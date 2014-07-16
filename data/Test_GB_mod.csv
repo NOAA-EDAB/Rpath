@@ -1,0 +1,11 @@
+Group,Type,Biomass,PB,QB,EE,ProdCons,BioAcc,Unassim,DetInput,Detritus,Groundfish.catch,Scallop.catch,Groundfish.discard,Scallop.discard
+Marine Mammals,0,0.8,0.03,1.5,,,0,0.2,,1,0,0,0,0
+Piscivores,0,2,0.4,4,,,0,0.2,,1,0.4,0,0.02,0
+Benthivores,0,5.5,0.6,4,,,0,0.2,,1,0.05,0.3,0.02,0.02
+Planktivores,0,6,0.6,2,,,0,0.2,,1,0.08,0,0.02,0
+Benthos,0,10,2,7,,,0,0.2,,1,0,2,0,0.05
+Zooplankton,0,25,10,30,,,0,0.2,,1,0,0,0,0
+Phytoplankton,1,50,150,,,,0,0,,1,0,0,0,0
+Detritus,2,50,,,,,0,0,0,0,,,,
+Groundfish Fleet,3,,,,,,,,,1,,,,
+Scallop Fleet,3,,,,,,,,,1,,,,

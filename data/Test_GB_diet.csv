@@ -1,0 +1,9 @@
+Group,Marine Mammals,Piscivores,Benthivores,Planktivores,Benthos,Zooplankton,Phytoplankton
+Marine Mammals,0,,,,,,
+Piscivores,0.1,,,,,,
+Benthivores,0.2,0.3,,,,,
+Planktivores,0.2,0.3,,,,,
+Benthos,,0.2,0.7,,,,
+Zooplankton,0.5,0.2,0.2,0.7,0.4,,
+Phytoplankton,,,,0.1,0.4,0.95,
+Detritus,,,0.1,0.2,0.2,0.05,
