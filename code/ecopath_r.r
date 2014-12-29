@@ -198,26 +198,29 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE){
   pedm[is.na(pedm)]                   <- 0
 
   # list structure for sim inputs
-  ecosim <- list(NUM_GROUPS = ngroups,          #define NUM_GROUPS 80  INCLUDES GEAR
-                 NUM_LIVING = nliving,          #define NUM_LIVING 60
-                 NUM_DEAD   = ndead,            #define NUM_DEAD 3
-                 NUM_GEARS  = ngear,            #define NUM_GEARS 17
-                 spname     = as.character(balanced$Group),
-                 type       = model[, Type],
-                 TL         = TL,
-                 BB         = balanced$Biomass, #float path_BB[1..NUM_GROUPS] vector
-                 PB         = balanced$PB,      #float path_PB[1..NUM_GROUPS] vector
-                 QB         = balanced$QB,      #float path_QB[1..NUM_GROUPS] vector
-                 EE         = balanced$EE,      #float path_EE[1..NUM_GROUPS] vector
-                 BA         = model[, BioAcc],  #float path_BA[1..NUM_GROUPS] vector
-                 GS         = model[, Unassim], #float path_GS[1..NUM_GROUPS] vector
-                 GE         = balanced$GE,      #float path_GS[1..NUM_GROUPS] vector
-                 pedigree   = pedm,             #float pedigree[B,PB,QB,Diet,1..NUM_GEARS][1..NUM_LIVING+NUM_DEAD]  matrix
-                 DC         = dietm,            #float path_DC[1..NUM_GROUPS][1..NUM_GROUPS]  matrix in [prey][pred] order     NUM_LIVING?
-                 DetFate    = detfatem,         #float path_DetFate[1..NUM_DEAD][1..NUM_GROUPS]  matrix in [det][groups] order
-                 Catch      = catchmatm,        #float path_Catch[1..NUM_GEARS][1..NUM_GROUPS]  matrix
-                 Discards   = discardmatm       #float path_Discards[1..NUM_GEARS][1..NUM_GROUPS] matrix
+  path.model <- list(NUM_GROUPS = ngroups,     #define NUM_GROUPS 80  INCLUDES GEAR
+                NUM_LIVING = nliving,          #define NUM_LIVING 60
+                NUM_DEAD   = ndead,            #define NUM_DEAD 3
+                NUM_GEARS  = ngear,            #define NUM_GEARS 17
+                spname     = as.character(balanced$Group),
+                type       = model[, Type],
+                TL         = TL,
+                BB         = balanced$Biomass, #float path_BB[1..NUM_GROUPS] vector
+                PB         = balanced$PB,      #float path_PB[1..NUM_GROUPS] vector
+                QB         = balanced$QB,      #float path_QB[1..NUM_GROUPS] vector
+                EE         = balanced$EE,      #float path_EE[1..NUM_GROUPS] vector
+                BA         = model[, BioAcc],  #float path_BA[1..NUM_GROUPS] vector
+                GS         = model[, Unassim], #float path_GS[1..NUM_GROUPS] vector
+                GE         = balanced$GE,      #float path_GS[1..NUM_GROUPS] vector
+                pedigree   = pedm,             #float pedigree[B,PB,QB,Diet,1..NUM_GEARS][1..NUM_LIVING+NUM_DEAD]  matrix
+                DC         = dietm,            #float path_DC[1..NUM_GROUPS][1..NUM_GROUPS]  matrix in [prey][pred] order     NUM_LIVING?
+                DetFate    = detfatem,         #float path_DetFate[1..NUM_DEAD][1..NUM_GROUPS]  matrix in [det][groups] order
+                Catch      = catchmatm,        #float path_Catch[1..NUM_GEARS][1..NUM_GROUPS]  matrix
+                Discards   = discardmatm       #float path_Discards[1..NUM_GEARS][1..NUM_GROUPS] matrix
   )
-    
-return(ecosim)
+
+#Define class of output
+class(path.model) <- 'Rpath'
+
+return(path.model)
 }
