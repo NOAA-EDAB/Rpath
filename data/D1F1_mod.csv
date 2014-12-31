@@ -1,0 +1,11 @@
+Group,Type,Biomass,PB,QB,EE,ProdCons,BioAcc,Unassim,DetInput,Detritus,Fishery1,Fishery1
+Apex Pred,0,0.03,0.1,3,,,0,0.2,,1,0,0.001
+Piscivores,0,2,0.2,1.5,,,0,0.2,,1,0.25,0.001
+Benthivores,0,3.00E+00,0.3,1.5,,,0,0.2,,1,0.3,0.05
+Planktivores,0,4,0.35,4,,,0,0.2,,1,0.3,0.05
+Megabenthos,0,2,0.6,3,,,0,0.2,,1,0,0.001
+Macrobenthos,0,,7.4,,0.8,0.2,0,0.2,,1,0,0
+Zooplankton,0,,6,27.74,0.8,,0,0.2,,1,0,0
+Phytoplankton,1,7.86063,166.4806,,,,0,0,,1,0,0
+Detritus,2,,,,,,0,0,0,0,0,0
+Fishery 1,3,,,,,,,,,1,,
