@@ -1,4 +1,26 @@
 #Functions for Rpath objects
+print.Rpath <- function(x, ...){
+  cat("Rpath model:\n")
+  if(max(x$EE, na.rm = T) > 1){
+    unbalanced.groups <- x$Group[which(EE > 1)]
+    print(paste("Unbalanced:\n", unbalanced.groups))
+  } else {
+    cat("Balanced\n")
+  }
+  removals <- rowSums(x$Catch) + rowSums(x$Discard)
+  out <- data.table(Group    = x$Group,
+                    type     = x$type,
+                    TL       = x$TL,
+                    Biomass  = x$BB,
+                    PB       = x$PB,
+                    QB       = x$QB,
+                    EE       = x$EE,
+                    GE       = x$GE,
+                    Removals = removals)
+  print(out, nrow = Inf)
+}
+
+
 summary.Rpath <- function(object, ...){
   z <- object
   EE <- z$EE
