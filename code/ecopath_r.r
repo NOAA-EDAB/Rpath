@@ -126,7 +126,7 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE){
   TL            <- rep(1, ngroups)
   TLcoeff       <- matrix(0, ngroups, ngroups)
   diag(TLcoeff) <- rep(1, ngroups)
-  gearcons      <- as.matrix(totcatchmat) / gearTot[col(as.matrix(totcatchmat))]
+  gearcons      <- as.matrix(totcatchmat) / geartot[col(as.matrix(totcatchmat))]
   dimnames(gearcons) <- list(NULL, NULL)
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
