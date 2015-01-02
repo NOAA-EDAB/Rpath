@@ -3,8 +3,10 @@
 print.Rpath <- function(x, rows = NA, morts = F, ...){
   cat("Rpath model:\n")
   if(max(x$EE, na.rm = T) > 1){
-    unbalanced.groups <- x$Group[which(EE > 1)]
-    print(paste("Unbalanced:\n", unbalanced.groups))
+    unbalanced.groups <- x$Group[which(x$EE > 1)]
+    cat("Unbalanced! \nThe following groups have EE > 1:\n")
+    print(unbalanced.groups)
+    cat("\n")
   } else {
     cat("Balanced\n")
   }
@@ -57,8 +59,10 @@ summary.Rpath <- function(object, ...){
   x <- object
   cat("Rpath model:\n")
   if(max(x$EE, na.rm = T) > 1){
-    unbalanced.groups <- x$Group[which(EE > 1)]
-    print(paste("Unbalanced:\n", unbalanced.groups))
+    unbalanced.groups <- x$Group[which(x$EE > 1)]
+    cat("Unbalanced! \nThe following groups have EE > 1:\n")
+    print(unbalanced.groups)
+    cat("\n")
   } else {
     cat("Balanced\n")
   }
