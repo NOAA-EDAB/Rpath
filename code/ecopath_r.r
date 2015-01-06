@@ -2,13 +2,13 @@
 ## Modified by Sean Lucey
 ## Version controled by git
 ## Function ecopathR takes as input 3 csv files and optional
-## output file name.  
+## ecosystem name  
 
 #Need to add these packages to a dependency file
 library(MASS)
 library(data.table)
 
-ecopath <- function(modfile, dietfile, pedfile, outname = FALSE, eco.name = NA){
+ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
   
   #Read in parameter files
   model <- as.data.table(read.csv(modfile))  # Basic parameters, detritus fate, catch, discards in that order
@@ -136,9 +136,6 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE, eco.name = NA){
   TLcoeffA <- TLcoeff - dietplus
   TL       <- solve(t(TLcoeffA), TL)     
 
-  # Path outputs to csv: unbalanced flag (in name), basic ests, and morts
-  wrt <- ifelse(outname == FALSE, FALSE, TRUE)
-  if(wrt) outname <- ifelse(max(EE, na.rm = T) > 1, paste("UB_", outname, sep = ""), outname)
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
   Bplus  <- c(living[, B], DetB, rep(0.0, ngear))
@@ -160,7 +157,6 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE, eco.name = NA){
                    GE       = GE, 
                    Removals = RemPlus)
 
-  if(wrt) write.csv(balanced, paste(outname, "_balanced.csv", sep = ""))
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
   gearF   <- as.matrix(totcatchmat) / living[, B][row(as.matrix(totcatchmat))]
   newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
@@ -171,7 +167,6 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE, eco.name = NA){
                   M0    = M0plus, 
                   F     = gearF[1:(nliving + ndead), ], 
                   M2    = predM)
-  if(wrt) write.csv(morts, paste(outname, "_morts.csv", sep = ""))
      
   # cleanup before sending to sim -- C code wants 0 as missing value, not NA
   balanced$Biomass[is.na(balanced$Biomass)] <- 0
@@ -222,5 +217,6 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE, eco.name = NA){
 #Define class of output
 class(path.model) <- 'Rpath'
 attr(path.model, 'eco.name') <- eco.name
+
 return(path.model)
 }
