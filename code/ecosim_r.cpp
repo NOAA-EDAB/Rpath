@@ -60,7 +60,7 @@
 // -----------------------------------------------------------------------------
 
 // Load main headers (standard C packages) AND global declarations
-#include "ecosim_r_v0_04.h"
+#include "ecosim_r.h"
 
 extern "C" void ecosim_run(
    // List of pointers to vectors created in R, must be in the same order
