@@ -8,7 +8,7 @@
 library(MASS)
 library(data.table)
 
-ecopath <- function(modfile, dietfile, pedfile, outname = FALSE){
+ecopath <- function(modfile, dietfile, pedfile, outname = FALSE, eco.name = NA){
   
   #Read in parameter files
   model <- as.data.table(read.csv(modfile))  # Basic parameters, detritus fate, catch, discards in that order
@@ -221,6 +221,6 @@ ecopath <- function(modfile, dietfile, pedfile, outname = FALSE){
 
 #Define class of output
 class(path.model) <- 'Rpath'
-
+attr(path.model, 'eco.name') <- eco.name
 return(path.model)
 }

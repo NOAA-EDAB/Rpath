@@ -1,14 +1,14 @@
 #Functions for Rpath objects
 #Print
 print.Rpath <- function(x, rows = NA, morts = F, ...){
-  cat("Rpath model:\n")
+  cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
   if(max(x$EE, na.rm = T) > 1){
     unbalanced.groups <- x$Group[which(x$EE > 1)]
-    cat("Unbalanced! \nThe following groups have EE > 1:\n")
+    cat("     Status: Unbalanced! \nThe following groups have EE > 1:\n")
     print(unbalanced.groups)
     cat("\n")
   } else {
-    cat("Balanced\n")
+    cat("     Status: Balanced\n")
   }
   if(morts == F){
     removals <- rowSums(x$Catch) + rowSums(x$Discard)
@@ -57,14 +57,14 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 #Summary
 summary.Rpath <- function(object, ...){
   x <- object
-  cat("Rpath model:\n")
+  cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
   if(max(x$EE, na.rm = T) > 1){
     unbalanced.groups <- x$Group[which(x$EE > 1)]
-    cat("Unbalanced! \nThe following groups have EE > 1:\n")
+    cat("     Status: Unbalanced! \nThe following groups have EE > 1:\n")
     print(unbalanced.groups)
     cat("\n")
   } else {
-    cat("Balanced\n")
+    cat("     Status: Balanced\n")
   }
   cat("\nSummary Statistics:\n")
   totbiomass <- sum(x$BB,    na.rm = T)
