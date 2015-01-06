@@ -10,7 +10,7 @@
 load_ecosim   <- function(Years, Pathfile, Dietfile, Pedigreefile, Juvfile){
 
     # Load and balance Ecopath	
-	  testpath  <- ecopathR(Pathfile, Dietfile, Pedigreefile, FALSE)
+	  testpath  <- ecopath(Pathfile, Dietfile, Pedigreefile, FALSE)
     # Convert Ecopath to ecosim rates
       testrates <- path_to_rates(testpath)
     # Add juveniles
@@ -56,7 +56,7 @@ path_to_rates<-function(path){
     rpar$NUM_DEAD   <- path$NUM_DEAD
     rpar$NUM_GEARS  <- path$NUM_GEARS
     
-    rpar$spname          <- c("Outside",path$spname)
+    rpar$spname          <- c("Outside",path$Group)
     rpar$spnum           <- 0:length(path$BB) 
 # Energetics for Living and Dead Groups
   # Reference biomass for calculating YY
