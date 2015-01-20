@@ -19,8 +19,9 @@ rl<-function(){
 ul<-function() if(is.loaded("ecosim_run")) dyn.unload("ecosim.dll") 	
 
 ##------------------------------------------------------------------------------ 
-
-path_to_rates <- function(path){
+#New ecosim function that runs all steps.
+ecosim <- function(Rpath, juvfile, YEARS = 100){
+  #Old path_to_rates--------------------------------------------------------------------
   MSCRAMBLE      <- 2.0
   MHANDLE        <- 1000.0
   PREYSWITCH     <- 1.0
@@ -28,32 +29,32 @@ path_to_rates <- function(path){
   ScrambleSelfWt <- 1.0
   HandleSelfWt   <- 1.0
 
-  rpar <- NULL
+  rpar <- c()
   
-  rpar$NUM_GROUPS <- path$NUM_GROUPS
-  rpar$NUM_LIVING <- path$NUM_LIVING
-  rpar$NUM_DEAD   <- path$NUM_DEAD
-  rpar$NUM_GEARS  <- path$NUM_GEARS
+  rpar$NUM_GROUPS <- Rpath$NUM_GROUPS
+  rpar$NUM_LIVING <- Rpath$NUM_LIVING
+  rpar$NUM_DEAD   <- Rpath$NUM_DEAD
+  rpar$NUM_GEARS  <- Rpath$NUM_GEARS
   
-  rpar$spname     <- c("Outside", path$Group)
-  rpar$spnum      <- 0:length(path$BB) 
+  rpar$spname     <- c("Outside", Rpath$Group)
+  rpar$spnum      <- 0:length(Rpath$BB) 
 
   #Energetics for Living and Dead Groups
   #Reference biomass for calculating YY
-  rpar$B_BaseRef <- c(1.0, path$BB) 
+  rpar$B_BaseRef <- c(1.0, Rpath$BB) 
   #Mzero proportional to (1-EE)
-  rpar$MzeroMort <- c(0.0, path$PB * (1.0 - path$EE)) 
+  rpar$MzeroMort <- c(0.0, Rpath$PB * (1.0 - Rpath$EE)) 
   #Unassimilated is the proportion of CONSUMPTION that goes to detritus.  
-  rpar$UnassimRespFrac <- c(0.0, path$GS);
+  rpar$UnassimRespFrac <- c(0.0, Rpath$GS);
   #Active respiration is proportion of CONSUMPTION that goes to "heat"
   #Passive respiration/ VonB adjustment is left out here
-  rpar$ActiveRespFrac <-  c(0.0, ifelse(path$QB > 0, 
-                                        1.0 - (path$PB / path$QB) - path$GS, 
+  rpar$ActiveRespFrac <-  c(0.0, ifelse(Rpath$QB > 0, 
+                                        1.0 - (Rpath$PB / Rpath$QB) - Rpath$GS, 
                                         0.0))
   #Ftime related parameters
   rpar$FtimeAdj   <- rep(0.0, length(rpar$B_BaseRef))
-  rpar$FtimeQBOpt <-   c(1.0, path$QB)
-  rpar$PBopt      <-   c(1.0, path$PB)           
+  rpar$FtimeQBOpt <-   c(1.0, Rpath$QB)
+  rpar$PBopt      <-   c(1.0, Rpath$PB)           
 
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
   rpar$fish_Effort <- ifelse(rpar$spnum <= rpar$NUM_LIVING + rpar$NUM_DEAD,
@@ -63,29 +64,29 @@ path_to_rates <- function(path){
   #NoIntegrate
   STEPS_PER_YEAR  <- 12
   STEPS_PER_MONTH <- 1
-  rpar$NoIntegrate <- ifelse(c(0, path$PB) / 
+  rpar$NoIntegrate <- ifelse(c(0, Rpath$PB) / 
                                (1.0 - rpar$ActiveRespFrac - rpar$UnassimRespFrac) > 
                                2 * STEPS_PER_YEAR * STEPS_PER_MONTH, 
                              0, 
                              rpar$spnum)  
 
   #Pred/Prey defaults
-  rpar$HandleSelf   <- rep(HandleSelfWt,   path$NUM_GROUPS + 1)
-  rpar$ScrambleSelf <- rep(ScrambleSelfWt, path$NUM_GROUPS + 1)
+  rpar$HandleSelf   <- rep(HandleSelfWt,   Rpath$NUM_GROUPS + 1)
+  rpar$ScrambleSelf <- rep(ScrambleSelfWt, Rpath$NUM_GROUPS + 1)
   
   #primary production links
-  #primTo   <- ifelse(path$PB>0 & path$QB<=0, 1:length(path$PB),0 )
-  primTo   <- ifelse(path$type == 1, 
-                     1:length(path$PB),
+  #primTo   <- ifelse(Rpath$PB>0 & Rpath$QB<=0, 1:length(Rpath$PB),0 )
+  primTo   <- ifelse(Rpath$type == 1, 
+                     1:length(Rpath$PB),
                      0)
-  primFrom <- rep(0, length(path$PB))
-  primQ    <- path$PB * path$BB 
+  primFrom <- rep(0, length(Rpath$PB))
+  primQ    <- Rpath$PB * Rpath$BB 
   
   #Predator/prey links
-  preyfrom  <- row(path$DC)
-  preyto    <- col(path$DC)	
-  predpreyQ <- path$DC * t(matrix(path$QB[1:path$NUM_LIVING] * path$BB[1:path$NUM_LIVING],
-                           path$NUM_LIVING, path$NUM_LIVING + path$NUM_DEAD))
+  preyfrom  <- row(Rpath$DC)
+  preyto    <- col(Rpath$DC)	
+  predpreyQ <- Rpath$DC * t(matrix(Rpath$QB[1:Rpath$NUM_LIVING] * Rpath$BB[1:Rpath$NUM_LIVING],
+                           Rpath$NUM_LIVING, Rpath$NUM_LIVING + Rpath$NUM_DEAD))
 
   #combined
   rpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0])
@@ -134,9 +135,9 @@ path_to_rates <- function(path){
   rpar$PreyPreyWeight <- c(0, rpar$PreyPreyWeight)
   
   #catchlinks
-  fishfrom    <- row(path$Catch)                      
-  fishthrough <- col(path$Catch) + (path$NUM_LIVING + path$NUM_DEAD)
-  fishcatch   <- path$Catch
+  fishfrom    <- row(Rpath$Catch)                      
+  fishthrough <- col(Rpath$Catch) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+  fishcatch   <- Rpath$Catch
   fishto      <- fishfrom * 0
   
   if(sum(fishcatch) > 0){
@@ -147,14 +148,14 @@ path_to_rates <- function(path){
   }
   #discard links
   
-  for(d in 1:path$NUM_DEAD){
-    detfate <- path$DetFate[(path$NUM_LIVING + path$NUM_DEAD + 1):path$NUM_GROUPS, d]
-    detmat  <- t(matrix(detfate, path$NUM_GEAR, path$NUM_GROUPS))
+  for(d in 1:Rpath$NUM_DEAD){
+    detfate <- Rpath$DetFate[(Rpath$NUM_LIVING + Rpath$NUM_DEAD + 1):Rpath$NUM_GROUPS, d]
+    detmat  <- t(matrix(detfate, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
    
-    fishfrom    <-  row(path$Discards)                      
-    fishthrough <-  col(path$Discards) + (path$NUM_LIVING + path$NUM_DEAD)
-    fishto      <-  t(matrix(path$NUM_LIVING + d, path$NUM_GEAR, path$NUM_GROUPS))
-    fishcatch   <-  path$Discards * detmat
+    fishfrom    <-  row(Rpath$Discards)                      
+    fishthrough <-  col(Rpath$Discards) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+    fishto      <-  t(matrix(Rpath$NUM_LIVING + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
+    fishcatch   <-  Rpath$Discards * detmat
     if(sum(fishcatch) > 0){
       rpar$FishFrom    <- c(rpar$FishFrom,    fishfrom   [fishcatch > 0])
       rpar$FishThrough <- c(rpar$FishThrough, fishthrough[fishcatch > 0])
@@ -171,11 +172,11 @@ path_to_rates <- function(path){
   rpar$FishTo          <- c(0, rpar$FishTo)   
 
 # Unwound discard fate for living groups
-  detfrac <- path$DetFate[1:(path$NUM_LIVING + path$NUM_DEAD), ]
+  detfrac <- Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]
   detfrom <- row(detfrac)
-  detto   <- col(detfrac) + path$NUM_LIVING
+  detto   <- col(detfrac) + Rpath$NUM_LIVING
   
-  detout <- 1 - rowSums(path$DetFate[1:(path$NUM_LIVING + path$NUM_DEAD), ])
+  detout <- 1 - rowSums(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ])
   dofrom <- 1:length(detout)
   doto   <- rep(0, length(detout))
   
@@ -186,84 +187,76 @@ path_to_rates <- function(path){
   rpar$NumDetLinks <- length(rpar$DetFrac) - 1
 
   rpar$state_BB    <- rpar$B_BaseRef
-  rpar$state_Ftime <- rep(1, length(path$BB) + 1)
+  rpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
   
-return(rpar)
-}
-
-
-##------------------------------------------------------------------------------ 
-
-#Initialize juvenile adult or "stanza" age structure in sim
-initialize_stanzas <- function(rpar, juv_file){    
-  STEPS_PER_YEAR    <- 12
+  #Old initialize_stanzas------------------------------------------------------------------------
+  #Initialize juvenile adult or "stanza" age structure in sim   
   MAX_MONTHS_STANZA <- 400
   MIN_REC_FACTOR    <- 6.906754779  #// This is ln(1/0.001 - 1) used to set min. logistic matuirty to 0.001
 
-  jpar       <- rpar
-  juv        <- read.csv(juv_file)
-  jpar$juv_N <- length(juv$JuvNum) 
+  juv        <- read.csv(juvfile)
+  rpar$juv_N <- length(juv$JuvNum) 
     
   #fill monthly vectors for each species, rel weight and consumption at age
   #Loops for weight and numbers
-  jpar$WageS      <- matrix(0, MAX_MONTHS_STANZA + 1, jpar$juv_N + 1)
-  jpar$WWa        <- matrix(0, MAX_MONTHS_STANZA + 1, jpar$juv_N + 1)
-  jpar$NageS      <- matrix(0, MAX_MONTHS_STANZA + 1, jpar$juv_N + 1)
-  jpar$SplitAlpha <- matrix(0, MAX_MONTHS_STANZA + 1, jpar$juv_N + 1)
+  rpar$WageS      <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
+  rpar$WWa        <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
+  rpar$NageS      <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
+  rpar$SplitAlpha <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
 
-  jpar$state_NN       <-rep(0.0, rpar$NUM_GROUPS + 1)
-  jpar$stanzaPred     <-rep(0.0, rpar$NUM_GROUPS + 1)
-  jpar$stanzaBasePred <-rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$state_NN       <-rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$stanzaPred     <-rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$stanzaBasePred <-rep(0.0, rpar$NUM_GROUPS + 1)
 
-  jpar$SpawnBio       <- rep(0.0, jpar$juv_N + 1)
-  jpar$EggsStanza     <- rep(0.0, jpar$juv_N + 1)
-  jpar$stanzaGGJuv    <- rep(0.0, jpar$juv_N + 1)
-  jpar$stanzaGGAdu    <- rep(0.0, jpar$juv_N + 1)
-  #jpar$drawn_K[MAX_SPLIT + 1]
-  #jpar$drawn_AduZ[MAX_SPLIT + 1]
-  #jpar$drawn_JuvZ[MAX_SPLIT + 1]
-  jpar$SpawnEnergy    <- rep(0.0, jpar$juv_N + 1)
-  jpar$SpawnX         <- rep(0.0, jpar$juv_N + 1)
-  jpar$SpawnAllocR    <- rep(0.0, jpar$juv_N + 1)
-  jpar$SpawnAllocG    <- rep(0.0, jpar$juv_N + 1)
+  rpar$SpawnBio       <- rep(0.0, rpar$juv_N + 1)
+  rpar$EggsStanza     <- rep(0.0, rpar$juv_N + 1)
+  rpar$stanzaGGJuv    <- rep(0.0, rpar$juv_N + 1)
+  rpar$stanzaGGAdu    <- rep(0.0, rpar$juv_N + 1)
+  #rpar$drawn_K[MAX_SPLIT + 1]
+  #rpar$drawn_AduZ[MAX_SPLIT + 1]
+  #rpar$drawn_JuvZ[MAX_SPLIT + 1]
+  rpar$SpawnEnergy    <- rep(0.0, rpar$juv_N + 1)
+  rpar$SpawnX         <- rep(0.0, rpar$juv_N + 1)
+  rpar$SpawnAllocR    <- rep(0.0, rpar$juv_N + 1)
+  rpar$SpawnAllocG    <- rep(0.0, rpar$juv_N + 1)
 
-  jpar$recruits       <- rep(0.0, jpar$juv_N + 1)
-  jpar$RzeroS         <- rep(0.0, jpar$juv_N + 1)
-  jpar$baseEggsStanza <- rep(0.0, jpar$juv_N + 1)
+  rpar$recruits       <- rep(0.0, rpar$juv_N + 1)
+  rpar$RzeroS         <- rep(0.0, rpar$juv_N + 1)
+  rpar$baseEggsStanza <- rep(0.0, rpar$juv_N + 1)
 
-  jpar$baseSpawnBio   <- rep(0.0, jpar$juv_N + 1)
-  jpar$Rbase          <- rep(0.0, jpar$juv_N + 1)
-  jpar$RscaleSplit    <- rep(0.0, jpar$juv_N + 1)
+  rpar$baseSpawnBio   <- rep(0.0, rpar$juv_N + 1)
+  rpar$Rbase          <- rep(0.0, rpar$juv_N + 1)
+  rpar$RscaleSplit    <- rep(0.0, rpar$juv_N + 1)
     
-  jpar$JuvNum         <- c(0, juv$JuvNum)
-  jpar$AduNum         <- c(0, juv$AduNum)
-  jpar$RecMonth       <- c(0, juv$RecMonth)
-  jpar$VonBD          <- c(0, juv$VonBD)
-	jpar$aduEqAgeZ      <- c(0, juv$JuvZ_BAB)
-	jpar$juvEqAgeZ      <- c(0, juv$AduZ_BAB)
-  jpar$RecPower       <- c(0, juv$RecPower)
-  jpar$Wmat001        <- c(0, juv$Wmat001)
-  jpar$Wmat50         <- c(0, juv$Wmat50)
-  jpar$Amat001        <- c(0, juv$Amat001)
-  jpar$Amat50         <- c(0, juv$Amat50)
+  rpar$JuvNum         <- c(0, juv$JuvNum)
+  rpar$AduNum         <- c(0, juv$AduNum)
+  rpar$RecMonth       <- c(0, juv$RecMonth)
+  rpar$VonBD          <- c(0, juv$VonBD)
+	rpar$aduEqAgeZ      <- c(0, juv$JuvZ_BAB)
+	rpar$juvEqAgeZ      <- c(0, juv$AduZ_BAB)
+  rpar$RecPower       <- c(0, juv$RecPower)
+  rpar$Wmat001        <- c(0, juv$Wmat001)
+  rpar$Wmat50         <- c(0, juv$Wmat50)
+  rpar$Amat001        <- c(0, juv$Amat001)
+  rpar$Amat50         <- c(0, juv$Amat50)
     
   #first calculate the number of months in each age group.  
   #For end stanza (plus group), capped in EwE @400, this is 90% of 
   #relative max wt, uses generalized exponent D
-  firstMoJuv   <- rep(0, jpar$juv_N) 
-  lastMoJuv    <- juv$RecAge * STEPS_PER_YEAR - 1
+  firstMoJuv <- rep(0, rpar$juv_N) 
+  lastMoJuv  <- juv$RecAge * STEPS_PER_YEAR - 1
   firstMoAdu <- juv$RecAge * STEPS_PER_YEAR
   lastMoAdu  <- floor(log(1.0 - (0.9 ^ (1.0 - juv$VonBD))) /
                         (-3.0 * juv$VonBK * (1.0 - juv$VonBD) / STEPS_PER_YEAR))
-  lastMoAdu <- ifelse(lastMoAdu > MAX_MONTHS_STANZA, 
-                      MAX_MONTHS_STANZA, 
-                      lastMoAdu)
+  lastMoAdu  <- ifelse(lastMoAdu > MAX_MONTHS_STANZA, 
+                       MAX_MONTHS_STANZA, 
+                       lastMoAdu)
 
   #Energy required to grow a unit in weight (scaled to Winf = 1)
-  vBM = 1.0 - 3.0 * juv$VonBK / STEPS_PER_YEAR
+  vBM <- 1.0 - 3.0 * juv$VonBK / STEPS_PER_YEAR
 
   #Set Q multiplier to 1 (used to rescale consumption rates) 
-  Qmult <- rep(1.0, jpar$NUM_GROUPS) 
+  Qmult <- rep(1.0, rpar$NUM_GROUPS) 
  
   #Survival rates for juveniles and adults
   #KYA Switched survival rate out of BAB == assume all on adults
@@ -274,16 +267,16 @@ initialize_stanzas <- function(rpar, juv_file){
   AmatSpread <- -(juv$Amat001 - juv$Amat50) / MIN_REC_FACTOR
 
   #Save numbers that can be saved at this point
-  jpar$WmatSpread  <- c(0, WmatSpread)    
-  jpar$AmatSpread  <- c(0, AmatSpread)
-  jpar$vBM         <- c(0, vBM)
-  jpar$firstMoJuv  <- c(0, firstMoJuv)
-  jpar$lastMoJuv   <- c(0, lastMoJuv)
-  jpar$firstMoAdu  <- c(0, firstMoAdu)
-  jpar$lastMoAdu   <- c(0, lastMoAdu)       
+  rpar$WmatSpread  <- c(0, WmatSpread)    
+  rpar$AmatSpread  <- c(0, AmatSpread)
+  rpar$vBM         <- c(0, vBM)
+  rpar$firstMoJuv  <- c(0, firstMoJuv)
+  rpar$lastMoJuv   <- c(0, lastMoJuv)
+  rpar$firstMoAdu  <- c(0, firstMoAdu)
+  rpar$lastMoAdu   <- c(0, lastMoAdu)       
     
-	if(jpar$juv_N>0){                        
-    for(i in 1:jpar$juv_N){
+	if(rpar$juv_N>0){                        
+    for(i in 1:rpar$juv_N){
 	    #R rpar lookup number for juvs and adults is shifted by 1
       rJuvNum <- juv$JuvNum[i] + 1
       rAduNum <- juv$AduNum[i] + 1
@@ -320,10 +313,10 @@ initialize_stanzas <- function(rpar, juv_file){
       JuvAges <- (ageMo <= lastMoJuv [i])
           
       #Sum up biomass per egg in adult group
-      BioPerEgg <- sum( AduAges * surv * WageS )
+      BioPerEgg <- sum(AduAges * surv * WageS)
         
-      #Actual Eggs is Biomass of path/Biomass per recruit  
-      recruits <- jpar$B_BaseRef[rAduNum] / BioPerEgg
+      #Actual Eggs is Biomass of Rpath/Biomass per recruit  
+      recruits <- rpar$B_BaseRef[rAduNum] / BioPerEgg
       #KYA Also took BAB out of here (don't know if this is a juv. or adu term)
       #RzeroS[i] <- recruits
       #RzeroS[i] = recruits * exp(juv_aduBAB[i]/ STEPS_PER_YEAR);;  
@@ -342,8 +335,8 @@ initialize_stanzas <- function(rpar, juv_file){
       #SumK is adjusted to QB, ratio between the two is A term in respiration
       #Actually, no, since Winf could scale it up, it could be above or below
       #Q/B
-    	sumK  <- jpar$FtimeQBOpt[rAduNum] * jpar$B_BaseRef[rAduNum] / sumK
-      aduQB <- jpar$FtimeQBOpt[rAduNum]
+    	sumK  <- rpar$FtimeQBOpt[rAduNum] * rpar$B_BaseRef[rAduNum] / sumK
+      aduQB <- rpar$FtimeQBOpt[rAduNum]
 
       #Calculate initial juvenile assimilated consumption
       juvCons <- sum(JuvAges * NageS * WWa)          
@@ -352,17 +345,17 @@ initialize_stanzas <- function(rpar, juv_file){
       juvCons <- juvCons *  sumK 
       juvQB   <- juvCons / juvBio 
 
-     #Following is from SplitSetPred
-     #v->stanzaBasePred[juv_JuvNum[i]] = v->stanzaPred[juv_JuvNum[i]];
-     #v->stanzaBasePred[juv_AduNum[i]] = v->stanzaPred[juv_AduNum[i]]; 
-     #Moved from the "second" juvenile loop - splitalpha calculation
-     JuvBasePred <- sum(JuvAges * NageS * WWa) 
-     AduBasePred <- sum(AduAges * NageS * WWa) 
+      #Following is from SplitSetPred
+      #v->stanzaBasePred[juv_JuvNum[i]] = v->stanzaPred[juv_JuvNum[i]];
+      #v->stanzaBasePred[juv_AduNum[i]] = v->stanzaPred[juv_AduNum[i]]; 
+      #Moved from the "second" juvenile loop - splitalpha calculation
+      JuvBasePred <- sum(JuvAges * NageS * WWa) 
+      AduBasePred <- sum(AduAges * NageS * WWa) 
       
-     #Consumption for growth between successive age classes
-     nb       <- length(WageS)
-     Diff     <- WageS[2:nb] - vBM[i] * WageS[1:(nb - 1)]
-     Diff[nb] <- Diff[nb - 1]  
+      #Consumption for growth between successive age classes
+      nb       <- length(WageS)
+      Diff     <- WageS[2:nb] - vBM[i] * WageS[1:(nb - 1)]
+      Diff[nb] <- Diff[nb - 1]  
       
       #Weighting to splitalpha
       SplitAlpha <- Diff * (JuvAges * JuvBasePred / (juvQB * juvBio) +
@@ -376,213 +369,124 @@ initialize_stanzas <- function(rpar, juv_file){
                                    -((ageMo - juv$Amat50[i]) / AmatSpread[i]))))
 		  #cat(i,SpawnBio,"\n")
       #Qmult is for scaling to the PreyTo list so uses actual juvnum, not juvnum + 1					
-      Qmult[juv$JuvNum[i]] <- juvCons / (jpar$FtimeQBOpt[rJuvNum] * jpar$B_BaseRef[rJuvNum])
+      Qmult[juv$JuvNum[i]] <- juvCons / (rpar$FtimeQBOpt[rJuvNum] * rpar$B_BaseRef[rJuvNum])
 
       #R comment:  FOLLOWING CHANGES RPAR
       #Set NoIntegrate flag (negative in both cases, different than split pools)
-      jpar$NoIntegrate[rJuvNum] <- -juv$JuvNum[i]
-      jpar$NoIntegrate[rAduNum] <- -juv$AduNum[i]
+      rpar$NoIntegrate[rJuvNum] <- -juv$JuvNum[i]
+      rpar$NoIntegrate[rAduNum] <- -juv$AduNum[i]
 
       #Reset juvenile B and QB in line with age stucture
-      jpar$FtimeAdj  [rJuvNum] <- 0.0
-      jpar$FtimeAdj  [rAduNum] <- 0.0
-      jpar$FtimeQBOpt[rJuvNum] <- juvQB
-      jpar$FtimeQBOpt[rAduNum] <- aduQB 
-      jpar$B_BaseRef [rJuvNum] <- juvBio
+      rpar$FtimeAdj  [rJuvNum] <- 0.0
+      rpar$FtimeAdj  [rAduNum] <- 0.0
+      rpar$FtimeQBOpt[rJuvNum] <- juvQB
+      rpar$FtimeQBOpt[rAduNum] <- aduQB 
+      rpar$B_BaseRef [rJuvNum] <- juvBio
     
       #KYA Spawn X is Beverton-Holt.  To turn off Beverton-Holt, set
       #SpawnX to 10000 or something similarly hight.  2.0 is half-saturation.
       #1.000001 or so is minimum.
       k <- i + 1
-      jpar$SpawnX[k]         <- 10000.0
-      jpar$SpawnEnergy[k]    <- 1.0 
-      jpar$SpawnAllocR[k]    <- 1.0
-      jpar$SpawnAllocG[k]    <- 1.0
-      jpar$SpawnBio[k]       <- SpawnBio
-      jpar$baseSpawnBio[k]   <- SpawnBio
-      jpar$EggsStanza[k]     <- SpawnBio
-      jpar$baseEggsStanza[k] <- SpawnBio
-      jpar$Rbase[k]          <- NageS[lastMoJuv[i] + 1] * WageS[lastMoJuv[i] + 1]            
+      rpar$SpawnX[k]         <- 10000.0
+      rpar$SpawnEnergy[k]    <- 1.0 
+      rpar$SpawnAllocR[k]    <- 1.0
+      rpar$SpawnAllocG[k]    <- 1.0
+      rpar$SpawnBio[k]       <- SpawnBio
+      rpar$baseSpawnBio[k]   <- SpawnBio
+      rpar$EggsStanza[k]     <- SpawnBio
+      rpar$baseEggsStanza[k] <- SpawnBio
+      rpar$Rbase[k]          <- NageS[lastMoJuv[i] + 1] * WageS[lastMoJuv[i] + 1]            
       #leaving out code to rescale recruitment if recruitment is seasonal
       #calculates RscaleSplit[i] to give same annual avg as equal monthly rec
-      jpar$RscaleSplit[k]     <- 1.0
+      rpar$RscaleSplit[k]     <- 1.0
 
-      jpar$recruits[k]       <- recruits
-      jpar$RzeroS[k]         <- recruits
-      jpar$stanzaGGJuv[k]    <- juvQB * juvBio / JuvBasePred
-      jpar$stanzaGGAdu[k]    <- aduQB * aduBio / AduBasePred
+      rpar$recruits[k]       <- recruits
+      rpar$RzeroS[k]         <- recruits
+      rpar$stanzaGGJuv[k]    <- juvQB * juvBio / JuvBasePred
+      rpar$stanzaGGAdu[k]    <- aduQB * aduBio / AduBasePred
 
-      jpar$state_NN[rJuvNum]       <- sum(NageS * JuvAges)
-      jpar$stanzaPred[rJuvNum]     <- JuvBasePred
-      jpar$stanzaBasePred[rJuvNum] <- JuvBasePred
+      rpar$state_NN[rJuvNum]       <- sum(NageS * JuvAges)
+      rpar$stanzaPred[rJuvNum]     <- JuvBasePred
+      rpar$stanzaBasePred[rJuvNum] <- JuvBasePred
 
-      jpar$state_NN[rAduNum]       <- sum(NageS * AduAges)
-      jpar$stanzaPred[rAduNum]     <- AduBasePred
-      jpar$stanzaBasePred[rAduNum] <- AduBasePred
+      rpar$state_NN[rAduNum]       <- sum(NageS * AduAges)
+      rpar$stanzaPred[rAduNum]     <- AduBasePred
+      rpar$stanzaBasePred[rAduNum] <- AduBasePred
 
-      jpar$WageS     [1:(lastMoAdu[i] + 1), k] <- WageS
-      jpar$WWa       [1:(lastMoAdu[i] + 1), k] <- WWa
-      jpar$NageS     [1:(lastMoAdu[i] + 1), k] <- NageS
-      jpar$SplitAlpha[1:(lastMoAdu[i] + 1), k] <- SplitAlpha
+      rpar$WageS     [1:(lastMoAdu[i] + 1), k] <- WageS
+      rpar$WWa       [1:(lastMoAdu[i] + 1), k] <- WWa
+      rpar$NageS     [1:(lastMoAdu[i] + 1), k] <- NageS
+      rpar$SplitAlpha[1:(lastMoAdu[i] + 1), k] <- SplitAlpha
                      
     }  #END OF JUVENILE LOOP
 	}
   #Reset QQ in line with new comsumtion
-  #jpar$QQ <- jpar$QQ * Qmult[jpar$PreyTo]
+  #rpar$QQ <- rpar$QQ * Qmult[rpar$PreyTo]
 
-  return(jpar)   
-}
+  #Old ecosim_pack-------------------------------------------------------------------- 
+  rpar$YEARS  <- YEARS
 
-##------------------------------------------------------------------------------ 
-
-ecosim_pack <- function(rpar, YEARS = 100){
-   res <- NULL 
-   attach(rpar)
-   
-   res$YEARS  <- YEARS
-
-   res$spname <- rpar$spname       
-   res$spnum  <- rpar$spnum          
-
-   res$numlist        <- c(NUM_GROUPS, NUM_LIVING, NUM_DEAD, NUM_GEARS, 
-                           juv_N, NumPredPreyLinks, NumFishingLinks, NumDetLinks)
-   names(res$numlist) <- c("NUM_GROUPS", "NUM_LIVING", "NUM_DEAD", "NUM_GEARS", 
-                           "juv_N", "NumPredPreyLinks", "NumFishingLinks", "NumDetLinks") 
-
-   res$flags        <- c(-1, 1)
-   names(res$flags) <- c("BURN_YEARS", "COUPLED")
-   
-   res$outflags        <- c(-1)
-   names(res$outflags) <- c("CRASH_YEAR")
-
-   res$ratelist <- data.frame(B_BaseRef,
-                              MzeroMort,
-                              UnassimRespFrac,
-                              ActiveRespFrac,
-                              FtimeAdj,
-                              FtimeQBOpt,
-                              PBopt, 
-                              NoIntegrate,
-                              HandleSelf,
-                              ScrambleSelf,
-                              PredTotWeight,
-                              PreyTotWeight,
-                              fish_Effort)
-                
-    res$ppind  <-   data.frame(PreyFrom, # 175   -none- numeric  
-                               PreyTo)   # 175   -none- numeric  
-    
-    res$pplist <- data.frame(QQ,             # 175   -none- numeric  
-                             DD,             # 175   -none- numeric  
-                             VV,             # 175   -none- numeric  
-                             HandleSwitch,   # 175   -none- numeric  
-                             PredPredWeight, # 175   -none- numeric  
-                             PreyPreyWeight) # 175   -none- numeric               
-
-    res$fishind <- data.frame(FishFrom,      #  89   -none- numeric  
-                              FishThrough,   #  89   -none- numeric  
-                              FishTo)        #  89   -none- numeric  
-
-    res$fishlist <- data.frame(FishQ)        #  89   -none- numeric  
-
-    res$detind <- data.frame(DetFrom,        #  53   -none- numeric  
-                            DetTo)           #  53   -none- numeric     
-     
-    res$detlist <- data.frame(DetFrac)       #  53   -none- numeric     
+  
+  rpar$BURN_YEARS <- -1
+  rpar$COUPLED    <-  1
  
-    res$juvind <- data.frame(JuvNum,         #   5   -none- numeric  
-                             AduNum,         #   5   -none- numeric 
-                             firstMoJuv,     #   5   -none- numeric  
-                             lastMoJuv,      #   5   -none- numeric  
-                             firstMoAdu,     #   5   -none- numeric  
-                             lastMoAdu)      #   5   -none- numeric  
+  rpar$CRASH_YEAR <- -1
+  
+  #derivlist
+  rpar$TotGain        <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$TotLoss        <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$LossPropToB    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$LossPropToQ    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$DerivT         <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$dyt            <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$biomeq         <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$FoodGain       <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$DetritalGain   <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$FoodLoss       <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$UnAssimLoss    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$ActiveRespLoss <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$MzeroLoss      <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$DetritalLoss   <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$TotDetOut      <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$FishingLoss    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$FishingGain    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$FishingThru    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$preyYY         <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$predYY         <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$PredSuite      <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$HandleSuite    <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$TerminalF      <- rep(0.0, rpar$NUM_GROUPS + 1)
+ 
+  
+  #targlist     
+  rpar$TARGET_BIO <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$TARGET_F   <- rep(0.0, rpar$NUM_GROUPS + 1)
+  rpar$ALPHA      <- rep(0.0, rpar$NUM_GROUPS + 1)
+  
+  mforcemat           <- data.frame(matrix(1.0, YEARS * 12 + 1, rpar$NUM_GROUPS + 1))
+  names(mforcemat)    <- rpar$spname
+  rpar$force_byprey   <- mforcemat
+  rpar$force_bymort   <- mforcemat
+  rpar$force_byrecs   <- mforcemat
+  rpar$force_bysearch <- mforcemat
+  
+  yforcemat         <- data.frame(matrix(0.0, YEARS + 1, rpar$NUM_GROUPS + 1))
+  names(yforcemat)  <- rpar$spname
+  rpar$FORCED_FRATE <- yforcemat
+  rpar$FORCED_CATCH <- yforcemat
 
-    res$juvlist <- data.frame(SpawnBio,      #   5   -none- numeric  
-                              EggsStanza,    #   5   -none- numeric  
-                              stanzaGGJuv,   #   5   -none- numeric  
-                              stanzaGGAdu,   #   5   -none- numeric  
-                              SpawnEnergy,   #   5   -none- numeric  
-                              SpawnX,        #   5   -none- numeric  
-                              SpawnAllocR,   #   5   -none- numeric  
-                              SpawnAllocG,   #   5   -none- numeric  
-                              recruits,      #   5   -none- numeric  
-                              RzeroS,        #   5   -none- numeric  
-                              baseEggsStanza,#   5   -none- numeric  
-                              baseSpawnBio,  #   5   -none- numeric  
-                              Rbase,         #   5   -none- numeric  
-                              RecMonth,      #   5   -none- numeric  
-                              VonBD,         #   5   -none- numeric  
-                              aduEqAgeZ,     #   5   -none- numeric  
-                              juvEqAgeZ,     #   5   -none- numeric  
-                              RecPower,      #   5   -none- numeric  
-                              Wmat001,       #   5   -none- numeric  
-                              Wmat50,        #   5   -none- numeric  
-                              Amat001,       #   5   -none- numeric  
-                              Amat50,        #   5   -none- numeric  
-                              WmatSpread,    #   5   -none- numeric  
-                              AmatSpread,    #   5   -none- numeric  
-                              vBM,           #   5   -none- numeric  
-                              RscaleSplit)   #   5   -none- numeric 
-     
-    res$statelist <- data.frame(state_BB,    #  35   -none- numeric  
-                                state_Ftime, #  35   -none- numeric  
-                                state_NN,    #  35   -none- numeric  
-                                stanzaPred,  #  35   -none- numeric  
-                                stanzaBasePred) #  35   -none- numeric  
+  omat           <- data.frame(matrix(0.0, YEARS * 12 + 1, rpar$NUM_GROUPS + 1))
+  names(omat)    <- rpar$spname
+  rpar$out_BB  <- omat 
+  rpar$out_CC  <- omat
+  rpar$out_SSB <- omat              
+  rpar$out_rec <- omat
+  
+  class(rpar) <- 'Rpath.sim'
+  return(rpar)
 
-  res$NageS      <- rpar$NageS
-  res$WageS      <- rpar$WageS
-  res$WWa        <- rpar$WWa 
-  res$SplitAlpha <- rpar$SplitAlpha
-  
-  res$derivlist <- data.frame(matrix(0.0, rpar$NUM_GROUPS + 1, 23))
-  names(res$derivlist) <- c("TotGain", "TotLoss", "LossPropToB", "LossPropToQ", 
-                            "DerivT", "dyt", "biomeq", "FoodGain", "DetritalGain",
-                            "FoodLoss", "UnAssimLoss", "ActiveRespLoss", "MzeroLoss",
-                            "DetritalLoss", "TotDetOut", "FishingLoss", "FishingGain",
-                            "FishingThru", "preyYY", "predYY", "PredSuite",
-                            "HandleSuite", "TerminalF")  
-  
-  res$targlist        <-  data.frame(matrix(0.0, rpar$NUM_GROUPS + 1, 3))
-  names(res$targlist) <- c("TARGET_BIO", "TARGET_F", "ALPHA")
-  
-  mforcemat          <- data.frame(matrix(1.0, YEARS * 12 + 1, rpar$NUM_GROUPS + 1))
-  names(mforcemat)   <- rpar$spname
-  res$force_byprey   <- mforcemat
-  res$force_bymort   <- mforcemat
-  res$force_byrecs   <- mforcemat
-  res$force_bysearch <- mforcemat
-  
-  yforcemat        <- data.frame(matrix(0.0, YEARS + 1, rpar$NUM_GROUPS + 1))
-  names(yforcemat) <- rpar$spname
-  res$FORCED_FRATE <- yforcemat
-  res$FORCED_CATCH <- yforcemat
-
-  omat        <- data.frame(matrix(0.0, YEARS * 12 + 1, rpar$NUM_GROUPS + 1))
-  names(omat) <- rpar$spname
-  res$out_BB  <- omat * 0.0
-  res$out_CC  <- omat * 0.0
-  res$out_SSB <- omat * 0.0              
-  res$out_rec <- omat * 0.0
-     
-   detach(rpar) 
-   return(res)
 }
-
-##------------------------------------------------------------------------------    
-
-load_ecosim <- function(Years, Pathfile, Dietfile, Pedigreefile, Juvfile){
-  #Load and balance Ecopath  
-  testpath  <- ecopath(Pathfile, Dietfile, Pedigreefile, FALSE)
-  #Convert Ecopath to ecosim rates
-  testrates <- path_to_rates(testpath)
-  #Add juveniles
-  testjuvs  <- initialize_stanzas(testrates, Juvfile)  
-  #Put in arrays appropriate for c
-  simout    <- ecosim_pack(testjuvs, Years)
-  
-  return(simout) 
-}  
+ 
 
 ##------------------------------------------------------------------------------ 
 
