@@ -58,7 +58,7 @@ summary(GOA)
 #Ecosim
 library(Rcpp)
 
-GOA.sim <- ecosim(GOA, YEARS = 100, juvfile)
+GOA.sim <- ecosim_init(GOA, YEARS = 100, juvfile)
 
 
 cppFunction('List cpptest(List x){
@@ -127,17 +127,34 @@ cppFunction('NumericMatrix RmatT (DataFrame x){
               return y;
               }')
 
-cppFunction('List cppTest(NumericVector predYY, NumericMatrix force_bysearch,
-                          int NUM_LIVING, int NUM_DEAD){
+cppFunction('List cppTest(List mod){
             #define STEPS_PER_YEAR 12
-            int sp, y = 1, m = 1;
-            for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){
-              predYY[sp] *= force_bysearch(sp, y*STEPS_PER_YEAR + m);
+            NumericVector Q;
+            int NumPredPreyLinks           = as<int>(mod["NumPredPreyLinks"]);
+            NumericVector preyYY           = as<NumericVector>(mod["preyYY"]);
+            NumericVector PreyFrom         = as<NumericVector>(mod["PreyFrom"]);
+            NumericVector PreyTo           = as<NumericVector>(mod["PreyTo"]);
+            NumericVector HandleSwitch     = as<NumericVector>(mod["HandleSwitch"]);
+            NumericVector COUPLED          = as<NumericVector>(mod["COUPLED"]);
+
+            for (int links=1; links<=NumPredPreyLinks; links++){
+   	          int prey = PreyFrom[links];
+ 		          int pred = PreyTo[links];
+              Q[links] = pow(preyYY[prey], COUPLED * HandleSwitch[links]);
             }
             List out = List::create(Named("predYY")         = predYY,
-                                    Named("force_bysearch") = force_bysearch,
-                                    Named("NUM_LIVING")     = NUM_LIVING,
-                                    Named("NUM_DEAD")       = NUM_DEAD);
+                                    Named("Q")              = Q);
+            return out;
+            }')
+
+cppFunction('List powtest(NumericVector x, NumericVector y){
+            int n = x.size();
+            NumericVector powerout(n);
+            for (int i = 0; i < x.size(); i++){
+              powerout[i] = pow(x[i], y[i]);
+            }
+            List out = List::create(Named("size") = x.size(),
+                                    Named("result") = powerout);
             return out;
             }')
 
