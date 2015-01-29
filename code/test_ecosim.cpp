@@ -33,27 +33,29 @@ NumericMatrix RmatT (DataFrame x){
             
 // [[Rcpp::export]]
 // Deriv master calculates the biomass dynamics derivative
-int master(List mod, int y, int m, int d){
+int deriv_master(List mod, int y, int m, int d){
  if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
 
-  // Functional response modars     
+  // Functional response vars     
   int sp, links, prey, pred, i;
-  double Master_Density, Q;
+  double caught, Q;
   unsigned int LL;
-  // Fishing modars
+  // Fishing vars
   int gr, dest;
-  double caught, totQ;
+  // double Master_Density, totQ;
   
   // Parse out List mod
   int NUM_GROUPS                 = as<int>(mod["NUM_GROUPS"]);
   int NUM_LIVING                 = as<int>(mod["NUM_LIVING"]);
   int NUM_DEAD                   = as<int>(mod["NUM_DEAD"]);
-  int NUM_GEARS                  = as<int>(mod["NUM_GEARS"]);
+  //int NUM_GEARS                  = as<int>(mod["NUM_GEARS"]);
   int NumPredPreyLinks           = as<int>(mod["NumPredPreyLinks"]);
   int NumFishingLinks            = as<int>(mod["NumFishingLinks"]);
   int NumDetLinks                = as<int>(mod["NumDetLinks"]);
   int juv_N                      = as<int>(mod["juv_N"]);
+  
   CharacterVector spname         = as<CharacterVector>(mod["spname"]);
+  
   NumericVector spnum            = as<NumericVector>(mod["spnum"]);
   NumericVector B_BaseRef        = as<NumericVector>(mod["B_BaseRef"]);
   NumericVector MzeroMort        = as<NumericVector>(mod["MzeroMort"]);
@@ -76,19 +78,15 @@ int master(List mod, int y, int m, int d){
   NumericVector PreyPreyWeight   = as<NumericVector>(mod["PreyPreyWeight"]);
   NumericVector PredTotWeight    = as<NumericVector>(mod["PredTotWeight"]);
   NumericVector PreyTotWeight    = as<NumericVector>(mod["PreyTotWeight"]);
-  
   NumericVector FishFrom         = as<NumericVector>(mod["FishFrom"]);
   NumericVector FishThrough      = as<NumericVector>(mod["FishThrough"]);
   NumericVector FishQ            = as<NumericVector>(mod["FishQ"]);
   NumericVector FishTo           = as<NumericVector>(mod["FishTo"]);
-  
   NumericVector DetFrac          = as<NumericVector>(mod["DetFrac"]);
   NumericVector DetFrom          = as<NumericVector>(mod["DetFrom"]);
   NumericVector DetTo            = as<NumericVector>(mod["DetTo"]);
-  
   NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
   NumericVector state_Ftime      = as<NumericVector>(mod["state_Ftime"]);
-  
   NumericVector WageS            = as<NumericVector>(mod["WageS"]);
   NumericVector WWa              = as<NumericVector>(mod["WWa"]);
   NumericVector NageS            = as<NumericVector>(mod["NageS"]);
@@ -130,7 +128,7 @@ int master(List mod, int y, int m, int d){
   NumericVector lastMoAdu        = as<NumericVector>(mod["lastMoAdu"]);
   NumericVector YEARS            = as<NumericVector>(mod["YEARS"]);
   NumericVector BURN_YEARS       = as<NumericVector>(mod["BURN_YEARS"]);
-  NumericVector COUPLED          = as<NumericVector>(mod["COUPLED"]);
+  int COUPLED          = as<int>(mod["COUPLED"]);
   NumericVector CRASH_YEAR       = as<NumericVector>(mod["CRASH_YEAR"]);
   NumericVector TotGain          = as<NumericVector>(mod["TotGain"]);
   NumericVector TotLoss          = as<NumericVector>(mod["TotLoss"]);
@@ -143,7 +141,7 @@ int master(List mod, int y, int m, int d){
   NumericVector DetritalGain     = as<NumericVector>(mod["DetritalGain"]);     
   NumericVector FoodLoss         = as<NumericVector>(mod["FoodLoss"]);
   NumericVector UnAssimLoss      = as<NumericVector>(mod["UnAssimLoss"]);
-  NumericVector ActimodeRespLoss = as<NumericVector>(mod["ActimodeRespLoss"]);   
+  NumericVector ActiveRespLoss = as<NumericVector>(mod["ActiveRespLoss"]);   
   NumericVector FishingGain      = as<NumericVector>(mod["FishingGain"]);
   NumericVector MzeroLoss        = as<NumericVector>(mod["MzeroLoss"]);
   NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);
@@ -173,12 +171,12 @@ int master(List mod, int y, int m, int d){
   NumericMatrix vforce_bysearch = RmatT(force_bysearch);
   
   
-  // Some derimodatimode parts need to be set to zero
+  // Some derivative parts need to be set to zero
   LL =  (NUM_GROUPS + 1) * sizeof(double);
   memset(FoodLoss,         0, LL);
   memset(FoodGain,         0, LL);
   memset(UnAssimLoss,      0, LL);
-  memset(ActimodeRespLoss, 0, LL);   
+  memset(ActiveRespLoss, 0, LL);   
   memset(DetritalGain,     0, LL);
   memset(FishingGain,      0, LL);
   memset(MzeroLoss,        0, LL);
@@ -224,45 +222,45 @@ int master(List mod, int y, int m, int d){
  		      prey = PreyFrom[links];
  		      pred = PreyTo[links];
  
-      // MAIN FUNCTIONAL RESPONSE SET HERE TO OUTPUT TOTAL CONSUMPTION (Q); use 1 modersion only
-         // (1) This is EwE Classic (c)(r)(tm)(4.0beta)(all rights resermoded)
+      // MAIN FUNCTIONAL RESPONSE SET HERE TO OUTPUT TOTAL CONSUMPTION (Q); use 1 version only
+         // (1) This is EwE Classic (c)(r)(tm)(4.0beta)(all rights reserved)
  				 //  Master_Density = predYY[pred];	 
      		 //   Q = QQ[links] * XX[links] * predYY[pred] * preyYY[prey] / 
          //       (Master_Density + ((XX[links] - 1.0) * 
  				 //	                   (1.0 + state_Ftime[prey]) / 2.0) );
   
-         // (2) Multiplicatimode modersion which is too weird for me.
+         // (2) Multiplicative version which is too weird for me.
          // Q =   QQ[links] * 
          //     ( XX[links] * predYY[pred] / ((XX[links] - 1.0) + predYY[pred])     )*
          //     ( HH[links] * preyYY[prey] / ((HH[links] - 1.0) + preyYY[prey])     )*
  				 // 		( DD[links]                 / ((DD[links] - 1.0) + HandleSuite[pred]) )*
- 				 // 		( modmod[links]                 / ((modmod[links] - 1.0) + PredSuite[prey])   );
+ 				 // 		( VV[links]                 / ((VV[links] - 1.0) + PredSuite[prey])   );
          
- 				 // (3) Additimode modersion: primary used and published in Aydin (2004) 
+ 				 // (3) Additive version: primary used and published in Aydin (2004) 
             // KYA 3/2/2012 setting "COUPLED" to zero means species are density dependent
             // (based on their own modul) but don't interact otherwise.  This can magically
             // create and destroy energy in the system but makes them act like a set
             // of independent surplus production models for comparison purposes 
-         Q =   QQ[links] * predYY[pred] * Rcpp::pow(preyYY[prey], COUPLED * HandleSwitch[links]) *
+         Q =   QQ[links] * predYY[pred] * pow(preyYY[prey], COUPLED * HandleSwitch[links]) *
  				      ( DD[links] / ( DD[links] - 1.0 + 
  						                     pow(HandleSelf[pred] * preyYY[prey]   + 
  																 (1. - HandleSelf[pred]) * HandleSuite[pred],
                                                       COUPLED * HandleSwitch[links])) )*
-             ( modmod[links] / ( modmod[links] - 1.0 + 
+             ( VV[links] / ( VV[links] - 1.0 + 
                                   ScrambleSelf[pred] * predYY[pred] + 
  						                     (1. - ScrambleSelf[pred]) * PredSuite[prey]) );
         
 			 // Include any Forcing by prey   
- 				  Q *= force_byprey[prey][y*STEPS_PER_YEAR+m]; 
+ 				  Q *= force_byprey(prey, y*STEPS_PER_YEAR+m); 
 
-			 // If model is uncoupled, food loss doesn't change with prey or predator lemodels.
+			 // If model is uncoupled, food loss doesn't change with prey or predator levels.
 				if (COUPLED){  FoodLoss[prey]  += Q; }
 				           else{  FoodLoss[prey]  += state_BB[prey] * QQ[links]/B_BaseRef[prey]; }
         
 			 // Energy Accounting
 				  FoodGain[pred]           += Q;
           UnAssimLoss[pred]        += Q * UnassimRespFrac[pred]; 
-          ActimodeRespLoss[pred]     += Q * ActimodeRespFrac[pred];  												 
+          ActiveRespLoss[pred]     += Q * ActiveRespFrac[pred];  												 
  		  }
  		
      // Mzero Mortality
@@ -279,7 +277,7 @@ int master(List mod, int y, int m, int d){
  		// RFISH for (gr=NUM_LIVING+NUM_DEAD+1; gr<=NUM_GROUPS; gr++){
     // RFISH This sets EFFORT by time series of gear-target combinations
  		// RFISH 		   for (gr=NUM_LIVING+NUM_DEAD+1; gr<=NUM_GROUPS; gr++){
-    // RFISH if -1 is an input modalue, uses TERMINAL F (last non-negatimode F) 		
+    // RFISH if -1 is an input value, uses TERMINAL F (last non-negative F) 		
      //RFISH 		   for (gr=NUM_LIVING+NUM_DEAD+1; gr<=NUM_GROUPS; gr++){
      //RFISH 		       if (y+m+d == 0){fish_Effort[gr]=1.0;}
      //RFISH 		       else           {fish_Effort[gr]=1.0;} // NOTE DEFAULT!  THIS CAN BE CHANGED TO 1.0
@@ -302,7 +300,7 @@ int master(List mod, int y, int m, int d){
      //RFISH 							   {fish_Effort[gr] = (1.0-EPSILON)*(state_BB[sp])/ 
      //RFISH 				    			                  (totQ * state_BB[sp]);}
      //RFISH 					 }
-     //RFISH 					 // By putting F after catch, Frates omoderride absolute catch
+     //RFISH 					 // By putting F after catch, Frates override absolute catch
      //RFISH 			     if ((FORCED_FTARGET[gr]>0) && (FORCED_FRATE[gr][y]>-EPSILON)){
      //RFISH 			        totQ = 0.0;
      //RFISH 			        sp   = FORCED_FTARGET[gr];
@@ -327,10 +325,10 @@ int master(List mod, int y, int m, int d){
  			 					 			 					 
    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
       for (links=1; links<=NumFishingLinks; links++){
- 				 prey = FishingFrom[links];
- 				 gr   = FishingThrough[links];
- 				 dest = FishingTo[links];
- 				 caught = FishingQ[links] * fish_Effort[gr] * state_BB[prey]; 
+ 				 prey = FishFrom[links];
+ 				 gr   = FishThrough[links];
+ 				 dest = FishTo[links];
+ 				 caught = FishQ[links] * fish_Effort[gr] * state_BB[prey]; 
           FishingLoss[prey] += caught;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
@@ -338,8 +336,8 @@ int master(List mod, int y, int m, int d){
  
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             caught = FORCED_CATCH[sp][y] + FORCED_FRATE[sp][y] * state_BB[sp];
-             // KYA Aug 2011 remomoded terminal effort option to allow negatimode fishing pressure 
+             caught = FORCED_CATCH(sp, y) + FORCED_FRATE(sp, y) * state_BB[sp];
+             // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
              if (caught>=state_BB[sp]){caught=(1.0-EPSILON)*(state_BB[sp]);}
              FishingLoss[sp] += caught;
@@ -353,7 +351,7 @@ int master(List mod, int y, int m, int d){
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
             if (TARGET_BIO[sp] > EPSILON){
                RefBio    = state_BB[sp]/TARGET_BIO[sp];
-               maxcaught = TARGET_FRATE[sp] * state_BB[sp];         
+               maxcaught = TARGET_F[sp] * state_BB[sp];         
                if      (RefBio > 1.0)           {caught = maxcaught;}
                else if (RefBio >= ALPHA[sp]) {caught = maxcaught * (RefBio - ALPHA[sp])/(1.0 - ALPHA[sp]);}
                else                             {caught = 0.0;}
@@ -364,16 +362,16 @@ int master(List mod, int y, int m, int d){
             }          
         }
         
-   // DETRITUS  - note: check interdetrital flow carefully, hamode had some issues
+   // DETRITUS  - note: check interdetrital flow carefully, have had some issues
  	 // (check by ensuring equlibrium run stays in equilibrium)
-	 	  int limod, det;
+	 	  int liv, det;
  		  double flow;
       for (links=1; links<=NumDetLinks; links++){
-          limod  = DetFrom[links];
+          liv  = DetFrom[links];
           det  = DetTo[links];
-          flow = DetFrac[links] * (MzeroLoss[limod] + UnAssimLoss[limod]);
+          flow = DetFrac[links] * (MzeroLoss[liv] + UnAssimLoss[liv]);
           DetritalGain[det] += flow;
-          if (limod > NUM_LIVING) {DetritalLoss[limod] += flow; }
+          if (liv > NUM_LIVING) {DetritalLoss[liv] += flow; }
       }
       for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
          MzeroLoss[sp] = 0.0;
@@ -381,23 +379,23 @@ int master(List mod, int y, int m, int d){
     
   // Add mortality forcing
      for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-        FoodLoss[i]  *= force_bymort[i][y*STEPS_PER_YEAR+m];
-        MzeroLoss[i] *= force_bymort[i][y*STEPS_PER_YEAR+m];
+        FoodLoss[i]  *= force_bymort(i, y * STEPS_PER_YEAR + m);
+        MzeroLoss[i] *= force_bymort(i, y * STEPS_PER_YEAR + m);
      }
   
-	// Sum up derimoditimode parts; momode premodious derimodatimode to dyt        
+	// Sum up derivitive parts; move previous derivative to dyt        
      for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-         dyt[i]=DerimodT[i];
+         dyt[i]=DerivT[i];
          TotGain[i] = FoodGain[i] + DetritalGain[i] + 
 				                                              FishingGain[i];      
-         LossPropToQ[i] = UnAssimLoss[i]  + ActimodeRespLoss[i];
+         LossPropToQ[i] = UnAssimLoss[i]  + ActiveRespLoss[i];
          LossPropToB[i] = FoodLoss[i]     + MzeroLoss[i] +
                                 FishingLoss[i]  + DetritalLoss[i]; 
                   
          TotLoss[i] = LossPropToQ[i] + LossPropToB[i];    
-         DerimodT[i]  = TotGain[i] - TotLoss[i]; 
+         DerivT[i]  = TotGain[i] - TotLoss[i]; 
          
- 	   // Set biomeq for "fast equilibrium" of fast modariables
+ 	   // Set biomeq for "fast equilibrium" of fast variables
   	    if (state_BB[i] > 0) {
             biomeq[i] = TotGain[i] / 
  					                 (TotLoss[i] / state_BB[i]);
@@ -405,5 +403,4 @@ int master(List mod, int y, int m, int d){
      }
      
 return 0;
-}
 }
