@@ -19,6 +19,12 @@ rl<-function(){
 ul<-function() if(is.loaded("ecosim_run")) dyn.unload("ecosim.dll") 	
 
 ##------------------------------------------------------------------------------ 
+rmat_trans <- function(rvec){
+  dim(rvec) <- c(1, nrow(rvec) * ncol(rvec))
+  return(rvec)
+}
+
+##------------------------------------------------------------------------------ 
 #New ecosim function that runs all steps.
 ecosim <- function(Rpath, juvfile, YEARS = 100){
   #Old path_to_rates--------------------------------------------------------------------
@@ -199,11 +205,11 @@ ecosim <- function(Rpath, juvfile, YEARS = 100){
     
   #fill monthly vectors for each species, rel weight and consumption at age
   #Loops for weight and numbers
-  rpar$WageS      <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
-  rpar$WWa        <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
-  rpar$NageS      <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
-  rpar$SplitAlpha <- matrix(0, MAX_MONTHS_STANZA + 1, rpar$juv_N + 1)
-
+  rpar$WageS      <- rep(0, MAX_MONTHS_STANZA + 1 * rpar$juv_N + 1)
+  rpar$WWa        <- rep(0, MAX_MONTHS_STANZA + 1 * rpar$juv_N + 1)
+  rpar$NageS      <- rep(0, MAX_MONTHS_STANZA + 1 * rpar$juv_N + 1)
+  rpar$SplitAlpha <- rep(0, MAX_MONTHS_STANZA + 1 * rpar$juv_N + 1)
+  
   rpar$state_NN       <-rep(0.0, rpar$NUM_GROUPS + 1)
   rpar$stanzaPred     <-rep(0.0, rpar$NUM_GROUPS + 1)
   rpar$stanzaBasePred <-rep(0.0, rpar$NUM_GROUPS + 1)
