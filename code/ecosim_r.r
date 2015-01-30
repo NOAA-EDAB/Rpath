@@ -19,10 +19,6 @@ rl<-function(){
 ul<-function() if(is.loaded("ecosim_run")) dyn.unload("ecosim.dll") 	
 
 ##------------------------------------------------------------------------------ 
-rmat_trans <- function(rvec){
-  dim(rvec) <- c(1, nrow(rvec) * ncol(rvec))
-  return(rvec)
-}
 
 ##------------------------------------------------------------------------------ 
 #New ecosim function that runs all steps.

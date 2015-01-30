@@ -30,11 +30,11 @@ NumericMatrix RmatT (DataFrame x){
   
   return y;
   }
-            
-// [[Rcpp::export]]
+
 // Deriv master calculates the biomass dynamics derivative
+// [[Rcpp::export]]
 int deriv_master(List mod, int y, int m, int d){
- if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
+ //if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
 
   // Functional response vars     
   int sp, links, prey, pred, i;
@@ -53,6 +53,7 @@ int deriv_master(List mod, int y, int m, int d){
   int NumFishingLinks            = as<int>(mod["NumFishingLinks"]);
   int NumDetLinks                = as<int>(mod["NumDetLinks"]);
   int juv_N                      = as<int>(mod["juv_N"]);
+  int COUPLED                    = as<int>(mod["COUPLED"]);
   
   CharacterVector spname         = as<CharacterVector>(mod["spname"]);
   
@@ -128,7 +129,6 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector lastMoAdu        = as<NumericVector>(mod["lastMoAdu"]);
   NumericVector YEARS            = as<NumericVector>(mod["YEARS"]);
   NumericVector BURN_YEARS       = as<NumericVector>(mod["BURN_YEARS"]);
-  int COUPLED          = as<int>(mod["COUPLED"]);
   NumericVector CRASH_YEAR       = as<NumericVector>(mod["CRASH_YEAR"]);
   NumericVector TotGain          = as<NumericVector>(mod["TotGain"]);
   NumericVector TotLoss          = as<NumericVector>(mod["TotLoss"]);
@@ -141,7 +141,7 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector DetritalGain     = as<NumericVector>(mod["DetritalGain"]);     
   NumericVector FoodLoss         = as<NumericVector>(mod["FoodLoss"]);
   NumericVector UnAssimLoss      = as<NumericVector>(mod["UnAssimLoss"]);
-  NumericVector ActiveRespLoss = as<NumericVector>(mod["ActiveRespLoss"]);   
+  NumericVector ActiveRespLoss   = as<NumericVector>(mod["ActiveRespLoss"]);   
   NumericVector FishingGain      = as<NumericVector>(mod["FishingGain"]);
   NumericVector MzeroLoss        = as<NumericVector>(mod["MzeroLoss"]);
   NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);
@@ -156,19 +156,33 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector TARGET_BIO       = as<NumericVector>(mod["TARGET_BIO"]);
   NumericVector TARGET_F         = as<NumericVector>(mod["TARGET_F"]);
   NumericVector ALPHA            = as<NumericVector>(mod["ALPHA"]);
-  NumericVector force_byprey     = as<NumericVector>(mod["force_byprey"]);
-  NumericVector force_bymort     = as<NumericVector>(mod["force_bymort"]);
-  NumericVector force_byrecs     = as<NumericVector>(mod["force_byrecs"]);
-  NumericVector force_bysearch   = as<NumericVector>(mod["force_bysearch"]);
-  NumericVector FORCED_FRATE     = as<NumericVector>(mod["FORCED_FRATE"]);
-  NumericVector FORCED_CATCH     = as<NumericVector>(mod["FORCED_CATCH"]);
-  NumericVector out_BB           = as<NumericVector>(mod["out_BB"]);
-  NumericVector out_CC           = as<NumericVector>(mod["out_CC"]);
-  NumericVector out_SSB          = as<NumericVector>(mod["out_SSB"]);
-  NumericVector out_rec          = as<NumericVector>(mod["out_rec"]);
+  
+  DataFrame force_byprey     = as<DataFrame>(mod["force_byprey"]);
+  DataFrame force_bymort     = as<DataFrame>(mod["force_bymort"]);
+  DataFrame force_byrecs     = as<DataFrame>(mod["force_byrecs"]);
+  DataFrame force_bysearch   = as<DataFrame>(mod["force_bysearch"]);
+  DataFrame FORCED_FRATE     = as<DataFrame>(mod["FORCED_FRATE"]);
+  DataFrame FORCED_CATCH     = as<DataFrame>(mod["FORCED_CATCH"]);
+  DataFrame out_BB           = as<DataFrame>(mod["out_BB"]);
+  DataFrame out_CC           = as<DataFrame>(mod["out_CC"]);
+  DataFrame out_SSB          = as<DataFrame>(mod["out_SSB"]);
+  DataFrame out_rec          = as<DataFrame>(mod["out_rec"]);
   
   // Convert data frames
+  NumericMatrix vNageS          = RmatT(NageS);
+  NumericMatrix vWageS          = RmatT(WageS);
+  NumericMatrix vWWa            = RmatT(WWa);
+  NumericMatrix vSplitAlpha     = RmatT(SplitAlpha);
+  NumericMatrix vforce_byprey   = RmatT(force_byprey);
+  NumericMatrix vforce_bymort   = RmatT(force_bymort);
+  NumericMatrix vforce_byrecs   = RmatT(force_byrecs);
   NumericMatrix vforce_bysearch = RmatT(force_bysearch);
+  NumericMatrix vFORCED_FRATE   = RmatT(FORCED_FRATE);
+  NumericMatrix vFORCED_CATCH   = RmatT(FORCED_CATCH);
+  NumericMatrix vout_BB         = RmatT(out_BB);
+  NumericMatrix vout_CC         = RmatT(out_CC);
+  NumericMatrix vout_SSB        = RmatT(out_SSB);
+  NumericMatrix vout_rec        = RmatT(out_rec);
   
   
   // Some derivative parts need to be set to zero
@@ -176,7 +190,7 @@ int deriv_master(List mod, int y, int m, int d){
   memset(FoodLoss,         0, LL);
   memset(FoodGain,         0, LL);
   memset(UnAssimLoss,      0, LL);
-  memset(ActiveRespLoss, 0, LL);   
+  memset(ActiveRespLoss,   0, LL);   
   memset(DetritalGain,     0, LL);
   memset(FishingGain,      0, LL);
   memset(MzeroLoss,        0, LL);
@@ -206,7 +220,7 @@ int deriv_master(List mod, int y, int m, int d){
  		   }
     // add "mediation by search rate" KYA 7/8/08
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-            predYY[sp] *= force_bysearch(sp, y*STEPS_PER_YEAR+m); 
+            predYY[sp] *= vforce_bysearch(sp, y*STEPS_PER_YEAR+m); 
         }
         
  	  // Summed predator and prey for joint handling time and/or scramble functional response
@@ -251,7 +265,7 @@ int deriv_master(List mod, int y, int m, int d){
  						                     (1. - ScrambleSelf[pred]) * PredSuite[prey]) );
         
 			 // Include any Forcing by prey   
- 				  Q *= force_byprey(prey, y*STEPS_PER_YEAR+m); 
+ 				  Q *= vforce_byprey(prey, y*STEPS_PER_YEAR+m); 
 
 			 // If model is uncoupled, food loss doesn't change with prey or predator levels.
 				if (COUPLED){  FoodLoss[prey]  += Q; }
@@ -336,7 +350,7 @@ int deriv_master(List mod, int y, int m, int d){
  
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             caught = FORCED_CATCH(sp, y) + FORCED_FRATE(sp, y) * state_BB[sp];
+             caught = vFORCED_CATCH(sp, y) + vFORCED_FRATE(sp, y) * state_BB[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
              if (caught>=state_BB[sp]){caught=(1.0-EPSILON)*(state_BB[sp]);}
@@ -379,8 +393,8 @@ int deriv_master(List mod, int y, int m, int d){
     
   // Add mortality forcing
      for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-        FoodLoss[i]  *= force_bymort(i, y * STEPS_PER_YEAR + m);
-        MzeroLoss[i] *= force_bymort(i, y * STEPS_PER_YEAR + m);
+        FoodLoss[i]  *= vforce_bymort(i, y * STEPS_PER_YEAR + m);
+        MzeroLoss[i] *= vforce_bymort(i, y * STEPS_PER_YEAR + m);
      }
   
 	// Sum up derivitive parts; move previous derivative to dyt        
@@ -401,6 +415,6 @@ int deriv_master(List mod, int y, int m, int d){
  					                 (TotLoss[i] / state_BB[i]);
         }          
      }
-     
-return 0;
+int out = 0;     
+return out;
 }

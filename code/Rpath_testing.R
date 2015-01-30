@@ -5,11 +5,11 @@
 
 #User parameters
 
-windows <- F
+windows <- T
 if(windows == T){
-  r.dir    <- "L:\\Rpath\\code\\"
-  data.dir <- "L:\\Rpath\\data\\"
-  out.dir  <- "L:\\Rpath\\outputs\\"
+  r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\code\\"
+  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\data\\"
+  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\outputs\\"
   stable   <- "L:\\PhD\\Rpath\\code\\"
 }
 if(windows == F){
@@ -60,21 +60,9 @@ library(Rcpp)
 
 GOA.sim <- ecosim_init(GOA, YEARS = 100, juvfile)
 
+sourceCpp(paste(r.dir, 'test_ecosim.cpp', sep = ''))
 
-cppFunction('List cpptest(List x){
-            if (!x.inherits("Rpath.sim")) stop("Input must be a Rpath model");            
-                       
-            int year                       = as<int>(x["YEARS"]);
-            CharacterVector spname         = as<Rcpp::CharacterVector>(x["spname"]);
-            double *preyYY                 = as<double>(x["preyYY"]);
-            List out = List::create(Named("Years")      = year,
-                                    Named("Groups")     = spname,
-                                    Named("preyYY")     = preyYY);
-            
-            out.attr("class") = "Rsim";
-            return out;
-            }')
-
+test <- deriv_master(GOA.sim, 1, 1, 0)
 cppFunction('List cpptest2 (List x){
             DataFrame test     = as<DataFrame>(x["force_bysearch"]);
             const int c = test.size(); 
@@ -147,16 +135,10 @@ cppFunction('List cppTest(List mod){
             return out;
             }')
 
-cppFunction('List powtest(NumericVector x, NumericVector y){
-            int n = x.size();
-            NumericVector powerout(n);
-            for (int i = 0; i < x.size(); i++){
-              powerout[i] = pow(x[i], y[i]);
-            }
-            List out = List::create(Named("size") = x.size(),
-                                    Named("result") = powerout);
-            return out;
+cppFunction('int testtest(){
+            return 0;
             }')
+
 
 cppTest(GOA.sim$predYY, RmatT(GOA.sim$force_bysearch), GOA.sim$NUM_LIVING, GOA.sim$NUM_DEAD)
 
@@ -164,7 +146,7 @@ cppTest(GOA.sim$predYY, RmatT(GOA.sim$force_bysearch), GOA.sim$NUM_LIVING, GOA.s
 
 test <- cpptest(GOA.sim)
 
-sourceCpp(paste(r.dir, 'test_ecosim.cpp', sep = ''))
+
 
 
 #Run stable ecosim
