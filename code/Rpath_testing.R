@@ -5,7 +5,7 @@
 
 #User parameters
 
-windows <- T
+windows <- F
 if(windows == T){
   r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\data\\"
@@ -52,6 +52,7 @@ pedfile  <- paste(data.dir, 'GOAped.csv',  sep = '')
 juvfile  <- paste(data.dir, 'GOAjuv.csv',  sep = '')
 
 GOA <- ecopath(modfile, dietfile, pedfile, eco.name = 'Gulf of Alaska')
+
 GOA
 summary(GOA)
 
@@ -62,33 +63,46 @@ GOA.sim <- ecosim_init(GOA, YEARS = 100, juvfile)
 
 sourceCpp(paste(r.dir, 'test_ecosim.cpp', sep = ''))
 
-test <- deriv_master(GOA.sim, 1, 1, 0)
-cppFunction('List cpptest2 (List x){
-            DataFrame test     = as<DataFrame>(x["force_bysearch"]);
-            const int c = test.size(); 
-            const int r = (as<int>(x["YEARS"]) * 12) + 1;
-            NumericMatrix test2 = as<NumericMatrix>(test);
-//            NumericMatrix test  = as<NumericMatrix>(x["NageS"]);
-//            NumericVector test2 = as<NumericVector>(test);
-            
-//            test2.attr("dim") = Dimension(1, test2.size());
-//            List out = List::create(Named("NageS")  = test,
-//                                    Named("NageSv") = test2,
-//                                    Named("WageS")  = test3);
-            return List::create(c, r, test, test2);
-}')
+deriv_master(GOA.sim, 0, 0, 0)
 
-cppFunction('NumericVector DFtoV(DataFrame x){
-            int nRows = x.nrows();
-            NumericVector y(nRows * x.size());
-            for( int i = 0; i < x.size(); i++){
-              NumericVector xcol = x[i];
-              for( int j = 0; j < nRows; j++){   
-                y[(i * nRows) + j] = xcol[j];
+#test pointers
+test <- list(x = data.frame(x = 1:10, y = rep(2, 10)), z = rep(0, 10))
+
+cppFunction('NumericMatrix RmatT (DataFrame x){
+              //Tranposes the column and rows
+              int nc = x.nrows();
+              int nr = x.size();
+              NumericMatrix y(Dimension(nr, nc));
+              
+              for( int i = 0; i < x.size(); i++){
+                NumericVector xcol = x[i];
+                NumericMatrix::Row yy = y( i, _);
+                yy = xcol;
               }
-            }
-            return y;
+              
+              return y;
             }')
+
+cppFunction('int cpptest(List test){
+            DataFrame x = as<DataFrame>(test["x"]);
+            NumericVector z = as<NumericVector>(test["z"]);
+            
+            int n = x.nrows();
+            for( int i = 0; i < n; i++){
+              z[i] = x(i, 1) * x(i, 2);
+              x[i, 2]++;
+              }
+            return 0;
+            }')
+
+
+cpptest(test)
+test
+cpptest(test)
+
+
+
+
 
 cppFunction('NumericMatrix DFtoA (DataFrame x){
               int nr = x.nrows();
@@ -135,12 +149,54 @@ cppFunction('List cppTest(List mod){
             return out;
             }')
 
-cppFunction('int testtest(){
-            return 0;
+cppFunction('int deriv_master(List mod, int y, int m, int d){
+
+            int STEPS_PER_YEAR = 12;
+            int sp, i;
+
+            // Parse out List mod
+            int NUM_LIVING                 = as<int>(mod["NUM_LIVING"]);
+            int NUM_DEAD                   = as<int>(mod["NUM_DEAD"]);
+            int juv_N                      = as<int>(mod["juv_N"]);
+            NumericVector spnum            = as<NumericVector>(mod["spnum"]);
+            NumericVector B_BaseRef        = as<NumericVector>(mod["B_BaseRef"]);
+            NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
+            NumericVector state_Ftime      = as<NumericVector>(mod["state_Ftime"]);
+            NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
+            NumericVector stanzaBasePred   = as<NumericVector>(mod["stanzaBasePred"]);
+            NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
+            NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
+            NumericVector preyYY           = as<NumericVector>(mod["preyYY"]);
+            NumericVector predYY           = as<NumericVector>(mod["predYY"]);
+            NumericMatrix force_bysearch   = as<NumericMatrix>(mod["force_bysearch"]);
+
+            
+            //  Set YY = B/B(ref) for functional response; note that foraging time is
+            //  used here as a biomass modifier before the main functional response  
+            for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){
+              preyYY[sp] = state_Ftime[sp] * state_BB[sp] / B_BaseRef[sp];
+              predYY[sp] = state_Ftime[sp] * state_BB[sp] / B_BaseRef[sp];
+              }    
+            // The sun always has a biomass of 1 for Primary Production
+            preyYY[0] = 1.0;  predYY[0] = 1.0;
+            
+            // Set functional response biomass for juvenile and adult groups (including foraging time) 
+            for (i=1; i<=juv_N; i++){
+              if (stanzaBasePred[JuvNum[i]]>0){
+                predYY[JuvNum[i]] = state_Ftime[JuvNum[i]] * 
+                stanzaPred[JuvNum[i]]/stanzaBasePred[JuvNum[i]];
+                predYY[AduNum[i]] = state_Ftime[AduNum[i]] * 
+                stanzaPred[AduNum[i]]/stanzaBasePred[AduNum[i]];
+              }
+            }
+            // add "mediation by search rate" KYA 7/8/08
+            for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+              predYY[sp] *= force_bysearch(y*STEPS_PER_YEAR+m, sp); 
+            }
             }')
 
+deriv_master(GOA.sim, 0, 0, 0)
 
-cppTest(GOA.sim$predYY, RmatT(GOA.sim$force_bysearch), GOA.sim$NUM_LIVING, GOA.sim$NUM_DEAD)
 
 
 

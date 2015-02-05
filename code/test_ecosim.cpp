@@ -169,20 +169,20 @@ int deriv_master(List mod, int y, int m, int d){
   DataFrame out_rec          = as<DataFrame>(mod["out_rec"]);
   
   // Convert data frames
-  NumericMatrix vNageS          = RmatT(NageS);
-  NumericMatrix vWageS          = RmatT(WageS);
-  NumericMatrix vWWa            = RmatT(WWa);
-  NumericMatrix vSplitAlpha     = RmatT(SplitAlpha);
-  NumericMatrix vforce_byprey   = RmatT(force_byprey);
-  NumericMatrix vforce_bymort   = RmatT(force_bymort);
-  NumericMatrix vforce_byrecs   = RmatT(force_byrecs);
-  NumericMatrix vforce_bysearch = RmatT(force_bysearch);
-  NumericMatrix vFORCED_FRATE   = RmatT(FORCED_FRATE);
-  NumericMatrix vFORCED_CATCH   = RmatT(FORCED_CATCH);
-  NumericMatrix vout_BB         = RmatT(out_BB);
-  NumericMatrix vout_CC         = RmatT(out_CC);
-  NumericMatrix vout_SSB        = RmatT(out_SSB);
-  NumericMatrix vout_rec        = RmatT(out_rec);
+//  NumericMatrix vNageS          = RmatT(NageS);
+//  NumericMatrix vWageS          = RmatT(WageS);
+//  NumericMatrix vWWa            = RmatT(WWa);
+//  NumericMatrix vSplitAlpha     = RmatT(SplitAlpha);
+//  NumericMatrix vforce_byprey   = RmatT(force_byprey);
+//  NumericMatrix vforce_bymort   = RmatT(force_bymort);
+//  NumericMatrix vforce_byrecs   = RmatT(force_byrecs);
+//  NumericMatrix vforce_bysearch = RmatT(force_bysearch);
+//  NumericMatrix vFORCED_FRATE   = RmatT(FORCED_FRATE);
+//  NumericMatrix vFORCED_CATCH   = RmatT(FORCED_CATCH);
+//  NumericMatrix vout_BB         = RmatT(out_BB);
+//  NumericMatrix vout_CC         = RmatT(out_CC);
+//  NumericMatrix vout_SSB        = RmatT(out_SSB);
+//  NumericMatrix vout_rec        = RmatT(out_rec);
   
   
   // Some derivative parts need to be set to zero
@@ -414,7 +414,6 @@ int deriv_master(List mod, int y, int m, int d){
             biomeq[i] = TotGain[i] / 
  					                 (TotLoss[i] / state_BB[i]);
         }          
-     }
-int out = 0;     
-return out;
+     }     
+return 0;
 }
