@@ -391,3 +391,65 @@ int deriv_master(List mod, int y, int m, int d){
      }     
 return 0;
 }
+
+// SplitSetPred function called in sim stanza initialize and update
+// This function simply sums up across juvenile and adult age structure to get 
+// population-level Biomass, Numbers, and Consumption 
+// [[Rcpp::export]]
+int SplitSetPred(List mod){
+
+int ageMo, i;  
+double Bt, pt, Nt;
+
+  // Parse out List mod
+  int juv_N                      = as<int>(mod["juv_N"]);
+  NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
+  NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
+  NumericVector WWa              = as<NumericVector>(mod["WWa"]);
+  NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
+  NumericVector state_NN         = as<NumericVector>(mod["state_NN"]);
+  NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
+  NumericVector stanzaGGJuv      = as<NumericVector>(mod["stanzaGGJuv"]);
+  NumericVector stanzaGGAdu      = as<NumericVector>(mod["stanzaGGAdu"]);
+  NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
+  NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
+  NumericVector firstMoJuv       = as<NumericVector>(mod["firstMoJuv"]);
+  NumericVector lastMoJuv        = as<NumericVector>(mod["lastMoJuv"]);
+  NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
+  NumericVector lastMoAdu        = as<NumericVector>(mod["lastMoAdu"]);
+  NumericVector FoodGain         = as<NumericVector>(mod["FoodGain"]);
+  
+  // loop over split pools
+     for (i = 1; i<= juv_N; i++){
+         Bt = 1e-30;
+         pt = 1e-30;
+         Nt = 1e-30;
+      // loop over juv monthly age classes
+         for (ageMo = firstMoJuv[i]; ageMo <= lastMoJuv[i]; ageMo++){
+             Bt = Bt + NageS(ageMo, i) * WageS(ageMo, i);
+             pt = pt + NageS(ageMo, i) * WWa(ageMo, i);
+             Nt = Nt + NageS(ageMo, i);
+             
+         }
+         state_BB[JuvNum[i]]   = Bt;
+         stanzaPred[JuvNum[i]] = pt;
+         state_NN[JuvNum[i]]   = Nt;
+    
+      // loop over adult monthly age classes
+         Bt = 1e-30;
+         pt = 1e-30;
+         Nt = 1e-30;       
+         for (ageMo = firstMoAdu[i]; ageMo <= lastMoAdu[i]; ageMo++){
+             Bt = Bt + NageS(ageMo, i) * WageS(ageMo, i);
+             pt = pt + NageS(ageMo, i) * WWa(ageMo, i);
+             Nt = Nt + NageS(ageMo, i);
+         }
+         state_BB[AduNum[i]]   = Bt;
+         stanzaPred[AduNum[i]] = pt;
+         state_NN[AduNum[i]]   = Nt;    
+         stanzaGGJuv[i] =  FoodGain[JuvNum[i]] / stanzaPred[JuvNum[i]]; 
+         stanzaGGAdu[i] =  FoodGain[AduNum[i]] / stanzaPred[AduNum[i]]; 
+     }  
+
+return(0);
+}
