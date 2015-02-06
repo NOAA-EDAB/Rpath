@@ -392,6 +392,8 @@ int deriv_master(List mod, int y, int m, int d){
 return 0;
 }
 
+
+
 // SplitSetPred function called in sim stanza initialize and update
 // This function simply sums up across juvenile and adult age structure to get 
 // population-level Biomass, Numbers, and Consumption 
@@ -452,4 +454,131 @@ double Bt, pt, Nt;
      }  
 
 return(0);
+}
+
+
+
+// Update juvenile adult or "stanza" age structure during sim run 
+// on monthly timesteps (not hardwiring months, but recommended)
+// [[Rcpp::export]] 
+ int update_stanzas(List mod, int yr, int mon){
+ 
+int ageMo, i;  
+double Su, Gf, Nt; 
+double propRepro;
+
+// Parse out List mod
+  int juv_N                      = as<int>(mod["juv_N"]);
+  NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
+  NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
+  NumericVector WWa              = as<NumericVector>(mod["WWa"]);
+  NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
+  NumericVector state_NN         = as<NumericVector>(mod["state_NN"]);
+  NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
+  NumericVector stanzaGGJuv      = as<NumericVector>(mod["stanzaGGJuv"]);
+  NumericVector stanzaGGAdu      = as<NumericVector>(mod["stanzaGGAdu"]);
+  NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
+  NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
+  NumericVector firstMoJuv       = as<NumericVector>(mod["firstMoJuv"]);
+  NumericVector lastMoJuv        = as<NumericVector>(mod["lastMoJuv"]);
+  NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
+  NumericVector lastMoAdu        = as<NumericVector>(mod["lastMoAdu"]);
+  NumericVector FoodGain         = as<NumericVector>(mod["FoodGain"]);
+  NumericVector SpawnBio         = as<NumericVector>(mod["SpawnBio"]);
+  NumericVector LossPropToB      = as<NumericVector>(mod["LossPropToB"]);
+  NumericVector vBM              = as<NumericVector>(mod["vBM"]);
+  NumericMatrix SplitAlpha       = as<NumericMatrix>(mod["SplitAlpha"]);
+  NumericVector Wmat001          = as<NumericVector>(mod["Wmat001"]);
+  NumericVector Wmat50           = as<NumericVector>(mod["Wmat50"]);
+  NumericVector Amat001          = as<NumericVector>(mod["Amat001"]);
+  NumericVector Amat50           = as<NumericVector>(mod["Amat50"]);
+  NumericVector WmatSpread       = as<NumericVector>(mod["WmatSpread"]);
+  NumericVector AmatSpread       = as<NumericVector>(mod["AmatSpread"]);
+  NumericVector EggsStanza       = as<NumericVector>(mod["EggsStanza"]);
+  NumericVector SpawnEnergy      = as<NumericVector>(mod["SpawnEnergy"]);
+  NumericVector SpawnX           = as<NumericVector>(mod["SpawnX"]);
+  NumericVector baseSpawnBio     = as<NumericVector>(mod["baseSpawnBio"]);
+  NumericVector RecMonth         = as<NumericVector>(mod["RecMonth"]);
+  NumericVector baseEggsStanza   = as<NumericVector>(mod["baseEggsStanza"]);
+  NumericVector RscaleSplit      = as<NumericVector>(mod["RscaleSplit"]);
+  NumericVector RzeroS           = as<NumericVector>(mod["RzeroS"]);
+  NumericVector RecPower         = as<NumericVector>(mod["RecPower"]);
+  NumericVector VonBD            = as<NumericVector>(mod["VonBD"]);
+  DataFrame force_byrecs         = as<DataFrame>(mod["force_byrecs"]);
+   
+  // loop over split species groups to update n, wt, biomass in sim  
+     for (i = 1; i <= juv_N; i++){
+         SpawnBio[i] = 0;
+      // loop over juv timesteps with juv survival and growth, also calculate Spawning Biomass
+         Su = exp(-LossPropToB[JuvNum[i]] / STEPS_PER_YEAR / state_BB[JuvNum[i]]);    
+         Gf = FoodGain[JuvNum[i]] / stanzaPred[JuvNum[i]];  // BB should be stanzaPred            
+   			 stanzaGGJuv[i] = Gf; 						         
+         for (ageMo = firstMoJuv[i]; ageMo <= lastMoJuv[i]; ageMo++){   
+             NageS(ageMo, i) = NageS(ageMo, i) * Su;
+             WageS(ageMo, i) = vBM[i] * WageS(ageMo, i) + Gf * SplitAlpha(ageMo, i);
+             if ( (WageS(ageMo, i) > Wmat001[i]) && (ageMo > Amat001[i])) {
+                 SpawnBio[i]  += WageS(ageMo, i) * NageS(ageMo, i) /
+                                 (1. + exp(- ((WageS(ageMo, i) - Wmat50[i]) / WmatSpread[i]) 
+ 																		      - ((ageMo - Amat50[i]) /AmatSpread[i])));                             
+             }            
+         }
+ 				      
+      // loop over adult timesteps with adult survival and growth, also calculate Spawning Biomass
+         Su = exp(-LossPropToB[AduNum[i]] / STEPS_PER_YEAR / state_BB[AduNum[i]]);
+         Gf = FoodGain[AduNum[i]] / stanzaPred[AduNum[i]];   //BB should be stanzaPred         
+         stanzaGGAdu[i] = Gf; 
+         for (ageMo = firstMoAdu[i]; ageMo <= lastMoAdu[i]; ageMo++){
+             NageS(ageMo, i) = NageS(ageMo, i) * Su;
+             WageS(ageMo, i) = vBM[i] * WageS(ageMo, i) + Gf * SplitAlpha(ageMo, i);
+ 						if ( (WageS(ageMo, i) > Wmat001[i]) && (ageMo > Amat001[i])) {
+                 SpawnBio[i]  += WageS(ageMo, i) * NageS(ageMo, i) /
+                                 (1. + exp(- ((WageS(ageMo, i) - Wmat50[i]) / WmatSpread[i]) 
+ 																		      - ((ageMo - Amat50[i]) / AmatSpread[i])));                             
+             }     	       
+         }
+         
+      // KYA This is a Beverton-Holt curve between Spawning Biomass and
+      // Number of Eggs Produced; generally near-linear with default parameters        
+         EggsStanza[i] = SpawnBio[i] * SpawnEnergy[i] * SpawnX[i] /
+ 				                             (SpawnX[i] - 1.0 + 
+ 			  															 (SpawnBio[i] / baseSpawnBio[i]));
+ 		 // Forcing for eggs applied here															 
+ 			   NumericVector jv_force_byrecs = force_byrecs[JuvNum[i]];
+          EggsStanza[i] *= jv_force_byrecs[yr * STEPS_PER_YEAR + mon];		
+
+		 // If recruitment happens all at once (in a single month) that happens here)
+     // Otherwise, recruitment is throughout the year.
+ 			  if (RecMonth[i] > 0){
+ 				   if (mon == RecMonth[i]) {EggsStanza[i] *=1. ;}
+ 				 else                         {EggsStanza[i] *=0. ;}
+ 				}
+     
+     // now update n and wt looping backward over age
+         Nt = NageS(lastMoAdu[i], i) + NageS(lastMoAdu[i] - 1, i);
+         if (Nt == 0){Nt = 1e-30;}
+         WageS(lastMoAdu[i], i) = (WageS(lastMoAdu[i], i) * NageS(lastMoAdu[i], i) + 
+                            WageS(lastMoAdu[i] - 1, i) * NageS(lastMoAdu[i] - 1, i)) / Nt;
+         NageS(lastMoAdu[i], i) = Nt;
+         
+         for (ageMo = lastMoAdu[i] - 1; ageMo > firstMoJuv[i]; ageMo--) {
+             NageS(ageMo, i) = NageS(ageMo - 1, i);
+             WageS(ageMo, i) = WageS(ageMo - 1, i);   
+         }
+ 
+      // finally apply number of eggs to youngest juvenile slot. including Carl's recruit power        
+         if (baseEggsStanza[i] > 0){
+             NageS(firstMoJuv[i], i) = RscaleSplit[i] * RzeroS[i] * 
+                                       pow(double(EggsStanza[i] / baseEggsStanza[i]), 
+                                       double(RecPower[i]));
+         }
+         WageS(firstMoJuv[i], i) = 0;
+ 
+     // Uses generalized vonB (exponent is d).    
+     // ADDED FOR STABILITY 4/13/07 (Unlucky Friday)
+        for (ageMo = 0; ageMo <= lastMoAdu[i]; ageMo++){
+             WWa(ageMo, i) = pow(double(WageS(ageMo, i)), double(VonBD[i])); 
+         }           
+     }  // end of Juvenile Loop  
+
+return(0); 
 }
