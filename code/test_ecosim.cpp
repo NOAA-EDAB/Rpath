@@ -582,3 +582,221 @@ double propRepro;
 
 return(0); 
 }
+
+
+// [[Rcpp::export]] 
+int Adams_Basforth (List mod, int StartYear, int EndYear){
+     
+int y, m, c, j, dd;
+int sp, t, i, ageMo, s, link,prey,pred,links,gr;
+int inbound;
+double old_B, new_B, nn, ww, bb, pd;
+double newbio; float ystep;
+double bioanom, bioratio;
+unsigned int LL;
+
+// Parse out List mod
+  int NUM_LIVING = as<int>(mod["NUM_LIVING"]);
+  int NUM_DEAD   = as<int>(mod["NUM_DEAD"]);
+  int juv_N      = as<int>(mod["juv_N"]);
+  int init_run   = as<int>(mod["init_run"]);
+  int BURN_YEARS = as<int>(mod["BURN_YEARS"]);
+  int CRASH_YEAR = as<int>(mod["CRASH_YEAR"]);
+  
+  NumericVector B_BaseRef        = as<NumericVector>(mod["B_BaseRef"]);
+  NumericVector NoIntegrate      = as<NumericVector>(mod["NoIntegrate"]);
+  NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
+  NumericVector state_Ftime      = as<NumericVector>(mod["state_Ftime"]);
+  NumericVector FtimeAdj         = as<NumericVector>(mod["FtimeAdj"]);
+  NumericVector FtimeQBOpt       = as<NumericVector>(mod["FtimeQBOpt"]);
+  NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
+  NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
+  NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
+  NumericVector SpawnBio         = as<NumericVector>(mod["SpawnBio"]);
+  NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
+  NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
+  NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
+  NumericVector DerivT           = as<NumericVector>(mod["DerivT"]);
+  NumericVector dyt              = as<NumericVector>(mod["dyt"]);
+  NumericVector biomeq           = as<NumericVector>(mod["biomeq"]);
+  NumericVector FoodGain         = as<NumericVector>(mod["FoodGain"]);
+  NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);
+
+  DataFrame out_BB           = as<DataFrame>(mod["out_BB"]);
+  DataFrame out_CC           = as<DataFrame>(mod["out_CC"]);
+  DataFrame out_SSB          = as<DataFrame>(mod["out_SSB"]);
+  DataFrame out_rec          = as<DataFrame>(mod["out_rec"]);
+  
+   // Update sums of split groups to total biomass for derivative calcs
+      SplitSetPred(mod); 
+      
+    // If not starting from previous timestep, call derivative twice to
+ 	 // set deriv and deriv(t-1)
+      if (init_run){
+         deriv_master(mod, 0, 0, 0);
+         deriv_master(mod, 0, 0, 0);
+      }
+
+    // MAIN LOOP STARTS HERE     
+       for (y = StartYear; y < EndYear; y++){                                  
+         for (m = 0; m < STEPS_PER_YEAR; m++){
+                     
+           // dd is index for saving monthly output
+				      dd = y * STEPS_PER_YEAR + m;
+           
+           // save current state to output matrix
+           // For non-split pools, SSB is output output as the same as B.
+					 // For adult split pools, it is overwritten with "actual" SSB, 
+					 // for juvs it is 0. 
+              for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){ 
+                  NumericVector sp_out_BB  = out_BB[sp];
+                  NumericVector sp_out_SSB = out_SSB[sp];
+                  NumericVector sp_out_rec = out_rec[sp];
+                  
+                  sp_out_BB[dd]  = state_BB[sp];
+                  sp_out_SSB[dd] = state_BB[sp];
+                  sp_out_rec[dd] = state_BB[sp];
+              }
+              for (i = 1; i <= juv_N; i++){
+                  NumericVector jv_out_BB  = out_BB[JuvNum[i]];
+                  NumericVector jv_out_SSB = out_SSB[JuvNum[i]];
+                  NumericVector jv_out_rec = out_rec[JuvNum[i]];
+                  
+                  jv_out_SSB[dd] = 0.0;
+									jv_out_SSB[dd] = SpawnBio[i];
+									jv_out_rec[dd] = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+              }
+       
+			    // note: code for sub-monthly steps has been removed    
+ 		      // for (d=0; d<STEPS_PER_MONTH; d++){
+
+ 		          // Calculate Derivative for a given timestep
+ 	               deriv_master(mod, y, m, 0);
+
+ 	            // Loop through species, applying Adams-Basforth or fast
+ 	            // equilibrium depending on species.
+ 	            
+ 								 for (sp=1; sp <= NUM_LIVING + NUM_DEAD; sp++){                    
+
+                  // Adjust feeding time 
+ 	                   if (NoIntegrate[sp] < 0){pd = stanzaPred[sp];}
+ 	                   else                         {pd = state_BB[sp];}	                      					       
+                     if ((pd > 0) && (FoodGain[sp] > 0)){
+ 										      state_Ftime[sp] = 0.1 + 0.9 * state_Ftime[sp] * 
+                                 ((1.0 - FtimeAdj[sp] / (double)STEPS_PER_MONTH) 
+ 																+ FtimeAdj[sp] / (double)STEPS_PER_MONTH * 
+ 										             FtimeQBOpt[sp] / (FoodGain[sp] / pd));
+                          }	
+                     MAX_THRESHOLD(state_Ftime[sp], 2.0);
+                      
+                  // Biomass update for non-split groups
+ 								     old_B = state_BB[sp];
+ 								     new_B = state_BB[sp];
+ 								     if (NoIntegrate[sp] == 0){
+ 										 // 'Fast equilibrium'
+												new_B        = (1.0 - SORWT) * biomeq[sp] 
+ 												               + SORWT * state_BB[sp];
+ 										 }
+ 										 else if (NoIntegrate[sp] == sp){
+                         // Adams-Basforth timestep 
+                            new_B = state_BB[sp] + (DELTA_T / 2.0) * 
+                                   (3.0 * (DerivT[sp]) - dyt[sp]); 
+ 										       }
+ 										       
+						      // If the new biomass goes to infinity or something, set a
+									// flag to exit the loop and return the problem. 
+						         if (isnan(new_B) || isinf(new_B)) {
+                        CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+                     }
+                  
+									// If the run is during the "burn-in" years, and biomass goes
+									// into the discard range, set flag to exit the loop.  
+                     if (y < BURN_YEARS){
+                       if  ( (new_B < B_BaseRef[sp] * LO_DISCARD) ||
+                             (new_B > B_BaseRef[sp] * HI_DISCARD) ){
+                           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                         
+                       }                          
+                     }
+                    
+                 // Otherwise if biomass goes very large or very small, set to 
+                 // min or max.
+								    MIN_THRESHOLD(new_B, B_BaseRef[sp] * EPSILON);
+                    MAX_THRESHOLD(new_B, B_BaseRef[sp] * BIGNUM);                    
+                    
+ 										state_BB[sp] = new_B;                                
+ 						        
+                 // sum up Catch at every time step (catch is cumulative)
+ 								    NumericVector sp_out_CC = out_CC[sp];
+                     if (fabs(state_BB[sp]/old_B-1.0) > EPSILON){
+ 								       sp_out_CC[dd] = ((FishingLoss[sp] * DELTA_T) / old_B) *
+ 									                       (state_BB[sp] - old_B) /
+ 										 	    							 log(state_BB[sp] / old_B);
+ 									  }
+ 									  else {sp_out_CC[dd] = (FishingLoss[sp] * DELTA_T);
+ 								    }		  
+  									         
+ 								 } // End of species loop
+		    		       
+ 					//}  // End of days loop
+           
+          // Monthly Stanza (split pool) update
+ 					   update_stanzas(mod, y, m + 1);
+             SplitSetPred(mod);
+           
+				 // As above for non-split groups, check for out-of-bounds, numerical
+				 // errors, or burn-in model stoppages for juvs and then adults.   
+            for (i = 1; i <= juv_N; i++){
+                sp = JuvNum[i];
+                new_B = state_BB[sp];
+						    if (isnan(new_B) || isinf(new_B)) {
+                   CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+                }                  
+                if (y < BURN_YEARS){
+                    if  ( (new_B < B_BaseRef[sp] * LO_DISCARD) ||
+                          (new_B > B_BaseRef[sp] * HI_DISCARD) ){
+                         CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                           
+                    }                          
+                }                
+                sp    = AduNum[i];
+                new_B = state_BB[sp];
+						    if (isnan(new_B) || isinf(new_B)) {
+                    CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+                }     
+                if (y < BURN_YEARS){
+                   if  ( (new_B < B_BaseRef[sp] * LO_DISCARD) ||
+                         (new_B > B_BaseRef[sp] * HI_DISCARD) ){
+                       CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                           
+                   }                          
+                }                
+            }
+                           
+ 		    }  // End of main months loop
+     
+   }// End of years loop
+       
+   // If you get to the end and haven't crashed, save biomass in the
+   // final time slot before exiting.
+      if (CRASH_YEAR < 0){
+         dd = EndYear * STEPS_PER_YEAR;
+         for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){ 
+              NumericVector sp_out_BB  = out_BB[sp];
+              NumericVector sp_out_SSB = out_SSB[sp];
+              NumericVector sp_out_rec = out_rec[sp];
+              
+              sp_out_BB[dd]  = state_BB[sp];
+              sp_out_SSB[dd] = state_BB[sp];
+              sp_out_rec[dd] = state_BB[sp];
+         }
+         for (i = 1; i <= juv_N; i++){
+              NumericVector jv_out_SSB = out_SSB[JuvNum[i]];
+              NumericVector ad_out_SSB = out_SSB[AduNum[i]];
+              NumericVector ad_out_rec = out_rec[AduNum[i]];
+              
+              jv_out_SSB[dd] = 0.0;
+						  ad_out_SSB[dd] = SpawnBio[i];
+						  ad_out_rec[dd] = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+         }
+      }  
+      
+return(0);
+} 
