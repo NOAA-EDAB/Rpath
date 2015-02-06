@@ -155,20 +155,20 @@ int deriv_master(List mod, int y, int m, int d){
     
   
   // Some derivative parts need to be set to zero
-  LL =  (NUM_GROUPS + 1) * sizeof(double);
-  memset(FoodLoss,         0, LL);
-  memset(FoodGain,         0, LL);
-  memset(UnAssimLoss,      0, LL);
-  memset(ActiveRespLoss,   0, LL);   
-  memset(DetritalGain,     0, LL);
-  memset(FishingGain,      0, LL);
-  memset(MzeroLoss,        0, LL);
-  memset(FishingLoss,      0, LL);
-  memset(DetritalLoss,     0, LL);
-  memset(FishingThru,      0, LL);
-  memset(PredSuite,        0, LL);
-  memset(HandleSuite,      0, LL);
- 				     			  
+//  LL =  (NUM_GROUPS + 1) * sizeof(double);
+//  memset(FoodLoss,         0, LL);
+//  memset(FoodGain,         0, LL);
+//  memset(UnAssimLoss,      0, LL);
+//  memset(ActiveRespLoss,   0, LL);   
+//  memset(DetritalGain,     0, LL);
+//  memset(FishingGain,      0, LL);
+//  memset(MzeroLoss,        0, LL);
+//  memset(FishingLoss,      0, LL);
+//  memset(DetritalLoss,     0, LL);
+//  memset(FishingThru,      0, LL);
+//  memset(PredSuite,        0, LL);
+//  memset(HandleSuite,      0, LL);
+// 				     			  
   //  Set YY = B/B(ref) for functional response; note that foraging time is
 	//  used here as a biomass modifier before the main functional response  
   for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){
@@ -189,7 +189,8 @@ int deriv_master(List mod, int y, int m, int d){
  		   }
     // add "mediation by search rate" KYA 7/8/08
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-            predYY[sp] *= vforce_bysearch(sp, y*STEPS_PER_YEAR+m); 
+            NumericVector sp_force_bysearch = force_bysearch[sp];
+            predYY[sp] *= sp_force_bysearch[y * STEPS_PER_YEAR + m]; 
         }
         
  	  // Summed predator and prey for joint handling time and/or scramble functional response
@@ -199,6 +200,7 @@ int deriv_master(List mod, int y, int m, int d){
                PredSuite[prey]   += predYY[pred] * PredPredWeight[links];
                HandleSuite[pred] += preyYY[prey] * PreyPreyWeight[links];
  		  }
+
 
 	 // Main loop to calculate functional response for each predator/prey link
       for (links=1; links<=NumPredPreyLinks; links++){
@@ -234,7 +236,8 @@ int deriv_master(List mod, int y, int m, int d){
  						                     (1. - ScrambleSelf[pred]) * PredSuite[prey]) );
         
 			 // Include any Forcing by prey   
- 				  Q *= vforce_byprey(prey, y*STEPS_PER_YEAR+m); 
+ 				  NumericVector prey_force_byprey = force_byprey[prey];
+           Q *= prey_force_byprey[y * STEPS_PER_YEAR + m]; 
 
 			 // If model is uncoupled, food loss doesn't change with prey or predator levels.
 				if (COUPLED){  FoodLoss[prey]  += Q; }
@@ -319,7 +322,9 @@ int deriv_master(List mod, int y, int m, int d){
  
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             caught = vFORCED_CATCH(sp, y) + vFORCED_FRATE(sp, y) * state_BB[sp];
+             NumericVector sp_FORCED_CATCH = FORCED_CATCH[sp];
+             NumericVector sp_FORCED_FRATE = FORCED_FRATE[sp];
+             caught = sp_FORCED_CATCH[y] + sp_FORCED_FRATE[y] * state_BB[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
              if (caught>=state_BB[sp]){caught=(1.0-EPSILON)*(state_BB[sp]);}
@@ -362,15 +367,15 @@ int deriv_master(List mod, int y, int m, int d){
     
   // Add mortality forcing
      for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-        FoodLoss[i]  *= vforce_bymort(i, y * STEPS_PER_YEAR + m);
-        MzeroLoss[i] *= vforce_bymort(i, y * STEPS_PER_YEAR + m);
+        NumericVector i_force_bymort = force_bymort[i];
+        FoodLoss[i]  *= i_force_bymort[y * STEPS_PER_YEAR + m];
+        MzeroLoss[i] *= i_force_bymort[y * STEPS_PER_YEAR + m];
      }
   
 	// Sum up derivitive parts; move previous derivative to dyt        
      for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
          dyt[i]=DerivT[i];
-         TotGain[i] = FoodGain[i] + DetritalGain[i] + 
-				                                              FishingGain[i];      
+         TotGain[i] = FoodGain[i] + DetritalGain[i] + FishingGain[i];      
          LossPropToQ[i] = UnAssimLoss[i]  + ActiveRespLoss[i];
          LossPropToB[i] = FoodLoss[i]     + MzeroLoss[i] +
                                 FishingLoss[i]  + DetritalLoss[i]; 

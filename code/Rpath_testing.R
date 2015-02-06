@@ -5,7 +5,7 @@
 
 #User parameters
 
-windows <- F
+windows <- T
 if(windows == T){
   r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\data\\"
@@ -83,16 +83,13 @@ cppFunction('NumericMatrix RmatT (DataFrame x){
               return y;
             }')
 
-cppFunction('int cpptest(List test){
+cppFunction('NumericVector cpptest(List test){
             DataFrame x = as<DataFrame>(test["x"]);
-            NumericVector z = as<NumericVector>(test["z"]);
+            NumericVector out = x[0];
             
-            int n = x.nrows();
-            for( int i = 0; i < n; i++){
-              z[i] = x(i, 1) * x(i, 2);
-              x[i, 2]++;
-              }
-            return 0;
+out[0] = 15;
+            Rcout << "Test" << std::endl;
+            return out;
             }')
 
 
@@ -168,7 +165,7 @@ cppFunction('int deriv_master(List mod, int y, int m, int d){
             NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
             NumericVector preyYY           = as<NumericVector>(mod["preyYY"]);
             NumericVector predYY           = as<NumericVector>(mod["predYY"]);
-            NumericMatrix force_bysearch   = as<NumericMatrix>(mod["force_bysearch"]);
+            DataFrame force_bysearch       = as<DataFrame>(mod["force_bysearch"]);
 
             
             //  Set YY = B/B(ref) for functional response; note that foraging time is
@@ -191,7 +188,8 @@ cppFunction('int deriv_master(List mod, int y, int m, int d){
             }
             // add "mediation by search rate" KYA 7/8/08
             for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-              predYY[sp] *= force_bysearch(y*STEPS_PER_YEAR+m, sp); 
+              NumericVector sp_force_bysearch = force_bysearch[sp];
+              predYY[sp] *= sp_force_bysearch[y*STEPS_PER_YEAR+m]; 
             }
             }')
 
