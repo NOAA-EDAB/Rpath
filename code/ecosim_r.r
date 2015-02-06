@@ -492,61 +492,13 @@ ecosim_init <- function(Rpath, juvfile, YEARS = 100){
 
 ##------------------------------------------------------------------------------ 
 
-ecosim_run <- function(simpar, BYY = 0, EYY = 0){
+ecosim_run <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
   if((EYY <= 0) | (EYY > simpar$YEARS)) EYY <- simpar$YEARS
-  if(BYY <0)                          BYY <- 0
+  if(BYY < 0)                           BYY <- 0
   if(BYY >= simpar$YEARS)               BYY <- simpar$YEARS - 1
-  if(EYY <= BYY)                      EYY <- BYY + 1
-
-  out <- simpar
-  res<-.C("ecosim_run", 
-    # inputs that shouldn't change
-    as.integer(simpar$YEARS),
-    as.integer(BYY),
-    as.integer(EYY),
-    as.integer(simpar$numlist),
-    as.integer(simpar$flags),
-    as.double(as.matrix(simpar$ratelist)),
-    as.integer(as.matrix(simpar$ppind)),
-    as.double(as.matrix(simpar$pplist)),
-    as.integer(as.matrix(simpar$fishind)),
-    as.double(as.matrix(simpar$fishlist)),
-    as.integer(as.matrix(simpar$detind)),
-    as.double(as.matrix(simpar$detlist)),
-    as.integer(as.matrix(simpar$juvind)),
-    as.double(as.matrix(simpar$juvlist)),
-    as.double(as.matrix(simpar$targlist)),
-    # outputs that should
-    outflags       = as.integer(simpar$outflags),  
-    state          = as.double(as.matrix(simpar$statelist)),
-    NageS          = as.double(simpar$NageS),
-    WageS          = as.double(simpar$WageS),
-    WWa            = as.double(simpar$WWa),
-    SplitAlpha     = as.double(simpar$SplitAlpha),
-    derivlist      = as.double(as.matrix(simpar$derivlist)),
-    force_byprey   = as.double(as.matrix(simpar$force_byprey)),
-    force_bymort   = as.double(as.matrix(simpar$force_bymort)),
-    force_byrecs   = as.double(as.matrix(simpar$force_byrecs)),
-    force_bysearch = as.double(as.matrix(simpar$force_bysearch)),
-    FORCED_FRATE   = as.double(as.matrix(simpar$FORCED_FRATE)),
-    FORCED_CATCH   = as.double(as.matrix(simpar$FORCED_CATCH)),
-    out_BB         = as.double(as.matrix(simpar$out_BB)),
-    out_CC         = as.double(as.matrix(simpar$out_CC)),
-    out_SSB        = as.double(as.matrix(simpar$out_SSB)), 
-    out_rec        = as.double(as.matrix(simpar$out_rec)))
-  
-  out$outflags[]   <- res$outflags
-  out$derivlist[]  <- res$derivlist
-  out$statelist[]  <- res$state
-  out$NageS[]      <- res$NageS
-  out$WageS[]      <- res$WageS
-  out$WWa[]        <- res$WWa
-  out$SplitAlpha[] <- res$SplitAlpha
-  out$out_BB[]     <- res$out_BB
-  out$out_CC[]     <- res$out_CC
-  out$out_SSB[]    <- res$out_SSB  
-  out$out_rec[]    <- res$out_rec
-
-  return(out)
+  if(EYY <= BYY)                        EYY <- BYY + 1
+  simpar$init_run <- init_run
+  Adams_Basforth(simpar, BYY, EYY)
+  return(simpar)
 }
 
