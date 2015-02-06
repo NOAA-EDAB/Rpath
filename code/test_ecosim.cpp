@@ -155,20 +155,21 @@ int deriv_master(List mod, int y, int m, int d){
     
   
   // Some derivative parts need to be set to zero
-//  LL =  (NUM_GROUPS + 1) * sizeof(double);
-//  memset(FoodLoss,         0, LL);
-//  memset(FoodGain,         0, LL);
-//  memset(UnAssimLoss,      0, LL);
-//  memset(ActiveRespLoss,   0, LL);   
-//  memset(DetritalGain,     0, LL);
-//  memset(FishingGain,      0, LL);
-//  memset(MzeroLoss,        0, LL);
-//  memset(FishingLoss,      0, LL);
-//  memset(DetritalLoss,     0, LL);
-//  memset(FishingThru,      0, LL);
-//  memset(PredSuite,        0, LL);
-//  memset(HandleSuite,      0, LL);
-// 				     			  
+  for(i = 0; i < NUM_GROUPS + 1; i++){
+    FoodLoss[i]       = 0;
+    FoodGain[i]       = 0;
+    UnAssimLoss[i]    = 0;
+    ActiveRespLoss[i] = 0;   
+    DetritalGain[i]   = 0;
+    FishingGain[i]    = 0;
+    MzeroLoss[i]      = 0;
+    FishingLoss[i]    = 0;
+    DetritalLoss[i]   = 0;
+    FishingThru[i]    = 0;
+    PredSuite[i]      = 0;
+    HandleSuite[i]    = 0;
+  }
+			     			  
   //  Set YY = B/B(ref) for functional response; note that foraging time is
 	//  used here as a biomass modifier before the main functional response  
   for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){
@@ -658,13 +659,13 @@ unsigned int LL;
                   sp_out_rec[dd] = state_BB[sp];
               }
               for (i = 1; i <= juv_N; i++){
-                  NumericVector jv_out_BB  = out_BB[JuvNum[i]];
                   NumericVector jv_out_SSB = out_SSB[JuvNum[i]];
-                  NumericVector jv_out_rec = out_rec[JuvNum[i]];
+                  NumericVector ad_out_SSB = out_SSB[AduNum[i]];
+                  NumericVector ad_out_rec = out_rec[AduNum[i]];
                   
                   jv_out_SSB[dd] = 0.0;
-									jv_out_SSB[dd] = SpawnBio[i];
-									jv_out_rec[dd] = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+									ad_out_SSB[dd] = SpawnBio[i];
+									ad_out_rec[dd] = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
               }
        
 			    // note: code for sub-monthly steps has been removed    
