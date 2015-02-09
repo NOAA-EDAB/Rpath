@@ -1,27 +1,10 @@
 ################################################################################
-# R version of ecosim (to work with ecosim.dll c code) by Kerim Aydin
-#
-# Version 0.04
+# R version of ecosim 
+# originally developed by Kerim Aydin
+# modified by Sean Lucey
+# 
 ################################################################################ 
 
-##------------------------------------------------------------------------------ 
-#Load and unload dll (unloading needed before compiling any c-code changes)
-#Load
-ll <- function() if(!is.loaded("ecosim_run")) dyn.load("ecosim.dll")
-
-#Reload
-rl<-function(){
-  if(is.loaded("ecosim_run")) dyn.unload("ecosim.dll") 
-  dyn.load("ecosim.dll")		
-}
-
-#Unload
-ul<-function() if(is.loaded("ecosim_run")) dyn.unload("ecosim.dll") 	
-
-##------------------------------------------------------------------------------ 
-
-##------------------------------------------------------------------------------ 
-#New ecosim function that runs all steps.
 ecosim_init <- function(Rpath, juvfile, YEARS = 100){
   #Old path_to_rates--------------------------------------------------------------------
   MSCRAMBLE      <- 2.0
@@ -426,12 +409,9 @@ ecosim_init <- function(Rpath, juvfile, YEARS = 100){
   #simpar$QQ <- simpar$QQ * Qmult[simpar$PreyTo]
 
   #Old ecosim_pack-------------------------------------------------------------------- 
-  simpar$YEARS  <- YEARS
-
-  
+  simpar$YEARS      <- YEARS  
   simpar$BURN_YEARS <- -1
   simpar$COUPLED    <-  1
- 
   simpar$CRASH_YEAR <- -1
   
   #derivlist
@@ -459,26 +439,22 @@ ecosim_init <- function(Rpath, juvfile, YEARS = 100){
   simpar$HandleSuite    <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$TerminalF      <- rep(0.0, simpar$NUM_GROUPS + 1)
  
-  
   #targlist     
   simpar$TARGET_BIO <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$TARGET_F   <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$ALPHA      <- rep(0.0, simpar$NUM_GROUPS + 1)
   
-  mforcemat           <- data.frame(matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
-  names(mforcemat)    <- simpar$spname
+  mforcemat             <- matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1)
   simpar$force_byprey   <- mforcemat
   simpar$force_bymort   <- mforcemat
   simpar$force_byrecs   <- mforcemat
   simpar$force_bysearch <- mforcemat
   
-  yforcemat         <- data.frame(matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
-  names(yforcemat)  <- simpar$spname
+  yforcemat           <- matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1)
   simpar$FORCED_FRATE <- yforcemat
   simpar$FORCED_CATCH <- yforcemat
 
-  omat           <- data.frame(matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
-  names(omat)    <- simpar$spname
+  omat           <- matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1)
   simpar$out_BB  <- omat 
   simpar$out_CC  <- omat
   simpar$out_SSB <- omat              
@@ -497,8 +473,35 @@ ecosim_run <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
   if(BYY < 0)                           BYY <- 0
   if(BYY >= simpar$YEARS)               BYY <- simpar$YEARS - 1
   if(EYY <= BYY)                        EYY <- BYY + 1
+  #Assign initial run flag
   simpar$init_run <- init_run
+  
+  #Run C code
   Adams_Basforth(simpar, BYY, EYY)
+  
+  #Convert outputs to data frames
+  simpar$force_byprey   <- as.data.frame(simpar$force_byprey)
+  simpar$force_bymort   <- as.data.frame(simpar$force_bymort)
+  simpar$force_byrecs   <- as.data.frame(simpar$force_byrecs)
+  simpar$force_bysearch <- as.data.frame(simpar$force_bysearch)
+  simpar$FORCED_FRATE   <- as.data.frame(simpar$FORCED_FRATE)
+  simpar$FORCED_CATCH   <- as.data.frame(simpar$FORCED_CATCH)
+  simpar$out_BB         <- as.data.frame(simpar$out_BB)
+  simpar$out_CC         <- as.data.frame(simpar$out_CC)
+  simpar$out_SSB        <- as.data.frame(simpar$out_SSB)       
+  simpar$out_rec        <- as.data.frame(simpar$out_rec)
+  
+  names(simpar$force_byprey)   <- simpar$spname
+  names(simpar$force_bymort)   <- simpar$spname
+  names(simpar$force_byrecs)   <- simpar$spname
+  names(simpar$force_bysearch) <- simpar$spname
+  names(simpar$FORCED_FRATE)   <- simpar$spname
+  names(simpar$FORCED_CATCH)   <- simpar$spname
+  names(simpar$out_BB)         <- simpar$spname
+  names(simpar$out_CC)         <- simpar$spname
+  names(simpar$out_SSB)        <- simpar$spname
+  names(simpar$out_rec)        <- simpar$spname
+  
   return(simpar)
 }
 
