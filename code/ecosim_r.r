@@ -444,17 +444,20 @@ ecosim_init <- function(Rpath, juvfile, YEARS = 100){
   simpar$TARGET_F   <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$ALPHA      <- rep(0.0, simpar$NUM_GROUPS + 1)
   
-  mforcemat             <- matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1)
+  mforcemat             <- as.data.frame(matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  names(mforcemat)      <- simpar$spname
   simpar$force_byprey   <- mforcemat
   simpar$force_bymort   <- mforcemat
   simpar$force_byrecs   <- mforcemat
   simpar$force_bysearch <- mforcemat
   
-  yforcemat           <- matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1)
+  yforcemat           <- as.data.frame(matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
+  names(yforcemat)    <- simpar$spname
   simpar$FORCED_FRATE <- yforcemat
   simpar$FORCED_CATCH <- yforcemat
 
-  omat           <- matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1)
+  omat           <- as.data.frame(matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  names(omat)    <- simpar$spname
   simpar$out_BB  <- omat 
   simpar$out_CC  <- omat
   simpar$out_SSB <- omat              
@@ -475,6 +478,18 @@ ecosim_run <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
   if(EYY <= BYY)                        EYY <- BYY + 1
   #Assign initial run flag
   simpar$init_run <- init_run
+  
+  #Rcpp doesn't handle data frames well so need to convert to matrices
+  simpar$force_byprey   <- as.matrix(simpar$force_byprey)
+  simpar$force_bymort   <- as.matrix(simpar$force_bymort)
+  simpar$force_byrecs   <- as.matrix(simpar$force_byrecs)
+  simpar$force_bysearch <- as.matrix(simpar$force_bysearch)
+  simpar$FORCED_FRATE   <- as.matrix(simpar$FORCED_FRATE)
+  simpar$FORCED_CATCH   <- as.matrix(simpar$FORCED_CATCH)
+  simpar$out_BB         <- as.matrix(simpar$out_BB)
+  simpar$out_CC         <- as.matrix(simpar$out_CC)
+  simpar$out_SSB        <- as.matrix(simpar$out_SSB)       
+  simpar$out_rec        <- as.matrix(simpar$out_rec)
   
   #Run C code
   Adams_Basforth(simpar, BYY, EYY)
