@@ -33,25 +33,17 @@ int deriv_master(List mod, int y, int m, int d){
   int NUM_GROUPS                 = as<int>(mod["NUM_GROUPS"]);
   int NUM_LIVING                 = as<int>(mod["NUM_LIVING"]);
   int NUM_DEAD                   = as<int>(mod["NUM_DEAD"]);
-  //int NUM_GEARS                  = as<int>(mod["NUM_GEARS"]);
   int NumPredPreyLinks           = as<int>(mod["NumPredPreyLinks"]);
   int NumFishingLinks            = as<int>(mod["NumFishingLinks"]);
   int NumDetLinks                = as<int>(mod["NumDetLinks"]);
   int juv_N                      = as<int>(mod["juv_N"]);
   int COUPLED                    = as<int>(mod["COUPLED"]);
   
-  CharacterVector spname         = as<CharacterVector>(mod["spname"]);
-  
-  NumericVector spnum            = as<NumericVector>(mod["spnum"]);
   NumericVector B_BaseRef        = as<NumericVector>(mod["B_BaseRef"]);
   NumericVector MzeroMort        = as<NumericVector>(mod["MzeroMort"]);
   NumericVector UnassimRespFrac  = as<NumericVector>(mod["UnassimRespFrac"]);
   NumericVector ActiveRespFrac   = as<NumericVector>(mod["ActiveRespFrac"]);
-  NumericVector FtimeAdj         = as<NumericVector>(mod["FtimeAdj"]);
-  NumericVector FtimeQBOpt       = as<NumericVector>(mod["FtimeQBOpt"]);
-  NumericVector PBopt            = as<NumericVector>(mod["PBopt"]);
   NumericVector fish_Effort      = as<NumericVector>(mod["fish_Effort"]);
-  NumericVector NoIntegrate      = as<NumericVector>(mod["NoIntegrate"]);
   NumericVector HandleSelf       = as<NumericVector>(mod["HandleSelf"]);
   NumericVector ScrambleSelf     = as<NumericVector>(mod["ScrambleSelf"]);
   NumericVector PreyFrom         = as<NumericVector>(mod["PreyFrom"]);
@@ -62,8 +54,6 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector HandleSwitch     = as<NumericVector>(mod["HandleSwitch"]);
   NumericVector PredPredWeight   = as<NumericVector>(mod["PredPredWeight"]);
   NumericVector PreyPreyWeight   = as<NumericVector>(mod["PreyPreyWeight"]);
-  NumericVector PredTotWeight    = as<NumericVector>(mod["PredTotWeight"]);
-  NumericVector PreyTotWeight    = as<NumericVector>(mod["PreyTotWeight"]);
   NumericVector FishFrom         = as<NumericVector>(mod["FishFrom"]);
   NumericVector FishThrough      = as<NumericVector>(mod["FishThrough"]);
   NumericVector FishQ            = as<NumericVector>(mod["FishQ"]);
@@ -73,48 +63,10 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector DetTo            = as<NumericVector>(mod["DetTo"]);
   NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
   NumericVector state_Ftime      = as<NumericVector>(mod["state_Ftime"]);
-  NumericVector WageS            = as<NumericVector>(mod["WageS"]);
-  NumericVector WWa              = as<NumericVector>(mod["WWa"]);
-  NumericVector NageS            = as<NumericVector>(mod["NageS"]);
-  NumericVector SplitAlpha       = as<NumericVector>(mod["SplitAlpha"]);
-  NumericVector state_NN         = as<NumericVector>(mod["state_NN"]);
   NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
   NumericVector stanzaBasePred   = as<NumericVector>(mod["stanzaBasePred"]);
-  NumericVector SpawnBio         = as<NumericVector>(mod["SpawnBio"]);
-  NumericVector EggsStanza       = as<NumericVector>(mod["EggsStanza"]);
-  NumericVector stanzaGGJuv      = as<NumericVector>(mod["stanzaGGJuv"]);
-  NumericVector stanzaGGAdu      = as<NumericVector>(mod["stanzaGGAdu"]);
-  NumericVector SpawnEnergy      = as<NumericVector>(mod["SpawnEnergy"]);
-  NumericVector SpawnX           = as<NumericVector>(mod["SpawnX"]);
-  NumericVector SpawnAllocR      = as<NumericVector>(mod["SpawnAllocR"]);
-  NumericVector SpawnAllocG      = as<NumericVector>(mod["SpawnAllocG"]);
-  NumericVector recruits         = as<NumericVector>(mod["recruits"]);
-  NumericVector RzeroS           = as<NumericVector>(mod["RzeroS"]);
-  NumericVector baseEggsStanza   = as<NumericVector>(mod["baseEggsStanza"]);
-  NumericVector baseSpawnBio     = as<NumericVector>(mod["baseSpawnBio"]);
-  NumericVector Rbase            = as<NumericVector>(mod["Rbase"]);
-  NumericVector RscaleSplit      = as<NumericVector>(mod["RscaleSplit"]);
   NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
   NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
-  NumericVector RecMonth         = as<NumericVector>(mod["RecMonth"]);
-  NumericVector VonBD            = as<NumericVector>(mod["VonBD"]);
-  NumericVector aduEqAgeZ        = as<NumericVector>(mod["aduEqAgeZ"]);
-  NumericVector juvEqAgeZ        = as<NumericVector>(mod["juvEqAgeZ"]);
-  NumericVector RecPower         = as<NumericVector>(mod["RecPower"]);
-  NumericVector Wmat001          = as<NumericVector>(mod["Wmat001"]);
-  NumericVector Wmat50           = as<NumericVector>(mod["Wmat50"]);
-  NumericVector Amat001          = as<NumericVector>(mod["Amat001"]);
-  NumericVector Amat50           = as<NumericVector>(mod["Amat50"]);
-  NumericVector WmatSpread       = as<NumericVector>(mod["WmatSpread"]);
-  NumericVector AmatSpread       = as<NumericVector>(mod["AmatSpread"]);
-  NumericVector vBM              = as<NumericVector>(mod["vBM"]);
-  NumericVector firstMoJuv       = as<NumericVector>(mod["firstMoJuv"]);
-  NumericVector lastMoJuv        = as<NumericVector>(mod["lastMoJuv"]);
-  NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
-  NumericVector lastMoAdu        = as<NumericVector>(mod["lastMoAdu"]);
-  NumericVector YEARS            = as<NumericVector>(mod["YEARS"]);
-  NumericVector BURN_YEARS       = as<NumericVector>(mod["BURN_YEARS"]);
-  NumericVector CRASH_YEAR       = as<NumericVector>(mod["CRASH_YEAR"]);
   NumericVector TotGain          = as<NumericVector>(mod["TotGain"]);
   NumericVector TotLoss          = as<NumericVector>(mod["TotLoss"]);
   NumericVector LossPropToB      = as<NumericVector>(mod["LossPropToB"]);
@@ -134,7 +86,6 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector FishingThru      = as<NumericVector>(mod["FishingThru"]);
   NumericVector PredSuite        = as<NumericVector>(mod["PredSuite"]);
   NumericVector HandleSuite      = as<NumericVector>(mod["HandleSuite"]);
-  NumericVector TotDetOut        = as<NumericVector>(mod["TotDetOut"]);
   NumericVector preyYY           = as<NumericVector>(mod["preyYY"]);
   NumericVector predYY           = as<NumericVector>(mod["predYY"]);
   NumericVector TerminalF        = as<NumericVector>(mod["TerminalF"]);
@@ -144,15 +95,9 @@ int deriv_master(List mod, int y, int m, int d){
   
   NumericMatrix force_byprey     = as<NumericMatrix>(mod["force_byprey"]);
   NumericMatrix force_bymort     = as<NumericMatrix>(mod["force_bymort"]);
-  NumericMatrix force_byrecs     = as<NumericMatrix>(mod["force_byrecs"]);
   NumericMatrix force_bysearch   = as<NumericMatrix>(mod["force_bysearch"]);
   NumericMatrix FORCED_FRATE     = as<NumericMatrix>(mod["FORCED_FRATE"]);
   NumericMatrix FORCED_CATCH     = as<NumericMatrix>(mod["FORCED_CATCH"]);
-  NumericMatrix out_BB           = as<NumericMatrix>(mod["out_BB"]);
-  NumericMatrix out_CC           = as<NumericMatrix>(mod["out_CC"]);
-  NumericMatrix out_SSB          = as<NumericMatrix>(mod["out_SSB"]);
-  NumericMatrix out_rec          = as<NumericMatrix>(mod["out_rec"]);
-    
   
   // Some derivative parts need to be set to zero
   for(i = 0; i < NUM_GROUPS + 1; i++){
