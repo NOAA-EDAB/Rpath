@@ -5,7 +5,7 @@
 
 #User parameters
 
-windows <- F
+windows <- T
 if(windows == T){
   r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\data\\"
@@ -104,48 +104,44 @@ summary(GOA.sim$out_BB[34])
 
 plot(GOA.sim$out_BB[34])
 
+
+test.sim <- list(NUM_LIVING = 2, NUM_DEAD = 1, juv_N = 1, 
+                 state_BB = c(1, 3.97, 0.85, 2.456),
+                 SpawnBio = c(0, 0.87),
+                 JuvNum = c(0, 1), AduNum = c(0, 2), firstMoAdu = 24,
+                 WageS = matrix(0, 1, 1),
+                 NageS = matrix(0, 1, 1),
+                 out_BB =  data.frame(Sp1 = rep(0, 12*5),
+                                      Sp2 = rep(0, 12*5),
+                                      Sp3 = rep(0, 12*5)),
+                 out_SSB = data.frame(Sp1 = rep(0, 12*5),
+                                      Sp2 = rep(0, 12*5),
+                                      Sp3 = rep(0, 12*5)),
+                 out_rec = data.frame(Sp1 = rep(0, 12*5),
+                                      Sp2 = rep(0, 12*5),
+                                      Sp3 = rep(0, 12*5)))
+
 cppFunction('int ecosim_test(List mod, int StartYear, int EndYear){
-            int y, m, c, j, dd;
-            int sp, t, i, ageMo, s, link,prey,pred,links,gr;
-            int inbound;
-            double old_B, new_B, nn, ww, bb, pd;
-            double newbio; float ystep;
-            double bioanom, bioratio;
-            unsigned int LL;
+            int y, m, dd;
+            int sp, i;
             int STEPS_PER_YEAR = 12;
 
             // Parse out List mod
             int NUM_LIVING = as<int>(mod["NUM_LIVING"]);
             int NUM_DEAD   = as<int>(mod["NUM_DEAD"]);
             int juv_N      = as<int>(mod["juv_N"]);
-            int init_run   = as<int>(mod["init_run"]);
-            int BURN_YEARS = as<int>(mod["BURN_YEARS"]);
-            int CRASH_YEAR = as<int>(mod["CRASH_YEAR"]);
-            
-            NumericVector B_BaseRef        = as<NumericVector>(mod["B_BaseRef"]);
-            NumericVector NoIntegrate      = as<NumericVector>(mod["NoIntegrate"]);
-            NumericVector state_BB         = as<NumericVector>(mod["state_BB"]);
-            NumericVector state_Ftime      = as<NumericVector>(mod["state_Ftime"]);
-            NumericVector FtimeAdj         = as<NumericVector>(mod["FtimeAdj"]);
-            NumericVector FtimeQBOpt       = as<NumericVector>(mod["FtimeQBOpt"]);
-            NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
-            NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
-            NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
-            NumericVector SpawnBio         = as<NumericVector>(mod["SpawnBio"]);
-            NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
-            NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
-            NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
-            NumericVector DerivT           = as<NumericVector>(mod["DerivT"]);
-            NumericVector dyt              = as<NumericVector>(mod["dyt"]);
-            NumericVector biomeq           = as<NumericVector>(mod["biomeq"]);
-            NumericVector FoodGain         = as<NumericVector>(mod["FoodGain"]);
-            NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);
-            
+              
+            NumericVector state_BB     = as<NumericVector>(mod["state_BB"]);
+            NumericVector JuvNum       = as<NumericVector>(mod["JuvNum"]);
+            NumericVector AduNum       = as<NumericVector>(mod["AduNum"]);
+            NumericVector SpawnBio     = as<NumericVector>(mod["SpawnBio"]);
+            NumericVector firstMoAdu   = as<NumericVector>(mod["firstMoAdu"]);
+            NumericMatrix WageS        = as<NumericMatrix>(mod["WageS"]);
+            NumericMatrix NageS        = as<NumericMatrix>(mod["NageS"]);
             DataFrame out_BB           = as<DataFrame>(mod["out_BB"]);
-            DataFrame out_CC           = as<DataFrame>(mod["out_CC"]);
             DataFrame out_SSB          = as<DataFrame>(mod["out_SSB"]);
             DataFrame out_rec          = as<DataFrame>(mod["out_rec"]);
-            
+         
             for (y = StartYear; y < EndYear; y++){                                  
             for (m = 0; m < STEPS_PER_YEAR; m++){
                      
@@ -160,8 +156,9 @@ cppFunction('int ecosim_test(List mod, int StartYear, int EndYear){
                   NumericVector sp_out_BB  = out_BB[sp];
                   NumericVector sp_out_SSB = out_SSB[sp];
                   NumericVector sp_out_rec = out_rec[sp];
-                  
+
                   sp_out_BB[dd]  = state_BB[sp];
+                  //if(sp = 34)  Rcout << sp_out_BB[dd] << std::endl;
                   sp_out_SSB[dd] = state_BB[sp];
                   sp_out_rec[dd] = state_BB[sp];
               }
@@ -176,7 +173,10 @@ cppFunction('int ecosim_test(List mod, int StartYear, int EndYear){
               }
 }
 }
-       return(0);
-            }')
+return 0;
+            }')        
 
-ecosim_test(GOA.sim, 0, 50)
+ecosim_test(test.sim, 0, 3)
+
+ecosim_test(GOA.sim, 0, 100)
+as.data.table(GOA.sim$out_BB[34])
