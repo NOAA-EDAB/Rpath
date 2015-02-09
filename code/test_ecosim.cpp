@@ -142,16 +142,16 @@ int deriv_master(List mod, int y, int m, int d){
   NumericVector TARGET_F         = as<NumericVector>(mod["TARGET_F"]);
   NumericVector ALPHA            = as<NumericVector>(mod["ALPHA"]);
   
-  DataFrame force_byprey     = as<DataFrame>(mod["force_byprey"]);
-  DataFrame force_bymort     = as<DataFrame>(mod["force_bymort"]);
-  DataFrame force_byrecs     = as<DataFrame>(mod["force_byrecs"]);
-  DataFrame force_bysearch   = as<DataFrame>(mod["force_bysearch"]);
-  DataFrame FORCED_FRATE     = as<DataFrame>(mod["FORCED_FRATE"]);
-  DataFrame FORCED_CATCH     = as<DataFrame>(mod["FORCED_CATCH"]);
-  DataFrame out_BB           = as<DataFrame>(mod["out_BB"]);
-  DataFrame out_CC           = as<DataFrame>(mod["out_CC"]);
-  DataFrame out_SSB          = as<DataFrame>(mod["out_SSB"]);
-  DataFrame out_rec          = as<DataFrame>(mod["out_rec"]);
+  NumericMatrix force_byprey     = as<NumericMatrix>(mod["force_byprey"]);
+  NumericMatrix force_bymort     = as<NumericMatrix>(mod["force_bymort"]);
+  NumericMatrix force_byrecs     = as<NumericMatrix>(mod["force_byrecs"]);
+  NumericMatrix force_bysearch   = as<NumericMatrix>(mod["force_bysearch"]);
+  NumericMatrix FORCED_FRATE     = as<NumericMatrix>(mod["FORCED_FRATE"]);
+  NumericMatrix FORCED_CATCH     = as<NumericMatrix>(mod["FORCED_CATCH"]);
+  NumericMatrix out_BB           = as<NumericMatrix>(mod["out_BB"]);
+  NumericMatrix out_CC           = as<NumericMatrix>(mod["out_CC"]);
+  NumericMatrix out_SSB          = as<NumericMatrix>(mod["out_SSB"]);
+  NumericMatrix out_rec          = as<NumericMatrix>(mod["out_rec"]);
     
   
   // Some derivative parts need to be set to zero
@@ -190,8 +190,7 @@ int deriv_master(List mod, int y, int m, int d){
  		   }
     // add "mediation by search rate" KYA 7/8/08
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-            NumericVector sp_force_bysearch = force_bysearch[sp];
-            predYY[sp] *= sp_force_bysearch[y * STEPS_PER_YEAR + m]; 
+            predYY[sp] *= force_bysearch(y * STEPS_PER_YEAR + m, sp); 
         }
         
  	  // Summed predator and prey for joint handling time and/or scramble functional response
@@ -237,8 +236,7 @@ int deriv_master(List mod, int y, int m, int d){
  						                     (1. - ScrambleSelf[pred]) * PredSuite[prey]) );
         
 			 // Include any Forcing by prey   
- 				  NumericVector prey_force_byprey = force_byprey[prey];
-           Q *= prey_force_byprey[y * STEPS_PER_YEAR + m]; 
+           Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
 
 			 // If model is uncoupled, food loss doesn't change with prey or predator levels.
 				if (COUPLED){  FoodLoss[prey]  += Q; }
@@ -323,12 +321,10 @@ int deriv_master(List mod, int y, int m, int d){
  
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             NumericVector sp_FORCED_CATCH = FORCED_CATCH[sp];
-             NumericVector sp_FORCED_FRATE = FORCED_FRATE[sp];
-             caught = sp_FORCED_CATCH[y] + sp_FORCED_FRATE[y] * state_BB[sp];
+             caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
-             if (caught>=state_BB[sp]){caught=(1.0-EPSILON)*(state_BB[sp]);}
+             if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
              FishingLoss[sp] += caught;
              FishingThru[0]  += caught;
              FishingGain[0]  += caught;
@@ -339,7 +335,7 @@ int deriv_master(List mod, int y, int m, int d){
         double RefBio, maxcaught;
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
             if (TARGET_BIO[sp] > EPSILON){
-               RefBio    = state_BB[sp]/TARGET_BIO[sp];
+               RefBio    = state_BB[sp] / TARGET_BIO[sp];
                maxcaught = TARGET_F[sp] * state_BB[sp];         
                if      (RefBio > 1.0)           {caught = maxcaught;}
                else if (RefBio >= ALPHA[sp]) {caught = maxcaught * (RefBio - ALPHA[sp])/(1.0 - ALPHA[sp]);}
@@ -368,9 +364,8 @@ int deriv_master(List mod, int y, int m, int d){
     
   // Add mortality forcing
      for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-        NumericVector i_force_bymort = force_bymort[i];
-        FoodLoss[i]  *= i_force_bymort[y * STEPS_PER_YEAR + m];
-        MzeroLoss[i] *= i_force_bymort[y * STEPS_PER_YEAR + m];
+        FoodLoss[i]  *= force_bymort(y * STEPS_PER_YEAR + m, i);
+        MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
      }
   
 	// Sum up derivitive parts; move previous derivative to dyt        
@@ -505,7 +500,7 @@ double Su, Gf, Nt;
   NumericVector RzeroS           = as<NumericVector>(mod["RzeroS"]);
   NumericVector RecPower         = as<NumericVector>(mod["RecPower"]);
   NumericVector VonBD            = as<NumericVector>(mod["VonBD"]);
-  DataFrame force_byrecs         = as<DataFrame>(mod["force_byrecs"]);
+  NumericMatrix force_byrecs     = as<NumericMatrix>(mod["force_byrecs"]);
    
   // loop over split species groups to update n, wt, biomass in sim  
      for (i = 1; i <= juv_N; i++){
@@ -544,8 +539,7 @@ double Su, Gf, Nt;
  				                             (SpawnX[i] - 1.0 + 
  			  															 (SpawnBio[i] / baseSpawnBio[i]));
  		 // Forcing for eggs applied here															 
- 			   NumericVector jv_force_byrecs = force_byrecs[JuvNum[i]];
-          EggsStanza[i] *= jv_force_byrecs[yr * STEPS_PER_YEAR + mon];		
+          EggsStanza[i] *= force_byrecs(yr * STEPS_PER_YEAR + mon, JuvNum[i]);		
 
 		 // If recruitment happens all at once (in a single month) that happens here)
      // Otherwise, recruitment is throughout the year.
@@ -623,10 +617,10 @@ double old_B, new_B, pd; //nn, ww, bb,
   NumericVector FoodGain         = as<NumericVector>(mod["FoodGain"]);
   NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);
 
-  DataFrame out_BB           = as<DataFrame>(mod["out_BB"]);
-  DataFrame out_CC           = as<DataFrame>(mod["out_CC"]);
-  DataFrame out_SSB          = as<DataFrame>(mod["out_SSB"]);
-  DataFrame out_rec          = as<DataFrame>(mod["out_rec"]);
+  NumericMatrix out_BB           = as<NumericMatrix>(mod["out_BB"]);
+  NumericMatrix out_CC           = as<NumericMatrix>(mod["out_CC"]);
+  NumericMatrix out_SSB          = as<NumericMatrix>(mod["out_SSB"]);
+  NumericMatrix out_rec          = as<NumericMatrix>(mod["out_rec"]);
   
    // Update sums of split groups to total biomass for derivative calcs
       SplitSetPred(mod); 
@@ -650,22 +644,14 @@ double old_B, new_B, pd; //nn, ww, bb,
 					 // For adult split pools, it is overwritten with "actual" SSB, 
 					 // for juvs it is 0. 
               for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){ 
-                  NumericVector sp_out_BB  = out_BB[sp];
-                  NumericVector sp_out_SSB = out_SSB[sp];
-                  NumericVector sp_out_rec = out_rec[sp];
-                  
-                  sp_out_BB[dd]  = state_BB[sp];
-                  sp_out_SSB[dd] = state_BB[sp];
-                  sp_out_rec[dd] = state_BB[sp];
+                  out_BB(dd, sp)  = state_BB[sp];
+                  out_SSB(dd, sp) = state_BB[sp];
+                  out_rec(dd, sp) = state_BB[sp];
               }
               for (i = 1; i <= juv_N; i++){
-                  NumericVector jv_out_SSB = out_SSB[JuvNum[i]];
-                  NumericVector ad_out_SSB = out_SSB[AduNum[i]];
-                  NumericVector ad_out_rec = out_rec[AduNum[i]];
-                  
-                  jv_out_SSB[dd] = 0.0;
-									ad_out_SSB[dd] = SpawnBio[i];
-									ad_out_rec[dd] = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+                  out_SSB(dd, JuvNum[i]) = 0.0;
+									out_SSB(dd, AduNum[i]) = SpawnBio[i];
+									out_rec(dd, AduNum[i]) = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
               }
        
 			    // note: code for sub-monthly steps has been removed    
@@ -727,13 +713,12 @@ double old_B, new_B, pd; //nn, ww, bb,
  										state_BB[sp] = new_B;                                
  						        
                  // sum up Catch at every time step (catch is cumulative)
- 								    NumericVector sp_out_CC = out_CC[sp];
                      if (fabs(state_BB[sp]/old_B-1.0) > EPSILON){
- 								       sp_out_CC[dd] = ((FishingLoss[sp] * DELTA_T) / old_B) *
+ 								       out_CC(dd, sp) = ((FishingLoss[sp] * DELTA_T) / old_B) *
  									                       (state_BB[sp] - old_B) /
  										 	    							 log(state_BB[sp] / old_B);
  									  }
- 									  else {sp_out_CC[dd] = (FishingLoss[sp] * DELTA_T);
+ 									  else {out_CC(dd, sp) = (FishingLoss[sp] * DELTA_T);
  								    }		  
   									         
  								 } // End of species loop
@@ -780,22 +765,14 @@ double old_B, new_B, pd; //nn, ww, bb,
       if (CRASH_YEAR < 0){
          dd = EndYear * STEPS_PER_YEAR;
          for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){ 
-              NumericVector sp_out_BB  = out_BB[sp];
-              NumericVector sp_out_SSB = out_SSB[sp];
-              NumericVector sp_out_rec = out_rec[sp];
-              
-              sp_out_BB[dd]  = state_BB[sp];
-              sp_out_SSB[dd] = state_BB[sp];
-              sp_out_rec[dd] = state_BB[sp];
+              out_BB(dd, sp)  = state_BB[sp];
+              out_SSB(dd, sp) = state_BB[sp];
+              out_rec(dd, sp) = state_BB[sp];
          }
          for (i = 1; i <= juv_N; i++){
-              NumericVector jv_out_SSB = out_SSB[JuvNum[i]];
-              NumericVector ad_out_SSB = out_SSB[AduNum[i]];
-              NumericVector ad_out_rec = out_rec[AduNum[i]];
-              
-              jv_out_SSB[dd] = 0.0;
-						  ad_out_SSB[dd] = SpawnBio[i];
-						  ad_out_rec[dd] = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+              out_SSB(dd, JuvNum[i]) = 0.0;
+						  out_SSB(dd, AduNum[i]) = SpawnBio[i];
+						  out_rec(dd, AduNum[i]) = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
          }
       }  
       
