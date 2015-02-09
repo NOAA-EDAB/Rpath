@@ -24,7 +24,7 @@ int deriv_master(List mod, int y, int m, int d){
   // Functional response vars     
   int sp, links, prey, pred, i;
   double caught, Q;
-  unsigned int LL;
+  //unsigned int LL;
   // Fishing vars
   int gr, dest;
   // double Master_Density, totQ;
@@ -466,7 +466,7 @@ return(0);
  
 int ageMo, i;  
 double Su, Gf, Nt; 
-double propRepro;
+//double propRepro;
 
 // Parse out List mod
   int juv_N                      = as<int>(mod["juv_N"]);
@@ -588,13 +588,13 @@ return(0);
 // [[Rcpp::export]] 
 int Adams_Basforth (List mod, int StartYear, int EndYear){
      
-int y, m, c, j, dd;
-int sp, t, i, ageMo, s, link,prey,pred,links,gr;
-int inbound;
-double old_B, new_B, nn, ww, bb, pd;
-double newbio; float ystep;
-double bioanom, bioratio;
-unsigned int LL;
+int y, m, dd;//c, j, 
+int sp, i; //t, ageMo, s, link, prey,pred,links,gr
+//int inbound;
+double old_B, new_B, pd; //nn, ww, bb, 
+//double newbio; float ystep;
+//double bioanom, bioratio;
+//unsigned int LL;
 
 // Parse out List mod
   int NUM_LIVING = as<int>(mod["NUM_LIVING"]);
@@ -706,7 +706,7 @@ unsigned int LL;
  										       
 						      // If the new biomass goes to infinity or something, set a
 									// flag to exit the loop and return the problem. 
-						         if (isnan(new_B) || isinf(new_B)) {
+						         if (std::isnan(new_B) || std::isinf(new_B)) {
                         CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
                      }
                   
@@ -749,7 +749,7 @@ unsigned int LL;
             for (i = 1; i <= juv_N; i++){
                 sp = JuvNum[i];
                 new_B = state_BB[sp];
-						    if (isnan(new_B) || isinf(new_B)) {
+						    if (std::isnan(new_B) || std::isinf(new_B)) {
                    CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
                 }                  
                 if (y < BURN_YEARS){
@@ -760,7 +760,7 @@ unsigned int LL;
                 }                
                 sp    = AduNum[i];
                 new_B = state_BB[sp];
-						    if (isnan(new_B) || isinf(new_B)) {
+						    if (std::isnan(new_B) || std::isinf(new_B)) {
                     CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
                 }     
                 if (y < BURN_YEARS){
