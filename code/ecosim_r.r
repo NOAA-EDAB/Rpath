@@ -5,7 +5,7 @@
 # 
 ################################################################################ 
 
-ecosim_init <- function(Rpath, juvfile, YEARS = 100){
+ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   #Old path_to_rates--------------------------------------------------------------------
   MSCRAMBLE      <- 2.0
   MHANDLE        <- 1000.0
@@ -471,11 +471,13 @@ ecosim_init <- function(Rpath, juvfile, YEARS = 100){
 
 ##------------------------------------------------------------------------------ 
 
-ecosim_run <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
+ecosim.run <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
+  
   if((EYY <= 0) | (EYY > simpar$YEARS)) EYY <- simpar$YEARS
   if(BYY < 0)                           BYY <- 0
   if(BYY >= simpar$YEARS)               BYY <- simpar$YEARS - 1
   if(EYY <= BYY)                        EYY <- BYY + 1
+  
   #Assign initial run flag
   simpar$init_run <- init_run
   
