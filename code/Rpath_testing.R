@@ -19,6 +19,11 @@ if(windows == F){
   stable   <- "/home/slucey/slucey/PhD/Rpath/code/"
 }
 
+#To download Rpath
+#library(devtools)
+#devtools::install_github('slucey/Rpath/Rpath', 
+#                          auth_token = 'd95526d2fb3f6e34f9c8481b1740e0033ac1d623')
+
 library(Rpath)
 
 
