@@ -4,9 +4,21 @@
 ## Function ecopathR takes as input 3 csv files and optional
 ## ecosystem name  
 
-#Need to add these packages to a dependency file
-library(MASS)
-library(data.table)
+
+#'Ecopath modual of Rpath
+#'
+#'Performs initial mass balance using a model parameter file and diet
+#'matrix file.
+#'
+#'@family Rpath functions
+#'
+#'@param modfile Comma deliminated model parameter file.
+#'@param dietfile Comma deliminated diet matrix file.
+#'@param pedfile Comma deliminated pedigree file.
+#'@param eco.name Optional name of the ecosystem which becomes an attribute of
+#'    rpath object.
+#'
+#'@return Returns an Rpath object that can be supplied to the ecosim.init function.
 
 ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
   
