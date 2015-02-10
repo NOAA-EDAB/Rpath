@@ -1,11 +1,18 @@
 Package: Rpath
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: R implementation of Ecopath with Ecosim
+Version: 0.0.0.9000
 Date: 2015-02-09
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: More about what it does (maybe more than one line)
+Authors@R: c(
+    person("Kerim", "Aydin",   email = "Kerim.Aydin@NOAA.gov",   role = "aut"),
+    person("Sean", "Lucey",    email = "Sean.Lucey@NOAA.gov",    
+           role = c("aut", "cre")),
+    person("Sarah", "Gaichas", email = "Sarah.Gaichas@NOAA.gov", role = "aut"))
+Description: This package implements the core equations from the popular 
+    Ecopath with Ecosim mass balance model. (Need to expand)
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.11.3)
+Imports: 
+    data.table,
+    MASS,
+    Rcpp (>= 0.11.3)
 LinkingTo: Rcpp
