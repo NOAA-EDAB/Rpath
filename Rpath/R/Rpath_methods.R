@@ -1,5 +1,6 @@
 #Functions for Rpath objects
 #Print
+#'@export
 print.Rpath <- function(x, rows = NA, morts = F, ...){
   cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
   if(max(x$EE, na.rm = T) > 1){
@@ -12,7 +13,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
   }
   if(morts == F){
     removals <- rowSums(x$Catch) + rowSums(x$Discard)
-    out <- data.table(Group    = x$Group,
+    out <- data.frame(Group    = x$Group,
                       type     = x$type,
                       TL       = x$TL,
                       Biomass  = x$BB,
@@ -24,7 +25,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
   }
   if(morts == T){
     ngroup <- x$NUM_LIVING + x$NUM_DEAD
-    out <- data.table(Group    = x$Group[1:ngroup],
+    out <- data.frame(Group    = x$Group[1:ngroup],
                       type     = x$type [1:ngroup],
                       PB       = x$PB   [1:ngroup])
     #Calculate M0
@@ -33,14 +34,14 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
     out <- cbind(out, M0)
     #Calculate F mortality
     totcatch <- x$Catch + x$Discards
-    Fmort    <- as.data.table(totcatch / x$BB[row(as.matrix(totcatch))])
+    Fmort    <- as.data.frame(totcatch / x$BB[row(as.matrix(totcatch))])
     setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
                     paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
     out  <- cbind(out, Fmort[1:ngroup, ])
     #Calculate M2
     bio  <- x$BB[1:x$NUM_LIVING]
     BQB  <- bio * x$QB[1:x$NUM_LIVING]
-    diet <- as.data.table(x$DC)
+    diet <- as.data.frame(x$DC)
     nodetrdiet <- diet[1:x$NUM_LIVING, ]
     detrdiet   <- diet[(x$NUM_LIVING +1):ngroup, ]
     newcons    <- nodetrdiet * BQB[col(as.matrix(nodetrdiet))]
@@ -55,6 +56,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 }
 
 #Summary
+#'@export
 summary.Rpath <- function(object, ...){
   x <- object
   cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
@@ -69,7 +71,7 @@ summary.Rpath <- function(object, ...){
   cat("\nSummary Statistics:\n")
   totbiomass <- sum(x$BB,    na.rm = T)
   totcatch   <- sum(x$Catch, na.rm = T)
-  table <- data.table(Num.Groups   = x$NUM_GROUPS,
+  table <- data.frame(Num.Groups   = x$NUM_GROUPS,
                       Num.Living   = x$NUM_LIVING,
                       Num.Detritus = x$NUM_DEAD,
                       Num.Fleets   = x$NUM_GEARS,
@@ -80,16 +82,12 @@ summary.Rpath <- function(object, ...){
   print(names(GOA))
 }
 
-
-write.test <- function(x, file = '', ...){
-  write.csv(x, file = file)
-}
-
+#'@export
 #Write -- note, not a generic function
 write.Rpath <- function(x, file, morts = F, ...){
   if(morts == F){
     removals <- rowSums(x$Catch) + rowSums(x$Discard)
-    out <- data.table(Group    = x$Group,
+    out <- data.frame(Group    = x$Group,
                       type     = x$type,
                       TL       = x$TL,
                       Biomass  = x$BB,
@@ -101,7 +99,7 @@ write.Rpath <- function(x, file, morts = F, ...){
   }
   if(morts == T){
     ngroup <- x$NUM_LIVING + x$NUM_DEAD
-    out <- data.table(Group    = x$Group[1:ngroup],
+    out <- data.frame(Group    = x$Group[1:ngroup],
                       type     = x$type [1:ngroup],
                       PB       = x$PB   [1:ngroup])
     #Calculate M0
@@ -110,14 +108,14 @@ write.Rpath <- function(x, file, morts = F, ...){
     out <- cbind(out, M0)
     #Calculate F mortality
     totcatch <- x$Catch + x$Discards
-    Fmort    <- as.data.table(totcatch / x$BB[row(as.matrix(totcatch))])
+    Fmort    <- as.data.frame(totcatch / x$BB[row(as.matrix(totcatch))])
     setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
              paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
     out  <- cbind(out, Fmort[1:ngroup, ])
     #Calculate M2
     bio  <- x$BB[1:x$NUM_LIVING]
     BQB  <- bio * x$QB[1:x$NUM_LIVING]
-    diet <- as.data.table(x$DC)
+    diet <- as.data.frame(x$DC)
     nodetrdiet <- diet[1:x$NUM_LIVING, ]
     detrdiet   <- diet[(x$NUM_LIVING +1):ngroup, ]
     newcons    <- nodetrdiet * BQB[col(as.matrix(nodetrdiet))]

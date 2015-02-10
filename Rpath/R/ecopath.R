@@ -19,7 +19,8 @@
 #'    rpath object.
 #'
 #'@return Returns an Rpath object that can be supplied to the ecosim.init function.
-
+#'@import data.table
+#'@export
 ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
   
   #Read in parameter files
@@ -101,7 +102,7 @@ ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
   living[, Q := Q + rowSums(cons, na.rm = T)]  
 
   # Generalized inverse does the actual solving
-  pars <- ginv(A, tol = .Machine$double.eps) %*% living[, Q]
+  pars <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, Q]
   living[, EEa := pars * noEE]
   living[is.na(EE), EE := EEa]
   living[, EEa := NULL]

@@ -13,15 +13,13 @@ if(windows == T){
   stable   <- "L:\\PhD\\Rpath\\code\\"
 }
 if(windows == F){
-  r.dir    <- "slucey/Rpath/code/"
-  data.dir <- "slucey/Rpath/data/"
-  out.dir  <- "slucey/Rpath/outputs/"
-  stable   <- "slucey/PhD/Rpath/code/"
+  r.dir    <- "/home/slucey/slucey/Rpath/code/"
+  data.dir <- "/home/slucey/slucey/Rpath/data/"
+  out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
+  stable   <- "/home/slucey/slucey/PhD/Rpath/code/"
 }
 
-source(paste(r.dir, 'Rpath_methods.R', sep = ''))
-source(paste(r.dir, 'ecopath_r.r',     sep = ''))
-source(paste(r.dir, 'ecosim_r.r',      sep = ''))
+library(Rpath)
 
 
 #These groups are unbalanced for the time being
@@ -57,11 +55,8 @@ GOA
 summary(GOA)
 
 #Ecosim
-library(Rcpp)
-sourceCpp(paste(r.dir, 'test_ecosim.cpp', sep = ''))
-
-GOA.sim <- ecosim_init(GOA, YEARS = 100, juvfile)
-GOA.sim <- ecosim_run(GOA.sim, 0, 100)
+GOA.sim <- ecosim.init(GOA, YEARS = 100, juvfile)
+GOA.sim <- ecosim.run(GOA.sim, 0, 100)
 
 
 #Microbenchmark verses old version
