@@ -4,15 +4,36 @@
 \alias{webplot}
 \title{Plot routine for Ecopath food web}
 \usage{
-webplot(x, highlight = NULL, eco.name = attr(x, "eco.name"))
+webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"), highlight = NULL,
+  highlight.col = c("black", "red", "orange"), labels = FALSE,
+  label.pos = NULL, line.col = "grey", Fleets = FALSE,
+  type.col = "black")
 }
 \arguments{
+\item{Rpath.obj}{Rpath model created by the ecopath() function.}
+
+\item{eco.name}{Optional name of the ecosystem.  Default is the eco.name attribute from the
+rpath object.}
+
 \item{highlight}{Box number to highlight connections.}
 
-\item{eco.name}{Optional name of the ecosystem.  Default is the attribute of the
-   rpath object.}
+\item{highlight.col}{Color of the connections to the highlighted group.}
 
-\item{Rpath.obj}{Rpath model created by the ecopath() function.}
+\item{labels}{Logical whether or not to display group names.  If True and label.pos is Null, no
+points will be ploted, just label names.}
+
+\item{label.pos}{A position specifier for the labels.  Values of 1, 2, 3, 4, respectively
+indicate positions below, to the left of, above, and to the right of the points. A null
+value will cause the labels to be ploted without the points (Assuming that labels = TRUE).}
+
+\item{line.col}{The color of the lines between nodes of the food web.}
+
+\item{Fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
+
+\item{type.col}{The color of the points cooresponding to the types of the group.  Can either be
+ of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.}
+
+\item{highlight}{Set to the group number to highlight the connections of that group.}
 }
 \value{
 Creates a figure of the food web.

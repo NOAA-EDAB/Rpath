@@ -5,7 +5,7 @@
 
 #User parameters
 
-windows <- T
+windows <- F
 if(windows == T){
   r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"

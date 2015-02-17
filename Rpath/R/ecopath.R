@@ -243,20 +243,40 @@ return(path.model)
 #'
 #'@param Rpath.obj Rpath model created by the ecopath() function.
 #'@param highlight Box number to highlight connections.
-#'@param eco.name Optional name of the ecosystem.  Default is the attribute of the
+#'@param eco.name Optional name of the ecosystem.  Default is the eco.name attribute from the
 #'    rpath object.
+#'@param highlight Set to the group number to highlight the connections of that group.
+#'@param highlight.col Color of the connections to the highlighted group.
+#'@param labels Logical whether or not to display group names.  If True and label.pos is Null, no 
+#'  points will be ploted, just label names.
+#'@param label.pos A position specifier for the labels.  Values of 1, 2, 3, 4, respectively 
+#'  indicate positions below, to the left of, above, and to the right of the points. A null 
+#'  value will cause the labels to be ploted without the points (Assuming that labels = TRUE).
+#'@param line.col The color of the lines between nodes of the food web.
+#'@param Fleets Logical value indicating whether or not to include fishing fleets in the food web.
+#'@param type.col The color of the points cooresponding to the types of the group.  Can either be 
+#'  of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.  
 #'
 #'@return Creates a figure of the food web.
 #'@import data.table
-#'@import plyr
 #'@export
-webplot <- function(Rpath.obj, highlight = NULL, eco.name = attr(Rpath.obj, 'eco.name')){
+webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), highlight = NULL, 
+                    highlight.col = c('black', 'red', 'orange'), labels = FALSE, label.pos = NULL, 
+                    line.col = 'grey', Fleets = FALSE, type.col = 'black'){
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
                          TL       = Rpath.obj$TL, 
-                         Biomass  = Rpath.obj$BB, 
-                         TLlevel  = round(Rpath.obj$TL))
+                         Biomass  = Rpath.obj$BB)
+  pointmap[TL < 2,               TLlevel := 1]
+  pointmap[TL >= 2.0 & TL < 3.0, TLlevel := 2]
+  pointmap[TL >= 3.0 & TL < 3.5, TLlevel := 3]
+  pointmap[TL >= 3.5 & TL < 4.0, TLlevel := 4]
+  pointmap[TL >= 4.0 & TL < 4.5, TLlevel := 5]
+  pointmap[TL >= 4.5 & TL < 5.0, TLlevel := 6]
+  pointmap[TL >= 5.0,            TLlevel := 7]
+  
+  if(Fleets == F) pointmap <- pointmap[type < 3, ]
   nTL <- table(pointmap[, TLlevel])
   pointmap[, n := nTL[which(names(nTL) == TLlevel)], by = TLlevel]
   pointmap[, x.space  := 1 / n]
@@ -270,31 +290,98 @@ webplot <- function(Rpath.obj, highlight = NULL, eco.name = attr(Rpath.obj, 'eco
     x.count.all <- rbind(x.count.all, x.count)
   }
   pointmap <- merge(pointmap, x.count.all, by = 'Group', all.x = T)
-  pointmap[x.count == 1, x.pos := x.offset]
-  pointmap[x.count != 1, x.pos := x.offset + x.space * (x.count - 1)]
+  pointmap[x.count == 1, x.pos := x.offset + rnorm(1, 0, 0.01)]
+  pointmap[x.count != 1, x.pos := x.offset + x.space * (x.count - 1) + rnorm(1, 0, 0.01)]
   pointmap[, c('TLlevel', 'n', 'x.offset', 'x.space', 'x.count') := NULL]
   
   ymin <- min(pointmap[, TL]) - 0.1 * min(pointmap[, TL])
   ymax <- max(pointmap[, TL]) + 0.1 * max(pointmap[, TL])
   plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, 1), typ = 'n', xlab = '', 
        ylab = '', axes = F)
+  if(!is.null(eco.name)) mtext(3, text = eco.name, cex = 1.5)
   axis(2, las = T)
   box()
   mtext(2, text = 'Trophic Level', line = 2)
   
-  points(pointmap[, x.pos], pointmap[, TL], pch = 16)
+  #Web connections
+  tot.catch <- Rpath.obj$Catch + Rpath.obj$Discards
+  pred      <- pointmap[type %in% c(0, 3), GroupNum]
   
-  dc.n <- nrow(pointmap[type %in% c(0, 3), ])
-  for(i in 1:dc.n){
-    pred.dc <- Rpath.obj$DC[, i]
-    prey <- which(pred.dc > 0)
+  for(i in pred){
     pred.x <- pointmap[GroupNum == i, x.pos] 
     pred.y <- pointmap[GroupNum == i, TL]
+    if(pointmap[GroupNum == i, type] == 0){
+      prey <- which(Rpath.obj$DC[, i] > 0)
+    }
+    if(pointmap[GroupNum == i, type] == 3){
+      gear.num <- i - (Rpath.obj$NUM_GROUPS - Rpath.obj$NUM_GEARS)
+      prey <- which(tot.catch[, gear.num] > 0)
+    }
     prey.x <- pointmap[GroupNum %in% prey, x.pos]
     prey.y <- pointmap[GroupNum %in% prey, TL]
     for(j in 1:length(prey)){
-      lines(c(pred.x, prey.x[j]), c(pred.y, prey.y[j]))
+      lines(c(pred.x, prey.x[j]), c(pred.y, prey.y[j]), col = line.col)
     }
-  } 
+  }
+  
+  if(!is.null(highlight)){
+    pred.x <- pointmap[GroupNum == highlight, x.pos]
+    pred.y <- pointmap[GroupNum == highlight, TL]
+    if(pointmap[GroupNum == highlight, type] < 3){
+      prey       <- which(Rpath.obj$DC[, highlight] > 0)
+      group.pred <- which(Rpath.obj$DC[highlight, ] > 0)
+      fleet.pred <- which(tot.catch[highlight, ] > 0)
+    }
+    if(pointmap[GroupNum == highlight, type] %in% c(1:2)) prey <- NULL
+    if(pointmap[GroupNum == highlight, type] == 3){
+      gear.num <- highlight - (Rpath.obj$NUM_GROUPS - Rpath.obj$NUM_GEARS)
+      prey <- which(tot.catch[, gear.num] > 0)
+      group.pred <- NULL
+    }
+    if(!is.null(prey)){
+      prey.x <- pointmap[GroupNum %in% prey, x.pos]
+      prey.y <- pointmap[GroupNum %in% prey, TL]
+      for(j in 1:length(prey)){
+        lines(c(pred.x, prey.x[j]), c(pred.y, prey.y[j]), col = highlight.col[1], lwd = 2)
+      }
+    }
+    if(!is.null(group.pred)){
+      group.pred.x <- pointmap[GroupNum %in% group.pred, x.pos]
+      group.pred.y <- pointmap[GroupNum %in% group.pred, TL]
+      for(j in 1:length(group.pred)){
+        lines(c(pred.x, group.pred.x[j]), c(pred.y, group.pred.y[j]), 
+              col = highlight.col[2], lwd = 2)
+      }
+    }
+    if(length(fleet.pred) > 0){
+      gear.num <- fleet.pred + (Rpath.obj$NUM_GROUPS - Rpath.obj$NUM_GEARS)
+      fleet.pred.x <- pointmap[GroupNum %in% gear.num, x.pos]
+      fleet.pred.y <- pointmap[GroupNum %in% gear.num, TL]
+      for(j in 1:length(fleet.pred)){
+        lines(c(pred.x, fleet.pred.x[j]), c(pred.y, fleet.pred.y[j]), 
+              col = highlight.col[3], lwd = 2)
+      }
+    }
+    legend('bottomleft', legend = c('prey', 'predator', 'fleet'), lty = 1, col = highlight.col,
+           lwd = 2, ncol = 3, xpd = T, inset = c(0, -.1))
+  }
+  
+  #Group points
+  if(!is.null(label.pos) | labels == F){
+    if(length(type.col) ==4){
+      legend('bottomright', legend = c('living', 'primary', 'detrital', 'fleet'), 
+             pch = 16, col = type.col, ncol = 4, xpd = T, inset = c(0, -.1))
+    }
+    if(length(type.col) < 4) type.col <- rep(type.col[1], 4)
+    points(pointmap[type == 0, x.pos], pointmap[type == 0, TL], pch = 16, col = type.col[1])
+    points(pointmap[type == 1, x.pos], pointmap[type == 1, TL], pch = 16, col = type.col[2])
+    points(pointmap[type == 2, x.pos], pointmap[type == 2, TL], pch = 16, col = type.col[3])
+    points(pointmap[type == 3, x.pos], pointmap[type == 3, TL], pch = 16, col = type.col[4])
+  }
+  
+  if(labels == T){
+    text(pointmap[, x.pos], pointmap[, TL], pointmap[, Group], pos = label.pos)
+  }
+  
 }
   
