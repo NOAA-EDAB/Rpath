@@ -233,3 +233,68 @@ attr(path.model, 'eco.name') <- eco.name
 
 return(path.model)
 }
+
+
+#'Plot routine for Ecopath food web
+#'
+#'Plots the food web associated with an Rpath object.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath.obj Rpath model created by the ecopath() function.
+#'@param highlight Box number to highlight connections.
+#'@param eco.name Optional name of the ecosystem.  Default is the attribute of the
+#'    rpath object.
+#'
+#'@return Creates a figure of the food web.
+#'@import data.table
+#'@import plyr
+#'@export
+webplot <- function(Rpath.obj, highlight = NULL, eco.name = attr(Rpath.obj, 'eco.name')){
+  pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
+                         Group    = Rpath.obj$Group, 
+                         type     = Rpath.obj$type, 
+                         TL       = Rpath.obj$TL, 
+                         Biomass  = Rpath.obj$BB, 
+                         TLlevel  = round(Rpath.obj$TL))
+  nTL <- table(pointmap[, TLlevel])
+  pointmap[, n := nTL[which(names(nTL) == TLlevel)], by = TLlevel]
+  pointmap[, x.space  := 1 / n]
+  pointmap[, x.offset := x.space / 2]
+  x.count.all <- c()
+  for(i in 1:max(pointmap[, TLlevel])){
+    x.count <- pointmap[TLlevel == i, list(Group)]
+    for(j in 1:nrow(x.count)){
+      x.count[j, x.count := j]  
+    }
+    x.count.all <- rbind(x.count.all, x.count)
+  }
+  pointmap <- merge(pointmap, x.count.all, by = 'Group', all.x = T)
+  pointmap[x.count == 1, x.pos := x.offset]
+  pointmap[x.count != 1, x.pos := x.offset + x.space * (x.count - 1)]
+  pointmap[, c('TLlevel', 'n', 'x.offset', 'x.space', 'x.count') := NULL]
+  
+  ymin <- min(pointmap[, TL]) - 0.1 * min(pointmap[, TL])
+  ymax <- max(pointmap[, TL]) + 0.1 * max(pointmap[, TL])
+  plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, 1), typ = 'n', xlab = '', 
+       ylab = '', axes = F)
+  axis(2, las = T)
+  box()
+  mtext(2, text = 'Trophic Level', line = 2)
+  
+  points(pointmap[, x.pos], pointmap[, TL], pch = 16)
+  
+  dc.n <- nrow(pointmap[type %in% c(0, 3), ])
+  for(i in 1:dc.n){
+    pred.dc <- Rpath.obj$DC[, i]
+    prey <- which(pred.dc > 0)
+    pred.x <- pointmap[GroupNum == i, x.pos] 
+    pred.y <- pointmap[GroupNum == i, TL]
+    prey.x <- pointmap[GroupNum %in% prey, x.pos]
+    prey.y <- pointmap[GroupNum %in% prey, TL]
+    for(j in 1:length(prey)){
+      lines(c(pred.x, prey.x[j]), c(pred.y, prey.y[j]))
+    }
+  } 
+}
+  

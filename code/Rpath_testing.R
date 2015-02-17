@@ -5,11 +5,11 @@
 
 #User parameters
 
-windows <- F
+windows <- T
 if(windows == T){
-  r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\code\\"
-  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\data\\"
-  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath_git\\Rpath\\outputs\\"
+  r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\code\\"
+  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
+  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
   stable   <- "L:\\PhD\\Rpath\\code\\"
 }
 if(windows == F){
@@ -20,9 +20,9 @@ if(windows == F){
 }
 
 #To download Rpath
-#library(devtools)
-#devtools::install_github('slucey/Rpath/Rpath', 
-#                          auth_token = 'd95526d2fb3f6e34f9c8481b1740e0033ac1d623')
+# library(devtools)
+# devtools::install_github('slucey/Rpath/Rpath', 
+#                           auth_token = 'd95526d2fb3f6e34f9c8481b1740e0033ac1d623')
 
 library(Rpath)
 
@@ -31,7 +31,7 @@ library(Rpath)
 #D1F1 testing
 modfile  <- paste(data.dir, 'D1F1_mod.csv',  sep = '')
 dietfile <- paste(data.dir, 'D1F1_diet.csv', sep = '')
-pedfile  <- paste(data.dir, 'D1F1_ped.csv',  sep = '')
+pedfile  <- paste(data.dir, 'AnchovyBay_ped.csv',  sep = '')
 
 d1f1 <- ecopath(modfile, dietfile, pedfile)
 summary(d1f1)
@@ -58,6 +58,7 @@ GOA <- ecopath(modfile, dietfile, pedfile, eco.name = 'Gulf of Alaska')
 
 GOA
 summary(GOA)
+webplot(GOA)
 
 #Ecosim
 GOA.sim <- ecosim.init(GOA, YEARS = 100, juvfile)
@@ -91,3 +92,13 @@ ecosim.bm <- microbenchmark(ecosim_run(base_sim,0,100),
                             ecosim_run_new(GOA.sim, 0, 100))
 
 
+#Anchovy Bay
+modfile  <- paste(data.dir, 'AnchovyBay_mod.csv',  sep = '')
+dietfile <- paste(data.dir, 'AnchovyBay_diet.csv', sep = '')
+pedfile  <- paste(data.dir, 'AnchovyBay_ped.csv',  sep = '')
+juvfile  <- paste(data.dir, 'AnchovyBay_juv.csv',  sep = '')
+
+anc.bay <- ecopath(modfile, dietfile, pedfile, 'Anchovy Bay')
+
+summary(anc.bay)
+webplot(anc.bay)

@@ -79,7 +79,7 @@ summary.Rpath <- function(object, ...){
                       TotCatch     = totcatch)
   print(table)
   cat("\nRpath model also includes:\n")
-  print(names(GOA))
+  print(names(x))
 }
 
 #'@export
