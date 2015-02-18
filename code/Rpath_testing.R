@@ -58,7 +58,18 @@ GOA <- ecopath(modfile, dietfile, pedfile, eco.name = 'Gulf of Alaska')
 
 GOA
 summary(GOA)
-webplot(GOA)
+
+png(file = paste(out.dir, 'Webplot_example_1.png'), height = 1500, width = 1700, res = 200)
+webplot(GOA, fleets = T)
+dev.off()
+
+png(file = paste(out.dir, 'Webplot_example_2.png'), height = 1500, width = 1700, res = 200)
+webplot(GOA, highlight = 33, fleets = T)
+dev.off()
+
+png(file = paste(out.dir, 'Webplot_example_3.png'), height = 1500, width = 1700, res = 200)
+webplot(GOA, highlight = 33, fleets = T, labels = T, label.num = T, label.pos = 3)
+dev.off()
 
 #Ecosim
 GOA.sim <- ecosim.init(GOA, YEARS = 100, juvfile)

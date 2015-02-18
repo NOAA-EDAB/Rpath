@@ -4,16 +4,18 @@
 \alias{webplot}
 \title{Plot routine for Ecopath food web}
 \usage{
-webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"), highlight = NULL,
-  highlight.col = c("black", "red", "orange"), labels = FALSE,
-  label.pos = NULL, line.col = "grey", Fleets = FALSE,
-  type.col = "black")
+webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"),
+  line.col = "grey", highlight = NULL, highlight.col = c("black", "red",
+  "orange"), labels = FALSE, label.pos = NULL, label.num = FALSE,
+  fleets = FALSE, type.col = "black")
 }
 \arguments{
 \item{Rpath.obj}{Rpath model created by the ecopath() function.}
 
 \item{eco.name}{Optional name of the ecosystem.  Default is the eco.name attribute from the
 rpath object.}
+
+\item{line.col}{The color of the lines between nodes of the food web.}
 
 \item{highlight}{Box number to highlight connections.}
 
@@ -26,9 +28,10 @@ points will be ploted, just label names.}
 indicate positions below, to the left of, above, and to the right of the points. A null
 value will cause the labels to be ploted without the points (Assuming that labels = TRUE).}
 
-\item{line.col}{The color of the lines between nodes of the food web.}
+\item{label.num}{Logical value indication whether group numbers should be used for labels
+instead of names.}
 
-\item{Fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
+\item{fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
 
 \item{type.col}{The color of the points cooresponding to the types of the group.  Can either be
  of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.}
@@ -43,6 +46,7 @@ Plots the food web associated with an Rpath object.
 }
 \seealso{
 Other Rpath.functions: \code{\link{ecopath}};
-  \code{\link{ecosim.init}}; \code{\link{ecosim.run}}
+  \code{\link{ecosim.init}}; \code{\link{ecosim.run}};
+  \code{\link{write.Rpath}}
 }
 

@@ -1,5 +1,5 @@
 #Functions for Rpath objects
-#Print
+#Print Rpath
 #'@export
 print.Rpath <- function(x, rows = NA, morts = F, ...){
   cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
@@ -52,13 +52,29 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
              paste('M2.', x$Group[1:x$NUM_LIVING], sep = ''))
     out <- cbind(out, predM)
   }
-  if(is.na(rows)) print(out, nrows = Inf) else print(out, topn = rows)
+  if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
 }
 
-#Summary
+#Print Rpath.sim
 #'@export
-summary.Rpath <- function(object, ...){
-  x <- object
+print.Rpath.sim <- function(x, rows = NA, ...){
+  cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
+  if(x$CRASHED_YEAR > 0) cat(paste("Run crashed at", x$CRASHED_YEAR, "\n", sep = ''))
+  out <- c()
+  for(i in 1:(x$NUM_LIVING + x$NUM_DEAD)){
+    sp.out <- data.frame(Group      = x$spname[i],
+                         StartBio   = x$out_BB[1, i],
+                         EndBio     = x$out_BB[nrow(x$out_CC), i],
+                         StartCatch = x$out_CC[1, i],
+                         EndCatch   = x$out_CC[nrow(x$out_CC) - 1, i])
+    out <- rbind(out, sp.out)
+  }
+  if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
+}
+  
+#Summary for Rpath
+#'@export
+summary.Rpath <- function(x, ...){
   cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
   if(max(x$EE, na.rm = T) > 1){
     unbalanced.groups <- x$Group[which(x$EE > 1)]
@@ -71,17 +87,51 @@ summary.Rpath <- function(object, ...){
   cat("\nSummary Statistics:\n")
   totbiomass <- sum(x$BB,    na.rm = T)
   totcatch   <- sum(x$Catch, na.rm = T)
-  table <- data.frame(Num.Groups   = x$NUM_GROUPS,
-                      Num.Living   = x$NUM_LIVING,
-                      Num.Detritus = x$NUM_DEAD,
-                      Num.Fleets   = x$NUM_GEARS,
-                      TotBiomass   = totbiomass,
-                      TotCatch     = totcatch)
-  print(table)
+  out <- data.frame(Num.Groups   = x$NUM_GROUPS,
+                    Num.Living   = x$NUM_LIVING,
+                    Num.Detritus = x$NUM_DEAD,
+                    Num.Fleets   = x$NUM_GEARS,
+                    TotBiomass   = totbiomass,
+                    TotCatch     = totcatch)
+  print(out)
   cat("\nRpath model also includes:\n")
   print(names(x))
 }
 
+#Summary for Rpath.sim
+#'@export
+summary.Rpath.sim <- function(x, ...){
+  cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
+  if(x$CRASHED_YEAR > 0) cat(paste("Run crashed at", x$CRASHED_YEAR, "\n", sep = ''))
+  cat("\nSummary Statistics:\n")
+  totbiomass.start <- sum(x$out_BB[1, ],                  na.rm = T)
+  totbiomass.end   <- sum(x$out_BB[nrow(x$out_BB), ],     na.rm = T)
+  totcatch.start   <- sum(x$out_CC[1, ],                  na.rm = T)
+  totcatch.end     <- sum(x$out_CC[nrow(x$out_CC) - 1, ], na.rm = T)
+  out <- data.frame(Num.Groups        = x$NUM_GROUPS,
+                    Num.Living      = x$NUM_LIVING,
+                    Num.Detritus    = x$NUM_DEAD,
+                    Num.Fleets      = x$NUM_GEARS,
+                    TotBiomassStart = totbiomass.start,
+                    TotBiomassEnd   = totbiomass.end,
+                    TotCatchStart   = totcatch.start,
+                    TotCatchEnd     = totcatch.end)
+  print(out)
+  cat("\nRpath sim also includes:\n")
+  print(names(x))
+}
+
+#'Write function for Ecopath object
+#'
+#'Outputs basic parameters or mortalities to a .csv file.
+#'
+#'@family Rpath functions
+#'
+#'@param x Rpath model created by the ecopath() function.
+#'@param file file name for resultant .csv file.  Be sure to include ".csv".
+#'@param morts Logical value whether to output basic parameters or mortalities.  
+#'
+#'@return Writes a .csv file with the basic parameters or mortalities from an Rpath object.
 #'@export
 #Write -- note, not a generic function
 write.Rpath <- function(x, file, morts = F, ...){

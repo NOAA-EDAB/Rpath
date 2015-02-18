@@ -22,6 +22,7 @@ initializing stanzas, and packing everything together to run.
 }
 \seealso{
 Other Rpath.functions: \code{\link{ecopath}};
-  \code{\link{ecosim.run}}; \code{\link{webplot}}
+  \code{\link{ecosim.run}}; \code{\link{webplot}};
+  \code{\link{write.Rpath}}
 }
 

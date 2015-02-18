@@ -25,6 +25,7 @@ matrix file.
 }
 \seealso{
 Other Rpath.functions: \code{\link{ecosim.init}};
-  \code{\link{ecosim.run}}; \code{\link{webplot}}
+  \code{\link{ecosim.run}}; \code{\link{webplot}};
+  \code{\link{write.Rpath}}
 }
 

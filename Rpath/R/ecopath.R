@@ -252,17 +252,20 @@ return(path.model)
 #'@param label.pos A position specifier for the labels.  Values of 1, 2, 3, 4, respectively 
 #'  indicate positions below, to the left of, above, and to the right of the points. A null 
 #'  value will cause the labels to be ploted without the points (Assuming that labels = TRUE).
+#'@param label.num Logical value indication whether group numbers should be used for labels 
+#'  instead of names.
 #'@param line.col The color of the lines between nodes of the food web.
-#'@param Fleets Logical value indicating whether or not to include fishing fleets in the food web.
+#'@param fleets Logical value indicating whether or not to include fishing fleets in the food web.
 #'@param type.col The color of the points cooresponding to the types of the group.  Can either be 
 #'  of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.  
 #'
 #'@return Creates a figure of the food web.
 #'@import data.table
 #'@export
-webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), highlight = NULL, 
-                    highlight.col = c('black', 'red', 'orange'), labels = FALSE, label.pos = NULL, 
-                    line.col = 'grey', Fleets = FALSE, type.col = 'black'){
+webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col = 'grey',
+                    highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
+                    labels = FALSE, label.pos = NULL, label.num = FALSE, 
+                    fleets = FALSE, type.col = 'black'){
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
@@ -276,7 +279,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), highlight
   pointmap[TL >= 4.5 & TL < 5.0, TLlevel := 6]
   pointmap[TL >= 5.0,            TLlevel := 7]
   
-  if(Fleets == F) pointmap <- pointmap[type < 3, ]
+  if(fleets == F) pointmap <- pointmap[type < 3, ]
   nTL <- table(pointmap[, TLlevel])
   pointmap[, n := nTL[which(names(nTL) == TLlevel)], by = TLlevel]
   pointmap[, x.space  := 1 / n]
@@ -327,16 +330,21 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), highlight
   if(!is.null(highlight)){
     pred.x <- pointmap[GroupNum == highlight, x.pos]
     pred.y <- pointmap[GroupNum == highlight, TL]
-    if(pointmap[GroupNum == highlight, type] < 3){
+    if(pointmap[GroupNum == highlight, type] == 0){
       prey       <- which(Rpath.obj$DC[, highlight] > 0)
       group.pred <- which(Rpath.obj$DC[highlight, ] > 0)
       fleet.pred <- which(tot.catch[highlight, ] > 0)
     }
-    if(pointmap[GroupNum == highlight, type] %in% c(1:2)) prey <- NULL
+    if(pointmap[GroupNum == highlight, type] %in% c(1:2)){
+      prey       <- NULL
+      group.pred <- which(Rpath.obj$DC[highlight, ] > 0)
+      fleet.pred <- which(tot.catch[highlight, ] > 0)
+    } 
     if(pointmap[GroupNum == highlight, type] == 3){
-      gear.num <- highlight - (Rpath.obj$NUM_GROUPS - Rpath.obj$NUM_GEARS)
-      prey <- which(tot.catch[, gear.num] > 0)
+      gear.num   <- highlight - (Rpath.obj$NUM_GROUPS - Rpath.obj$NUM_GEARS)
+      prey       <- which(tot.catch[, gear.num] > 0)
       group.pred <- NULL
+      fleet.pred <- NULL
     }
     if(!is.null(prey)){
       prey.x <- pointmap[GroupNum %in% prey, x.pos]
@@ -364,6 +372,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), highlight
     }
     legend('bottomleft', legend = c('prey', 'predator', 'fleet'), lty = 1, col = highlight.col,
            lwd = 2, ncol = 3, xpd = T, inset = c(0, -.1))
+    legend('topright', legend = pointmap[GroupNum == highlight, Group], bty = 'n')
   }
   
   #Group points
@@ -380,7 +389,12 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), highlight
   }
   
   if(labels == T){
-    text(pointmap[, x.pos], pointmap[, TL], pointmap[, Group], pos = label.pos)
+    if(label.num == F){
+      text(pointmap[, x.pos], pointmap[, TL], pointmap[, Group], pos = label.pos)
+    }
+    if(label.num == T){
+      text(pointmap[, x.pos], pointmap[, TL], pointmap[, GroupNum], pos = label.pos)
+    }
   }
   
 }
