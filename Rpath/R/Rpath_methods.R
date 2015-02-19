@@ -178,3 +178,9 @@ write.Rpath <- function(x, file, morts = F, ...){
   }
   write.csv(out, file = file)
 }
+
+#Plot for Rpath.sim
+#'@export
+plot.Rpath.sim(x, ...){
+  
+}
