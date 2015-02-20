@@ -20,9 +20,9 @@ if(windows == F){
 }
 
 #To download Rpath
-# library(devtools)
-# devtools::install_github('slucey/Rpath/Rpath', 
-#                           auth_token = 'd95526d2fb3f6e34f9c8481b1740e0033ac1d623')
+library(devtools)
+devtools::install_github('slucey/Rpath/Rpath', 
+                          auth_token = 'd95526d2fb3f6e34f9c8481b1740e0033ac1d623')
 
 library(Rpath)
 
@@ -103,13 +103,14 @@ ecosim.bm <- microbenchmark(ecosim_run(base_sim,0,100),
                             ecosim_run_new(GOA.sim, 0, 100))
 
 
-#Anchovy Bay
-modfile  <- paste(data.dir, 'AnchovyBay_mod.csv',  sep = '')
-dietfile <- paste(data.dir, 'AnchovyBay_diet.csv', sep = '')
-pedfile  <- paste(data.dir, 'AnchovyBay_ped.csv',  sep = '')
-juvfile  <- paste(data.dir, 'AnchovyBay_juv.csv',  sep = '')
+#R Ecosystem
+modfile  <- paste(data.dir, 'REco_mod.csv',  sep = '')
+dietfile <- paste(data.dir, 'REco_diet.csv', sep = '')
+pedfile  <- paste(data.dir, 'REco_ped.csv',  sep = '')
+juvfile  <- paste(data.dir, 'REco_juv.csv',  sep = '')
 
-anc.bay <- ecopath(modfile, dietfile, pedfile, 'Anchovy Bay')
+REco <- ecopath(modfile, dietfile, pedfile, 'R Ecosystem')
+REco
 
-summary(anc.bay)
-webplot(anc.bay)
+summary(REco)
+webplot(REco)

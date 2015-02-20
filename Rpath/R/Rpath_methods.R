@@ -85,7 +85,7 @@ summary.Rpath <- function(x, ...){
     cat("     Status: Balanced\n")
   }
   cat("\nSummary Statistics:\n")
-  totbiomass <- sum(x$BB,    na.rm = T)
+  totbiomass <- sum(x$BB[which(x$type == 0)],    na.rm = T)
   totcatch   <- sum(x$Catch, na.rm = T)
   out <- data.frame(Num.Groups   = x$NUM_GROUPS,
                     Num.Living   = x$NUM_LIVING,
@@ -179,8 +179,3 @@ write.Rpath <- function(x, file, morts = F, ...){
   write.csv(out, file = file)
 }
 
-#Plot for Rpath.sim
-#'@export
-plot.Rpath.sim(x, ...){
-  
-}
