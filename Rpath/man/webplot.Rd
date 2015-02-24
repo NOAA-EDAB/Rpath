@@ -7,7 +7,7 @@
 webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"),
   line.col = "grey", highlight = NULL, highlight.col = c("black", "red",
   "orange"), labels = FALSE, label.pos = NULL, label.num = FALSE,
-  fleets = FALSE, type.col = "black")
+  fleets = FALSE, type.col = "black", box.order = NULL)
 }
 \arguments{
 \item{Rpath.obj}{Rpath model created by the ecopath() function.}
@@ -34,7 +34,9 @@ instead of names.}
 \item{fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
 
 \item{type.col}{The color of the points cooresponding to the types of the group.  Can either be
- of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.}
+of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.}
+
+\item{box.order}{Vector of box numbers to change the default plot order.  Must include all box numbers}
 
 \item{highlight}{Set to the group number to highlight the connections of that group.}
 }

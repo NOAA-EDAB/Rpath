@@ -258,6 +258,7 @@ return(path.model)
 #'@param fleets Logical value indicating whether or not to include fishing fleets in the food web.
 #'@param type.col The color of the points cooresponding to the types of the group.  Can either be 
 #'  of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.  
+#'@param box.order Vector of box numbers to change the default plot order.  Must include all box numbers
 #'
 #'@return Creates a figure of the food web.
 #'@import data.table
@@ -265,7 +266,7 @@ return(path.model)
 webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col = 'grey',
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                     labels = FALSE, label.pos = NULL, label.num = FALSE, 
-                    fleets = FALSE, type.col = 'black'){
+                    fleets = FALSE, type.col = 'black', box.order = NULL){
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
@@ -278,6 +279,8 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   pointmap[TL >= 4.0 & TL < 4.5, TLlevel := 5]
   pointmap[TL >= 4.5 & TL < 5.0, TLlevel := 6]
   pointmap[TL >= 5.0,            TLlevel := 7]
+  
+  if(!is.null(box.order)) pointmap <- pointmap[box.order, ]
   
   if(fleets == F) pointmap <- pointmap[type < 3, ]
   nTL <- table(pointmap[, TLlevel])
