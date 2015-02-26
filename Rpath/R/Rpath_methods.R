@@ -59,7 +59,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 #'@export
 print.Rpath.sim <- function(x, rows = NA, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
-  if(x$CRASHED_YEAR > 0) cat(paste("Run crashed at", x$CRASHED_YEAR, "\n", sep = ''))
+  if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
   out <- c()
   for(i in 1:(x$NUM_LIVING + x$NUM_DEAD)){
     sp.out <- data.frame(Group      = x$spname[i],
@@ -102,7 +102,7 @@ summary.Rpath <- function(x, ...){
 #'@export
 summary.Rpath.sim <- function(x, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
-  if(x$CRASHED_YEAR > 0) cat(paste("Run crashed at", x$CRASHED_YEAR, "\n", sep = ''))
+  if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
   totbiomass.start <- sum(x$out_BB[1, ],                  na.rm = T)
   totbiomass.end   <- sum(x$out_BB[nrow(x$out_BB), ],     na.rm = T)
@@ -120,6 +120,7 @@ summary.Rpath.sim <- function(x, ...){
   cat("\nRpath sim also includes:\n")
   print(names(x))
 }
+
 
 #'Write function for Ecopath object
 #'

@@ -118,3 +118,7 @@ set.seed(34)
 my.order <- c(c(3, 23), c(24, 5, 12), c(1, 25, 9, 7, 2), 
               c(4, 13, 6, 8, 14, 11, 15, 10, 16), c(17, 19, 18, 22, 20, 21))
 webplot(REco, labels = T, fleets = T, box.order = my.order)
+
+#Ecosim
+REco.sim  <- ecosim.init(REco, YEARS = 100, juvfile)
+REco.base <- ecosim.run(REco.sim, 0, 100)
