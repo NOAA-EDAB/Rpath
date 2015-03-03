@@ -26,27 +26,6 @@ if(windows == F){
 
 library(Rpath)
 
-
-#These groups are unbalanced for the time being
-#D1F1 testing
-modfile  <- paste(data.dir, 'D1F1_mod.csv',  sep = '')
-dietfile <- paste(data.dir, 'D1F1_diet.csv', sep = '')
-pedfile  <- paste(data.dir, 'AnchovyBay_ped.csv',  sep = '')
-
-d1f1 <- ecopath(modfile, dietfile, pedfile)
-summary(d1f1)
-
-
-
-#D2F3 testing
-modfile  <- paste(data.dir, 'D2F3_mod.csv',  sep = '')
-dietfile <- paste(data.dir, 'D2F3_diet.csv', sep = '')
-pedfile  <- paste(data.dir, 'D2F3_ped.csv',  sep = '')
-
-d2f3 <- ecopath(modfile, dietfile, pedfile)
-summary(d2f3)
-
-
 #This is a balanced (and much larger) example with stanzas
 #GOA testing
 modfile  <- paste(data.dir, 'GOA.csv',     sep = '')
@@ -117,7 +96,10 @@ summary(REco)
 set.seed(34)
 my.order <- c(c(3, 23), c(24, 5, 12), c(1, 25, 9, 7, 2), 
               c(4, 13, 6, 8, 14, 11, 15, 10, 16), c(17, 19, 18, 22, 20, 21))
+
+png(file = paste(out.dir, 'R_Ecosystem.png'), height = 1500, width = 1700, res = 200)
 webplot(REco, labels = T, fleets = T, box.order = my.order)
+dev.off()
 
 #Ecosim
 REco.sim  <- ecosim.init(REco, YEARS = 100, juvfile)
