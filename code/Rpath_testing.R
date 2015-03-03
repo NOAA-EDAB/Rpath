@@ -122,3 +122,22 @@ webplot(REco, labels = T, fleets = T, box.order = my.order)
 #Ecosim
 REco.sim  <- ecosim.init(REco, YEARS = 100, juvfile)
 REco.base <- ecosim.run(REco.sim, 0, 100)
+
+#Plot Relative biomass
+library(data.table)
+biomass <- as.data.table(REco.base$out_BB[, 2:23])
+rel.bio <- data.table(Month = 1:nrow(biomass))
+for(i in 1:ncol(biomass)){
+  sp.bio.start <- biomass[1, i, with = F]
+  sp.rel.bio   <- biomass[ , i, with = F] / as.numeric(sp.bio.start)
+  rel.bio <- cbind(rel.bio, sp.rel.bio)
+}
+
+ymax <- max(rel.bio[, 2:ncol(rel.bio), with = F])
+xmax <- max(rel.bio[, Month])
+plot(0, 0, ylim = c(0, ymax), xlim = c(0, xmax), xlab = '', ylab = '', type = 'n')
+line.col <- heat.colors(23)
+for(i in 1:(ncol(rel.bio) - 1)){
+  lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i])
+}
+
