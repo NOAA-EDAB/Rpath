@@ -7,7 +7,7 @@
 webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"),
   line.col = "grey", highlight = NULL, highlight.col = c("black", "red",
   "orange"), labels = FALSE, label.pos = NULL, label.num = FALSE,
-  fleets = FALSE, type.col = "black", box.order = NULL)
+  label.cex = 1, fleets = FALSE, type.col = "black", box.order = NULL)
 }
 \arguments{
 \item{Rpath.obj}{Rpath model created by the ecopath() function.}
@@ -30,6 +30,8 @@ value will cause the labels to be ploted without the points (Assuming that label
 
 \item{label.num}{Logical value indication whether group numbers should be used for labels
 instead of names.}
+
+\item{label.cex}{The relative size of the labels within the plot.}
 
 \item{fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
 

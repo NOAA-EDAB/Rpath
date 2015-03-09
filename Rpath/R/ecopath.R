@@ -259,13 +259,14 @@ return(path.model)
 #'@param type.col The color of the points cooresponding to the types of the group.  Can either be 
 #'  of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.  
 #'@param box.order Vector of box numbers to change the default plot order.  Must include all box numbers
+#'@param label.cex The relative size of the labels within the plot.
 #'
 #'@return Creates a figure of the food web.
 #'@import data.table
 #'@export
 webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col = 'grey',
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
-                    labels = FALSE, label.pos = NULL, label.num = FALSE, 
+                    labels = FALSE, label.pos = NULL, label.num = FALSE, label.cex = 1,
                     fleets = FALSE, type.col = 'black', box.order = NULL){
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
@@ -393,10 +394,12 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   
   if(labels == T){
     if(label.num == F){
-      text(pointmap[, x.pos], pointmap[, TL], pointmap[, Group], pos = label.pos)
+      text(pointmap[, x.pos], pointmap[, TL], pointmap[, Group], 
+           pos = label.pos, cex = label.cex)
     }
     if(label.num == T){
-      text(pointmap[, x.pos], pointmap[, TL], pointmap[, GroupNum], pos = label.pos)
+      text(pointmap[, x.pos], pointmap[, TL], pointmap[, GroupNum], 
+           pos = label.pos, cex = label.cex)
     }
   }
   
