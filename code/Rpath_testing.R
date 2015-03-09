@@ -54,6 +54,26 @@ dev.off()
 GOA.sim <- ecosim.init(GOA, YEARS = 100, juvfile)
 GOA.sim <- ecosim.run(GOA.sim, 0, 100)
 
+#Plot Relative biomass
+library(data.table)
+biomass <- as.data.table(GOA.sim$out_BB[, 2:23])
+rel.bio <- data.table(Month = 1:nrow(biomass))
+for(i in 1:ncol(biomass)){
+  sp.bio.start <- biomass[1, i, with = F]
+  sp.rel.bio   <- biomass[ , i, with = F] / as.numeric(sp.bio.start)
+  rel.bio <- cbind(rel.bio, sp.rel.bio)
+}
+
+ymax <- max(rel.bio[, 2:ncol(rel.bio), with = F])
+xmax <- max(rel.bio[, Month])
+plot(0, 0, ylim = c(0, ymax), xlim = c(0, xmax), xlab = '', ylab = '', type = 'n')
+line.col <- heat.colors(23)
+for(i in 1:(ncol(rel.bio) - 1)){
+  lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i])
+}
+
+
+
 
 #Microbenchmark verses old version
 library(microbenchmark)
@@ -97,8 +117,14 @@ set.seed(34)
 my.order <- c(c(3, 23), c(24, 5, 12), c(1, 25, 9, 7, 2), 
               c(4, 13, 6, 8, 14, 11, 15, 10, 16), c(17, 19, 18, 22, 20, 21))
 
-png(file = paste(out.dir, 'R_Ecosystem.png'), height = 1500, width = 1700, res = 200)
-webplot(REco, labels = T, fleets = T, box.order = my.order)
+png(file = paste(out.dir, 'R_Ecosystem.png'), height = 1500, width = 1700, res = 300)
+webplot(REco, labels = T, fleets = T, box.order = my.order, label.cex = 0.65)
+dev.off()
+
+#Highlight example
+set.seed(34)
+tiff(file = paste(out.dir, 'Highlight_AduFlatfish1.tif'), height = 1800, width = 2000, res = 300)
+webplot(REco, fleets = T, highlight = 9, box.order = my.order, label.cex = 0.65)
 dev.off()
 
 #Ecosim
@@ -123,3 +149,5 @@ for(i in 1:(ncol(rel.bio) - 1)){
   lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i])
 }
 
+#Adult Roundfish 1
+lines(rel.bio[, c(1, 6), with = F], col = 'black')
