@@ -51,8 +51,8 @@ webplot(GOA, highlight = 33, fleets = T, labels = T, label.num = T, label.pos = 
 dev.off()
 
 #Ecosim
-GOA.sim <- ecosim.init(GOA, YEARS = 100, juvfile)
-GOA.sim <- ecosim.run(GOA.sim, 0, 100)
+GOA.base <- ecosim.init(GOA, YEARS = 100, juvfile)
+GOA.sim  <- ecosim.run(GOA.base, 0, 100)
 
 #Plot Relative biomass
 library(data.table)
