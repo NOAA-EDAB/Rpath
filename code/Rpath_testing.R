@@ -5,7 +5,7 @@
 
 #User parameters
 
-windows <- F
+windows <- T
 if(windows == T){
   r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
@@ -31,7 +31,7 @@ library(Rpath)
 modfile  <- paste(data.dir, 'GOA.csv',     sep = '')
 dietfile <- paste(data.dir, 'GOAdiet.csv', sep = '')
 pedfile  <- paste(data.dir, 'GOAped.csv',  sep = '')
-juvfile  <- paste(data.dir, 'GOAjuv.csv',  sep = '')
+GOA.juvfile  <- paste(data.dir, 'GOAjuv.csv',  sep = '')
 
 GOA <- ecopath(modfile, dietfile, pedfile, eco.name = 'Gulf of Alaska')
 
@@ -149,5 +149,29 @@ for(i in 1:(ncol(rel.bio) - 1)){
   lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i])
 }
 
-#Adult Roundfish 1
-lines(rel.bio[, c(1, 6), with = F], col = 'black')
+#Roundfish 1
+lines(rel.bio[, c(1, 5), with = F], col = 'black', lwd = 2)
+lines(rel.bio[, c(1, 6), with = F], col = 'red', lwd = 2)
+
+#Roundfish 2
+lines(rel.bio[, c(1, 7), with = F], col = 'green3', lwd = 2)
+lines(rel.bio[, c(1, 8), with = F], col = 'blue3', lwd = 2)
+
+#Flatfish 1
+lines(rel.bio[, c(1, 9),  with = F], col = 'orange3', lwd = 2)
+lines(rel.bio[, c(1, 10), with = F], col = 'purple3', lwd = 2)
+
+#Flatfish 2
+lines(rel.bio[, c(1, 11), with = F], col = 'brown', lwd = 2)
+lines(rel.bio[, c(1, 12), with = F], col = 'pink', lwd = 2)
+
+#Seals
+lines(rel.bio[, c(1, 4), with = F], lwd = 3)
+
+#Whales
+lines(rel.bio[, c(1, 3), with = F], lwd = 3)
+
+#GOA.juvfile
+GOA.juv <- read.csv(GOA.juvfile)
+#REco juvfile
+REco.juv <- read.csv(juvfile)
