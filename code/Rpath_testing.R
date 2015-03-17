@@ -5,7 +5,7 @@
 
 #User parameters
 
-windows <- T
+windows <- F
 if(windows == T){
   r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
@@ -133,6 +133,7 @@ REco.base <- ecosim.run(REco.sim, 0, 100)
 
 #Plot Relative biomass
 library(data.table)
+
 biomass <- as.data.table(REco.base$out_BB[, 2:23])
 rel.bio <- data.table(Month = 1:nrow(biomass))
 for(i in 1:ncol(biomass)){
@@ -142,12 +143,28 @@ for(i in 1:ncol(biomass)){
 }
 
 ymax <- max(rel.bio[, 2:ncol(rel.bio), with = F])
+ymax <- ymax + 0.1 * ymax
+ymin <- min(rel.bio[, 2:ncol(rel.bio), with = F])
+ymin <- ymin - 0.1 * ymin
 xmax <- max(rel.bio[, Month])
-plot(0, 0, ylim = c(0, ymax), xlim = c(0, xmax), xlab = '', ylab = '', type = 'n')
+
+#Plot relative biomass
+jpeg(file = paste(out.dir, 'REco_relative_bio_Base_run.jpg', sep = ''), 
+     height = 1700, width = 2000, res = 200)
+opar <- par(mar = c(4, 6, 2, 2))
+plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, xmax), 
+     axes = F, xlab = '', ylab = '', type = 'n')
+axis(1)
+axis(2, las = T)
+box(lwd = 2)
+mtext(1, text = 'Months', line = 2.5, cex = 1.8)
+mtext(2, text = 'Relative Biomass', line = 3, cex = 1.8)
+
 line.col <- heat.colors(23)
 for(i in 1:(ncol(rel.bio) - 1)){
-  lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i])
+  lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i], lwd = 3)
 }
+dev.off()
 
 #Roundfish 1
 lines(rel.bio[, c(1, 5), with = F], col = 'black', lwd = 2)
