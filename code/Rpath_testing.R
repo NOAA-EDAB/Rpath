@@ -31,7 +31,7 @@ library(Rpath)
 modfile  <- paste(data.dir, 'GOA.csv',     sep = '')
 dietfile <- paste(data.dir, 'GOAdiet.csv', sep = '')
 pedfile  <- paste(data.dir, 'GOAped.csv',  sep = '')
-GOA.juvfile  <- paste(data.dir, 'GOAjuv.csv',  sep = '')
+juvfile  <- paste(data.dir, 'GOAjuv.csv',  sep = '')
 
 GOA <- ecopath(modfile, dietfile, pedfile, eco.name = 'Gulf of Alaska')
 
