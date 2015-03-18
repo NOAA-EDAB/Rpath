@@ -24,8 +24,9 @@ Performs initial mass balance using a model parameter file and diet
 matrix file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{ecosim.init}};
-  \code{\link{ecosim.run}}; \code{\link{webplot}};
-  \code{\link{write.Rpath}}
+Other Rpath.functions: \code{\link{check.rpath.param}};
+  \code{\link{create.rpath.param}};
+  \code{\link{ecosim.init}}; \code{\link{ecosim.run}};
+  \code{\link{webplot}}; \code{\link{write.Rpath}}
 }
 

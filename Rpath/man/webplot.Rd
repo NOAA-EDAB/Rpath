@@ -49,7 +49,8 @@ Creates a figure of the food web.
 Plots the food web associated with an Rpath object.
 }
 \seealso{
-Other Rpath.functions: \code{\link{ecopath}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
+  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.init}}; \code{\link{ecosim.run}};
   \code{\link{write.Rpath}}
 }

@@ -20,7 +20,8 @@ Returns an Rpath.sim object.
 Runs the ecosim modual.
 }
 \seealso{
-Other Rpath.functions: \code{\link{ecopath}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
+  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.init}}; \code{\link{webplot}};
   \code{\link{write.Rpath}}
 }

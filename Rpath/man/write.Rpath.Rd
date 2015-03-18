@@ -20,7 +20,8 @@ Writes a .csv file with the basic parameters or mortalities from an Rpath object
 Outputs basic parameters or mortalities to a .csv file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{ecopath}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
+  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.init}}; \code{\link{ecosim.run}};
   \code{\link{webplot}}
 }

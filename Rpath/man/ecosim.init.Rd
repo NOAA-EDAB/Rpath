@@ -21,7 +21,8 @@ Performs initial set up for Ecosim by converting ecopath values to rates,
 initializing stanzas, and packing everything together to run.
 }
 \seealso{
-Other Rpath.functions: \code{\link{ecopath}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
+  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.run}}; \code{\link{webplot}};
   \code{\link{write.Rpath}}
 }
