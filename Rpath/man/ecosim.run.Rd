@@ -23,6 +23,6 @@ Runs the ecosim modual.
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.init}}; \code{\link{webplot}};
-  \code{\link{write.Rpath}}
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 
