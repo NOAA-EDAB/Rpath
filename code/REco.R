@@ -5,16 +5,12 @@
 #I have a windows machine and a linux machine, hence the windows toggle
 windows <- F
 if(windows == T){
-  r.dir    <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\code\\"
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
   out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
-  stable   <- "L:\\PhD\\Rpath\\code\\"
 }
 if(windows == F){
-  r.dir    <- "/home/slucey/slucey/Rpath/code/"
   data.dir <- "/home/slucey/slucey/Rpath/data/"
   out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
-  stable   <- "/home/slucey/slucey/PhD/Rpath/code/"
 }
 
 #To download Rpath
