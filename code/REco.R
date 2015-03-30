@@ -111,10 +111,10 @@ dev.off()
 
 #Scenario 2 - Increase F on Adult Roundfish 1
 REco.i2  <- copy(REco.init)
-REco.s2a <- ecosim.run(REco.i2, 0, 24)
+REco.s2a <- ecosim.run(REco.i2, 0, 25)
 
-REco.s2a$FORCED_FRATE$'AduRoundfish1'[24:100] <- 0.025 
-REco.s2b <- ecosim.run(REco.s2a, 24, 100)
+REco.s2a$FORCED_FRATE$'AduRoundfish1'[25:100] <- 0.025 
+REco.s2b <- ecosim.run(REco.s2a, 25, 100)
 
 #Write out the basic outputs from ecosim
 write.Rpath.sim(REco.s2b, file = paste(out.dir, 'R_Ecosystem_Ecosim_s2.csv', sep = ''))
