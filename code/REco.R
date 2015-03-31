@@ -159,4 +159,23 @@ dev.off()
 
 
 
+#Testing
+REco.i2  <- copy(REco.init)
+REco.s2a <- ecosim.run(REco.i2, 0, 25)
+
+fish <- data.table(Group = REco.s2a$FishFrom,
+                   Gear  = REco.s2a$FishThrough,
+                   Q     = REco.s2a$FishQ)
+fish[Group == 5, Q := c(.169, .007, .019, .105)]
+REco.s2a$FishQ <- fish[, Q]
+
+REco.s2b <- ecosim.run(REco.s2a, 25, 100, init_run = F)
+ecosim.plot(REco.s2b)
+
+REco.i3  <- copy(REco.init)
+REco.i3$FORCED_FRATE$'AduRoundfish1'[1:24] <- 0.0084
+REco.i3$FORCED_FRATE$'AduRoundfish1'[25:100] <- 0.025
+REco.s3 <- ecosim.run(REco.i3, 0, 100)
+ecosim.plot(REco.s3)
+
 
