@@ -172,10 +172,28 @@ REco.s2a$FishQ <- fish[, Q]
 REco.s2b <- ecosim.run(REco.s2a, 25, 100, init_run = F)
 ecosim.plot(REco.s2b)
 
-REco.i3  <- copy(REco.init)
-REco.i3$FORCED_FRATE$'AduRoundfish1'[1:24] <- 0.0084
-REco.i3$FORCED_FRATE$'AduRoundfish1'[25:100] <- 0.025
-REco.s3 <- ecosim.run(REco.i3, 0, 100)
-ecosim.plot(REco.s3)
 
+#Scenario 3 - Increase F on Foragefish 1
+REco.i3  <- copy(REco.init)
+REco.s3a <- ecosim.run(REco.i3, 0, 25)
+
+REco.s3a$FORCED_FRATE$'Foragefish1'[25:100] <- 0.0172 
+REco.s3b <- ecosim.run(REco.s3a, 25, 100)
+
+ecosim.plot(REco.s3b)
+
+#Write out the basic outputs from ecosim
+write.Rpath.sim(REco.s3b, file = paste(out.dir, 'R_Ecosystem_Ecosim_s3.csv', sep = ''))
+
+REco.i4  <- copy(REco.init)
+REco.s4a <- ecosim.run(REco.i4, 0, 25)
+
+fish <- data.table(Group = REco.s4a$FishFrom,
+                   Gear  = REco.s4a$FishThrough,
+                   Q     = REco.s4a$FishQ)
+fish[Group == 13, Q := c(.1764, .000588, .0294)]
+REco.s4a$FishQ <- fish[, Q]
+
+REco.s4b <- ecosim.run(REco.s4a, 25, 100, init_run = F)
+ecosim.plot(REco.s4b)
 

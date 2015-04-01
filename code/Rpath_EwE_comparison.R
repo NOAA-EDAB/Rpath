@@ -24,6 +24,7 @@ rpath.REco <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Parameters.csv
 rpath.REco.mort <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Mortalities.csv', sep = '')))
 rpath.s1 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s1.csv', sep = '')))
 rpath.s2 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s2.csv', sep = '')))
+rpath.s3 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s3.csv', sep = '')))
 
 #EwE
 ewe.REco <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_Parameters.csv', sep = '')))
@@ -34,6 +35,8 @@ ewe.s1 <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_Ecosim_s1.csv'
 ewe.s2 <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_Ecosim_s2.csv', sep = ''), skip = 1))
 ewe.s1.catch <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_Ecosim_s1_catch.csv', sep = ''), skip = 1))
 ewe.s2.catch <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_Ecosim_s2_catch.csv', sep = ''), skip = 1))
+ewe.s3 <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_s3_Biomass.csv', sep = ''), skip = 9))
+ewe.s3.catch <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_s3_Yield.csv', sep = ''), skip = 9))
 
 #Clean up EwE outputs
 #Parameters
@@ -70,7 +73,13 @@ for(i in 1:nrow(ewe.s2.fix)){
   ewe.s2.fix[i, StartCatch := ewe.s2.catch[2, i, with = F]]
   ewe.s2.fix[i, EndCatch   := ewe.s2.catch[nrow(ewe.s2.catch) - 1, i, with = F]]
 }
-
+ewe.s3.fix <- data.table(Group = rpath.s3[, Group])
+for(i in 2:nrow(ewe.s3.fix)){
+  ewe.s3.fix[i, StartBio := ewe.s3[1, which(names(ewe.s3) == ewe.s3.fix[i, Group]), with = F]]
+  ewe.s3.fix[i, EndBio   := ewe.s3[nrow(ewe.s3) - 1, i - 1, with = F]]
+  ewe.s3.fix[i, StartCatch := ewe.s3.catch[2, i - 1, with = F]]
+  ewe.s3.fix[i, EndCatch   := ewe.s3.catch[nrow(ewe.s3.catch) - 1, i - 1, with = F]]
+}
 
 #Calculate differences
 #Ecopath
