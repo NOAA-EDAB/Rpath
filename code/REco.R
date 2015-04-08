@@ -3,12 +3,12 @@
 
 #User parameters - file locations
 #I have a windows machine and a linux machine, hence the windows toggle
-windows <- F
-if(windows == T){
+if(Sys.info()['sysname']=="Windows"){
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
   out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
 }
-if(windows == F){
+
+if(Sys.info()['sysname']=="Linux"){
   data.dir <- "/home/slucey/slucey/Rpath/data/"
   out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
 }
@@ -86,16 +86,14 @@ ecosim.plot(ewe.s1.list)
 
 #Scenario 2 - Increase F on Adult Roundfish 1
 REco.i2  <- copy(REco.init)
-REco.s2a <- ecosim.run(REco.i2, 0, 25)
-
-REco.s2a$FORCED_FRATE$'AduRoundfish1'[25:100] <- 0.025 
-REco.s2b <- ecosim.run(REco.s2a, 25, 100)
+REco.i2$FORCED_FRATE$'AduRoundfish1'[25:100] <- 0.196 
+REco.s2 <- ecosim.run(REco.i2, 0, 100)
 
 #Write out the basic outputs from ecosim
 write.Rpath.sim(REco.s2b, file = paste(out.dir, 'R_Ecosystem_Ecosim_s2.csv', sep = ''))
 
 #Plot Relative biomass for sim run
-ecosim.plot(REco.s2b)
+ecosim.plot(REco.s2)
 ecosim.plot(ewe.s2.list)
 
 #Testing

@@ -1,12 +1,11 @@
 #Compare EwE and Rpath 
 
 #User parameters
-windows <- F
-if(windows == T){
+if(Sys.info()['sysname']=="Windows"){
   data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
   out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
 }
-if(windows == F){
+if(Sys.info()['sysname']=="Linux"){
   data.dir <- "/home/slucey/slucey/Rpath/outputs/"
   out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
 }
