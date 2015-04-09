@@ -1,5 +1,17 @@
-ecosim.plot <- function(x){
-  biomass <- as.data.table(x$out_BB[, 2:23])
+#'Plot routine for Ecosim runs
+#'
+#'Plots the relative biomass of each group from a run of ecosim.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath.sim.obj Rpath ecosim run created by the ecosim.run() function.
+#'
+#'@return Creates a figure of relative biomass.
+#'@import data.table
+#'@export
+ecosim.plot <- function(Rpath.sim.obj){
+  n <- Rpath.sim.obj$NUM_LIVING + Rpath.sim.obj$NUM_DEAD
+  biomass <- as.data.table(Rpath.sim.obj$out_BB[, 2:(n + 1)])
   rel.bio <- data.table(Month = 1:nrow(biomass))
   for(i in 1:ncol(biomass)){
     sp.bio.start <- biomass[1, i, with = F]
@@ -31,5 +43,5 @@ ecosim.plot <- function(x){
   
   opar <- par(mar = c(0, 0, 0, 0))
   plot(0, 0, xlab = '', ylab = '', axes = F)
-  legend('center', legend = x$spname[2:23], fill = line.col, cex = .6)
+  legend('center', legend = Rpath.sim.obj$spname[2:(n + 1)], fill = line.col, cex = .6)
 }
