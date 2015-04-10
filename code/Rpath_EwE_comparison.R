@@ -12,12 +12,12 @@ if(Sys.info()['sysname']=="Linux"){
 
 #------------------------------------------------------------------
 #User created functions
-ewe.2.rpath <- function(x){
+ewe.2.rpath <- function(x, numliv, numdead){
   ewe <- as.data.table(read.csv(x, skip = 9))
   ewe[, Outside := 0]
   setcolorder(ewe, c('Outside', names(ewe)[which(names(ewe) != 'Outside')]))
   Bmat <- as.matrix(ewe)
-  out <- list(spname = names(ewe), out_BB = Bmat)
+  out <- list(spname = names(ewe), out_BB = Bmat, NUM_LIVING = numliv, NUM_DEAD = numdead)
   return(out)
 }
 
@@ -32,6 +32,7 @@ rpath.REco.mort <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Mortaliti
 rpath.s1 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s1.csv', sep = '')))
 rpath.s2 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s2.csv', sep = '')))
 rpath.s3 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s3.csv', sep = '')))
+rpath.s4 <- as.data.table(read.csv(paste(data.dir, 'R_Ecosystem_Ecosim_s4.csv', sep = '')))
 
 #EwE
 ewe.REco <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_Parameters.csv', sep = '')))
@@ -46,9 +47,9 @@ ewe.s2.catch <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_s2_Yield
 ewe.s3.catch <- as.data.table(read.csv(paste(data.dir, 'EwE_R_Ecosystem_s3_Yield.csv', sep = ''), skip = 9))
 
 #To plot EwE scenarios
-ewe.s1.list <- ewe.2.rpath(paste(data.dir, 'EwE_R_Ecosystem_s1_Biomass.csv', sep = ''))
-ewe.s2.list <- ewe.2.rpath(paste(data.dir, 'EwE_R_Ecosystem_s2_Biomass.csv', sep = ''))
-ewe.s3.list <- ewe.2.rpath(paste(data.dir, 'EwE_R_Ecosystem_s3_Biomass.csv', sep = ''))
+ewe.s1.list <- ewe.2.rpath(paste(data.dir, 'EwE_R_Ecosystem_s1_Biomass.csv', sep = ''), numliv = 20, numdead = 2)
+ewe.s2.list <- ewe.2.rpath(paste(data.dir, 'EwE_R_Ecosystem_s2_Biomass.csv', sep = ''), numliv = 20, numdead = 2)
+ewe.s3.list <- ewe.2.rpath(paste(data.dir, 'EwE_R_Ecosystem_s3_Biomass.csv', sep = ''), numliv = 20, numdead = 2)
 
 #Clean up EwE outputs
 #Parameters
@@ -109,7 +110,7 @@ ecopath.diff[, c(paste(c('Biomass', 'TL', 'PB', 'QB', 'EE', 'GE'), '.x', sep = '
                  paste(c('Biomass', 'TL', 'PB', 'QB', 'EE', 'GE'), '.y', sep = ''),
                  c('X', 'type', 'Removals')) := NULL]
 
-png(file = paste(out.dir, 'Ecopath_differences.png', sep = ''), height = 800, width = 1063, res = 300)
+#png(file = paste(out.dir, 'Ecopath_differences.png', sep = ''), height = 800, width = 1063, res = 300)
 opar <- par(mar = c(3, 3, 1, 1))
 boxplot(ecopath.diff[, 2:7, with = F], axes = F)
 axis(1, at = axTicks(1), labels = c('Biomass', 'TL', 'PB', 'QB', 'EE', 'GE'), cex.axis = 0.7, padj = -1.5)
@@ -117,7 +118,7 @@ axis(2, las = T, cex.axis = 0.8, hadj = .7)
 box(lwd = 2)
 mtext(1, text = 'Ecopath parameters',  line = 1.3)
 mtext(2, text = 'Percent difference', line = 2.1)
-dev.off()
+#dev.off()
 
 #Ecosim scenario 1
 #Note - EwE catch is an annual step while Rpath is monthly
@@ -131,7 +132,7 @@ ecosim.1.diff[, c(paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.x',
                   paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.y', sep = ''),
                   'X') := NULL]
 
-png(file = paste(out.dir, 'Ecosim_differences_s1.png', sep = ''), height = 800, width = 1063, res = 300)
+#png(file = paste(out.dir, 'Ecosim_differences_s1.png', sep = ''), height = 800, width = 1063, res = 300)
 opar <- par(mar = c(3, 3, 1, 1))
 boxplot(ecosim.1.diff[, 2:5, with = F], axes = F)
 axis(1, at = axTicks(1), labels = c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), cex.axis = 0.7, padj = -1.5)
@@ -139,7 +140,7 @@ axis(2, las = T, cex.axis = 0.8, hadj = .7)
 box(lwd = 2)
 mtext(1, text = 'Ecosim outputs',  line = 1.3)
 mtext(2, text = 'Percent difference', line = 2.1)
-dev.off()
+#dev.off()
 
 #Ecosim scenario 2
 #Note - EwE catch is an annual step while Rpath is monthly
@@ -153,7 +154,7 @@ ecosim.2.diff[, c(paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.x',
                   paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.y', sep = ''),
                   'X') := NULL]
 
-png(file = paste(out.dir, 'Ecosim_differences_s2.png', sep = ''), height = 800, width = 1063, res = 300)
+#png(file = paste(out.dir, 'Ecosim_differences_s2.png', sep = ''), height = 800, width = 1063, res = 300)
 opar <- par(mar = c(3, 3, 1, 1))
 boxplot(ecosim.2.diff[, 2:5, with = F], axes = F)
 axis(1, at = axTicks(1), labels = c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), cex.axis = 0.7, padj = -1.5)
@@ -161,7 +162,7 @@ axis(2, las = T, cex.axis = 0.8, hadj = .7)
 box(lwd = 2)
 mtext(1, text = 'Ecosim outputs',  line = 1.3)
 mtext(2, text = 'Percent difference', line = 2.1)
-dev.off()
+#dev.off()
 
 #Ecosim scenario 3
 #Note - EwE catch is an annual step while Rpath is monthly
@@ -184,3 +185,25 @@ box(lwd = 2)
 mtext(1, text = 'Ecosim outputs',  line = 1.3)
 mtext(2, text = 'Percent difference', line = 2.1)
 dev.off()
+
+#Ecosim scenario 4
+#Note - EwE catch is an annual step while Rpath is monthly
+ecosim.4.diff <- merge(rpath.s4, ewe.s3.summary, by = 'Group')
+ecosim.4.diff <- ecosim.4.diff[!Group %in% c('Outside', 'Detritus')]
+ecosim.4.diff[, StartBio := ((StartBio.x - StartBio.y) / StartBio.y) * 100]
+ecosim.4.diff[, EndBio   := ((EndBio.x   - EndBio.y)   / EndBio.y)   * 100]
+ecosim.4.diff[, StartCatch := (((StartCatch.x * 12) - StartCatch.y) / StartCatch.y) * 100]
+ecosim.4.diff[, EndCatch   := (((EndCatch.x   * 12) - EndCatch.y)   / EndCatch.y)   * 100]
+ecosim.4.diff[, c(paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.x', sep = ''),
+                  paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.y', sep = ''),
+                  'X') := NULL]
+
+# png(file = paste(out.dir, 'Ecosim_differences_s4.png', sep = ''), height = 800, width = 1063, res = 300)
+opar <- par(mar = c(3, 3, 1, 1))
+boxplot(ecosim.3.diff[, 2:5, with = F], axes = F)
+axis(1, at = axTicks(1), labels = c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), cex.axis = 0.7, padj = -1.5)
+axis(2, las = T, cex.axis = 0.8, hadj = .7)
+box(lwd = 2)
+mtext(1, text = 'Ecosim outputs',  line = 1.3)
+mtext(2, text = 'Percent difference', line = 2.1)
+# dev.off()

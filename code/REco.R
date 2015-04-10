@@ -111,27 +111,32 @@ ecosim.plot(REco.s2b)
 ecosim.plot(ewe.s2.list)
 
 #Scenario 3 - Increase F on Foragefish 1
-REco.i3  <- copy(REco.init)
-REco.s3a <- ecosim.run(REco.i3, 0, 25)
+REco.i3 <- copy(REco.init)
+REco.i3$FORCED_FRATE$'Foragefish1'[25:100] <- 0.1376 
+REco.s3 <- ecosim.run(REco.i3, 0, 100)
 
-REco.s3a$FORCED_FRATE$'Foragefish1'[25:100] <- 0.0172 
-REco.s3b <- ecosim.run(REco.s3a, 25, 100)
+png(file = paste(out.dir, 'R_Ecosim_relbio_s3.png', sep = ''), height = 1700, width = 2000, res = 300)
+ecosim.plot(REco.s3)
+dev.off()
 
-ecosim.plot(REco.s3b)
+png(file = paste(out.dir, 'EwE_Ecosim_relbio_s3.png', sep = ''), height = 1700, width = 2000, res = 300)
 ecosim.plot(ewe.s3.list)
+dev.off()
 
 #Write out the basic outputs from ecosim
-write.Rpath.sim(REco.s3b, file = paste(out.dir, 'R_Ecosystem_Ecosim_s3.csv', sep = ''))
+write.Rpath.sim(REco.s3, file = paste(out.dir, 'R_Ecosystem_Ecosim_s3.csv', sep = ''))
 
 REco.i4  <- copy(REco.init)
-REco.s4a <- ecosim.run(REco.i4, 0, 25)
+REco.i4$NoIntegrate[2]  <- 1
+REco.i4$NoIntegrate[4]  <- 3
 
-fish <- data.table(Group = REco.s4a$FishFrom,
-                   Gear  = REco.s4a$FishThrough,
-                   Q     = REco.s4a$FishQ)
-fish[Group == 13, Q := c(.1764, .000588, .0294)]
-REco.s4a$FishQ <- fish[, Q]
+REco.i4$FORCED_FRATE$'Foragefish1'[25:100] <- 0.1376 
+REco.s4 <- ecosim.run(REco.i4, 0, 100)
 
-REco.s4b <- ecosim.run(REco.s4a, 25, 100, init_run = F)
-ecosim.plot(REco.s4b)
+write.Rpath.sim(REco.s4, file = paste(out.dir, 'R_Ecosystem_Ecosim_s4.csv', sep = ''))
+
+ecosim.plot(REco.s4)
+ecosim.plot(ewe.s3.list)
+
+
 
