@@ -153,5 +153,5 @@ REco.s5 <- ecosim.run(REco.s5a, 25, 100)
 write.Rpath.sim(REco.s4, file = paste(out.dir, 'R_Ecosystem_Ecosim_s5.csv', sep = ''))
 
 ecosim.plot(REco.s5)
-ecosim.plot(ewe.s3.list)
+ecosim.plot(ewe.s5.list)
 
