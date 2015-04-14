@@ -198,12 +198,34 @@ ecosim.4.diff[, c(paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.x',
                   paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.y', sep = ''),
                   'X') := NULL]
 
-# png(file = paste(out.dir, 'Ecosim_differences_s4.png', sep = ''), height = 800, width = 1063, res = 300)
+png(file = paste(out.dir, 'Ecosim_differences_percent_s4.png', sep = ''), height = 800, width = 1063, res = 300)
 opar <- par(mar = c(3, 3, 1, 1))
-boxplot(ecosim.3.diff[, 2:5, with = F], axes = F)
+boxplot(ecosim.4.diff[, 2:5, with = F], axes = F)
 axis(1, at = axTicks(1), labels = c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), cex.axis = 0.7, padj = -1.5)
 axis(2, las = T, cex.axis = 0.8, hadj = .7)
 box(lwd = 2)
 mtext(1, text = 'Ecosim outputs',  line = 1.3)
 mtext(2, text = 'Percent difference', line = 2.1)
-# dev.off()
+dev.off()
+
+
+#Absolute difference
+ecosim.4.diff <- merge(rpath.s4, ewe.s3.summary, by = 'Group')
+ecosim.4.diff <- ecosim.4.diff[!Group %in% c('Outside', 'Detritus')]
+ecosim.4.diff[, StartBio := StartBio.x - StartBio.y]
+ecosim.4.diff[, EndBio   := EndBio.x   - EndBio.y]
+ecosim.4.diff[, StartCatch := (StartCatch.x * 12) - StartCatch.y]
+ecosim.4.diff[, EndCatch   := (EndCatch.x   * 12) - EndCatch.y]
+ecosim.4.diff[, c(paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.x', sep = ''),
+                  paste(c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), '.y', sep = ''),
+                  'X') := NULL]
+
+png(file = paste(out.dir, 'Ecosim_differences_actual_s4.png', sep = ''), height = 800, width = 1063, res = 300)
+opar <- par(mar = c(3, 3, 1, 1))
+boxplot(ecosim.4.diff[, 2:5, with = F], axes = F)
+axis(1, at = axTicks(1), labels = c('StartBio', 'EndBio', 'StartCatch', 'EndCatch'), cex.axis = 0.7, padj = -1.5)
+axis(2, las = T, cex.axis = 0.8, hadj = .7)
+box(lwd = 2)
+mtext(1, text = 'Ecosim outputs',  line = 1.3)
+mtext(2, text = 'Actual difference', line = 2.1)
+dev.off()

@@ -139,4 +139,19 @@ ecosim.plot(REco.s4)
 ecosim.plot(ewe.s3.list)
 
 
+#Double trawling effort
+REco.i5  <- copy(REco.init)
+REco.i5$NoIntegrate[2]  <- 1
+REco.i5$NoIntegrate[4]  <- 3
+
+REco.s5a <- ecosim.run(REco.i5, 0, 25)
+
+REco.s5a$fish_Effort[24] <- 2
+
+REco.s5 <- ecosim.run(REco.s5a, 25, 100)
+
+write.Rpath.sim(REco.s4, file = paste(out.dir, 'R_Ecosystem_Ecosim_s5.csv', sep = ''))
+
+ecosim.plot(REco.s5)
+ecosim.plot(ewe.s3.list)
 
