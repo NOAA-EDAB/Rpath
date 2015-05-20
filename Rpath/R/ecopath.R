@@ -28,6 +28,14 @@ ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
   diet  <- as.data.table(read.csv(dietfile)) # diet matrix
   ped   <- as.data.table(read.csv(pedfile))  # pedigree file
   
+  #Check that all columns of model are numeric and not logical
+  if(length(which(sapply(model, class) == 'logical')) > 0){
+    logic.col <- which(sapply(model, class) == 'logical')
+    for(i in 1:length(logic.col)){
+      set(model, j = logic.col[i], value = as.numeric(model[[logic.col[i]]]))
+    }
+  }
+    
   #Remove first column if names
   if(sapply(diet, class)[1] == 'factor') diet <- diet[, 1 := NULL, with = F]
   if(sapply(ped,  class)[1] == 'factor') ped  <- ped [, 1 := NULL, with = F]
