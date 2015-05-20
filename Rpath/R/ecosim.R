@@ -133,8 +133,8 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   simpar$PreyPreyWeight <- c(0, simpar$PreyPreyWeight)
   
   #catchlinks
-  fishfrom    <- row(Rpath$Catch)                      
-  fishthrough <- col(Rpath$Catch) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+  fishfrom    <- row(as.matrix(Rpath$Catch))
+  fishthrough <- col(as.matrix(Rpath$Catch)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
   fishcatch   <- Rpath$Catch
   fishto      <- fishfrom * 0
   
@@ -150,8 +150,8 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
     detfate <- Rpath$DetFate[(Rpath$NUM_LIVING + Rpath$NUM_DEAD + 1):Rpath$NUM_GROUPS, d]
     detmat  <- t(matrix(detfate, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
    
-    fishfrom    <-  row(Rpath$Discards)                      
-    fishthrough <-  col(Rpath$Discards) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+    fishfrom    <-  row(as.matrix(Rpath$Discards))                      
+    fishthrough <-  col(as.matrix(Rpath$Discards)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
     fishto      <-  t(matrix(Rpath$NUM_LIVING + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
     fishcatch   <-  Rpath$Discards * detmat
     if(sum(fishcatch) > 0){
@@ -171,10 +171,10 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
 
 # Unwound discard fate for living groups
   detfrac <- Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]
-  detfrom <- row(detfrac)
-  detto   <- col(detfrac) + Rpath$NUM_LIVING
+  detfrom <- row(as.matrix(detfrac))
+  detto   <- col(as.matrix(detfrac)) + Rpath$NUM_LIVING
   
-  detout <- 1 - rowSums(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ])
+  detout <- 1 - rowSums(as.matrix(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]))
   dofrom <- 1:length(detout)
   doto   <- rep(0, length(detout))
   
