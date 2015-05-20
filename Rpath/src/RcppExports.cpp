@@ -9,66 +9,50 @@ using namespace Rcpp;
 int deriv_master(List mod, int y, int m, int d);
 RcppExport SEXP Rpath_deriv_master(SEXP modSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< List >::type mod(modSEXP );
-        Rcpp::traits::input_parameter< int >::type y(ySEXP );
-        Rcpp::traits::input_parameter< int >::type m(mSEXP );
-        Rcpp::traits::input_parameter< int >::type d(dSEXP );
-        int __result = deriv_master(mod, y, m, d);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
+    Rcpp::traits::input_parameter< int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    __result = Rcpp::wrap(deriv_master(mod, y, m, d));
+    return __result;
 END_RCPP
 }
 // SplitSetPred
 int SplitSetPred(List mod);
 RcppExport SEXP Rpath_SplitSetPred(SEXP modSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< List >::type mod(modSEXP );
-        int __result = SplitSetPred(mod);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
+    __result = Rcpp::wrap(SplitSetPred(mod));
+    return __result;
 END_RCPP
 }
 // update_stanzas
 int update_stanzas(List mod, int yr, int mon);
 RcppExport SEXP Rpath_update_stanzas(SEXP modSEXP, SEXP yrSEXP, SEXP monSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< List >::type mod(modSEXP );
-        Rcpp::traits::input_parameter< int >::type yr(yrSEXP );
-        Rcpp::traits::input_parameter< int >::type mon(monSEXP );
-        int __result = update_stanzas(mod, yr, mon);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
+    Rcpp::traits::input_parameter< int >::type yr(yrSEXP);
+    Rcpp::traits::input_parameter< int >::type mon(monSEXP);
+    __result = Rcpp::wrap(update_stanzas(mod, yr, mon));
+    return __result;
 END_RCPP
 }
 // Adams_Basforth
 int Adams_Basforth(List mod, int StartYear, int EndYear);
 RcppExport SEXP Rpath_Adams_Basforth(SEXP modSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< List >::type mod(modSEXP );
-        Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP );
-        Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP );
-        int __result = Adams_Basforth(mod, StartYear, EndYear);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
+    Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
+    Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
+    __result = Rcpp::wrap(Adams_Basforth(mod, StartYear, EndYear));
+    return __result;
 END_RCPP
 }

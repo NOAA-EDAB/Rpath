@@ -31,29 +31,30 @@ create.rpath.param <- function(filename = NA, group, type = NA, parameter = 'mod
   if(parameter == 'model'){
     out <- data.table(Group    = group, 
                       Type     = type, 
-                      Biomass  = NA,
-                      PB       = NA,
-                      QB       = NA,
-                      EE       = NA,
-                      ProdCons = NA,
-                      BioAcc   = NA,
-                      Unassim  = NA,
-                      DetInput = NA)
+                      Biomass  = as.numeric(NA),
+                      PB       = as.numeric(NA),
+                      QB       = as.numeric(NA),
+                      EE       = as.numeric(NA),
+                      ProdCons = as.numeric(NA),
+                      BioAcc   = as.numeric(NA),
+                      Unassim  = as.numeric(NA),
+                      DetInput = as.numeric(NA))
     
     #Add detritial groups
     for(i in 1:length(det.group)){
-      out[, V1 := NA]
+      out[Group %in% det.group, DetInput := 0]
+      out[, V1 := as.numeric(NA)]
       setnames(out, "V1", det.group[i])
     }
     
     #Add fleets twice - Landings and Discards
     for(i in 1:length(fleet.group)){
-      out[, V1 := NA]
+      out[, V1 := c(rep(0, length(group) - length(fleet.group)), rep(NA, length(fleet.group)))]
       setnames(out, "V1", fleet.group[i])
     }
     for(i in 1:length(fleet.group)){
-      out[, V1 := NA]
-      setnames(out, "V1", fleet.group[i])
+      out[, V1 := c(rep(0, length(group) - length(fleet.group)), rep(NA, length(fleet.group)))]
+      setnames(out, "V1", paste(fleet.group[i], '.disc', sep = ''))
     }
   }
   
@@ -61,7 +62,7 @@ create.rpath.param <- function(filename = NA, group, type = NA, parameter = 'mod
   if(parameter == 'diet'){
     out <- data.table(Group = prey.group)
     for(i in 1:length(pred.group)){
-      out[, V1 := NA]
+      out[, V1 := as.numeric(NA)]
       setnames(out, "V1", pred.group[i])
     }
   }
@@ -69,18 +70,18 @@ create.rpath.param <- function(filename = NA, group, type = NA, parameter = 'mod
   #Juvenile file
   if(parameter == 'juvenile'){
     out <- data.table(StanzaName = group,
-                      JuvNum     = NA,
-                      AduNum     = NA,
-                      RecAge     = NA,
-                      RecMonth   = NA,
-                      VonBK      = NA,
-                      AduZ_BAB   = NA,
-                      JuvZ_BAB   = NA,
-                      VonBD      = .6667,
-                      Wmat50     = NA,
-                      Wmat001    = NA,
-                      Amat50     = NA,
-                      Amat001    = NA,
+                      JuvNum     = as.numeric(NA),
+                      AduNum     = as.numeric(NA),
+                      RecAge     = as.numeric(NA),
+                      RecMonth   = as.numeric(NA),
+                      VonBK      = as.numeric(NA),
+                      AduZ_BAB   = as.numeric(NA),
+                      JuvZ_BAB   = as.numeric(NA),
+                      VonBD      = 0.6667,
+                      Wmat50     = as.numeric(NA),
+                      Wmat001    = as.numeric(NA),
+                      Amat50     = as.numeric(NA),
+                      Amat001    = as.numeric(NA),
                       RecPower   = 1)
   }
   

@@ -1,73 +1,118 @@
 #Ecosim group plots
-x <- REco.s1
-group <- 5
-colors <- rainbow(x$NUM_LIVING + x$NUM_DEAD)
-
-#Biomass
-group.table <- data.table(biomass = as.numeric(as.matrix(x$out_BB[group + 1])))
-
-#QB
-qmat <- data.table(Prey = x$PreyFrom, Pred = x$PreyTo, Q = x$QQ)
-Q <- qmat[Pred == group, sum(Q)]
-group.table[, Q := Q]
-group.table[, QB := Q / biomass]
-
-#M2
-qmat.pred <- qmat[Prey == group, ]
-if(nrow(qmat.pred) > 0){
-  pred <- qmat.pred[, Pred]
-  for(i in 1:length(pred)){
-    group.table[, M2.pred := qmat.pred[i, Q] / biomass]
-    setnames(group.table, 'M2.pred', paste('M2.', pred[i], sep = ''))
-  }
-  group.table[, M2 := rowSums(group.table[, 4:(length(pred) + 3), with = F])]
-} else group.table[, M2 := 0]
-ncol <- 4 + length(pred)
-
-#M0
-
-
-
-#Catch - 
-fmat <- data.table(Target = x$FishFrom, Gear = x$FishThrough, Fate = x$FishTo, Q = x$FishQ)
-target <- fmat[Fate == 0 & Target == group, ]
-if(nrow(target) > 0){
-  gear <- target[, Gear]
-  for(i in 1:length(gear)){
-    group.table[, C.gear := target[i, Q] * biomass]
-    setnames(group.table, 'C.gear', paste('C.', gear[i], sep = ''))
-  }
-  group.table[, Totland := rowSums(group.table[, (ncol + 1):(length(gear) + ncol), with = F])]
-} else group.table[, Totland := 0]
-ncol <- ncol + length(gear) + 1
-
-discard <- fmat[Fate != 0 & Target == group, ]
-if(nrow(discard) > 0){
-  gear <- discard[, Gear]
-  for(i in 1:length(gear)){
-    group.table[, D.gear := discard[i, Q] * biomass]
-    setnames(group.table, 'D.gear', paste('D.', gear[i], sep = ''))
-  }
-  group.table[, Totdisc := rowSums(group.table[, (ncol + 1):(length(gear) + ncol), with = F])]
-} else group.table[, Totdisc := 0]
-ncol <- ncol + length(gear) + 1
-
-group.table[, Totcatch := Totland + Totdisc]
-
-#F
-catch <- fmat[Target == group, ]
-catch <- catch[, sum(Q), by = Gear]
-setnames(catch, 'V1', 'Q')
-if(nrow(catch) > 0){
-  gear <- catch[, Gear]
-  for(i in 1:length(gear)){
-    group.table[, F.gear := discard[i, Q] * biomass]
-    setnames(group.table, 'D.gear', paste('D.', gear[i], sep = ''))
-  }
+#'Write function for Ecopath object
+#'
+#'Outputs basic parameters or mortalities to a .csv file.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath.sim.obj Rpath.sim object created by the ecosim.run() function.
+#'@param append object name if appending from a previous run.  
+#'
+#'@return Creates a list of diagnostic tables from an ecosim run.
+#'@export
+ecosim.group.plot <- function(Rpath.sim.obj, append = NA){
+  x <- copy(Rpath.sim.obj)
+  n <- x$NUM_LIVING + x$NUM_DEAD
   
-group.table[, F := Totcatch / biomass]
+  #To/From tables
+  qmat <- data.table(Prey = x$PreyFrom, Pred = x$PreyTo, Q = x$QQ)
+  fmat <- data.table(Target = x$FishFrom, Gear = x$FishThrough, Fate = x$FishTo, Q = x$FishQ)
+  
+  #Create output list
+  out <- c()
+  for(i in 1:n){
+    group <- i
+    #Biomass
+    group.table <- data.table(biomass = as.numeric(as.matrix(x$out_BB[i +1])))
+    
+    #QB
+    Q <- qmat[Pred == group, sum(Q)]
+    group.table[, Q := Q]
+    group.table[, QB := Q / biomass]
+    group.table[, Q := NULL]
+    
+    #M2
+    qmat.pred <- qmat[Prey == group, ]
+    if(nrow(qmat.pred) > 0){
+      pred <- qmat.pred[, Pred]
+      for(j in 1:length(pred)){
+        group.table[, M2.pred := qmat.pred[j, Q] / biomass]
+        setnames(group.table, 'M2.pred', paste('M2.', pred[j], sep = ''))
+      }
+      group.table[, M2 := rowSums(group.table[, 3:(length(pred) + 2), with = F])]
+    } else {
+      pred <- NULL
+      group.table[, M2 := 0]
+    }
+    ncol <- 3 + length(pred)
+    
+    #M0
+    group.table[, M0 := x$MzeroMort[i +1]]
+    
+    #M
+    group.table[, M := M0 + M2]
+    ncol <- ncol + 2
+    
+    #Landings 
+    target <- fmat[Fate == 0 & Target == group, ]
+    if(nrow(target) > 0){
+      gear <- target[, Gear]
+      for(j in 1:length(gear)){
+        group.table[, C.gear := target[j, Q] * biomass]
+        setnames(group.table, 'C.gear', paste('C.', gear[j], sep = ''))
+      }
+      group.table[, Land := rowSums(group.table[, (ncol + 1):(length(gear) + ncol), with = F])]
+    } else {
+      gear <- NULL
+      group.table[, Land := 0]
+    }
+    ncol <- ncol + length(gear) + 1
+    
+    #Discards
+    discard <- fmat[Fate != 0 & Target == group, ]
+    if(nrow(discard) > 0){
+      gear <- discard[, Gear]
+      for(j in 1:length(gear)){
+        group.table[, D.gear := discard[j, Q] * biomass]
+        setnames(group.table, 'D.gear', paste('D.', gear[j], sep = ''))
+      }
+      group.table[, Disc := rowSums(group.table[, (ncol + 1):(length(gear) + ncol), with = F])]
+    } else {
+      gear <- NULL
+      group.table[, Disc := 0]
+    }
+    ncol <- ncol + length(gear) + 1
+    
+    group.table[, Catch := Land + Disc]
+    
+    #F
+    FRate <- fmat[Target == group, ]
+    FRate <- FRate[, sum(Q), by = Gear]
+    setnames(FRate, 'V1', 'Q')
+    if(nrow(FRate) > 0){
+      gear <- FRate[, Gear]
+      for(j in 1:length(gear)){
+        group.table[, F.gear := FRate[Gear == gear[j], Q]]
+        setnames(group.table, 'F.gear', paste('F.', gear[j], sep = ''))
+      }
+    }
+    
+    group.table[, F := Catch / biomass]
+      
+    group.table[, Z := M + F]
+    
+    out$group.table <- group.table
+    names(out)[i] <- x$spname[i + 1]
+  }
+}
 
-group.table[, Z := M + F]
+
+
+
+
+
+
+ 
 
 #plot - six panels
 n <- nrow(group.table)
