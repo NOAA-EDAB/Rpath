@@ -5,7 +5,7 @@
 # 
 ################################################################################ 
 #'@export
-ecotest <- function(RP){
+ecotest <- function(RP){ 
   #deriv_master(RP,1,1,1) 
   Adams_Basforth(RP,0,20)
   return(deriv_test(RP));
