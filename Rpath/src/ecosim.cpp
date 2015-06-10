@@ -18,7 +18,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]] 
 int deriv_test(List mod){
-   return(3);
+   return(3); 
 }
 
 // Deriv master calculates the biomass dynamics derivative

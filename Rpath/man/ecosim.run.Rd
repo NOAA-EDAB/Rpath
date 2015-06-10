@@ -22,8 +22,8 @@ Runs the ecosim modual.
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.init}}; \code{\link{ecosim.plot}};
-  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}}
+  \code{\link{ecosim.init}}; \code{\link{ecosim.params}};
+  \code{\link{ecosim.plot}}; \code{\link{webplot}};
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 
