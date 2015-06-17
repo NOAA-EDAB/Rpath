@@ -18,8 +18,9 @@ Plots the relative biomass of each group from a run of ecosim.
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.init}}; \code{\link{ecosim.run}};
-  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}}
+  \code{\link{ecosim.init}}; \code{\link{ecosim.pack}};
+  \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
+  \code{\link{ecosim.stanzas}}; \code{\link{webplot}};
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

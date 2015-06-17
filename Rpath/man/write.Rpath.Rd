@@ -22,8 +22,9 @@ Outputs basic parameters or mortalities to a .csv file.
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.init}}; \code{\link{ecosim.plot}};
-  \code{\link{ecosim.run}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}
+  \code{\link{ecosim.init}}; \code{\link{ecosim.pack}};
+  \code{\link{ecosim.plot}}; \code{\link{ecosim.rates}};
+  \code{\link{ecosim.run}}; \code{\link{ecosim.stanzas}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}}
 }
 

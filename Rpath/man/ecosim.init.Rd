@@ -4,27 +4,30 @@
 \alias{ecosim.init}
 \title{Initial set up for Ecosim modual of Rpath}
 \usage{
-ecosim.init(Rpath, juvfile, YEARS = 100)
+ecosim.init(Rpath, juvfile, years = 100)
 }
 \arguments{
 \item{Rpath}{Rpath object containing a balanced model.}
 
 \item{juvfile}{Comma deliminated file with multi-stanza parameters.}
 
-\item{YEARS}{Integer value to set maximum number of years.}
+\item{years}{Integer value to set maximum number of years.}
 }
 \value{
 Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 }
 \description{
 Performs initial set up for Ecosim by converting ecopath values to rates,
-initializing stanzas, and packing everything together to run.
+initializing stanzas, and packing everything together to run.  These three
+steps can also be performed individually using the functions ecosim.rates,
+ecosim.stanzas, and ecosim.pack.
 }
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.plot}}; \code{\link{ecosim.run}};
-  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}}
+  \code{\link{ecosim.pack}}; \code{\link{ecosim.plot}};
+  \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
+  \code{\link{ecosim.stanzas}}; \code{\link{webplot}};
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

@@ -8,25 +8,47 @@
 #'Initial set up for Ecosim modual of Rpath
 #'
 #'Performs initial set up for Ecosim by converting ecopath values to rates,
-#'initializing stanzas, and packing everything together to run.
+#'initializing stanzas, and packing everything together to run.  These three
+#'steps can also be performed individually using the functions ecosim.rates,
+#'ecosim.stanzas, and ecosim.pack.
 #'
 #'@family Rpath functions
 #'
 #'@param Rpath Rpath object containing a balanced model.
 #'@param juvfile Comma deliminated file with multi-stanza parameters.
-#'@param YEARS Integer value to set maximum number of years.
+#'@param years Integer value to set maximum number of years.
 #'
 #'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 #'@export
-ecosim.init <- function(Rpath, juvfile, YEARS = 100){
-  #Old path_to_rates--------------------------------------------------------------------
-  MSCRAMBLE      <- 2.0
-  MHANDLE        <- 1000.0
-  PREYSWITCH     <- 1.0
-  # For SelfWts 1.0 = no overlap, 0.0 = complete overlap
-  ScrambleSelfWt <- 1.0
-  HandleSelfWt   <- 1.0
+ecosim.init <- function(Rpath, juvfile, years = 100){
+  simpar      <- ecosim.rates(Rpath)
+  simpar.stan <- ecosim.stanzas(simpar, juvfile)
+  simpar.pack <- ecosim.pack(simpar.stan)
+  
+  class(simpar.pack) <- 'Rpath.sim'
+  return(simpar.pack)
+}
 
+#'Conversion of ecopath outputs to rates for ecosim
+#'
+#'Converts the outputs from ecopath into rates for use in ecosim.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath Rpath object containing a balanced model.
+#'@param mscramble
+#'@param mhandle
+#'@param preyswitch
+#'@param scrambleselfwt Value of 1 indicates no overlap while 0 indicates complete overlap.
+#'@param handleselfwt Value of 1 indicates no overlap while 0 indicates complete overlap.
+#'@param steps_yr Number of time steps per year.
+#'@param steps_m Number of time steps per month.
+#'
+#'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
+#'@export
+ecosim.rates <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1, 
+                         scrambleselfwt = 1, handleselfwt = 1, 
+                         steps_yr = 12, steps_m = 1){
   simpar <- c()
   
   simpar$NUM_GROUPS <- Rpath$NUM_GROUPS
@@ -60,17 +82,15 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
                              1.0) 
     
   #NoIntegrate
-  STEPS_PER_YEAR  <- 12
-  STEPS_PER_MONTH <- 1
   simpar$NoIntegrate <- ifelse(c(0, Rpath$PB) / 
                                (1.0 - simpar$ActiveRespFrac - simpar$UnassimRespFrac) > 
-                               2 * STEPS_PER_YEAR * STEPS_PER_MONTH, 
+                               2 * steps_yr * steps_m, 
                              0, 
                              simpar$spnum)  
 
   #Pred/Prey defaults
-  simpar$HandleSelf   <- rep(HandleSelfWt,   Rpath$NUM_GROUPS + 1)
-  simpar$ScrambleSelf <- rep(ScrambleSelfWt, Rpath$NUM_GROUPS + 1)
+  simpar$HandleSelf   <- rep(handleselfwt,   Rpath$NUM_GROUPS + 1)
+  simpar$ScrambleSelf <- rep(scrambleselfwt, Rpath$NUM_GROUPS + 1)
   
   #primary production links
   #primTo   <- ifelse(Rpath$PB>0 & Rpath$QB<=0, 1:length(Rpath$PB),0 )
@@ -93,12 +113,12 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   
   numpredprey <- length(simpar$QQ)
 
-  simpar$DD <- rep(MHANDLE,   numpredprey)
-  simpar$VV <- rep(MSCRAMBLE, numpredprey)
+  simpar$DD <- rep(mhandle,   numpredprey)
+  simpar$VV <- rep(mscramble, numpredprey)
 
   #NOTE:  Original in C didn't set handleswitch for primary production groups.  Error?
   #probably not when group 0 biomass doesn't change from 1.
-  simpar$HandleSwitch <- rep(PREYSWITCH, numpredprey)
+  simpar$HandleSwitch <- rep(preyswitch, numpredprey)
 
   #scramble combined prey pools
   Btmp <- simpar$B_BaseRef
@@ -186,21 +206,33 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
 
   simpar$state_BB    <- simpar$B_BaseRef
   simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
-  
-  #Old initialize_stanzas------------------------------------------------------------------------
-  #Initialize juvenile adult or "stanza" age structure in sim   
-  MAX_MONTHS_STANZA <- 400
-  MIN_REC_FACTOR    <- 6.906754779  #// This is ln(1/0.001 - 1) used to set min. logistic matuirty to 0.001
+  return(simpar)
+}
 
-  juv        <- read.csv(juvfile)
+#'Initialization of stanzas for ecosim
+#'
+#'Sets up the initial conditions for groups with multiple stanzas.
+#'
+#'@family Rpath functions
+#'
+#'@param simpar List of ecosim parameters created by ecosim.rates
+#'@param juvfile Comma deliminated file with multi-stanza parameters. 
+#'@param steps_yr Number of time steps per year.
+#'@param max_months Maximum number of months that a stanza can survive.
+#'@param min_rec_factor Used to set minimum logistic maturity to 0.001.  Default value is ln(1 / 0.001 - 1).
+#'
+#'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
+#'@export 
+ecosim.stanzas <- function(simpar, juvfile, steps_yr = 12, max_months = 400, min_rec_factor = 6.906754779){
+  juv          <- read.csv(juvfile)
   simpar$juv_N <- length(juv$JuvNum) 
     
   #fill monthly vectors for each species, rel weight and consumption at age
   #Loops for weight and numbers
-  simpar$WageS      <- matrix(0,MAX_MONTHS_STANZA+1,simpar$juv_N+1)
-  simpar$WWa        <- matrix(0,MAX_MONTHS_STANZA+1,simpar$juv_N+1)
-  simpar$NageS      <- matrix(0,MAX_MONTHS_STANZA+1,simpar$juv_N+1)
-  simpar$SplitAlpha <- matrix(0,MAX_MONTHS_STANZA+1,simpar$juv_N+1)
+  simpar$WageS      <- matrix(0, max_months + 1, simpar$juv_N + 1)
+  simpar$WWa        <- matrix(0, max_months + 1, simpar$juv_N + 1)
+  simpar$NageS      <- matrix(0, max_months + 1, simpar$juv_N + 1)
+  simpar$SplitAlpha <- matrix(0, max_months + 1, simpar$juv_N + 1)
 
   simpar$state_NN       <-rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$stanzaPred     <-rep(0.0, simpar$NUM_GROUPS + 1)
@@ -242,27 +274,28 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   #For end stanza (plus group), capped in EwE @400, this is 90% of 
   #relative max wt, uses generalized exponent D
   firstMoJuv <- rep(0, simpar$juv_N) 
-  lastMoJuv  <- juv$RecAge * STEPS_PER_YEAR - 1
-  firstMoAdu <- juv$RecAge * STEPS_PER_YEAR
-  lastMoAdu  <- floor(log(1.0 - (0.9 ^ (1.0 - juv$VonBD))) /
-                        (-3.0 * juv$VonBK * (1.0 - juv$VonBD) / STEPS_PER_YEAR))
-  lastMoAdu  <- ifelse(lastMoAdu > MAX_MONTHS_STANZA, 
-                       MAX_MONTHS_STANZA, 
+  lastMoJuv  <- juv$RecAge * steps_yr - 1
+  firstMoAdu <- juv$RecAge * steps_yr
+  lastMoAdu  <- floor(log(1.0 - (0.9 ^ (1.0 - juv$VonBD))) / 
+                        (-3.0 * juv$VonBK * (1.0 - juv$VonBD) / 
+                           steps_yr))
+  lastMoAdu  <- ifelse(lastMoAdu > max_months, 
+                       max_months, 
                        lastMoAdu)
 
   #Energy required to grow a unit in weight (scaled to Winf = 1)
-  vBM <- 1.0 - 3.0 * juv$VonBK / STEPS_PER_YEAR
+  vBM <- 1.0 - 3.0 * juv$VonBK / steps_yr
 
   #Set Q multiplier to 1 (used to rescale consumption rates) 
   Qmult <- rep(1.0, simpar$NUM_GROUPS) 
  
   #Survival rates for juveniles and adults
   #KYA Switched survival rate out of BAB == assume all on adults
-  survRate_juv_month <- exp(-(juv$JuvZ_BAB) / STEPS_PER_YEAR)
-  survRate_adu_month <- exp(-(juv$AduZ_BAB) / STEPS_PER_YEAR)
+  survRate_juv_month <- exp(-(juv$JuvZ_BAB) / steps_yr)
+  survRate_adu_month <- exp(-(juv$AduZ_BAB) / steps_yr)
 
-  WmatSpread <- -(juv$Wmat001 - juv$Wmat50) / MIN_REC_FACTOR
-  AmatSpread <- -(juv$Amat001 - juv$Amat50) / MIN_REC_FACTOR
+  WmatSpread <- -(juv$Wmat001 - juv$Wmat50) / min_rec_factor
+  AmatSpread <- -(juv$Amat001 - juv$Amat50) / min_rec_factor
 
   #Save numbers that can be saved at this point
   simpar$WmatSpread  <- c(0, WmatSpread)    
@@ -285,7 +318,7 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
       #Weight and consumption at age
       WageS <- (1.0 - exp(-3 * juv$VonBK[i] * 
                             (1 - juv$VonBD[i]) * 
-                            ageMo / STEPS_PER_YEAR)) ^ (1.0 / (1.0 - juv$VonBD[i]))
+                            ageMo / steps_yr)) ^ (1.0 / (1.0 - juv$VonBD[i]))
       WWa <- WageS ^ juv$VonBD[i]
         
       #Numbers per recruit
@@ -420,12 +453,31 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
 	}
   #Reset QQ in line with new comsumtion
   #simpar$QQ <- simpar$QQ * Qmult[simpar$PreyTo]
+  return(simpar)
+}
 
-  #Old ecosim_pack-------------------------------------------------------------------- 
-  simpar$YEARS      <- YEARS  
-  simpar$BURN_YEARS <- -1
-  simpar$COUPLED    <-  1
-  simpar$CRASH_YEAR <- -1
+#'Adds final variables to be used in ecosim.run
+#'
+#'Final step of ecosim.init that adds output matrices to the Rpath.sim object
+#'that will be used during ecosim.run.
+#'
+#'@family Rpath functions
+#'
+#'@param simpar List of ecosim parameters created by ecosim.rates and modified by ecosim.stanzas
+#'@param years Integer value to set maximum number of years for the simulation.
+#'@param burn_years
+#'@param coupled
+#'@param crash_yr
+#'@param max_months Maximum number of months that a stanza can survive.
+#'@param min_rec_factor Used to set minimum logistic maturity to 0.001.  Default value is ln(1 / 0.001 - 1).
+#'
+#'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
+#'@export
+ecosim.pack <- function(simpar, years, burn_years = -1, coupled = 1, crash_yr = -1){
+  simpar$YEARS      <- years  
+  simpar$BURN_YEARS <- burn_years
+  simpar$COUPLED    <- coupled
+  simpar$CRASH_YEAR <- crash_yr
   
   #derivlist
   simpar$TotGain        <- rep(0.0, simpar$NUM_GROUPS + 1)
@@ -457,28 +509,26 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   simpar$TARGET_F   <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$ALPHA      <- rep(0.0, simpar$NUM_GROUPS + 1)
   
-  mforcemat             <- as.data.frame(matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  mforcemat             <- as.data.frame(matrix(1.0, years * 12 + 1, simpar$NUM_GROUPS + 1))
   names(mforcemat)      <- simpar$spname
   simpar$force_byprey   <- mforcemat
   simpar$force_bymort   <- mforcemat
   simpar$force_byrecs   <- mforcemat
   simpar$force_bysearch <- mforcemat
   
-  yforcemat           <- as.data.frame(matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
+  yforcemat           <- as.data.frame(matrix(0.0, years + 1, simpar$NUM_GROUPS + 1))
   names(yforcemat)    <- simpar$spname
   simpar$FORCED_FRATE <- yforcemat
   simpar$FORCED_CATCH <- yforcemat
 
-  omat           <- as.data.frame(matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  omat           <- as.data.frame(matrix(0.0, years * 12 + 1, simpar$NUM_GROUPS + 1))
   names(omat)    <- simpar$spname
   simpar$out_BB  <- omat 
   simpar$out_CC  <- omat
   simpar$out_SSB <- omat              
   simpar$out_rec <- omat
   
-  class(simpar) <- 'Rpath.sim'
   return(simpar)
-
 }
  
 
