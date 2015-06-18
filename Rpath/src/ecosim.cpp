@@ -16,16 +16,329 @@ using namespace Rcpp;
 #define EPSILON            1E-8                 // Test threshold for "too close to zero"
 #define BIGNUM             1E+8                 // Test threshold for "too big"
 
-// [[Rcpp::export]] 
-int deriv_test(List mod){
-   return(3); 
+//#define VECTORIZE(X,M,Y)   NumericVector (X) = as<NumericVector>((M)[(Y)])
+//#define MAKEINT(X,M,Y)     int (X) = as<int>(M[(Y)])
+// [[Rcpp::export]]
+NumericVector vpow(const NumericVector base, const NumericVector exp) {
+  NumericVector out(base.size());
+  std::transform(base.begin(), base.end(),
+                 exp.begin(), out.begin(), ::pow);
+  return out;
 }
 
+//##############################################################----------
+// [[Rcpp::export]] 
+List deriv_test(List par, int y, int m, int d){
+
+int sp, links, prey, pred, i;
+  double caught, Q;
+  // Fishing vars
+  int gr, dest;
+  
+  // Parse out List mod
+  int NUM_GROUPS                 = as<int>(par["NUM_GROUPS"]);
+  int NUM_LIVING                 = as<int>(par["NUM_LIVING"]);
+  int NUM_DEAD                   = as<int>(par["NUM_DEAD"]);
+  int NumPredPreyLinks           = as<int>(par["NumPredPreyLinks"]);
+  int NumFishingLinks            = as<int>(par["NumFishingLinks"]);
+  int NumDetLinks                = as<int>(par["NumDetLinks"]);
+  int juv_N                      = as<int>(par["juv_N"]);
+  int COUPLED                    = as<int>(par["COUPLED"]);
+  
+  NumericVector B_BaseRef        = as<NumericVector>(par["B_BaseRef"]);
+  NumericVector MzeroMort        = as<NumericVector>(par["MzeroMort"]);
+  NumericVector UnassimRespFrac  = as<NumericVector>(par["UnassimRespFrac"]);
+  NumericVector ActiveRespFrac   = as<NumericVector>(par["ActiveRespFrac"]);
+  NumericVector fish_Effort      = as<NumericVector>(par["fish_Effort"]);
+  NumericVector HandleSelf       = as<NumericVector>(par["HandleSelf"]);
+  NumericVector ScrambleSelf     = as<NumericVector>(par["ScrambleSelf"]);
+
+  IntegerVector PreyFrom         = as<IntegerVector>(par["PreyFrom"]);
+  IntegerVector PreyTo           = as<IntegerVector>(par["PreyTo"]);
+   NumericVector QQ               = as<NumericVector>(par["QQ"]);
+   NumericVector DD               = as<NumericVector>(par["DD"]);
+   NumericVector VV               = as<NumericVector>(par["VV"]);
+   NumericVector HandleSwitch     = as<NumericVector>(par["HandleSwitch"]);
+   NumericVector PredPredWeight   = as<NumericVector>(par["PredPredWeight"]);
+   NumericVector PreyPreyWeight   = as<NumericVector>(par["PreyPreyWeight"]);
+
+  IntegerVector FishFrom         = as<IntegerVector>(par["FishFrom"]);
+  IntegerVector FishThrough      = as<IntegerVector>(par["FishThrough"]);
+  IntegerVector FishTo           = as<IntegerVector>(par["FishTo"]);
+  NumericVector FishQ            = as<NumericVector>(par["FishQ"]);
+
+  IntegerVector DetFrom          = as<IntegerVector>(par["DetFrom"]);
+  IntegerVector DetTo            = as<IntegerVector>(par["DetTo"]);
+  NumericVector DetFrac          = as<NumericVector>(par["DetFrac"]);
+
+  NumericVector stanzaPred       = as<NumericVector>(par["stanzaPred"]);
+  NumericVector stanzaBasePred   = as<NumericVector>(par["stanzaBasePred"]);
+  NumericVector JuvNum           = as<NumericVector>(par["JuvNum"]);
+  NumericVector AduNum           = as<NumericVector>(par["AduNum"]);
+
+  NumericVector state_BB         = as<NumericVector>(par["state_BB"]);
+  NumericVector state_Ftime      = as<NumericVector>(par["state_Ftime"]);
+  
+  NumericVector TerminalF        = as<NumericVector>(par["TerminalF"]);
+  NumericVector TARGET_BIO       = as<NumericVector>(par["TARGET_BIO"]);
+  NumericVector TARGET_F         = as<NumericVector>(par["TARGET_F"]);
+  NumericVector ALPHA            = as<NumericVector>(par["ALPHA"]);
+  
+  //NumericMatrix force_byprey     = as<NumericMatrix>(par["force_byprey"]);
+  //NumericMatrix force_bymort     = as<NumericMatrix>(par["force_bymort"]);
+  //NumericMatrix force_bysearch   = as<NumericMatrix>(par["force_bysearch"]);
+  //NumericMatrix FORCED_FRATE     = as<NumericMatrix>(par["FORCED_FRATE"]);
+  //NumericMatrix FORCED_CATCH     = as<NumericMatrix>(par["FORCED_CATCH"]);
+
+  NumericVector TotGain(NUM_GROUPS);//          = as<NumericVector>(par["TotGain"]);
+  NumericVector TotLoss(NUM_GROUPS);          //= as<NumericVector>(par["TotLoss"]);
+  NumericVector LossPropToB(NUM_GROUPS);      //= as<NumericVector>(par["LossPropToB"]);
+  NumericVector LossPropToQ(NUM_GROUPS);      //= as<NumericVector>(par["LossPropToQ"]);
+  NumericVector DerivT(NUM_GROUPS);           //= as<NumericVector>(par["DerivT"]);
+  //NumericVector dyt(NUM_GROUPS);              //= as<NumericVector>(par["dyt"]);
+  NumericVector biomeq(NUM_GROUPS);           //= as<NumericVector>(par["biomeq"]);  
+  NumericVector FoodLoss(NUM_GROUPS);//[i]       = 0;
+  NumericVector FoodGain(NUM_GROUPS);//[i]       = 0;
+  NumericVector UnAssimLoss(NUM_GROUPS);//[i]    = 0;
+  NumericVector ActiveRespLoss(NUM_GROUPS);//[i] = 0;   
+  NumericVector DetritalGain(NUM_GROUPS);//[i]   = 0;
+  NumericVector FishingGain(NUM_GROUPS);//[i]    = 0;
+  NumericVector MzeroLoss(NUM_GROUPS);//[i]      = 0;
+  NumericVector FishingLoss(NUM_GROUPS);//[i]    = 0;
+  NumericVector DetritalLoss(NUM_GROUPS);//[i]   = 0;
+  NumericVector FishingThru(NUM_GROUPS);//[i]    = 0;
+  NumericVector PredSuite(NUM_GROUPS);//[i]      = 0;
+  NumericVector HandleSuite(NUM_GROUPS);//[i]    = 0;  
+  
+  NumericVector preyYY(NUM_GROUPS);//            = as<NumericVector>(par["preyYY"]);
+  NumericVector predYY(NUM_GROUPS);//            = as<NumericVector>(par["predYY"]);
+
+  preyYY = state_Ftime * state_BB / B_BaseRef;
+  predYY = state_Ftime * state_BB / B_BaseRef;
+
+
+  
+  // The sun always has a biomass of 1 for Primary Production
+  //preyYY[0] = 1.0;  predYY[0] = 1.0;
+  
+//   // Set functional response biomass for juvenile and adult groups (including foraging time) 
+//   for (i=1; i<=juv_N; i++){
+//     if (stanzaBasePred[JuvNum[i]]>0){
+//       predYY[JuvNum[i]] = state_Ftime[JuvNum[i]] * 
+//         stanzaPred[JuvNum[i]]/stanzaBasePred[JuvNum[i]];
+//       predYY[AduNum[i]] = state_Ftime[AduNum[i]] * 
+//         stanzaPred[AduNum[i]]/stanzaBasePred[AduNum[i]];
+//     }
+//   }
+
+  NumericVector PYY = preyYY[PreyFrom];
+  NumericVector PDY = predYY[PreyTo];
+
+//   // add "mediation by search rate" KYA 7/8/08
+//  for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+//    //FORCE     predYY[sp] *= force_bysearch(y * STEPS_PER_YEAR + m, sp); 
+//   }
+//   
+   // Summed predator and prey for joint handling time and/or scramble functional response
+   for (links=1; links<=NumPredPreyLinks; links++){
+     PredSuite[PreyFrom[links]] += predYY[PreyTo[links]  ] * PredPredWeight[links];
+     HandleSuite[PreyTo[links]] += preyYY[PreyFrom[links]] * PreyPreyWeight[links];
+   }
+   
+   NumericVector PdSuite = PredSuite[PreyFrom];
+   NumericVector PySuite = HandleSuite[PreyTo];
+   NumericVector Hself   = HandleSelf[PreyTo]; 
+   NumericVector Sself   = ScrambleSelf[PreyTo];
+   
+//   // Main loop to calculate functional response for each predator/prey link
+//     // (3) Additive version: primary used and published in Aydin (2004) 
+//     // KYA 3/2/2012 setting "COUPLED" to zero means species are density dependent
+//     // (based on their own modul) but don't interact otherwise.  This can magically
+//     // create and destroy energy in the system but makes them act like a set
+//     // of independent surplus production models for comparison purposes 
+//     Q =   QQ[links] * predYY[pred] * pow(preyYY[prey], COUPLED * HandleSwitch[links]) *
+//       ( DD[links] / ( DD[links] - 1.0 + 
+//       pow(HandleSelf[pred] * preyYY[prey]   + 
+//       (1. - HandleSelf[pred]) * HandleSuite[pred],
+//                                            COUPLED * HandleSwitch[links])) )*
+//                                              ( VV[links] / ( VV[links] - 1.0 + 
+//                                              ScrambleSelf[pred] * predYY[pred] + 
+//                                              (1. - ScrambleSelf[pred]) * PredSuite[prey]) );
+  NumericVector Q1 = QQ * PDY * vpow(PYY, HandleSwitch * COUPLED) *
+           ( DD / ( DD-1.0 + vpow(Hself*PYY + (1.-Hself)*PySuite, COUPLED*HandleSwitch)) )*
+           ( VV / ( VV-1.0 +      Sself*PDY + (1.-Sself)*PdSuite) );
+  
+//     // Include any Forcing by prey   
+//     Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
+
+
+ for (links=1; links<=NumPredPreyLinks; links++){
+    prey = PreyFrom[links];
+    pred = PreyTo[links];
+      // If model is uncoupled, food loss doesn't change with prey or predator levels.
+      if (COUPLED){  FoodLoss[prey]  += Q1[links]; }
+      else{  FoodLoss[prey]  += state_BB[prey] * QQ[links]/B_BaseRef[prey]; }
+      FoodGain[pred]           += Q1[links];
+ }
+
+// By Species Rates 
+     UnAssimLoss    = FoodGain  * UnassimRespFrac; 
+     ActiveRespLoss = FoodGain  * ActiveRespFrac;  												 
+     MzeroLoss      = MzeroMort * state_BB;
+   
+//   // MOST OF THE FOLLOWING FISHING SPECIFICATION METHODS ARE NOT SUPPORTED
+//   // BY THE R-CODE, only fishing by effort (for gear) or by F-rate (for
+//   // species) is supported at the end.
+//   //
+//   // BY CURRENT R-CODE.  ONLY    
+//   // RFISH for (gr=NUM_LIVING+NUM_DEAD+1; gr<=NUM_GROUPS; gr++){
+//   // RFISH This sets EFFORT by time series of gear-target combinations
+//   // RFISH 		   for (gr=NUM_LIVING+NUM_DEAD+1; gr<=NUM_GROUPS; gr++){
+//   // RFISH if -1 is an input value, uses TERMINAL F (last non-negative F) 		
+//   //RFISH 		   for (gr=NUM_LIVING+NUM_DEAD+1; gr<=NUM_GROUPS; gr++){
+//   //RFISH 		       if (y+m+d == 0){fish_Effort[gr]=1.0;}
+//   //RFISH 		       else           {fish_Effort[gr]=1.0;} // NOTE DEFAULT!  THIS CAN BE CHANGED TO 1.0
+//   //RFISH        // Added 7/8/08 for forced effort
+//   //RFISH            if (FORCED_EFFORT[gr][y] > -0.001) 
+//   //RFISH 					    {fish_Effort[gr]=FORCED_EFFORT[gr][y];}
+//   //RFISH 
+//   //RFISH 			     if ((FORCED_TARGET[gr]>0) && (FORCED_CATCH[gr][y]>-EPSILON)){
+//   //RFISH 			        totQ = 0.0;
+//   //RFISH 			        sp   = FORCED_TARGET[gr];
+//   //RFISH 			        for (links=1; links<=NumFishingLinks; links++){
+//   //RFISH     					    if ((FishingThrough[links] == gr) && 
+//   //RFISH 		    					    (FishingFrom[links]) == sp){
+//   //RFISH 				    					totQ += FishingQ[links];
+//   //RFISH 									}
+//   //RFISH 						  }
+//   //RFISH 						  fish_Effort[gr] = FORCED_CATCH[gr][y]/ 
+//   //RFISH 							                  (totQ * state_BB[sp]);
+//   //RFISH 							if (FORCED_CATCH[gr][y] >= state_BB[sp])
+//   //RFISH 							   {fish_Effort[gr] = (1.0-EPSILON)*(state_BB[sp])/ 
+//   //RFISH 				    			                  (totQ * state_BB[sp]);}
+//   //RFISH 					 }
+//   //RFISH 					 // By putting F after catch, Frates override absolute catch
+//   //RFISH 			     if ((FORCED_FTARGET[gr]>0) && (FORCED_FRATE[gr][y]>-EPSILON)){
+//   //RFISH 			        totQ = 0.0;
+//   //RFISH 			        sp   = FORCED_FTARGET[gr];
+//   //RFISH 			        for (links=1; links<=NumFishingLinks; links++){
+//   //RFISH     					    if ((FishingThrough[links] == gr) && 
+//   //RFISH 		    					    (FishingFrom[links]) == sp){
+//   //RFISH 				    					totQ += FishingQ[links];
+//   //RFISH 									}
+//   //RFISH 						  }
+//   //RFISH 						  fish_Effort[gr] = FORCED_FRATE[gr][y]/totQ;
+//   //RFISH 							//if (FORCED_CATCH[gr][y] >= state_BB[sp])
+//   //RFISH 							//   {fish_Effort[gr] = (1.0-EPSILON)*(state_BB[sp])/ 
+//   //RFISH 				    //			                  (totQ * state_BB[sp]);}
+//   //RFISH 					 }					 
+//   //RFISH 					 
+//   //RFISH 				   //if ((y==0) && (m==0) && (d==0)){
+//   //RFISH 					 //    cout << path_species[gr] << " " << FORCED_TARGET[gr] << " " << path_species[sp] << " " 
+//   //RFISH 					 //	      << state_BB[sp] << " " << FORCED_CATCH[gr][y] << " "
+//   //RFISH 					 //		      << fish_Effort[gr] << endl;
+//   //RFISH 					 //} 					 
+//   //RFISH 			 }
+//   
+//    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
+//    for (links=1; links<=NumFishingLinks; links++){
+//      prey = FishFrom[links];
+//      gr   = FishThrough[links];
+//      dest = FishTo[links];
+//      caught = FishQ[links] * fish_Effort[gr] * state_BB[prey]; 
+//      FishingLoss[prey] += caught;
+//      FishingThru[gr]   += caught;
+//      FishingGain[dest] += caught;
+//    }		
+//    
+// //   //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
+//    for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+//   //   caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
+//      // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
+//         // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
+//      if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
+//      FishingLoss[sp] += caught;
+//      FishingThru[0]  += caught;
+//      FishingGain[0]  += caught;
+//      TerminalF[sp] = caught/state_BB[sp];
+//    }
+//    
+//    // KINKED CONTROL RULE - NEEDS INPUT of TARGET BIOMASS and TARGET CATCH
+//    double RefBio, maxcaught;
+//    for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+//      if (TARGET_BIO[sp] > EPSILON){
+//        RefBio    = state_BB[sp] / TARGET_BIO[sp];
+//        maxcaught = TARGET_F[sp] * state_BB[sp];         
+//        if      (RefBio > 1.0)           {caught = maxcaught;}
+//        else if (RefBio >= ALPHA[sp]) {caught = maxcaught * (RefBio - ALPHA[sp])/(1.0 - ALPHA[sp]);}
+//        else                             {caught = 0.0;}
+//        FishingLoss[sp] += caught;
+//        FishingThru[0]  += caught;
+//        FishingGain[0]  += caught;
+//        TerminalF[sp] = caught/state_BB[sp];
+//      }          
+//    }
+//    
+//    // DETRITUS  - note: check interdetrital flow carefully, have had some issues
+//    // (check by ensuring equlibrium run stays in equilibrium)
+//    int liv, det;
+//    double flow;
+//    for (links=1; links<=NumDetLinks; links++){
+//      liv  = DetFrom[links];
+//      det  = DetTo[links];
+//      flow = DetFrac[links] * (MzeroLoss[liv] + UnAssimLoss[liv]);
+//      DetritalGain[det] += flow;
+//      if (liv > NUM_LIVING) {DetritalLoss[liv] += flow; }
+//    }
+//    for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+//      MzeroLoss[sp] = 0.0;
+//    }  
+   
+   // Add mortality forcing
+//   for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+//     FoodLoss[i]  *= force_bymort(y * STEPS_PER_YEAR + m, i);
+//     MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
+//   }
+   
+//   // Sum up derivitive parts; move previous derivative to dyt        
+//   for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+     //dyt = DerivT;//     dyt[i]=DerivT[i];
+     TotGain = FoodGain + DetritalGain + FishingGain;      
+     LossPropToQ = UnAssimLoss + ActiveRespLoss;
+     LossPropToB = FoodLoss    + MzeroLoss + FishingLoss  + DetritalLoss; 
+     TotLoss = LossPropToQ + LossPropToB;    
+     DerivT  = TotGain - TotLoss; 
+//     
+//     // Set biomeq for "fast equilibrium" of fast variables
+//     if (state_BB[i] > 0) {
+//       biomeq[i] = TotGain[i] / 
+//       (TotLoss[i] / state_BB[i]);
+//     }          
+//   }     
+//   return 0;
+// 
+//   
+   List deriv = List::create(_["TotGain"]=TotGain,
+                             _["TotLoss"]=TotLoss,
+                             _["preyYY"] =preyYY,
+                             _["predYY"] =predYY,
+                             _["Q1"] = Q1);  
+   
+   
+   
+   return(deriv);
+   
+}
+
+
+
+
+//-----#################################################################---- 
 // Deriv master calculates the biomass dynamics derivative
 // [[Rcpp::export]]
 int deriv_master(List mod, int y, int m, int d){
- //if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
-
+  //if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
+  
   // Functional response vars     
   int sp, links, prey, pred, i;
   double caught, Q;
@@ -339,7 +652,7 @@ return 0;
 }
 
 
-
+//-----#################################################################----
 // SplitSetPred function called in sim stanza initialize and update
 // This function simply sums up across juvenile and adult age structure to get 
 // population-level Biomass, Numbers, and Consumption 
@@ -403,7 +716,7 @@ return(0);
 }
 
 
-
+//-----#################################################################----
 // Update juvenile adult or "stanza" age structure during sim run 
 // on monthly timesteps (not hardwiring months, but recommended)
 // [[Rcpp::export]] 
@@ -529,6 +842,7 @@ return(0);
 }
 
 
+//-----#################################################################----
 // [[Rcpp::export]] 
 int Adams_Basforth (List mod, int StartYear, int EndYear){
      

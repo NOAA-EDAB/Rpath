@@ -5,14 +5,29 @@
 
 using namespace Rcpp;
 
-// deriv_test
-int deriv_test(List mod);
-RcppExport SEXP Rpath_deriv_test(SEXP modSEXP) {
+// vpow
+NumericVector vpow(const NumericVector base, const NumericVector exp);
+RcppExport SEXP Rpath_vpow(SEXP baseSEXP, SEXP expSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
-    __result = Rcpp::wrap(deriv_test(mod));
+    Rcpp::traits::input_parameter< const NumericVector >::type base(baseSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type exp(expSEXP);
+    __result = Rcpp::wrap(vpow(base, exp));
+    return __result;
+END_RCPP
+}
+// deriv_test
+List deriv_test(List par, int y, int m, int d);
+RcppExport SEXP Rpath_deriv_test(SEXP parSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type par(parSEXP);
+    Rcpp::traits::input_parameter< int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    __result = Rcpp::wrap(deriv_test(par, y, m, d));
     return __result;
 END_RCPP
 }

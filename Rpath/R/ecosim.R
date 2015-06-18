@@ -5,10 +5,10 @@
 # 
 ################################################################################ 
 #'@export
-ecotest <- function(RP){ 
-  #deriv_master(RP,1,1,1) 
-  Adams_Basforth(RP,0,20)
-  return(deriv_test(RP));
+ecotest <- function(RP,y,m,d){ 
+  #deriv_test(RP,y,m,d) 
+  #Adams_Basforth(RP,0,20)
+  return(deriv_test(RP,y,m,d));
 }
 
 #'Initial set up for Ecosim modual of Rpath
