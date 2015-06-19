@@ -5,12 +5,38 @@
 # 
 ################################################################################ 
 #'@export
-ecotest <- function(RP,y,m,d){ 
-  #deriv_test(RP,y,m,d) 
-  #Adams_Basforth(RP,0,20)
-  return(deriv_test(RP,y,m,d));
+ecotest <- function(RP,y,m,d){
+  YEARS <- 100
+  MF  <- (matrix(1.0, YEARS * 12 + 1, RP$NUM_GROUPS + 1))
+  forces<-c() ; #names(mforcemat)      <- simpar$spname
+  forces$force_byprey   <- MF
+  forces$force_bymort   <- MF
+  forces$force_byrecs   <- MF
+  forces$force_bysearch <- MF
+  
+  YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
+  #names(yforcemat)    <- simpar$spname
+  forces$FORCED_FRATE <- YF
+  forcesFORCED_CATCH  <- YF
+
+  return(deriv_test(RP,forces,y,m,d));
 }
 
+#'@export
+ecoderiv <- function(RP,y,m,d){ 
+  #Rcpp doesn't handle data frames well so need to convert to matrices
+  #RP$force_byprey   <- as.matrix(RP$force_byprey)
+  #RP$force_bymort   <- as.matrix(RP$force_bymort)
+  #RP$force_byrecs   <- as.matrix(RP$force_byrecs)
+  #RP$force_bysearch <- as.matrix(RP$force_bysearch)
+  #RP$FORCED_FRATE   <- as.matrix(RP$FORCED_FRATE)
+  #RP$FORCED_CATCH   <- as.matrix(RP$FORCED_CATCH)
+  #RP$out_BB         <- as.matrix(RP$out_BB)
+  #RP$out_CC         <- as.matrix(RP$out_CC)
+  #RP$out_SSB        <- as.matrix(RP$out_SSB)       
+  #RP$out_rec        <- as.matrix(RP$out_rec)
+  return(deriv_master(RP,y,m,d));
+}
 #'Initial set up for Ecosim modual of Rpath
 #'
 #'Performs initial set up for Ecosim by converting ecopath values to rates,
@@ -174,7 +200,7 @@ ecosim.params <- function(Rpath, juvfile){
   simpar$FishQ           <- c(0, simpar$FishQ)  
   simpar$FishTo          <- c(0, simpar$FishTo)   
   
-  # Unwound discard fate for living groups
+# SET DETRITAL FLOW
   detfrac <- Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]
   detfrom <- row(as.matrix(detfrac))
   detto   <- col(as.matrix(detfrac)) + Rpath$NUM_LIVING
@@ -186,11 +212,12 @@ ecosim.params <- function(Rpath, juvfile){
   simpar$DetFrac <- c(0, detfrac[detfrac > 0], detout[detout > 0])
   simpar$DetFrom <- c(0, detfrom[detfrac > 0], dofrom[detout > 0])
   simpar$DetTo   <- c(0, detto  [detfrac > 0], doto  [detout > 0])
-  
   simpar$NumDetLinks <- length(simpar$DetFrac) - 1
   
+# STATE VARIABLE DEFAULT 
   simpar$state_BB    <- simpar$B_BaseRef
   simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
+  
   
   #Old initialize_stanzas------------------------------------------------------------------------
   #Initialize juvenile adult or "stanza" age structure in sim   
@@ -215,9 +242,7 @@ ecosim.params <- function(Rpath, juvfile){
   simpar$EggsStanza     <- rep(0.0, simpar$juv_N + 1)
   simpar$stanzaGGJuv    <- rep(0.0, simpar$juv_N + 1)
   simpar$stanzaGGAdu    <- rep(0.0, simpar$juv_N + 1)
-  #simpar$drawn_K[MAX_SPLIT + 1]
-  #simpar$drawn_AduZ[MAX_SPLIT + 1]
-  #simpar$drawn_JuvZ[MAX_SPLIT + 1]
+
   simpar$SpawnEnergy    <- rep(0.0, simpar$juv_N + 1)
   simpar$SpawnX         <- rep(0.0, simpar$juv_N + 1)
   simpar$SpawnAllocR    <- rep(0.0, simpar$juv_N + 1)
@@ -938,19 +963,19 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   simpar$TARGET_F   <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$ALPHA      <- rep(0.0, simpar$NUM_GROUPS + 1)
   
-  mforcemat             <- as.data.frame(matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  mforcemat             <- (matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
   names(mforcemat)      <- simpar$spname
   simpar$force_byprey   <- mforcemat
   simpar$force_bymort   <- mforcemat
   simpar$force_byrecs   <- mforcemat
   simpar$force_bysearch <- mforcemat
   
-  yforcemat           <- as.data.frame(matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
+  yforcemat           <- (matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
   names(yforcemat)    <- simpar$spname
   simpar$FORCED_FRATE <- yforcemat
   simpar$FORCED_CATCH <- yforcemat
 
-  omat           <- as.data.frame(matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  omat           <- (matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
   names(omat)    <- simpar$spname
   simpar$out_BB  <- omat 
   simpar$out_CC  <- omat

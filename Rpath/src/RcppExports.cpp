@@ -18,16 +18,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // deriv_test
-List deriv_test(List par, int y, int m, int d);
-RcppExport SEXP Rpath_deriv_test(SEXP parSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+List deriv_test(List par, List force, int y, int m, int d);
+RcppExport SEXP Rpath_deriv_test(SEXP parSEXP, SEXP forceSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< List >::type par(parSEXP);
+    Rcpp::traits::input_parameter< List >::type force(forceSEXP);
     Rcpp::traits::input_parameter< int >::type y(ySEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    __result = Rcpp::wrap(deriv_test(par, y, m, d));
+    __result = Rcpp::wrap(deriv_test(par, force, y, m, d));
     return __result;
 END_RCPP
 }

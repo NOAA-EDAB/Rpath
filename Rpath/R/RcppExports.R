@@ -5,8 +5,8 @@ vpow <- function(base, exp) {
     .Call('Rpath_vpow', PACKAGE = 'Rpath', base, exp)
 }
 
-deriv_test <- function(par, y, m, d) {
-    .Call('Rpath_deriv_test', PACKAGE = 'Rpath', par, y, m, d)
+deriv_test <- function(par, force, y, m, d) {
+    .Call('Rpath_deriv_test', PACKAGE = 'Rpath', par, force, y, m, d)
 }
 
 deriv_master <- function(mod, y, m, d) {

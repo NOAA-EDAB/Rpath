@@ -18,23 +18,21 @@ using namespace Rcpp;
 
 //#define VECTORIZE(X,M,Y)   NumericVector (X) = as<NumericVector>((M)[(Y)])
 //#define MAKEINT(X,M,Y)     int (X) = as<int>(M[(Y)])
+
+//##############################################################----------
 // [[Rcpp::export]]
 NumericVector vpow(const NumericVector base, const NumericVector exp) {
   NumericVector out(base.size());
   std::transform(base.begin(), base.end(),
-                 exp.begin(), out.begin(), ::pow);
-  return out;
-}
+                 exp.begin(), out.begin(), ::pow); return out; }
 
 //##############################################################----------
 // [[Rcpp::export]] 
-List deriv_test(List par, int y, int m, int d){
+List deriv_test(List par, List force, int y, int m, int d){
 
-int sp, links, prey, pred, i;
-  double caught, Q;
-  // Fishing vars
-  int gr, dest;
-  
+int sp, links, prey, pred, gr, dest, i;
+  double caught;
+
   // Parse out List mod
   int NUM_GROUPS                 = as<int>(par["NUM_GROUPS"]);
   int NUM_LIVING                 = as<int>(par["NUM_LIVING"]);
@@ -45,14 +43,16 @@ int sp, links, prey, pred, i;
   int juv_N                      = as<int>(par["juv_N"]);
   int COUPLED                    = as<int>(par["COUPLED"]);
   
+  // NUM_GROUPS length input vectors
   NumericVector B_BaseRef        = as<NumericVector>(par["B_BaseRef"]);
   NumericVector MzeroMort        = as<NumericVector>(par["MzeroMort"]);
   NumericVector UnassimRespFrac  = as<NumericVector>(par["UnassimRespFrac"]);
   NumericVector ActiveRespFrac   = as<NumericVector>(par["ActiveRespFrac"]);
-  NumericVector fish_Effort      = as<NumericVector>(par["fish_Effort"]);
   NumericVector HandleSelf       = as<NumericVector>(par["HandleSelf"]);
   NumericVector ScrambleSelf     = as<NumericVector>(par["ScrambleSelf"]);
-
+  NumericVector fish_Effort      = as<NumericVector>(par["fish_Effort"]);
+  
+  // NumPredPreyLinks Length vectors
   IntegerVector PreyFrom         = as<IntegerVector>(par["PreyFrom"]);
   IntegerVector PreyTo           = as<IntegerVector>(par["PreyTo"]);
    NumericVector QQ               = as<NumericVector>(par["QQ"]);
@@ -84,67 +84,63 @@ int sp, links, prey, pred, i;
   NumericVector TARGET_F         = as<NumericVector>(par["TARGET_F"]);
   NumericVector ALPHA            = as<NumericVector>(par["ALPHA"]);
   
-  //NumericMatrix force_byprey     = as<NumericMatrix>(par["force_byprey"]);
-  //NumericMatrix force_bymort     = as<NumericMatrix>(par["force_bymort"]);
-  //NumericMatrix force_bysearch   = as<NumericMatrix>(par["force_bysearch"]);
-  //NumericMatrix FORCED_FRATE     = as<NumericMatrix>(par["FORCED_FRATE"]);
-  //NumericMatrix FORCED_CATCH     = as<NumericMatrix>(par["FORCED_CATCH"]);
+  NumericMatrix force_byprey     = as<NumericMatrix>(force["force_byprey"]);
+  NumericMatrix force_bymort     = as<NumericMatrix>(force["force_bymort"]);
+  NumericMatrix force_bysearch   = as<NumericMatrix>(force["force_bysearch"]);
+  NumericMatrix FORCED_FRATE     = as<NumericMatrix>(force["FORCED_FRATE"]);
+  NumericMatrix FORCED_CATCH     = as<NumericMatrix>(force["FORCED_CATCH"]);
 
-  NumericVector TotGain(NUM_GROUPS);//          = as<NumericVector>(par["TotGain"]);
-  NumericVector TotLoss(NUM_GROUPS);          //= as<NumericVector>(par["TotLoss"]);
-  NumericVector LossPropToB(NUM_GROUPS);      //= as<NumericVector>(par["LossPropToB"]);
-  NumericVector LossPropToQ(NUM_GROUPS);      //= as<NumericVector>(par["LossPropToQ"]);
-  NumericVector DerivT(NUM_GROUPS);           //= as<NumericVector>(par["DerivT"]);
-  //NumericVector dyt(NUM_GROUPS);              //= as<NumericVector>(par["dyt"]);
-  NumericVector biomeq(NUM_GROUPS);           //= as<NumericVector>(par["biomeq"]);  
-  NumericVector FoodLoss(NUM_GROUPS);//[i]       = 0;
-  NumericVector FoodGain(NUM_GROUPS);//[i]       = 0;
-  NumericVector UnAssimLoss(NUM_GROUPS);//[i]    = 0;
-  NumericVector ActiveRespLoss(NUM_GROUPS);//[i] = 0;   
-  NumericVector DetritalGain(NUM_GROUPS);//[i]   = 0;
-  NumericVector FishingGain(NUM_GROUPS);//[i]    = 0;
-  NumericVector MzeroLoss(NUM_GROUPS);//[i]      = 0;
-  NumericVector FishingLoss(NUM_GROUPS);//[i]    = 0;
-  NumericVector DetritalLoss(NUM_GROUPS);//[i]   = 0;
-  NumericVector FishingThru(NUM_GROUPS);//[i]    = 0;
-  NumericVector PredSuite(NUM_GROUPS);//[i]      = 0;
-  NumericVector HandleSuite(NUM_GROUPS);//[i]    = 0;  
-  
-  NumericVector preyYY(NUM_GROUPS);//            = as<NumericVector>(par["preyYY"]);
-  NumericVector predYY(NUM_GROUPS);//            = as<NumericVector>(par["predYY"]);
+  NumericVector TotGain(NUM_GROUPS+1);//          = as<NumericVector>(par["TotGain"]);
+  NumericVector TotLoss(NUM_GROUPS+1);          //= as<NumericVector>(par["TotLoss"]);
+  NumericVector LossPropToB(NUM_GROUPS+1);      //= as<NumericVector>(par["LossPropToB"]);
+  NumericVector LossPropToQ(NUM_GROUPS+1);      //= as<NumericVector>(par["LossPropToQ"]);
+  NumericVector DerivT(NUM_GROUPS+1);           //= as<NumericVector>(par["DerivT"]);
+  NumericVector biomeq(NUM_GROUPS+1);           //= as<NumericVector>(par["biomeq"]);  
+  NumericVector FoodLoss(NUM_GROUPS+1);//[i]       = 0;
+  NumericVector FoodGain(NUM_GROUPS+1);//[i]       = 0;
+  NumericVector UnAssimLoss(NUM_GROUPS+1);//[i]    = 0;
+  NumericVector ActiveRespLoss(NUM_GROUPS+1);//[i] = 0;   
+  NumericVector DetritalGain(NUM_GROUPS+1);//[i]   = 0;
+  NumericVector FishingGain(NUM_GROUPS+1);//[i]    = 0;
+  NumericVector MzeroLoss(NUM_GROUPS+1);//[i]      = 0;
+  NumericVector FishingLoss(NUM_GROUPS+1);//[i]    = 0;
+  NumericVector DetritalLoss(NUM_GROUPS+1);//[i]   = 0;
+  NumericVector FishingThru(NUM_GROUPS+1);//[i]    = 0;
+  NumericVector PredSuite(NUM_GROUPS+1);//[i]      = 0;
+  NumericVector HandleSuite(NUM_GROUPS+1);//[i]    = 0;  
+    
+  NumericVector preyYY(NUM_GROUPS+1);//            = as<NumericVector>(par["preyYY"]);
+  NumericVector predYY(NUM_GROUPS+1);//            = as<NumericVector>(par["predYY"]);
 
   preyYY = state_Ftime * state_BB / B_BaseRef;
   predYY = state_Ftime * state_BB / B_BaseRef;
 
+ // Set functional response biomass for juvenile and adult groups (including foraging time) 
+   for (i=1; i<=juv_N; i++){
+     if (stanzaBasePred[JuvNum[i]]>0){
+       predYY[JuvNum[i]] = state_Ftime[JuvNum[i]] * 
+         stanzaPred[JuvNum[i]]/stanzaBasePred[JuvNum[i]];
+       predYY[AduNum[i]] = state_Ftime[AduNum[i]] * 
+         stanzaPred[AduNum[i]]/stanzaBasePred[AduNum[i]];
+     } 
+   } 
 
-  
-  // The sun always has a biomass of 1 for Primary Production
-  //preyYY[0] = 1.0;  predYY[0] = 1.0;
-  
-//   // Set functional response biomass for juvenile and adult groups (including foraging time) 
-//   for (i=1; i<=juv_N; i++){
-//     if (stanzaBasePred[JuvNum[i]]>0){
-//       predYY[JuvNum[i]] = state_Ftime[JuvNum[i]] * 
-//         stanzaPred[JuvNum[i]]/stanzaBasePred[JuvNum[i]];
-//       predYY[AduNum[i]] = state_Ftime[AduNum[i]] * 
-//         stanzaPred[AduNum[i]]/stanzaBasePred[AduNum[i]];
-//     }
-//   }
-
+// UnRoll Vectors
   NumericVector PYY = preyYY[PreyFrom];
   NumericVector PDY = predYY[PreyTo];
 
 //   // add "mediation by search rate" KYA 7/8/08
 //  for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-//    //FORCE     predYY[sp] *= force_bysearch(y * STEPS_PER_YEAR + m, sp); 
+//    //FORCE     predYY[sp] *= force_bysearch(y * STEPS_PER_YEAR + m, sp);
+    predYY = predYY * force_bysearch(y * STEPS_PER_YEAR + m,_);
 //   }
 //   
-   // Summed predator and prey for joint handling time and/or scramble functional response
+   // Summed predator and prey suites for joint handling time and/or scramble functional response
    for (links=1; links<=NumPredPreyLinks; links++){
      PredSuite[PreyFrom[links]] += predYY[PreyTo[links]  ] * PredPredWeight[links];
      HandleSuite[PreyTo[links]] += preyYY[PreyFrom[links]] * PreyPreyWeight[links];
    }
-   
+   // Unroll the suites into a NumPredPrey length vector
    NumericVector PdSuite = PredSuite[PreyFrom];
    NumericVector PySuite = HandleSuite[PreyTo];
    NumericVector Hself   = HandleSelf[PreyTo]; 
@@ -164,8 +160,9 @@ int sp, links, prey, pred, i;
 //                                              ( VV[links] / ( VV[links] - 1.0 + 
 //                                              ScrambleSelf[pred] * predYY[pred] + 
 //                                              (1. - ScrambleSelf[pred]) * PredSuite[prey]) );
-  NumericVector Q1 = QQ * PDY * vpow(PYY, HandleSwitch * COUPLED) *
-           ( DD / ( DD-1.0 + vpow(Hself*PYY + (1.-Hself)*PySuite, COUPLED*HandleSwitch)) )*
+  NumericVector Q1 = 
+             QQ * PDY * vpow(PYY, HandleSwitch * COUPLED) *
+           ( DD / ( DD-1.0 + vpow(Hself*PYY + (1.-Hself)*PySuite, COUPLED*HandleSwitch)) ) *
            ( VV / ( VV-1.0 +      Sself*PDY + (1.-Sself)*PdSuite) );
   
 //     // Include any Forcing by prey   
@@ -240,21 +237,22 @@ int sp, links, prey, pred, i;
 //   //RFISH 					 //} 					 
 //   //RFISH 			 }
 //   
-//    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
-//    for (links=1; links<=NumFishingLinks; links++){
-//      prey = FishFrom[links];
-//      gr   = FishThrough[links];
-//      dest = FishTo[links];
-//      caught = FishQ[links] * fish_Effort[gr] * state_BB[prey]; 
-//      FishingLoss[prey] += caught;
-//      FishingThru[gr]   += caught;
-//      FishingGain[dest] += caught;
-//    }		
+  //double oddball;
+    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
+    for (links=1; links<=NumFishingLinks; links++){
+      prey = FishFrom[links];
+      gr   = FishThrough[links];
+      dest = FishTo[links];
+        caught = FishQ[links] *  fish_Effort[gr] * state_BB[prey]; 
+      FishingLoss[prey] += caught;
+      FishingThru[gr]   += caught;
+      FishingGain[dest] += caught;
+    }		
 //    
 // //   //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
 //    for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-//   //   caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
-//      // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
+   //   caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
+      // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
 //         // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
 //      if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
 //      FishingLoss[sp] += caught;
@@ -263,36 +261,36 @@ int sp, links, prey, pred, i;
 //      TerminalF[sp] = caught/state_BB[sp];
 //    }
 //    
-//    // KINKED CONTROL RULE - NEEDS INPUT of TARGET BIOMASS and TARGET CATCH
-//    double RefBio, maxcaught;
-//    for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-//      if (TARGET_BIO[sp] > EPSILON){
-//        RefBio    = state_BB[sp] / TARGET_BIO[sp];
-//        maxcaught = TARGET_F[sp] * state_BB[sp];         
-//        if      (RefBio > 1.0)           {caught = maxcaught;}
-//        else if (RefBio >= ALPHA[sp]) {caught = maxcaught * (RefBio - ALPHA[sp])/(1.0 - ALPHA[sp]);}
-//        else                             {caught = 0.0;}
-//        FishingLoss[sp] += caught;
-//        FishingThru[0]  += caught;
-//        FishingGain[0]  += caught;
-//        TerminalF[sp] = caught/state_BB[sp];
-//      }          
-//    }
+    // KINKED CONTROL RULE - NEEDS INPUT of TARGET BIOMASS and TARGET CATCH
+    double RefBio, maxcaught;
+    for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+      if (TARGET_BIO[sp] > EPSILON){
+        RefBio    = state_BB[sp] / TARGET_BIO[sp];
+        maxcaught = TARGET_F[sp] * state_BB[sp];         
+        if      (RefBio > 1.0)           {caught = maxcaught;}
+        else if (RefBio >= ALPHA[sp]) {caught = maxcaught * (RefBio - ALPHA[sp])/(1.0 - ALPHA[sp]);}
+        else                             {caught = 0.0;}
+        FishingLoss[sp] += caught;
+        FishingThru[0]  += caught;
+        FishingGain[0]  += caught;
+        TerminalF[sp] = caught/state_BB[sp];
+      }          
+    }
 //    
-//    // DETRITUS  - note: check interdetrital flow carefully, have had some issues
-//    // (check by ensuring equlibrium run stays in equilibrium)
-//    int liv, det;
-//    double flow;
-//    for (links=1; links<=NumDetLinks; links++){
-//      liv  = DetFrom[links];
-//      det  = DetTo[links];
-//      flow = DetFrac[links] * (MzeroLoss[liv] + UnAssimLoss[liv]);
-//      DetritalGain[det] += flow;
-//      if (liv > NUM_LIVING) {DetritalLoss[liv] += flow; }
-//    }
-//    for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-//      MzeroLoss[sp] = 0.0;
-//    }  
+    // DETRITUS  - note: check interdetrital flow carefully, have had some issues
+    // (check by ensuring equlibrium run stays in equilibrium)
+    int liv, det;
+    double flow;
+    for (links=1; links<=NumDetLinks; links++){
+      liv  = DetFrom[links];
+      det  = DetTo[links];
+      flow = DetFrac[links] * (MzeroLoss[liv] + UnAssimLoss[liv]);
+      DetritalGain[det] += flow;
+      if (liv > NUM_LIVING) {DetritalLoss[liv] += flow; }
+    }
+    for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+      MzeroLoss[sp] = 0.0;
+    }  
    
    // Add mortality forcing
 //   for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
@@ -300,34 +298,40 @@ int sp, links, prey, pred, i;
 //     MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
 //   }
    
-//   // Sum up derivitive parts; move previous derivative to dyt        
-//   for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     //dyt = DerivT;//     dyt[i]=DerivT[i];
+   // Sum up derivitive parts        
      TotGain = FoodGain + DetritalGain + FishingGain;      
      LossPropToQ = UnAssimLoss + ActiveRespLoss;
      LossPropToB = FoodLoss    + MzeroLoss + FishingLoss  + DetritalLoss; 
      TotLoss = LossPropToQ + LossPropToB;    
+     biomeq  = TotGain/(TotLoss/state_BB);
      DerivT  = TotGain - TotLoss; 
-//     
+     
 //     // Set biomeq for "fast equilibrium" of fast variables
-//     if (state_BB[i] > 0) {
-//       biomeq[i] = TotGain[i] / 
-//       (TotLoss[i] / state_BB[i]);
-//     }          
-//   }     
-//   return 0;
-// 
-//   
-   List deriv = List::create(_["TotGain"]=TotGain,
-                             _["TotLoss"]=TotLoss,
-                             _["preyYY"] =preyYY,
-                             _["predYY"] =predYY,
-                             _["Q1"] = Q1);  
-   
-   
-   
+//     if (state_BB[i] > 0) {biomeq[i] = TotGain[i] / (TotLoss[i] / state_BB[i]);}          
+  
+   List deriv = List::create(
+     _["preyYY"]=preyYY,
+     _["predYY"]=predYY,
+     _["TotGain"]=TotGain,
+     _["TotLoss"]=TotLoss,
+     _["DerivT"]=DerivT,
+     _["biomeq"]=biomeq,
+     _["LossPropToB"]=LossPropToB, 
+     _["LossPropToQ"]=LossPropToQ,                           
+     _["FoodLoss"]=FoodLoss,
+     _["FoodGain"]=FoodGain,
+     _["UnAssimLoss"]=UnAssimLoss,
+     _["ActiveRespLoss"]=ActiveRespLoss,
+     _["DetritalGain"]=DetritalGain,
+     _["FishingGain"]=FishingGain,
+     _["MzeroLoss"]=MzeroLoss,
+     _["FishingLoss"]=FishingLoss,
+     _["DetritalLoss"]=DetritalLoss,
+     _["FishingThru"]=FishingThru,
+     _["PredSuite"]=PredSuite,
+     _["HandleSuite"]=HandleSuite);
+
    return(deriv);
-   
 }
 
 

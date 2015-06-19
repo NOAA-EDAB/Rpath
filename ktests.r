@@ -9,10 +9,10 @@ Ejuv  <- "data/EBS_andre_juvs.csv"
 EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Eastern Bering')
 ERUN  <- ecosim.init(EBS,Ejuv)
 
+#
+as.data.frame(ecotest(ERUN,1,1,1))
+
 require(microbenchmark)
-ecotest(ERUN,1,1,1)
-
-
 microbenchmark(ecotest(ERUN,1,1,1),times=10000L)
 
 #EBS_0 <- ecosim.init(EBS,Ejuv,YEARS=100)
