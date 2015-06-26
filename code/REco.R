@@ -73,7 +73,7 @@ dev.off()
 
 #Use the Rpath object from above to run a 100 year Ecosim
 #Scenario 1 - Equilibrium
-REco.init <- ecosim.init(REco, YEARS = 100, juvfile)
+REco.init <- ecosim.init(REco, years = 100, juvfile)
 REco.i1   <- copy(REco.init)
 REco.s1   <- ecosim.run(REco.i1, 0, 100)
 
