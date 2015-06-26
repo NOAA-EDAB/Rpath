@@ -113,7 +113,7 @@ if(!is.na(filename)){
 #'@family Rpath functions
 #'
 #'@param filename Name of the parameter file.  Must be a .csv. 
-#'@param parameter The type of parameter file you are checking.  Choices include "model",
+#'@param type The type of parameter file you are checking.  Choices include "model",
 #'  "diet", "juvenile", and "pedigree".
 #'
 #'@return Checks Rpath parameter files for consistency.  An error message will be produced if one of
@@ -121,7 +121,129 @@ if(!is.na(filename)){
 #'  (NOTE: This does not ensure data is correct just that it is in the right places).
 #'@import data.table
 #'@export
-check.rpath.param <- function(filename, parameter = 'model'){
+check.rpath.param <- function(filename, type = 'model'){
   parameter <- as.data.table(read.csv(filename))
   
+  if(type == 'model'){
+    #Check to make sure all types are represented
+    if(length(parameter[Type == 0, ]) == 0) stop('Model must contain at least 1 consumer')
+    if(length(parameter[Type == 1, ]) == 0) stop('Model must contain a producer group')
+    if(length(parameter[Type == 2, ]) == 0) stop('Model must contain at least 1 detrital group')
+    if(length(parameter[Type == 3, ]) == 0) stop('Model must contain at least 1 fleet')
+    
+    #Check that there is the proper number of columns
+    n.groups <- nrow(parameter)
+    n.dead   <- length(parameter[Type == 2, Group])
+    n.fleet  <- length(parameter[Type == 3, Group])
+    if(ncol(parameter) != 10 + n.dead + 2 * n.fleet){
+      stop('Model does not have the correct number of column.  There should be 10 columns plus one for 
+           each detrital group plus two for each fleet group (landings and discards).  Please double check 
+           your columns')
+      
+    #Check that either biomass or EE is entered and not both
+    if(length(parameter[is.na(Biomass) & is.na(EE) & Type < 2, Group]) > 0){
+      stop(paste(parameter[is.na(Biomass) & is.na(EE) & Type < 2, Group], 
+                 'are missing both Biomass and EE...must enter one', sep = ' '))
+    }
+    if(length(parameter[!is.na(Biomass) & !is.na(EE) & Type < 2, Group]) > 0){
+      stop(paste(parameter[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
+                 'have both Biomass and EE...only one should be entered', sep = ' '))
+      #consider making this a warning() since you can have both in EwE
+    }
+  
+    #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 2 and 3
+    if(length(parameter[Type > 1 & !is.na(Biomass), Group]) > 0){
+      stop(paste(parameter[Type > 1 & !is.na(Biomass), Group], 
+                 'are not living and should not have a biomass...set to NA', sep = ' '))
+    }
+    if(length(parameter[Type > 1 & !is.na(PB), Group]) > 0){
+      stop(paste(parameter[Type > 1 & !is.na(PB), Group], 
+                 'are not living and should not have a PB...set to NA', sep = ' '))
+    }
+    if(length(parameter[Type > 1 & !is.na(QB), Group]) > 0){
+      stop(paste(parameter[Type > 1 & !is.na(QB), Group], 
+                 'are not living and should not have a QB...set to NA', sep = ' '))
+    }
+    if(length(parameter[Type > 1 & !is.na(EE), Group]) > 0){
+      stop(paste(parameter[Type > 1 & !is.na(EE), Group], 
+                 'are not living and should not have a EE...set to NA', sep = ' '))
+    }
+    if(length(parameter[Type > 1 & !is.na(ProdCons), Group]) > 0){
+      stop(paste(parameter[Type > 1 & !is.na(ProdCons), Group], 
+                 'are not living and should not have a ProdCons...set to NA', sep = ' '))
+    }
+    
+    #Check that types 0 and 1 have a PB
+    if(length(parameter[Type < 2 & is.na(PB), Group]) > 0){
+      stop(paste(parameter[Type < 2 & is.na(PB), Group],
+                 'are missing a PB...set to >= 0', sep = ' '))
+    }
+    
+    #Check that consumers have a QB or ProdCons but not both
+    if(length(parameter[is.na(QB) & is.na(ProdCons) & Type == 0, Group]) > 0){
+      stop(paste(parameter[is.na(QB) & is.na(ProdCons) & Type == 0, Group], 
+                 'are missing both QB and ProdCons...must enter one', sep = ' '))
+    }
+    if(length(parameter[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group]) > 0){
+      stop(paste(parameter[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group],
+                 'have both QB and ProdCons...only one should be entered', sep = ' '))
+    }
+    
+    #Check that BioAcc / Unassim is NA for fleets and numeric for types < 3
+    if(length(parameter[Type == 3 & !is.na(BioAcc), Group]) > 0){
+      stop(paste(parameter[Type == 3 & !is.na(BioAcc), Group],
+                 'are fleets and should not have a BioAcc...set to NA', sep = ' '))
+    }
+    if(length(parameter[Type == 3 & !is.na(Unassim), Group]) > 0){
+      stop(paste(parameter[Type == 3 & !is.na(Unassim), Group],
+                 'are fleets and should not have an Unassim...set to NA', sep = ' '))
+    }
+    if(length(parameter[Type != 3 & is.na(BioAcc), Group]) > 0){
+      stop(paste(parameter[Type != 3 & is.na(BioAcc), Group],
+                 'must have a number for BioAcc...set to >= 0', sep = ' '))
+    }
+    if(length(parameter[Type != 3 & is.na(Unassim), Group]) > 0){
+      stop(paste(parameter[Type != 3 & is.na(Unassim), Group],
+                 'must have a number for Unassim...set to >= 0', sep = ' '))
+    }
+    
+    #Check that only Type 2 has DetInput set
+    if(length(parameter[Type != 2 & !is.na(DetInput), Group]) > 0){
+      stop(paste(parameter[Type != 2 & !is.na(DetInput), Group],
+                 'are not detritus...set DetInput to NA', sep = ' '))
+    }
+    if(length(parameter[Type == 2 & is.na(DetInput), Group]) >0){
+      stop(paste(parameter[Type == 2 & is.na(DetInput), Group],
+                 'are detritus...set DetInput to 0', sep = ' '))
+    }
+    
+    #Check detritus fate is numeric and sum to 1
+    det.matrix <- parameter[, 11:(10 + n.dead), with = F]
+    test.rows  <- rowSums(det.matrix)
+    if(length(setdiff(which(parameter[, Type] == 2), which(test.rows != 1))) > 0){
+      stop(paste(parameter[, Group][setdiff(which(parameter[, Type] == 2), which(test.rows != 1))],
+                 'detrital fate does not sum to 1', sep = ' '))
+    }
+    if(length(which(is.na(det.matrix))) > 0){
+      na.group <- which(is.na(det.matrix))
+      for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- na.group[i] - n.groups
+      na.group <- unique(na.group)
+      stop(paste(parameter[na.group, Group], 
+                 'one or more detrital fates are NA...set to >= 0', sep = ' '))
+    }
+    
+    #Check that landings and discards are numbers for type < 3
+    fleet.matrix <- parameter[, (11 + n.dead):ncol(parameter), with = F]
+    if(length(which(is.na(fleet.matrix))) > 0){
+      na.group <- which(is.na(fleet.matrix))
+      for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- na.group[i] - n.groups
+      na.group <- unique(na.group)
+      stop(paste(parameter[na.group, Group], 
+                 'one or more detrital fates are NA...set to >= 0', sep = ' '))
+    }
+  #Need to make sure only non-fleets counted then do again for only NAs in fleets.....
+    
+  }
 }
+
+
