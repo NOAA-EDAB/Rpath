@@ -20,7 +20,8 @@ Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.init}}; \code{\link{ecosim.pack}};
   \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
-  \code{\link{ecosim.stanzas}}; \code{\link{webplot}};
+  \code{\link{ecosim.stanzas}}; \code{\link{frate.adjust}};
+  \code{\link{frate.table}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

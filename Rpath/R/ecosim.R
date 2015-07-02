@@ -23,7 +23,7 @@
 ecosim.init <- function(Rpath, juvfile, years = 100){
   simpar      <- ecosim.rates(Rpath)
   simpar.stan <- ecosim.stanzas(simpar, juvfile)
-  simpar.pack <- ecosim.pack(simpar.stan)
+  simpar.pack <- ecosim.pack(simpar.stan, years)
   
   class(simpar.pack) <- 'Rpath.sim'
   return(simpar.pack)

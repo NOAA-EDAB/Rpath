@@ -4,12 +4,12 @@
 \alias{check.rpath.param}
 \title{Check Rpath parameter files}
 \usage{
-check.rpath.param(filename, parameter = "model")
+check.rpath.param(filename, type = "model")
 }
 \arguments{
 \item{filename}{Name of the parameter file.  Must be a .csv.}
 
-\item{parameter}{The type of parameter file you are checking.  Choices include "model",
+\item{type}{The type of parameter file you are checking.  Choices include "model",
  "diet", "juvenile", and "pedigree".}
 }
 \value{
@@ -26,7 +26,8 @@ Other Rpath.functions: \code{\link{create.rpath.param}};
   \code{\link{ecopath}}; \code{\link{ecosim.init}};
   \code{\link{ecosim.pack}}; \code{\link{ecosim.plot}};
   \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
-  \code{\link{ecosim.stanzas}}; \code{\link{webplot}};
+  \code{\link{ecosim.stanzas}}; \code{\link{frate.adjust}};
+  \code{\link{frate.table}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

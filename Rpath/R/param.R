@@ -245,5 +245,6 @@ check.rpath.param <- function(filename, type = 'model'){
     
   }
 }
+}
 
 
