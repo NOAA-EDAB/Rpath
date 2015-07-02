@@ -75,6 +75,7 @@ frate.adjust <- function(Rpath.sim, group, gear, frate, multiplier = T, target =
     if(discard == T) fish[Group == group & Gear == gear & Fate >  0, Q := frate]
   }
   Rpath.sim$FishQ <- fish[, Q]
+  return(Rpath.sim)
 }
 
 
