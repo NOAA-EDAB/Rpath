@@ -61,12 +61,12 @@ print.Rpath.sim <- function(x, rows = NA, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
   if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
   out <- c()
-  for(i in 1:(x$NUM_LIVING + x$NUM_DEAD)){
+  for(i in 1:(x$NUM_LIVING + x$NUM_DEAD + 1)){
     sp.out <- data.frame(Group      = x$spname[i],
                          StartBio   = x$out_BB[1, i],
                          EndBio     = x$out_BB[nrow(x$out_CC), i],
-                         StartCatch = x$out_CC[1, i],
-                         EndCatch   = x$out_CC[nrow(x$out_CC) - 1, i])
+                         StartCatch = x$out_CC[1, i] * 12,
+                         EndCatch   = x$out_CC[nrow(x$out_CC) - 1, i] * 12)
     out <- rbind(out, sp.out)
   }
   if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
@@ -104,10 +104,10 @@ summary.Rpath.sim <- function(x, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
   if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
-  totbiomass.start <- sum(x$out_BB[1, ],                  na.rm = T)
-  totbiomass.end   <- sum(x$out_BB[nrow(x$out_BB), ],     na.rm = T)
-  totcatch.start   <- sum(x$out_CC[1, ],                  na.rm = T)
-  totcatch.end     <- sum(x$out_CC[nrow(x$out_CC) - 1, ], na.rm = T)
+  totbiomass.start <- sum(x$out_BB[1, ],                       na.rm = T)
+  totbiomass.end   <- sum(x$out_BB[nrow(x$out_BB), ],          na.rm = T)
+  totcatch.start   <- sum(x$out_CC[1, ] * 12,                  na.rm = T)
+  totcatch.end     <- sum(x$out_CC[nrow(x$out_CC) - 1, ] * 12, na.rm = T)
   out <- data.frame(Num.Groups        = x$NUM_GROUPS,
                     Num.Living      = x$NUM_LIVING,
                     Num.Detritus    = x$NUM_DEAD,
