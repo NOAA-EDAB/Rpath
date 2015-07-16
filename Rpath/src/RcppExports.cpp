@@ -5,18 +5,36 @@
 
 using namespace Rcpp;
 
-// deriv_test
-List deriv_test(List par, List force, int y, int m, int d);
-RcppExport SEXP Rpath_deriv_test(SEXP parSEXP, SEXP forceSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+// Adams_test
+List Adams_test(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+RcppExport SEXP Rpath_Adams_test(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< List >::type par(parSEXP);
-    Rcpp::traits::input_parameter< List >::type force(forceSEXP);
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< List >::type instate(instateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
+    Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
+    Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
+    __result = Rcpp::wrap(Adams_test(params, instate, forcing, fishing, StartYear, EndYear));
+    return __result;
+END_RCPP
+}
+// deriv_test
+List deriv_test(List params, List state, List forcing, List fishing, int y, int m, int d);
+RcppExport SEXP Rpath_deriv_test(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< List >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
     Rcpp::traits::input_parameter< int >::type y(ySEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    __result = Rcpp::wrap(deriv_test(par, force, y, m, d));
+    __result = Rcpp::wrap(deriv_test(params, state, forcing, fishing, y, m, d));
     return __result;
 END_RCPP
 }

@@ -4,68 +4,255 @@
 //#define MAKEINT(X,M,Y)     int (X) = as<int>(M[(Y)])
 
 //##############################################################----------
+//-----#################################################################----
+// [[Rcpp::export]] 
+List Adams_test (List params, List instate, List forcing, List fishing, int StartYear, int EndYear){
+     
+int y, m, dd, sp, i; 
+
+// Parse out List mod
+  i=0;
+    Rprintf("test %d\n", i++);
+  int NUM_LIVING = as<int>(params["NUM_LIVING"]);
+    Rprintf("test %d\n", i++);
+  int NUM_DEAD   = as<int>(params["NUM_DEAD"]);
+    Rprintf("test %d\n", i++);
+  int juv_N      = as<int>(params["juv_N"]);
+    Rprintf("test %d\n", i++);
+  //int init_run   = as<int>(params["init_run"]);
+  //  Rprintf("test %d\n", i++);
+  int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+    Rprintf("test %d\n", i++);
+  int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
+    Rprintf("test %d\n", i++);
+  int NUM_GROUPS = NUM_LIVING+NUM_DEAD;
+  Rprintf("test %d\n", i++);
+  NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
+  NumericVector NoIntegrate      = as<NumericVector>(params["NoIntegrate"]);
+  NumericVector FtimeAdj         = as<NumericVector>(params["FtimeAdj"]);
+  NumericVector FtimeQBOpt       = as<NumericVector>(params["FtimeQBOpt"]);
+  Rprintf("test %d\n", i++);   
+  //NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
+  //NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
+  //NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
+  //NumericVector SpawnBio         = as<NumericVector>(mod["SpawnBio"]);
+  //NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
+  //NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
+  //NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
+  Rprintf("test %d\n", i++);
+  //NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);                      
+  NumericMatrix out_BB(EndYear*12+1, NUM_GROUPS+1);           //= as<NumericMatrix>(mod["out_BB"]);
+  NumericMatrix out_CC(EndYear*12+1, NUM_GROUPS+1);           //= as<NumericMatrix>(mod["out_CC"]);
+  NumericMatrix out_SSB(EndYear*12+1, NUM_GROUPS+1);          //= as<NumericMatrix>(mod["out_SSB"]);
+  NumericMatrix out_rec(EndYear*12+1, NUM_GROUPS+1);          //= as<NumericMatrix>(mod["out_rec"]);
+  Rprintf("test %d\n", i++); 
+   // Update sums of split groups to total biomass for derivative calcs
+//NOJUV      SplitSetPred(mod); 
+      
+    // call derivative twice to set deriv and deriv(t-1)
+    // TODO init versus non init_run     if (init_run){
+   List state = instate;
+   //List dyt0  = deriv_test(params,state,forcing,fishing,0,0,0);
+   List dyt   = deriv_test(params,state,forcing,fishing,0,0,0);
+  Rprintf("test %d\n", i++);
+// MAIN LOOP STARTS HERE
+// ASSUMES STEPS_PER_MONTH is 1.0 always, take out divisions     
+   for (y = StartYear; y < EndYear; y++){                                  
+     Rprintf("Year %d\n",y);
+     for (m = 0; m < STEPS_PER_YEAR; m++){     
+				 dd = y * STEPS_PER_YEAR + m;  // index for monthly output           
+      // save state to output matrix
+      // For non-split pools, SSB is output output as the same as B.
+			// For adults, it is overwritten with SSB, for juvs 0.     
+              //for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){ 
+         NumericVector old_BB    = as<NumericVector>(state["BB"]);
+ 				 NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
+ 	       NumericVector dydt0     = as<NumericVector>(dyt["DerivT"]);
+ 	       
+ 	       dyt   = deriv_test(params,state,forcing,fishing,y,m,0);
+
+         NumericVector dydt1     = as<NumericVector>(dyt["DerivT"]); 
+ 				 NumericVector FoodGain = as<NumericVector>(dyt["FoodGain"]);					
+         NumericVector biomeq   = as<NumericVector>(dyt["biomeq"]);
+//NOJUV  NumericVector pd = ifelse(NoIntegrate<0, stanzaPred, old_B);
+         NumericVector pd = old_BB;         
+         NumericVector new_Ftime =    ifelse( 
+                                         (FoodGain>0)&(pd>0),
+                                            0.1 + 0.9*old_Ftime * 
+                                            ((1.0-FtimeAdj) + FtimeAdj * 
+                                            FtimeQBOpt/(FoodGain/pd)),
+                                      old_Ftime);
+                                                         										                       
+         NumericVector new_BB = 
+                         ifelse( NoIntegrate==0,
+                          (1.0-SORWT)* biomeq + SORWT*old_BB,
+                          ifelse(NoIntegrate==sp,
+                            old_BB + (DELTA_T/2.0) * (3.0*(dydt1 - dydt0)), 
+                          0) 
+                         );
+                                                               										       
+						      // If the new biomass goes to infinity or something, set a
+									// flag to exit the loop and return the problem. 
+						         if ( any(is_na(new_BB)) | any(is_infinite(new_BB)) ) {
+                        CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+                     }
+                  
+									// If the run is during the "burn-in" years, and biomass goes
+									// into the discard range, set flag to exit the loop.  
+//NOJUV                      if (y < BURN_YEARS){
+//NOJUV                        if  ( (new_B < B_BaseRef[sp] * LO_DISCARD) ||
+//NOJUV                              (new_B > B_BaseRef[sp] * HI_DISCARD) ){
+//NOJUV                            CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                         
+//NOJUV                        }                          
+//NOJUV                      }
+                    
+                 // Otherwise if biomass goes very large or very small, set to 
+                 // min or max. 
+								    //MIN_THRESHOLD(new_B, B_BaseRef[sp] * EPSILON);
+                    //MAX_THRESHOLD(new_B, B_BaseRef[sp] * BIGNUM);                    
+   state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON); 
+   state["Ftime"] = pmin(new_Ftime, 2.0);                   
+ 										//state_BB[sp] = new_B;                                
+ 						        
+                 // sum up Catch at every time step (catch is cumulative)
+//NOCATCH                     if (fabs(state_BB[sp]/old_B-1.0) > EPSILON){
+//NOCATCH 								       out_CC(dd, sp) = ((FishingLoss[sp] * DELTA_T) / old_B) *
+//NOCATCH 									                       (state_BB[sp] - old_B) /
+//NOCATCH 										 	    							 log(state_BB[sp] / old_B);
+//NOCATCH 									  }
+//NOCATCH 									  else {out_CC(dd, sp) = (FishingLoss[sp] * DELTA_T);
+//NOCATCH 								    }		  
+  									         
+ 					//			 } // End of species loop
+		    		       
+ 					//}  // End of days loop
+           
+          // Monthly Stanza (split pool) update
+//NOJUV 					   update_stanzas(mod, y, m + 1);
+//NOJUV             SplitSetPred(mod);
+           
+				 // As above for non-split groups, check for out-of-bounds, numerical
+				 // errors, or burn-in model stoppages for juvs and then adults.   
+//NOJUV            for (i = 1; i <= juv_N; i++){
+//NOJUV                sp = JuvNum[i];
+//NOJUV                new_B = state_BB[sp];
+//NOJUV						    if (std::isnan(new_B) || std::isinf(new_B)) {
+//NOJUV                   CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+//NOJUV                }                  
+//NOJUV                if (y < BURN_YEARS){
+//NOJUV                    if  ( (new_B < B_BaseRef[sp] * LO_DISCARD) ||
+//NOJUV                          (new_B > B_BaseRef[sp] * HI_DISCARD) ){
+//NOJUV                         CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                           
+//NOJUV                    }                          
+//NOJUV                }                
+//NOJUV                sp    = AduNum[i];
+//NOJUV                new_B = state_BB[sp];
+//NOJUV						    if (std::isnan(new_B) || std::isinf(new_B)) {
+//NOJUV                    CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+//NOJUV                }     
+//NOJUV                if (y < BURN_YEARS){
+//NOJUV                   if  ( (new_B < B_BaseRef[sp] * LO_DISCARD) ||
+//NOJUV                         (new_B > B_BaseRef[sp] * HI_DISCARD) ){
+//NOJUV                       CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                           
+//NOJUV                   }                          
+//NOJUV                }                
+//NOJUV            }
+         out_BB( dd, _) = old_BB;
+         out_SSB(dd, _) = old_BB;
+         out_rec(dd, _) = old_BB;                           
+//NOJUV               for (i = 1; i <= juv_N; i++){
+//NOJUV                   out_SSB(dd, JuvNum[i]) = 0.0;
+//NOJUV 									out_SSB(dd, AduNum[i]) = SpawnBio[i];
+//NOJUV 									out_rec(dd, AduNum[i]) = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+//NOJUV 
+ 		    }  // End of main months loop
+     
+   }// End of years loop
+       
+   // If you get to the end and haven't crashed, save biomass in the
+   // final time slot before exiting.
+//NOCATCH      if (CRASH_YEAR < 0){
+//NOCATCH         dd = EndYear * STEPS_PER_YEAR;
+//NOCATCH         for (sp = 1; sp <= NUM_LIVING + NUM_DEAD; sp++){ 
+//NOCATCH              out_BB(dd, sp)  = state_BB[sp];
+//NOCATCH              out_SSB(dd, sp) = state_BB[sp];
+//NOCATCH              out_rec(dd, sp) = state_BB[sp];
+//NOCATCH         }
+//NOCATCH         for (i = 1; i <= juv_N; i++){
+//NOCATCH              out_SSB(dd, JuvNum[i]) = 0.0;
+//NOCATCH						  out_SSB(dd, AduNum[i]) = SpawnBio[i];
+//NOCATCH						  out_rec(dd, AduNum[i]) = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
+//NOCATCH         }
+//NOCATCH      }  
+   List outdat = List::create(
+               _["out_BB"]=out_BB);      
+return(outdat);
+} 
+
+
 //##############################################################----------
 // [[Rcpp::export]] 
-List deriv_test(List par, List force, int y, int m, int d){
+List deriv_test(List params, List state, List forcing, List fishing, int y, int m, int d){
 
 int sp, links, prey, pred, gr, dest, i;
   double caught;
 
   // Parse out List mod
-  int NUM_GROUPS                 = as<int>(par["NUM_GROUPS"]);
-  int NUM_LIVING                 = as<int>(par["NUM_LIVING"]);
-  int NUM_DEAD                   = as<int>(par["NUM_DEAD"]);
-  int NumPredPreyLinks           = as<int>(par["NumPredPreyLinks"]);
-  int NumFishingLinks            = as<int>(par["NumFishingLinks"]);
-  int NumDetLinks                = as<int>(par["NumDetLinks"]);
-  int juv_N                      = as<int>(par["juv_N"]);
-  int COUPLED                    = as<int>(par["COUPLED"]);
+  int NUM_GROUPS                 = as<int>(params["NUM_GROUPS"]);
+  int NUM_LIVING                 = as<int>(params["NUM_LIVING"]);
+  int NUM_DEAD                   = as<int>(params["NUM_DEAD"]);
+  int NumPredPreyLinks           = as<int>(params["NumPredPreyLinks"]);
+  int NumFishingLinks            = as<int>(params["NumFishingLinks"]);
+  int NumDetLinks                = as<int>(params["NumDetLinks"]);
+  int juv_N                      = as<int>(params["juv_N"]);
+  int COUPLED                    = as<int>(params["COUPLED"]);
  
   // NUM_GROUPS length input vectors
-  NumericVector B_BaseRef        = as<NumericVector>(par["B_BaseRef"]);
-  NumericVector MzeroMort        = as<NumericVector>(par["MzeroMort"]);
-  NumericVector UnassimRespFrac  = as<NumericVector>(par["UnassimRespFrac"]);
-  NumericVector ActiveRespFrac   = as<NumericVector>(par["ActiveRespFrac"]);
-  NumericVector HandleSelf       = as<NumericVector>(par["HandleSelf"]);
-  NumericVector ScrambleSelf     = as<NumericVector>(par["ScrambleSelf"]);
-  NumericVector fish_Effort      = as<NumericVector>(par["fish_Effort"]);
+  NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
+  NumericVector MzeroMort        = as<NumericVector>(params["MzeroMort"]);
+  NumericVector UnassimRespFrac  = as<NumericVector>(params["UnassimRespFrac"]);
+  NumericVector ActiveRespFrac   = as<NumericVector>(params["ActiveRespFrac"]);
+  NumericVector HandleSelf       = as<NumericVector>(params["HandleSelf"]);
+  NumericVector ScrambleSelf     = as<NumericVector>(params["ScrambleSelf"]);
+  NumericVector fish_Effort      = as<NumericVector>(params["fish_Effort"]);
 
   // NumPredPreyLinks Length vectors
-  IntegerVector PreyFrom         = as<IntegerVector>(par["PreyFrom"]);
-  IntegerVector PreyTo           = as<IntegerVector>(par["PreyTo"]);
-   NumericVector QQ               = as<NumericVector>(par["QQ"]);
-   NumericVector DD               = as<NumericVector>(par["DD"]);
-   NumericVector VV               = as<NumericVector>(par["VV"]);
-   NumericVector HandleSwitch     = as<NumericVector>(par["HandleSwitch"]);
-   NumericVector PredPredWeight   = as<NumericVector>(par["PredPredWeight"]);
-   NumericVector PreyPreyWeight   = as<NumericVector>(par["PreyPreyWeight"]);
+  IntegerVector PreyFrom         = as<IntegerVector>(params["PreyFrom"]);
+  IntegerVector PreyTo           = as<IntegerVector>(params["PreyTo"]);
+   NumericVector QQ               = as<NumericVector>(params["QQ"]);
+   NumericVector DD               = as<NumericVector>(params["DD"]);
+   NumericVector VV               = as<NumericVector>(params["VV"]);
+   NumericVector HandleSwitch     = as<NumericVector>(params["HandleSwitch"]);
+   NumericVector PredPredWeight   = as<NumericVector>(params["PredPredWeight"]);
+   NumericVector PreyPreyWeight   = as<NumericVector>(params["PreyPreyWeight"]);
 
-  IntegerVector FishFrom         = as<IntegerVector>(par["FishFrom"]);
-  IntegerVector FishThrough      = as<IntegerVector>(par["FishThrough"]);
-  IntegerVector FishTo           = as<IntegerVector>(par["FishTo"]);
-  NumericVector FishQ            = as<NumericVector>(par["FishQ"]);
-  IntegerVector DetFrom          = as<IntegerVector>(par["DetFrom"]);
-  IntegerVector DetTo            = as<IntegerVector>(par["DetTo"]);
-  NumericVector DetFrac          = as<NumericVector>(par["DetFrac"]);
+  IntegerVector FishFrom         = as<IntegerVector>(params["FishFrom"]);
+  IntegerVector FishThrough      = as<IntegerVector>(params["FishThrough"]);
+  IntegerVector FishTo           = as<IntegerVector>(params["FishTo"]);
+  NumericVector FishQ            = as<NumericVector>(params["FishQ"]);
+  IntegerVector DetFrom          = as<IntegerVector>(params["DetFrom"]);
+  IntegerVector DetTo            = as<IntegerVector>(params["DetTo"]);
+  NumericVector DetFrac          = as<NumericVector>(params["DetFrac"]);
 
-  NumericVector stanzaPred       = as<NumericVector>(par["stanzaPred"]);
-  NumericVector stanzaBasePred   = as<NumericVector>(par["stanzaBasePred"]);
-  NumericVector JuvNum           = as<NumericVector>(par["JuvNum"]);
-  NumericVector AduNum           = as<NumericVector>(par["AduNum"]);
+  NumericVector stanzaPred       = as<NumericVector>(params["stanzaPred"]);
+  NumericVector stanzaBasePred   = as<NumericVector>(params["stanzaBasePred"]);
+  NumericVector JuvNum           = as<NumericVector>(params["JuvNum"]);
+  NumericVector AduNum           = as<NumericVector>(params["AduNum"]);
 
-  NumericVector state_BB         = as<NumericVector>(par["state_BB"]);
-  NumericVector state_Ftime      = as<NumericVector>(par["state_Ftime"]);
+  NumericVector state_BB         = as<NumericVector>(state["BB"]);
+  NumericVector state_Ftime      = as<NumericVector>(state["Ftime"]);
 
-  NumericVector TerminalF        = as<NumericVector>(par["TerminalF"]);
-  NumericVector TARGET_BIO       = as<NumericVector>(par["TARGET_BIO"]);
-  NumericVector TARGET_F         = as<NumericVector>(par["TARGET_F"]);
-  NumericVector ALPHA            = as<NumericVector>(par["ALPHA"]);
+  NumericVector TerminalF        = as<NumericVector>(params["TerminalF"]);
+  NumericVector TARGET_BIO       = as<NumericVector>(params["TARGET_BIO"]);
+  NumericVector TARGET_F         = as<NumericVector>(params["TARGET_F"]);
+  NumericVector ALPHA            = as<NumericVector>(params["ALPHA"]);
 
-  NumericMatrix force_byprey     = as<NumericMatrix>(force["byprey"]);
-  NumericMatrix force_bymort     = as<NumericMatrix>(force["bymort"]);
-  NumericMatrix force_bysearch   = as<NumericMatrix>(force["bysearch"]);
-  NumericMatrix FORCED_FRATE     = as<NumericMatrix>(force["FRATE"]);
-  NumericMatrix FORCED_CATCH     = as<NumericMatrix>(force["CATCH"]);
+  NumericMatrix force_byprey     = as<NumericMatrix>(forcing["byprey"]);
+  NumericMatrix force_bymort     = as<NumericMatrix>(forcing["bymort"]);
+  NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["bysearch"]);
+  
+  NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
+  NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["CATCH"]);
 
   NumericVector TotGain(NUM_GROUPS+1);//          = as<NumericVector>(par["TotGain"]);
   NumericVector TotLoss(NUM_GROUPS+1);          //= as<NumericVector>(par["TotLoss"]);
@@ -88,7 +275,7 @@ int sp, links, prey, pred, gr, dest, i;
     
   NumericVector preyYY(NUM_GROUPS+1);//            = as<NumericVector>(par["preyYY"]);
   NumericVector predYY(NUM_GROUPS+1);//            = as<NumericVector>(par["predYY"]);
-            Rprintf("0j\n");
+   //         Rprintf("0j\n");
   //Rprintf("1\n");
   preyYY = state_Ftime * state_BB / B_BaseRef;
   predYY = state_Ftime * state_BB / B_BaseRef;
@@ -146,14 +333,14 @@ int sp, links, prey, pred, gr, dest, i;
 //     // Include any Forcing by prey   
 //     Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
 
-//  Rprintf("3\n"); 
+//  No vector solution here as we need to sum by both links and species 
  for (links=1; links<=NumPredPreyLinks; links++){
-    prey = PreyFrom[links];
-    pred = PreyTo[links];
-      // If model is uncoupled, food loss doesn't change with prey or predator levels.
-      if (COUPLED){  FoodLoss[prey]  += Q1[links]; }
-      else{  FoodLoss[prey]  += state_BB[prey] * QQ[links]/B_BaseRef[prey]; }
-      FoodGain[pred]           += Q1[links];
+      prey = PreyFrom[links];
+      pred = PreyTo[links];
+  // If model is uncoupled, food loss doesn't change with prey or predator levels.
+     if (COUPLED){  FoodLoss[prey]  += Q1[links]; }
+     else{  FoodLoss[prey]  += state_BB[prey] * QQ[links]/B_BaseRef[prey]; }
+     FoodGain[pred]         += Q1[links];
  }
 
 // By Species Rates 
@@ -876,7 +1063,7 @@ double old_B, new_B, pd; //nn, ww, bb,
          deriv_master(mod, 0, 0, 0);
          deriv_master(mod, 0, 0, 0);
       }
-
+      
     // MAIN LOOP STARTS HERE     
        for (y = StartYear; y < EndYear; y++){                                  
          for (m = 0; m < STEPS_PER_YEAR; m++){

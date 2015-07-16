@@ -5,6 +5,31 @@
 # 
 ################################################################################ 
 #'@export
+Adamstest <- function(RP){
+  # monthly forcing matrix of 1.0s
+  YEARS <- 100
+  MF  <- (matrix(1.0, YEARS * 12 + 1, RP$NUM_GROUPS + 1))
+  
+  # yearly forcing matrix of 1.0s  
+  YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
+  
+  state   <- list(BB    = RP$state_BB, 
+                  Ftime = RP$state_Ftime)
+  
+  forcing <- list(byprey=MF, 
+                  bymort=MF, 
+                  byrecs=MF, 
+                  bysearch=MF)
+  fishing <- list(
+    FRATE=YF,
+    CATCH=YF
+  )  
+  return(Adams_test (RP, state, forcing, fishing, 0 , YEARS));
+  }
+
+
+#####################################################################################
+#'@export
 ecotest <- function(RP,y,m,d){
   YEARS <- 100
   
@@ -14,10 +39,14 @@ ecotest <- function(RP,y,m,d){
   # yearly forcing matrix of 1.0s  
     YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
   
-  forces <- list(byprey=MF, 
+  state   <- list(BB    = RP$state_BB, 
+                  Ftime = RP$state_Ftime)
+  
+  forcing <- list(byprey=MF, 
                  bymort=MF, 
                  byrecs=MF, 
-                 bysearch=MF,
+                 bysearch=MF)
+  fishing <- list(
                  FRATE=YF,
                  CATCH=YF
                  )  
@@ -30,7 +59,7 @@ ecotest <- function(RP,y,m,d){
   #forces$FORCED_FRATE <- YF
   #forces$FORCED_CATCH <- YF
 
-  return(deriv_test(RP,forces,y,m,d));
+  return(deriv_test(RP,state,forcing,fishing,y,m,d));
 }
 
 #'@export
