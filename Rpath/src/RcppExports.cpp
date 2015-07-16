@@ -5,18 +5,6 @@
 
 using namespace Rcpp;
 
-// vpow
-NumericVector vpow(const NumericVector base, const NumericVector exp);
-RcppExport SEXP Rpath_vpow(SEXP baseSEXP, SEXP expSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const NumericVector >::type base(baseSEXP);
-    Rcpp::traits::input_parameter< const NumericVector >::type exp(expSEXP);
-    __result = Rcpp::wrap(vpow(base, exp));
-    return __result;
-END_RCPP
-}
 // deriv_test
 List deriv_test(List par, List force, int y, int m, int d);
 RcppExport SEXP Rpath_deriv_test(SEXP parSEXP, SEXP forceSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
@@ -80,6 +68,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
     __result = Rcpp::wrap(Adams_Basforth(mod, StartYear, EndYear));
+    return __result;
+END_RCPP
+}
+// vpow
+NumericVector vpow(const NumericVector base, const NumericVector exp);
+RcppExport SEXP Rpath_vpow(SEXP baseSEXP, SEXP expSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const NumericVector >::type base(baseSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type exp(expSEXP);
+    __result = Rcpp::wrap(vpow(base, exp));
     return __result;
 END_RCPP
 }

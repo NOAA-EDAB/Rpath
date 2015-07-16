@@ -7,17 +7,28 @@
 #'@export
 ecotest <- function(RP,y,m,d){
   YEARS <- 100
-  MF  <- (matrix(1.0, YEARS * 12 + 1, RP$NUM_GROUPS + 1))
-  forces<-c() ; #names(mforcemat)      <- simpar$spname
-  forces$force_byprey   <- MF
-  forces$force_bymort   <- MF
-  forces$force_byrecs   <- MF
-  forces$force_bysearch <- MF
   
-  YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
+  # monthly forcing matrix of 1.0s
+    MF  <- (matrix(1.0, YEARS * 12 + 1, RP$NUM_GROUPS + 1))
+  
+  # yearly forcing matrix of 1.0s  
+    YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
+  
+  forces <- list(byprey=MF, 
+                 bymort=MF, 
+                 byrecs=MF, 
+                 bysearch=MF,
+                 FRATE=YF,
+                 CATCH=YF
+                 )  
+  #forces<-c() ; #names(mforcemat)      <- simpar$spname
+  #forces$force_byprey   <- MF
+  #forces$force_bymort   <- MF
+  #forces$force_byrecs   <- MF
+  #forces$force_bysearch <- MF
   #names(yforcemat)    <- simpar$spname
-  forces$FORCED_FRATE <- YF
-  forcesFORCED_CATCH  <- YF
+  #forces$FORCED_FRATE <- YF
+  #forces$FORCED_CATCH <- YF
 
   return(deriv_test(RP,forces,y,m,d));
 }

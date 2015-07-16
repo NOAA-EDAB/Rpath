@@ -1,6 +1,6 @@
 // Note: this is compiled in C++ to interface with R declarations (extern C) but
 // the code is pretty much straight c.
-
+            
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>

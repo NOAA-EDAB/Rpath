@@ -1,31 +1,9 @@
-#include <Rcpp.h>
-using namespace Rcpp;
- 
-// Various Constants
-#define STEPS_PER_MONTH    1        // Integration Steps per month (speed (5) vs. accuracy (10 to 30))
-#define MAX_MONTHS_STANZA  400      // Max number age pools within stanza calcs (months)
-#define LO_DISCARD         1e-4     // Discard Limit for sense
-#define HI_DISCARD         1e+4     // Discard Limit for sense
 
-// Some fixed definitions, shouldn't need to tweak
-#define STEPS_PER_YEAR     12                   // Steps per year between stanzas ("months")
-#define MIN_THRESHOLD(x,y) if ((x)<(y))(x)=(y)  // Set x to min y if too small
-#define MAX_THRESHOLD(x,y) if ((x)>(y))(x)=(y)  // Set x to max y if too big
-#define DELTA_T            0.083333333333333333
-#define SORWT              0.5                  // Fast Equilibrium smoother
-#define EPSILON            1E-8                 // Test threshold for "too close to zero"
-#define BIGNUM             1E+8                 // Test threshold for "too big"
-
+#include "ecosim.h"
 //#define VECTORIZE(X,M,Y)   NumericVector (X) = as<NumericVector>((M)[(Y)])
 //#define MAKEINT(X,M,Y)     int (X) = as<int>(M[(Y)])
 
 //##############################################################----------
-// [[Rcpp::export]]
-NumericVector vpow(const NumericVector base, const NumericVector exp) {
-  NumericVector out(base.size());
-  std::transform(base.begin(), base.end(),
-                 exp.begin(), out.begin(), ::pow); return out; }
-
 //##############################################################----------
 // [[Rcpp::export]] 
 List deriv_test(List par, List force, int y, int m, int d){
@@ -42,7 +20,7 @@ int sp, links, prey, pred, gr, dest, i;
   int NumDetLinks                = as<int>(par["NumDetLinks"]);
   int juv_N                      = as<int>(par["juv_N"]);
   int COUPLED                    = as<int>(par["COUPLED"]);
-  
+ 
   // NUM_GROUPS length input vectors
   NumericVector B_BaseRef        = as<NumericVector>(par["B_BaseRef"]);
   NumericVector MzeroMort        = as<NumericVector>(par["MzeroMort"]);
@@ -51,7 +29,7 @@ int sp, links, prey, pred, gr, dest, i;
   NumericVector HandleSelf       = as<NumericVector>(par["HandleSelf"]);
   NumericVector ScrambleSelf     = as<NumericVector>(par["ScrambleSelf"]);
   NumericVector fish_Effort      = as<NumericVector>(par["fish_Effort"]);
-  
+
   // NumPredPreyLinks Length vectors
   IntegerVector PreyFrom         = as<IntegerVector>(par["PreyFrom"]);
   IntegerVector PreyTo           = as<IntegerVector>(par["PreyTo"]);
@@ -66,7 +44,6 @@ int sp, links, prey, pred, gr, dest, i;
   IntegerVector FishThrough      = as<IntegerVector>(par["FishThrough"]);
   IntegerVector FishTo           = as<IntegerVector>(par["FishTo"]);
   NumericVector FishQ            = as<NumericVector>(par["FishQ"]);
-
   IntegerVector DetFrom          = as<IntegerVector>(par["DetFrom"]);
   IntegerVector DetTo            = as<IntegerVector>(par["DetTo"]);
   NumericVector DetFrac          = as<NumericVector>(par["DetFrac"]);
@@ -78,17 +55,17 @@ int sp, links, prey, pred, gr, dest, i;
 
   NumericVector state_BB         = as<NumericVector>(par["state_BB"]);
   NumericVector state_Ftime      = as<NumericVector>(par["state_Ftime"]);
-  
+
   NumericVector TerminalF        = as<NumericVector>(par["TerminalF"]);
   NumericVector TARGET_BIO       = as<NumericVector>(par["TARGET_BIO"]);
   NumericVector TARGET_F         = as<NumericVector>(par["TARGET_F"]);
   NumericVector ALPHA            = as<NumericVector>(par["ALPHA"]);
-  
-  NumericMatrix force_byprey     = as<NumericMatrix>(force["force_byprey"]);
-  NumericMatrix force_bymort     = as<NumericMatrix>(force["force_bymort"]);
-  NumericMatrix force_bysearch   = as<NumericMatrix>(force["force_bysearch"]);
-  NumericMatrix FORCED_FRATE     = as<NumericMatrix>(force["FORCED_FRATE"]);
-  NumericMatrix FORCED_CATCH     = as<NumericMatrix>(force["FORCED_CATCH"]);
+
+  NumericMatrix force_byprey     = as<NumericMatrix>(force["byprey"]);
+  NumericMatrix force_bymort     = as<NumericMatrix>(force["bymort"]);
+  NumericMatrix force_bysearch   = as<NumericMatrix>(force["bysearch"]);
+  NumericMatrix FORCED_FRATE     = as<NumericMatrix>(force["FRATE"]);
+  NumericMatrix FORCED_CATCH     = as<NumericMatrix>(force["CATCH"]);
 
   NumericVector TotGain(NUM_GROUPS+1);//          = as<NumericVector>(par["TotGain"]);
   NumericVector TotLoss(NUM_GROUPS+1);          //= as<NumericVector>(par["TotLoss"]);
@@ -111,7 +88,8 @@ int sp, links, prey, pred, gr, dest, i;
     
   NumericVector preyYY(NUM_GROUPS+1);//            = as<NumericVector>(par["preyYY"]);
   NumericVector predYY(NUM_GROUPS+1);//            = as<NumericVector>(par["predYY"]);
-
+            Rprintf("0j\n");
+  //Rprintf("1\n");
   preyYY = state_Ftime * state_BB / B_BaseRef;
   predYY = state_Ftime * state_BB / B_BaseRef;
 
@@ -134,7 +112,7 @@ int sp, links, prey, pred, gr, dest, i;
 //    //FORCE     predYY[sp] *= force_bysearch(y * STEPS_PER_YEAR + m, sp);
     predYY = predYY * force_bysearch(y * STEPS_PER_YEAR + m,_);
 //   }
-//   
+  //Rprintf("2\n");  
    // Summed predator and prey suites for joint handling time and/or scramble functional response
    for (links=1; links<=NumPredPreyLinks; links++){
      PredSuite[PreyFrom[links]] += predYY[PreyTo[links]  ] * PredPredWeight[links];
@@ -168,7 +146,7 @@ int sp, links, prey, pred, gr, dest, i;
 //     // Include any Forcing by prey   
 //     Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
 
-
+//  Rprintf("3\n"); 
  for (links=1; links<=NumPredPreyLinks; links++){
     prey = PreyFrom[links];
     pred = PreyTo[links];
@@ -248,6 +226,7 @@ int sp, links, prey, pred, gr, dest, i;
       FishingThru[gr]   += caught;
       FishingGain[dest] += caught;
     }		
+//  Rprintf("4\n"); 
 //    
 // //   //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
 //    for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
@@ -291,7 +270,7 @@ int sp, links, prey, pred, gr, dest, i;
     for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
       MzeroLoss[sp] = 0.0;
     }  
-   
+//   Rprintf("5\n");   
    // Add mortality forcing
 //   for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
 //     FoodLoss[i]  *= force_bymort(y * STEPS_PER_YEAR + m, i);
@@ -346,10 +325,8 @@ int deriv_master(List mod, int y, int m, int d){
   // Functional response vars     
   int sp, links, prey, pred, i;
   double caught, Q;
-  //unsigned int LL;
   // Fishing vars
   int gr, dest;
-  // double Master_Density, totQ;
   
   // Parse out List mod
   int NUM_GROUPS                 = as<int>(mod["NUM_GROUPS"]);
