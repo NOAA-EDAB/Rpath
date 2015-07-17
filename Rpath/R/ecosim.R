@@ -2,31 +2,39 @@
 # R version of ecosim 
 # originally developed by Kerim Aydin
 # modified by Sean Lucey
-# 
+#                       
 ################################################################################ 
 #'@export
-Adamstest <- function(RP){
-  # monthly forcing matrix of 1.0s
-  YEARS <- 100
-  MF  <- (matrix(1.0, YEARS * 12 + 1, RP$NUM_GROUPS + 1))
-  
-  # yearly forcing matrix of 1.0s  
-  YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
-  
-  state   <- list(BB    = RP$state_BB, 
-                  Ftime = RP$state_Ftime)
-  
-  forcing <- list(byprey=MF, 
-                  bymort=MF, 
-                  byrecs=MF, 
-                  bysearch=MF)
-  fishing <- list(
-    FRATE=YF,
-    CATCH=YF
-  )  
-  return(Adams_test (RP, state, forcing, fishing, 0 , YEARS));
+ecotest.run <- function(RP){ 
+  return(Adams_test (RP$params, RP$state, RP$forcing, RP$fishing, 0 , 100));
+
   }
 
+#####################################################################################
+#'@export
+ecotest.init <- function(Rpath, YEARS=100){
+
+  # Set initial Ecosim parameters and state
+    params <- ecosim.params(Rpath)
+    state  <- list(BB    = params$B_BaseRef, 
+                   Ftime = rep(1, length(params$B_BaseRef) + 1))
+
+  # monthly and yearly matrices initialized to 1.0 for forcing, 0 for fishing 
+    MF <- (matrix(1.0, YEARS * 12 + 1, params$NUM_GROUPS + 1))
+    YF <- (matrix(0.0, YEARS + 1, params$NUM_GROUPS + 1))  
+  
+  # monthly environmental forcing   
+    forcing <- list(byprey=MF, 
+                    bymort=MF, 
+                    byrecs=MF, 
+                    bysearch=MF)
+  # fishing 
+    fishing <- list(FRATE=YF,
+                    CATCH=YF) 
+  
+  rsim = list(params=params,state=state,forcing=forcing,fishing=fishing)
+  return(rsim)   
+}
 
 #####################################################################################
 #'@export
@@ -39,8 +47,8 @@ ecotest <- function(RP,y,m,d){
   # yearly forcing matrix of 1.0s  
     YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
   
-  state   <- list(BB    = RP$state_BB, 
-                  Ftime = RP$state_Ftime)
+   state   <- list(BB    = RP$state_BB, 
+                   Ftime = RP$state_Ftime)
   
   forcing <- list(byprey=MF, 
                  bymort=MF, 
@@ -50,18 +58,10 @@ ecotest <- function(RP,y,m,d){
                  FRATE=YF,
                  CATCH=YF
                  )  
-  #forces<-c() ; #names(mforcemat)      <- simpar$spname
-  #forces$force_byprey   <- MF
-  #forces$force_bymort   <- MF
-  #forces$force_byrecs   <- MF
-  #forces$force_bysearch <- MF
-  #names(yforcemat)    <- simpar$spname
-  #forces$FORCED_FRATE <- YF
-  #forces$FORCED_CATCH <- YF
-
   return(deriv_test(RP,state,forcing,fishing,y,m,d));
 }
 
+#####################################################################################
 #'@export
 ecoderiv <- function(RP,y,m,d){ 
   #Rcpp doesn't handle data frames well so need to convert to matrices
@@ -89,7 +89,7 @@ ecoderiv <- function(RP,y,m,d){
 #'
 #'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 #'@export
-ecosim.params <- function(Rpath, juvfile){
+ecosim.params <- function(Rpath){
   #Old path_to_rates--------------------------------------------------------------------
   MSCRAMBLE      <- 2.0
   MHANDLE        <- 1000.0
@@ -255,9 +255,13 @@ ecosim.params <- function(Rpath, juvfile){
   simpar$NumDetLinks <- length(simpar$DetFrac) - 1
   
 # STATE VARIABLE DEFAULT 
-  simpar$state_BB    <- simpar$B_BaseRef
-  simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
+  #simpar$state_BB    <- simpar$B_BaseRef
+  #simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
+  simpar$BURN_YEARS <- -1
+  simpar$COUPLED    <-  1
+  simpar$CRASH_YEAR <- -1
   
+  return(simpar)
   
   #Old initialize_stanzas------------------------------------------------------------------------
   #Initialize juvenile adult or "stanza" age structure in sim   

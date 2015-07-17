@@ -4,7 +4,7 @@
 \alias{ecosim.params}
 \title{Initial set up for Ecosim modual of Rpath}
 \usage{
-ecosim.params(Rpath, juvfile)
+ecosim.params(Rpath)
 }
 \arguments{
 \item{Rpath}{Rpath object containing a balanced model.}
