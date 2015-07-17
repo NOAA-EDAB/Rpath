@@ -12,26 +12,20 @@ int y, m, dd, sp, i;
 
 // Parse out List mod
   i=0;
-    Rprintf("test %d\n", i++);
+
   int NUM_LIVING = as<int>(params["NUM_LIVING"]);
-    Rprintf("test %d\n", i++);
   int NUM_DEAD   = as<int>(params["NUM_DEAD"]);
-    Rprintf("test %d\n", i++);
   int juv_N      = as<int>(params["juv_N"]);
-    Rprintf("test %d\n", i++);
   //int init_run   = as<int>(params["init_run"]);
-  //  Rprintf("test %d\n", i++);
   int BURN_YEARS = as<int>(params["BURN_YEARS"]);
-    Rprintf("test %d\n", i++);
   int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
-    Rprintf("test %d\n", i++);
   int NUM_GROUPS = NUM_LIVING+NUM_DEAD;
-  Rprintf("test %d\n", i++);
+
   NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
   NumericVector NoIntegrate      = as<NumericVector>(params["NoIntegrate"]);
   NumericVector FtimeAdj         = as<NumericVector>(params["FtimeAdj"]);
   NumericVector FtimeQBOpt       = as<NumericVector>(params["FtimeQBOpt"]);
-  Rprintf("test %d\n", i++);   
+  //Rprintf("test %d\n", i++);   
   //NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
   //NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
   //NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
@@ -39,13 +33,13 @@ int y, m, dd, sp, i;
   //NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
   //NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
   //NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
-  Rprintf("test %d\n", i++);
+
   //NumericVector FishingLoss      = as<NumericVector>(mod["FishingLoss"]);                      
   NumericMatrix out_BB(EndYear*12+1, NUM_GROUPS+1);           //= as<NumericMatrix>(mod["out_BB"]);
   NumericMatrix out_CC(EndYear*12+1, NUM_GROUPS+1);           //= as<NumericMatrix>(mod["out_CC"]);
   NumericMatrix out_SSB(EndYear*12+1, NUM_GROUPS+1);          //= as<NumericMatrix>(mod["out_SSB"]);
   NumericMatrix out_rec(EndYear*12+1, NUM_GROUPS+1);          //= as<NumericMatrix>(mod["out_rec"]);
-  Rprintf("test %d\n", i++); 
+
    // Update sums of split groups to total biomass for derivative calcs
 //NOJUV      SplitSetPred(mod); 
       
@@ -54,11 +48,11 @@ int y, m, dd, sp, i;
    List state = instate;
    //List dyt0  = deriv_test(params,state,forcing,fishing,0,0,0);
    List dyt   = deriv_test(params,state,forcing,fishing,0,0,0);
-  Rprintf("test %d\n", i++);
+
 // MAIN LOOP STARTS HERE
 // ASSUMES STEPS_PER_MONTH is 1.0 always, take out divisions     
    for (y = StartYear; y < EndYear; y++){                                  
-     Rprintf("Year %d\n",y);
+     //Rprintf("Year %d\n",y);
      for (m = 0; m < STEPS_PER_YEAR; m++){     
 				 dd = y * STEPS_PER_YEAR + m;  // index for monthly output           
       // save state to output matrix
@@ -86,11 +80,13 @@ int y, m, dd, sp, i;
          NumericVector new_BB = 
                          ifelse( NoIntegrate==0,
                           (1.0-SORWT)* biomeq + SORWT*old_BB,
-                          ifelse(NoIntegrate==sp,
-                            old_BB + (DELTA_T/2.0) * (3.0*(dydt1 - dydt0)), 
-                          0) 
-                         );
-                                                               										       
+//NOJUV                          //ifelse(NoIntegrate==sp,
+                            old_BB + (DELTA_T/2.0) * (3.0*(dydt1 - dydt0)) 
+                            );
+//NOJUV                            ,0));
+        if(dd==0){
+        Rprintf("%g %g %g %g\n",old_BB[2],dydt1[2],dydt0[2],new_BB[2]);}                 
+        //new_BB[0]=1.0;                                             										       
 						      // If the new biomass goes to infinity or something, set a
 									// flag to exit the loop and return the problem. 
 						         if ( any(is_na(new_BB)) | any(is_infinite(new_BB)) ) {
@@ -105,14 +101,9 @@ int y, m, dd, sp, i;
 //NOJUV                            CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;                         
 //NOJUV                        }                          
 //NOJUV                      }
-                    
-                 // Otherwise if biomass goes very large or very small, set to 
-                 // min or max. 
-								    //MIN_THRESHOLD(new_B, B_BaseRef[sp] * EPSILON);
-                    //MAX_THRESHOLD(new_B, B_BaseRef[sp] * BIGNUM);                    
-   state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON); 
-   state["Ftime"] = pmin(new_Ftime, 2.0);                   
- 										//state_BB[sp] = new_B;                                
+   // Update state variables, set to mins and maxes                                   
+      state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON); 
+      state["Ftime"] = pmin(new_Ftime, 2.0);                                                 
  						        
                  // sum up Catch at every time step (catch is cumulative)
 //NOCATCH                     if (fabs(state_BB[sp]/old_B-1.0) > EPSILON){
@@ -122,11 +113,7 @@ int y, m, dd, sp, i;
 //NOCATCH 									  }
 //NOCATCH 									  else {out_CC(dd, sp) = (FishingLoss[sp] * DELTA_T);
 //NOCATCH 								    }		  
-  									         
- 					//			 } // End of species loop
-		    		       
- 					//}  // End of days loop
-           
+  									                    
           // Monthly Stanza (split pool) update
 //NOJUV 					   update_stanzas(mod, y, m + 1);
 //NOJUV             SplitSetPred(mod);
@@ -185,6 +172,7 @@ int y, m, dd, sp, i;
 //NOCATCH         }
 //NOCATCH      }  
    List outdat = List::create(
+               _["endState"]=state,
                _["out_BB"]=out_BB);      
 return(outdat);
 } 
@@ -468,8 +456,11 @@ int sp, links, prey, pred, gr, dest, i;
      TotGain = FoodGain + DetritalGain + FishingGain;      
      LossPropToQ = UnAssimLoss + ActiveRespLoss;
      LossPropToB = FoodLoss    + MzeroLoss + FishingLoss  + DetritalLoss; 
-     TotLoss = LossPropToQ + LossPropToB;    
+     LossPropToB[0] = 0;  
+     LossPropToQ[0] = 0;
+     TotLoss = LossPropToQ + LossPropToB;      
      biomeq  = TotGain/(TotLoss/state_BB);
+     biomeq[0] = 1.0;
      DerivT  = TotGain - TotLoss; 
      
 //     // Set biomeq for "fast equilibrium" of fast variables
