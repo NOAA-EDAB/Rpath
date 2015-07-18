@@ -5,29 +5,33 @@ Ebase <- "data/EBS_andre_base.csv"
 Ediet <- "data/EBS_andre_diet.csv"
 Eped  <- "data/EBS_andre_ped.csv"
 Ejuv  <- "data/EBS_andre_juvs.csv"
+EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 
-Ebase <- "data/ECS_eis_base_July2015.csv"
-Ediet <- "data/ECS_eis_diet_Jun2015.csv"
-Eped  <- "data/ECS_eis_ped_Jun2015.csv"
-Ejuv  <- "data/ECS_eis_juv_July2015.csv"
-EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Chukchi')
+#Ebase <- "data/ECS_eis_base_July2015.csv"
+#Ediet <- "data/ECS_eis_diet_Jun2015.csv"
+#Eped  <- "data/ECS_eis_ped_Jun2015.csv"
+#Ejuv  <- "data/ECS_eis_juv_July2015.csv"
+#EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Chukchi')
 
 EBASE  <- ecosim.init(EBS,Ejuv)
-TBASE  <- ecotest.init(EBS)
-
-
+EBASE$FORCED_FRATE[1:30,2]<-0.05
 ERUN <- ecosim.run(EBASE,0,100)
-TRUN <- ecotest.run(TBASE)
+etest.plot(ERUN$out_BB)
 
-etest.plot<-function(TB) {
-  N <- length(TB$out_BB[1,])
+TBASE  <- ecotest.init(EBS)
+TBASE$fishing$FRATE[1:30,2]<-0.05
+TRUN <- ecotest.run(TBASE)
+etest.plot(TRUN$out_BB)
+
+etest.plot<-function(outBB) {
+  N <- length(outBB[1,])
   plot( c(1,1201), c(0,2) ,type='n') 
   for (i in 1:N) {
-    lines(1:1201, TB$out_BB[,i]/TB$out_BB[1,i])    
+    lines(1:1201, outBB[,i]/outBB[1,i])    
    }  
 }
 
-etest.plot(TRUN)
+
 
 test <- Adamstest(EBASE)
 tderiv<-ecotest(EBASE,1,1,1)

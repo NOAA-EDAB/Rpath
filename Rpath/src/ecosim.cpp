@@ -1,23 +1,22 @@
 
 #include "ecosim.h"
-//#define VECTORIZE(X,M,Y)   NumericVector (X) = as<NumericVector>((M)[(Y)])
-//#define MAKEINT(X,M,Y)     int (X) = as<int>(M[(Y)])
 
-//##############################################################----------
+//################################################################----------
 //-----#################################################################----
 // [[Rcpp::export]] 
-List Adams_test (List params, List instate, List forcing, List fishing, int StartYear, int EndYear){
+List Adams_test (List params, List instate, List forcing, List fishing, 
+                 int StartYear, int EndYear){
      
 int y, m, dd, sp, i; 
 
 // Parse out List mod
-  int NUM_LIVING = as<int>(params["NUM_LIVING"]);
-  int NUM_DEAD   = as<int>(params["NUM_DEAD"]);
-//NOJUV  int juv_N      = as<int>(params["juv_N"]);
-  //TODO int init_run   = as<int>(params["init_run"]);
-  int BURN_YEARS = as<int>(params["BURN_YEARS"]);
-  int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
-  int NUM_GROUPS = NUM_LIVING+NUM_DEAD;
+   int NUM_LIVING = as<int>(params["NUM_LIVING"]);
+   int NUM_DEAD   = as<int>(params["NUM_DEAD"]);
+// NOJUV  int juv_N      = as<int>(params["juv_N"]);
+   //TODO int init_run   = as<int>(params["init_run"]);
+   int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+   int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
+   int NUM_GROUPS = NUM_LIVING+NUM_DEAD;
 
 // Parameters needed directly by Adams Basforth
    NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
@@ -32,18 +31,20 @@ int y, m, dd, sp, i;
 //NOJUV NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
 //NOJUV NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
 //NOJUV NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
-                     
-  NumericMatrix out_BB(EndYear*12+1, NUM_GROUPS+1);           
-  NumericMatrix out_CC(EndYear*12+1, NUM_GROUPS+1);          
-  NumericMatrix out_SSB(EndYear*12+1, NUM_GROUPS+1);        
-  NumericMatrix out_rec(EndYear*12+1, NUM_GROUPS+1);       
 
-   // Update sums of split groups to total biomass for derivative calcs
+// Monthly output matrices                     
+   NumericMatrix out_BB(EndYear*12+1, NUM_GROUPS+1);           
+   NumericMatrix out_CC(EndYear*12+1, NUM_GROUPS+1);          
+   NumericMatrix out_SSB(EndYear*12+1, NUM_GROUPS+1);        
+   NumericMatrix out_rec(EndYear*12+1, NUM_GROUPS+1);       
+
+// Update sums of split groups to total biomass for derivative calcs
 //NOJUV      SplitSetPred(mod); 
+
 Rprintf("%d\n",3);       
+// TODO init versus non init_run     if (init_run){
 // Load state and call initial derivative    
    List state = instate;
-// TODO init versus non init_run     if (init_run){
    List dyt   = deriv_test(params,state,forcing,fishing,0,0,0);
    Rprintf("%d\n",4); 
 
@@ -67,7 +68,7 @@ Rprintf("%d\n",3);
          NumericVector FishingLoss = as<NumericVector>(dyt["FishingLoss"]);
                
       // Now Update the new State Biomass using Adams-Basforth                                                     										                       
-     // NOJUV ifelse(NoIntegrate==sp, is second part of statement if juvs*/ 
+      // NOJUV ifelse(NoIntegrate==sp, is second part of statement if juvs*/ 
          NumericVector new_BB = 
                        ifelse( NoIntegrate==0,
                          (1.0-SORWT)* biomeq + SORWT*old_BB,
@@ -83,15 +84,16 @@ Rprintf("%d\n",3);
                          old_Ftime);
 
     // Monthly Stanza (split pool) update
-//NOJUV 					   update_stanzas(mod, y, m + 1);
-//NOJUV             SplitSetPred(mod);
+       //NOJUV  update_stanzas(mod, y, m + 1);
+       //NOJUV  SplitSetPred(mod);
 
     // Calculate catch assuming fixed Frate and exponential biomass change.
-        NumericVector new_CC = ifelse( new_BB==old_BB,
-                                       FishingLoss*DELTA_T,
-                                       (FishingLoss*DELTA_T/old_BB) *
-                                       (new_BB-old_BB) / log(new_BB/old_BB) 
-                                     );       
+        NumericVector new_CC = 
+                      ifelse( new_BB==old_BB,
+                        FishingLoss*DELTA_T,
+                        (FishingLoss*DELTA_T/old_BB) *
+                          (new_BB-old_BB)/log(new_BB/old_BB) 
+                      );       
                                                                         										                         
 		 // If the run is during the "burn-in" years, and biomass goes
 		 // into the discard range, set flag to exit the loop.  
@@ -130,7 +132,9 @@ Rprintf("%d\n",3);
    // Write Last timestep 
    out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
    out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
-   out_rec(dd+1, _) = as<NumericVector>(state["BB"]);        
+   out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
+   out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
+           
 //NOJUV         for (i = 1; i <= juv_N; i++){
 //NOJUV              out_SSB(dd, JuvNum[i]) = 0.0;
 //NOJUV						  out_SSB(dd, AduNum[i]) = SpawnBio[i];
@@ -208,7 +212,8 @@ int sp, links, prey, pred, gr, dest, i;
   
   NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
   NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["CATCH"]);
-
+  NumericMatrix EffortMat        = as<NumericMatrix>(fishing["EFFORT"]); 
+  
   NumericVector TotGain(NUM_GROUPS+1);       
   NumericVector TotLoss(NUM_GROUPS+1);         
   NumericVector LossPropToB(NUM_GROUPS+1);     
@@ -354,24 +359,32 @@ int sp, links, prey, pred, gr, dest, i;
 //   //RFISH 					 //} 					 
 //   //RFISH 			 }
 //   
-
+ double caught;
+   
+   
    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
-   // Not using vector notation due to summing bookkeeping
       for (links=1; links<=NumFishingLinks; links++){
  				 prey = FishFrom[links];
  				 gr   = FishThrough[links];
  				 dest = FishTo[links];
- 				 double caught = FishQ[links] * fish_Effort[gr] * state_BB[prey]; 
+ 				 caught =  FishQ[links] * fish_Effort[gr] * state_BB[prey]; 
           FishingLoss[prey] += caught;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
  		}		
-
-  // caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
  
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
-
-        
+        for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+             caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
+             // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
+                // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
+             if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
+             FishingLoss[sp] += caught;
+             FishingThru[0]  += caught;
+             FishingGain[0]  += caught;
+             //TerminalF[sp] = caught/state_BB[sp];
+        }
+            
     // KINKED CONTROL RULE - NEEDS INPUT of TARGET BIOMASS and TARGET CATCH
 //FISHING      double RefBio, maxcaught;
 //FISHING      for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){

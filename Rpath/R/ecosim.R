@@ -7,7 +7,6 @@
 #'@export
 ecotest.run <- function(RP){ 
   return(Adams_test (RP$params, RP$state, RP$forcing, RP$fishing, 0 , 100));
-
   }
 
 #####################################################################################
@@ -29,7 +28,8 @@ ecotest.init <- function(Rpath, YEARS=100){
                     byrecs=MF, 
                     bysearch=MF)
   # fishing 
-    fishing <- list(FRATE=YF,
+    fishing <- list(EFFORT=(matrix(1.0, YEARS + 1, params$NUM_GEARS + 1)),
+                    FRATE=YF,
                     CATCH=YF) 
   
   rsim = list(params=params,state=state,forcing=forcing,fishing=fishing)
@@ -55,6 +55,7 @@ ecotest <- function(RP,y,m,d){
                  byrecs=MF, 
                  bysearch=MF)
   fishing <- list(
+                 EFFORT=(matrix(1.0, YEARS + 1, RP$NUM_GEARS + 1)),
                  FRATE=YF,
                  CATCH=YF
                  )  
@@ -126,6 +127,7 @@ ecosim.params <- function(Rpath){
   simpar$PBopt      <-   c(1.0, Rpath$PB)           
   
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
+  #KYA EFFORT REMOVED FROM PARAMS July 2015
   simpar$fish_Effort <- ifelse(simpar$spnum <= simpar$NUM_LIVING + simpar$NUM_DEAD,
                                0.0,
                                1.0) 
