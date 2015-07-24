@@ -64,7 +64,7 @@ REco.init <- ecosim.init(REco, years = 100, juvfile)
 REco.init$NoIntegrate[2]  <- 1
 REco.init$NoIntegrate[4]  <- 3
 REco.base   <- copy(REco.init)
-REco.base   <- ecosim.run(REco.i1, 0, 100)
+REco.base   <- ecosim.run(REco.base, 0, 100)
 
 # #Write out the basic outputs from ecosim
 # write.Rpath.sim(REco.s1, file = paste(out.dir, 'R_Ecosystem_Ecosim_s1.csv', sep = ''))
@@ -198,7 +198,7 @@ r.rf1.catch <- r.rf1.catch[1:1200, ]
 
 groups <- copy(names(ewe.rf1)[1:20])
 
-jpeg(file = paste(out.dir, 'R_Ecosystem_compare_EwE_R_doubleF_rf1.jpg', sep = ''),
+jpeg(file = paste(out.dir, 'R_Ecosystem_compare_EwE_R_doubleF_rf1_2.jpg', sep = ''),
      height = 1700, width = 1500, res = 200)
 opar <- par(mfrow = c(5, 4), mar = c(2, 2, 2, 2), oma = c(2, 4, 0, 4))
 for(i in 1:length(groups)){
