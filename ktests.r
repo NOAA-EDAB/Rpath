@@ -20,10 +20,15 @@ plot(ERUN$out_BB[1:1200,2])
 
 
 TBASE  <- ecotest.init(EBS)
-TBASE$fishing$FRATE[1:30,2]<-0.05
-TRUN <- ecotest.run(TBASE)
-plot(TRUN$out_BB[1:1200,2])
+#TBASE$fishing$FRATE[1:30,2]<-0.05
+TRUN <- ecotest.run(TBASE,100)
 
+plot(TRUN$out_BB[,2])
+
+TTEST <- TBASE
+TTEST$params <- ecosim.random.params(EBS)
+TRUN <- ecotest.run(TTEST,100)
+plot(TRUN$out_BB[,2])
 
 etest.plot(TRUN$out_BB)
 

@@ -66,14 +66,14 @@ Rprintf("%d\n",3);
  				 NumericVector FoodGain    = as<NumericVector>(dyt["FoodGain"]);					
          NumericVector biomeq      = as<NumericVector>(dyt["biomeq"]);
          NumericVector FishingLoss = as<NumericVector>(dyt["FishingLoss"]);
-               
+         //Rprintf("%g %g \n",dydt1[1],dydt0[1]);      
       // Now Update the new State Biomass using Adams-Basforth                                                     										                       
       // NOJUV ifelse(NoIntegrate==sp, is second part of statement if juvs*/ 
          NumericVector new_BB = 
                        ifelse( NoIntegrate==0,
                          (1.0-SORWT)* biomeq + SORWT*old_BB,
-                         old_BB + (DELTA_T/2.0) * (3.0*(dydt1 - dydt0)) ); 
-
+                         old_BB + (DELTA_T/2.0) * (3.0*dydt1 - dydt0) ); 
+         //Rprintf("%g %g\n",old_BB[1],new_BB[1]);
       // Then Update Foraging Time 
 //NOJUV  NumericVector pd = ifelse(NoIntegrate<0, stanzaPred, old_B);
          NumericVector pd = old_BB;
@@ -112,7 +112,7 @@ Rprintf("%d\n",3);
      //dependencies).
 
      // Update state variables, set to mins and maxes                                   
-        state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON); 
+        old_BB    =      pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON); 
         state["Ftime"] = pmin(new_Ftime, 2.0);                                                 
  		 
      // Write to output matricies     				          									                    
@@ -372,16 +372,17 @@ int sp, links, prey, pred, gr, dest, i;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
  		}		
- 
+    NumericVector FORCE_F = FORCED_FRATE(y,_);
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             caught = FORCED_CATCH(y, sp) + FORCED_FRATE(y, sp) * state_BB[sp];
+             caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_BB[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
              if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
              FishingLoss[sp] += caught;
              FishingThru[0]  += caught;
              FishingGain[0]  += caught;
+             //if(sp==1){Rprintf("%d %g %g %g \n",sp,FORCED_FRATE(y,sp),caught,FishingLoss[sp]);}
              //TerminalF[sp] = caught/state_BB[sp];
         }
             
@@ -455,6 +456,10 @@ int sp, links, prey, pred, gr, dest, i;
      _["PredSuite"]=PredSuite,
      _["HandleSuite"]=HandleSuite);
 
+   //Rprintf("%g %g %g %g %g %g %g %g %g %g %g\n", FoodGain[1],DetritalGain[1],FishingGain[1],
+   //        UnAssimLoss[1],ActiveRespLoss[1],FoodLoss[1],MzeroLoss[1],FishingLoss[1],
+   //        DetritalLoss[1],DerivT[1],biomeq[1]);   
+   
    return(deriv);
 }
 
@@ -772,7 +777,11 @@ int deriv_master(List mod, int y, int m, int d){
             biomeq[i] = TotGain[i] / 
  					                 (TotLoss[i] / state_BB[i]);
         }          
-     }     
+     }   
+     
+    //Rprintf("%g %g %g %g %g %g %g %g %g %g %g\n", FoodGain[1],DetritalGain[1],FishingGain[1],
+    //UnAssimLoss[1],ActiveRespLoss[1],FoodLoss[1],MzeroLoss[1],FishingLoss[1],
+    //DetritalLoss[1],DerivT[1],biomeq[1]);   
 return 0;
 }
 
