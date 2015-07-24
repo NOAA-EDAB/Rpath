@@ -41,12 +41,12 @@ int y, m, dd, sp, i;
 // Update sums of split groups to total biomass for derivative calcs
 //NOJUV      SplitSetPred(mod); 
 
-Rprintf("%d\n",3);       
+//Rprintf("%d\n",3);       
 // TODO init versus non init_run     if (init_run){
 // Load state and call initial derivative    
    List state = instate;
    List dyt   = deriv_test(params,state,forcing,fishing,0,0,0);
-   Rprintf("%d\n",4); 
+   //Rprintf("%d\n",4); 
 
 // MAIN LOOP STARTS HERE
 // ASSUMES STEPS_PER_MONTH will always be 1.0, took out divisions     
