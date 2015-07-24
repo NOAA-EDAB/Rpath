@@ -16,11 +16,15 @@ EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 EBASE  <- ecosim.init(EBS,Ejuv)
 EBASE$FORCED_FRATE[1:30,2]<-0.05
 ERUN <- ecosim.run(EBASE,0,100)
-etest.plot(ERUN$out_BB)
+plot(ERUN$out_BB[1:1200,2])
+
 
 TBASE  <- ecotest.init(EBS)
 TBASE$fishing$FRATE[1:30,2]<-0.05
 TRUN <- ecotest.run(TBASE)
+plot(TRUN$out_BB[1:1200,2])
+
+
 etest.plot(TRUN$out_BB)
 
 etest.plot<-function(outBB) {

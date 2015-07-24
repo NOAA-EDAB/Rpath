@@ -459,19 +459,18 @@ int sp, links, prey, pred, gr, dest, i;
 }
 
 
-
-
-//-----#################################################################---- 
 // Deriv master calculates the biomass dynamics derivative
 // [[Rcpp::export]]
 int deriv_master(List mod, int y, int m, int d){
-  //if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
-  
+ //if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
+
   // Functional response vars     
   int sp, links, prey, pred, i;
   double caught, Q;
+  //unsigned int LL;
   // Fishing vars
   int gr, dest;
+  // double Master_Density, totQ;
   
   // Parse out List mod
   int NUM_GROUPS                 = as<int>(mod["NUM_GROUPS"]);
@@ -778,7 +777,7 @@ return 0;
 }
 
 
-//-----#################################################################----
+
 // SplitSetPred function called in sim stanza initialize and update
 // This function simply sums up across juvenile and adult age structure to get 
 // population-level Biomass, Numbers, and Consumption 
@@ -842,7 +841,7 @@ return(0);
 }
 
 
-//-----#################################################################----
+
 // Update juvenile adult or "stanza" age structure during sim run 
 // on monthly timesteps (not hardwiring months, but recommended)
 // [[Rcpp::export]] 
@@ -968,7 +967,6 @@ return(0);
 }
 
 
-//-----#################################################################----
 // [[Rcpp::export]] 
 int Adams_Basforth (List mod, int StartYear, int EndYear){
      
@@ -1021,7 +1019,7 @@ double old_B, new_B, pd; //nn, ww, bb,
          deriv_master(mod, 0, 0, 0);
          deriv_master(mod, 0, 0, 0);
       }
-      
+
     // MAIN LOOP STARTS HERE     
        for (y = StartYear; y < EndYear; y++){                                  
          for (m = 0; m < STEPS_PER_YEAR; m++){
@@ -1168,3 +1166,4 @@ double old_B, new_B, pd; //nn, ww, bb,
       
 return(0);
 } 
+

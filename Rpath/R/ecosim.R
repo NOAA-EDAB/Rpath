@@ -556,6 +556,12 @@ ecosim.params <- function(Rpath){
   return(simpar)
   
 }
+################################################################################
+# R version of ecosim 
+# originally developed by Kerim Aydin
+# modified by Sean Lucey
+# 
+################################################################################ 
 
 #'Initial set up for Ecosim modual of Rpath
 #'
@@ -685,8 +691,8 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   simpar$PreyPreyWeight <- c(0, simpar$PreyPreyWeight)
   
   #catchlinks
-  fishfrom    <- row(as.matrix(Rpath$Catch))
-  fishthrough <- col(as.matrix(Rpath$Catch)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+  fishfrom    <- row(Rpath$Catch)                      
+  fishthrough <- col(Rpath$Catch) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
   fishcatch   <- Rpath$Catch
   fishto      <- fishfrom * 0
   
@@ -702,8 +708,8 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
     detfate <- Rpath$DetFate[(Rpath$NUM_LIVING + Rpath$NUM_DEAD + 1):Rpath$NUM_GROUPS, d]
     detmat  <- t(matrix(detfate, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
    
-    fishfrom    <-  row(as.matrix(Rpath$Discards))                      
-    fishthrough <-  col(as.matrix(Rpath$Discards)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+    fishfrom    <-  row(Rpath$Discards)                      
+    fishthrough <-  col(Rpath$Discards) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
     fishto      <-  t(matrix(Rpath$NUM_LIVING + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
     fishcatch   <-  Rpath$Discards * detmat
     if(sum(fishcatch) > 0){
@@ -723,10 +729,10 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
 
 # Unwound discard fate for living groups
   detfrac <- Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]
-  detfrom <- row(as.matrix(detfrac))
-  detto   <- col(as.matrix(detfrac)) + Rpath$NUM_LIVING
+  detfrom <- row(detfrac)
+  detto   <- col(detfrac) + Rpath$NUM_LIVING
   
-  detout <- 1 - rowSums(as.matrix(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]))
+  detout <- 1 - rowSums(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ])
   dofrom <- 1:length(detout)
   doto   <- rep(0, length(detout))
   
@@ -1009,19 +1015,19 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
   simpar$TARGET_F   <- rep(0.0, simpar$NUM_GROUPS + 1)
   simpar$ALPHA      <- rep(0.0, simpar$NUM_GROUPS + 1)
   
-  mforcemat             <- (matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  mforcemat             <- as.data.frame(matrix(1.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
   names(mforcemat)      <- simpar$spname
   simpar$force_byprey   <- mforcemat
   simpar$force_bymort   <- mforcemat
   simpar$force_byrecs   <- mforcemat
   simpar$force_bysearch <- mforcemat
   
-  yforcemat           <- (matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
+  yforcemat           <- as.data.frame(matrix(0.0, YEARS + 1, simpar$NUM_GROUPS + 1))
   names(yforcemat)    <- simpar$spname
   simpar$FORCED_FRATE <- yforcemat
   simpar$FORCED_CATCH <- yforcemat
 
-  omat           <- (matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
+  omat           <- as.data.frame(matrix(0.0, YEARS * 12 + 1, simpar$NUM_GROUPS + 1))
   names(omat)    <- simpar$spname
   simpar$out_BB  <- omat 
   simpar$out_CC  <- omat
