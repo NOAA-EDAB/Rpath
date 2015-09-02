@@ -21,7 +21,8 @@
 #'  correctly (NOTE: This does not ensure data is correct just that it is in the right places).
 #'@import data.table
 #'@export
-create.rpath.param <- function(filename = NA, group, type = NA, parameter = 'model'){
+create.rpath.param <- function(parameter = 'model', group = NA, type = NA,  
+                               filename = NA){
   pred.group  <- group[which(type < 2)]
   prey.group  <- group[which(type < 3)]
   det.group   <- group[which(type == 2)]

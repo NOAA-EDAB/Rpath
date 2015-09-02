@@ -4,10 +4,12 @@
 \alias{create.rpath.param}
 \title{Create shells for the Rpath parameter files}
 \usage{
-create.rpath.param(filename = NA, group, type = NA, parameter = "model")
+create.rpath.param(parameter = "model", group = NA, type = NA,
+  filename = NA)
 }
 \arguments{
-\item{filename}{Name of the output file saved as a .csv. If NA the file will not be written.}
+\item{parameter}{The type of parameter file you are creating.  Choices include "model",
+ "diet", "juvenile", and "pedigree".}
 
 \item{group}{Vector of group names.  If parameter equals "juvenile", this should be a vector of
 stanza groups only (Juvenile and Adults in one group).}
@@ -15,8 +17,7 @@ stanza groups only (Juvenile and Adults in one group).}
 \item{type}{Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
 Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.}
 
-\item{parameter}{The type of parameter file you are creating.  Choices include "model",
- "diet", "juvenile", and "pedigree".}
+\item{filename}{Name of the output file saved as a .csv. If NA the file will not be written.}
 }
 \value{
 Outputs a shell of the parameter file indicated by the parameter variable.  The shell
