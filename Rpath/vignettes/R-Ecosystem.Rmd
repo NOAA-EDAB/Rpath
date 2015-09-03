@@ -10,14 +10,25 @@ vignette: >
 ---
 
 Rpath is an implementation of the ecosystem model Ecopath with Ecosim (EwE; 
-Christensen and Walters 2001).  This vignette describes some of the basic 
-functionality of the package using a fictional ecosystem, R Ecosystem.  Any 
-resemblance to an actual ecosystem is purely coincidental.  To see the underlying mathematics please refer to Lucey et al. (in prep).
-```{r echo = F}
+Christensen and Pauly 1992^[Christensen and Pauly. 1992. ECOPATH II - a software
+for balancing steady-state models and calculating network characteristics. 
+Ecological Modelling 61:169-85], Walters et al. 1997^[Walters et al. 1997. 
+Structuring dynamic models of exploited ecosystems from trophic mass-balance 
+assessments. Reviews of Fish Biology and Fisheries 7:1-34]).  This vignette 
+describes some of the basic functionality of the package using a fictional 
+ecosystem, R Ecosystem.  Any resemblance to an actual ecosystem is purely 
+coincidental.  To see the underlying mathematics please refer to Lucey et al. 
+(in prep^[Lucey et al. in prep. Improving the EBFM toolbox with an alternative 
+open source version of Ecopath with Ecosim]).
+
+```{r rpath load, echo = F}
+knitr::opts_chunk$set(
+  comment = '#>',
+  collapse = T)
 library(Rpath)
 ````
 
-## Ecopath
+## Setting up Ecopath
 
 ### Parameter file generation
 Unlike the GUI based EwE software package, Rpath relies on a series of parameter
@@ -38,7 +49,7 @@ fate parameters and fleet landings and discards. The `create.rpath.param` functi
 requires a vector of group names and a vector of their corresponding type (Living = 0, 
 Primary Producer = 1, Detritus = 2, Fleet = 3).
 
-```{r}
+```{r groups}
 #Groups and types for the R Ecosystem
 
 groups <- c('Seabirds', 'Whales', 'Seals', 'JuvRoundfish1', 'AduRoundfish1', 
@@ -53,7 +64,7 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 modfile <- create.rpath.param(parameter = 'model', group = groups, type = types)
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r blank modfile table, echo=FALSE, results='asis'}
 knitr::kable(modfile, caption = 'Example table created using the 
              `create.rpath.param` function')
 ```
@@ -64,7 +75,7 @@ Data tables are an extention of the classic data frame class.  They allow for
 simplified indexing which can help populate the files in R.  For example you can
 add data to a specific slot or fill an entire column.
 
-```{r}
+```{r How to fill}
 #Example of filling specific slots
 modfile <- modfile[Group %in% c('Seals', 'Megabenthos'), EE := 0.8]
 
@@ -74,15 +85,18 @@ biomass <- c(0.0149, 0.454, NA, 0.130, 1.39, 1.233, 5.553, 0.070, 5.766, 0.096,
 modfile <- modfile[, Biomass := biomass]
 
 ```
+
 Note the use of the operator ':=' to assign values.  This is unique to data tables.
-```{r, echo = F}
+
+```{r Modfile Table partial, echo = F}
 knitr::kable(modfile[, list(Group, Type, Biomass, EE)], 
              caption = 'Example of assigning a specific slot or a whole column')
 
 ```
 
 Here is the completed model parameter file for R Ecosystem:
-```{r}
+
+```{r Fill Modfile}
 #PB and QB
 pb <- c(0.098, 0.031, 0.100, 2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18, 0.6,
         0.61, 0.65, 1.5, 0.9, 1.3, 7, 39, 240, rep(NA, 5))
@@ -123,7 +137,7 @@ modfile <- modfile[, Trawlers.disc := trawl.d]
 modfile <- modfile[, Midwater.disc := mid.d]
 modfile <- modfile[, Dredgers.disc := dredge.d]
 ```
-```{r, echo = F}
+```{r Modfile Table, echo = F}
 knitr::kable(modfile, caption = 'Model Parameter file for R Ecosystem')
 ```
 
@@ -136,10 +150,10 @@ skeleton of the diet parameter file using a vector of group names and types as
 well as setting the argument 'parameter' to 'diet'.  Just as within EwE, the columns 
 represent the predators while the rows represent the prey.
 
-```{r}
+```{r initial dietfile}
 dietfile <- create.rpath.param(parameter = 'diet', group = groups, type = types)
 ```
-```{r echo = F}
+```{r blank dietfile table, echo = F}
 knitr::kable(dietfile, caption = 'Skeleton of the diet parameter file generated 
              by `create.rpath.param` function')
 ```
@@ -147,21 +161,25 @@ knitr::kable(dietfile, caption = 'Skeleton of the diet parameter file generated
 Individual diet components can be adjusted by specifying the prey in the 'Group'
 variable and assigning the value to the predator.  For example, if you wanted to
 assign 10% of the seabird diet as 'Other Groundfish' you could do it like this:
-```{r}
+
+```{r how to fill diet 1}
 dietfile <- dietfile[Group == 'OtherGroundfish', Seabirds := 0.1]
 ```
+
 You can also assign the entire diet composition for a predator:
-```{r}
+
+```{r how to fill diet 2}
 whale.diet <- c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, NA, 0.01, rep(NA, 4), 0.1,
                 rep(NA, 3), 0.86, rep(NA, 3))
 dietfile <- dietfile[, Whales := whale.diet]
 ```
-```{r echo = F}
+```{r Dietfile table partial, echo = F}
 knitr::kable(dietfile[, list(Group, Seabirds, Whales)])
 ```
 
 Here is the completed model parameter file for R Ecosystem:
-```{r}
+
+```{r diet fill}
 seabird.diet <- c(rep(NA, 11), 0.1, 0.25, 0.2, 0.15, rep(NA, 6), 0.3)
 seal.diet    <- c(rep(NA, 3), 0.05, 0.1, 0.05, 0.2, 0.005, 0.05, 0.005, 0.01, 0.24, 
                   rep(0.05, 4), 0.09, rep(NA, 5))
@@ -185,7 +203,7 @@ shell.diet   <- c(rep(NA, 18), 0.3, 0.5, 0.2, NA)
 macro.diet   <- c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)
 zoo.diet     <- c(rep(NA, 18), 0.2, 0.6, 0.2, NA)
 
-dietfile <- dietfile[, Seabird         := seabird.diet]
+dietfile <- dietfile[, Seabirds        := seabird.diet]
 dietfile <- dietfile[, Seals           := seal.diet]
 dietfile <- dietfile[, JuvRoundfish1   := juvrf.diet]
 dietfile <- dietfile[, AduRoundfish1   := rf1.diet]
@@ -205,7 +223,7 @@ dietfile <- dietfile[, Macrobenthos    := macro.diet]
 dietfile <- dietfile[, Zooplankton     := zoo.diet]
 
 ```
-```{r, echo = F}
+```{r Dietfile Table, echo = F}
 knitr::kable(dietfile, caption = 'Diet parameter file for R Ecosystem')
 ```
 
@@ -218,81 +236,167 @@ Rpath is currently set up to only handle adult and juvenile stanzas.  We expect
 to expand this capability to multi-stanzas in the near future.  If your model
 does not have any groups with stanzas, you still need to generate a juvenile
 parameter file.  The easiest way to do this is to call the `create.rpath.param`
-function without any groups.
-```{r}
+function without any groups specified.
+
+```{r empty juvfile}
 juvfile <- create.rpath.param(parameter = 'juvenile')
 ```
-```{r, echo = F}
+```{r empty juvfile table, echo = F}
 knitr::kable(juvfile, caption = 'Juvenile parameter file created without any
              multi-stanza groups')
 ```
 
-If you are generating a juvenile parameter file for groups with stanzas, the
-'group' argument should be a vector of the stanza group names (i.e. adults and
-juveniles named the same).
-```{r}
+If your model does have groups with stanzas, generate a juvenile parameter file 
+and set the 'group' argument to a vector of stanza group names (i.e. the Multi-
+stanza group name from EwE).
+
+```{r juvfile with groups}
 juvfile <- create.rpath.param(parameter = 'juvenile', 
                               group = c('Roundfish1', 'Roundfish2', 'Flatfish1', 
                                         'Flatfish2'))
 ```
-```{r, echo = F}
+```{r blank juvfile table, echo = F}
 knitr::kable(juvfile, caption = 'Juvenile parameter file created with stanza groups')
 ```
 
-The JuvNum and AduNum variables refer to the group number of the juveniles and 
-adults respectively.  This refers to there position in the model and diet parameter
-files.
-```{r, comment = '>', results = 'hold'}
+The parameters in this file can be a bit confusing.  The first parameters are the
+JuvNum and AduNum. These refer to their position in the model and diet parameter
+files for the juveniles and adults respectively.  The easiest way to figure this
+out is to use the `which` command on your vector of group names.
+
+```{r group numbers, results = 'hold'}
 #Roundfish1
 cat('JuvRoundfish1:')
 which(groups == 'JuvRoundfish1')
 cat('AduRoundfish1:')
 which(groups == 'AduRoundfish1')
 ```
-RecAge and RecMonth are the variables that tell Rpath when to advance the biomass
-from the juvenile stanza to the adult month.  The RecAge variable is in years while
-the RecMonth is the numeric representation of the month when spawning occurs.  If
-set to zero the spawning is assumed to happen throughout the year.
 
-VonBK is the the specialized von Bertalanffy growth coefficient (Essington et al. 
-2001).  Rpath actually calculates growth using the "generalized" von Bertalanffy 
-growth equation so this k is multiplied by 3 when used.  The "specialized" equation
-is simplified from the "generalized" equation by assuming that consumption rates
-scale with body size to the 2/3 power.  This can be changed in Rpath by specifying
-a value other than 0.6667 for the VonBD variable.  By default, `create.rpath.param`
+The next two parameters, RecAge and RecMonth, effect how biomass flows between 
+the two stanzas.  RecAge, measured in years, determines when to advance the biomass
+from the juvenile stanza to the adult stanza. While RecMonth is the numeric 
+representation of the month when spawning occurs.  If set to zero, spawning is 
+assumed to happen throughout the year (zero should be the default assumption).
+
+Growth in Rpath is modeled using the "generalized" von Bertalanffy growth function
+(VBGF; Essington et al. 2001^[Essington et al. 2001. The von Bertalanffy growth
+function, bioenergetics, and the consumption rates of fish. Canadian Journal of 
+Fisheries and Aquatic Sciences 58:2129-2138]).  However, the "specialized" 
+version of the equation is more commonly used in fisheries.  For this reason, the
+VonBK parameter in the parameter file is the the "specialized"" von Bertalanffy 
+growth coefficient, k. This is consistent with the inputs for EwE. Rpath multiplies 
+this value by 3 when supplying it to the "generalized" VBGF. In addition, the 
+"specialized" VBGF is simplified from the "generalized" VBGF by assuming that 
+consumption rates scale with body size to the 2/3 power (Essington et al. 2001).
+Because Rpath uses the "generalized" VBGF, this can be changed by specifying
+a value other than 0.6667 for the VonBD parameter.  By default, `create.rpath.param`
 populates the VonBD variable with 0.6667.
 
-Other variables in the juvenile parameter file include AduZ_BAB and JuvZ_BAB 
-variables.  These are the total mortality terms for the adult and juvenile stanzas 
-respectively.  Total mortality can be estimated using the PB ratio.  Note that if
-the PB value and Z_BAB value are different, Rpath will use the difference as a biomass
-accumulation term.  This can lead to strange behavior in the model.
+The juvenile parameter file also contains total mortality parameters for the two
+stanzas, AduZ_BAB and JuvZ_BAB.  Total mortality can be estimated using the PB 
+ratio.  Note that if the PB value and Z_BAB value are different, Rpath will use the 
+difference as a biomass accumulation term.  This can lead to strange behavior in the 
+model.
 
+The remaining parameters are related to the growth curve.  Wmat50, Wmat001, Amat50,
+and Amat001 are a ratio of the weight (W) or age (A) at 50% (50) or first (001)
+maturity to the asymptotic weight/age.  Setting Amat001 to -1000000 effectively 
+turns that parameter off in the model (default assumption).  The final parameter 
+is the recruitment power (RecPower).  This is defaulted to 1 (no effect).  This 
+can be used to create non-linear effects of food consumption rate on recruitment 
+per adults (Walter et al. 2000^[Walters et al. 2000. Representing density dependent
+consequences of life history strategies in aquatic ecosystems: EcoSim II. 
+Ecosystems 3:70-83]).
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+Here is the completed juvfile for R Ecosystem:
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```{r fill juvfile}
+juvfile <- juvfile[, JuvNum := c(4, 6, 8, 10)]
+juvfile <- juvfile[, AduNum := c(5, 7, 9, 11)]
+juvfile <- juvfile[, RecAge := c(rep(2, 3), 4)]
+juvfile <- juvfile[, RecMonth := rep(0, 4)]
+juvfile <- juvfile[, VonBK := c(0.145, 0.295, 0.076, 0.112)]
+juvfile <- juvfile[, AduZ_BAB := c(0.42, 0.425, 0.26, 0.18)]
+juvfile <- juvfile[, JuvZ_BAB := c(2.026, 2.1, 1.5, 1.1)]
+juvfile <- juvfile[, Wmat50 := c(0.077, 0.561, 0.117, 0.321)]
+juvfile <- juvfile[, Wmat001 := c(0.058, 0.421, 0.088, 0.241)]
+juvfile <- juvfile[, Amat50 := c(rep(4, 3), 8)]
+juvfile <- juvfile[, Amat001 := rep(-1000000, 4)]
+```
+```{r juvfile table, echo = F}
+knitr::kable(juvfile, caption = 'Juvenile parameter file for R Ecosystem')
+
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+#### Pedigree parameter file
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+Rpath does not currently use pedigrees however, future Rpath extentions will use
+them.  Therefore we provide a means of creating a pedigree parameter file.  The
+default values are 1 (low confidence).  These defaults are not changed for R
+Ecosystem but can obviously be changed in a similar manner to the other parameter
+files.
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r pedigree creation}
+pedfile <- create.rpath.param(parameter = 'pedigree', group = groups, type = types)
+```
+```{r pedigree table, echo = F}
+knitr::kable(pedfile, caption = 'Pedigree parameter file for R Ecosystem')
 ```
 
-Also a quote using `>`:
+## Running Ecopath
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+After creating the parameter files, running ecopath in R is relatively 
+straightforward.  It is just the function `ecopath` supplied with the model and
+diet parameter files.  Additionally, you can supply an ecosystem name for the
+output.
+```{r Running ecopath}
+REco <- ecopath(modfile, dietfile, eco.name = 'R Ecosystem')
+REco
+```
+
+The output object from `ecopath` is an S3 object type called 'Rpath'.  Rpath objects
+are a list of parameters from the mass balance.  However, the `print` function will
+display the same information as the "Basic Estimates" tab from EwE. You will also 
+notice that the `print` function will display whether the model is balanced or not.
+If the model was not balanced, it would list the groups that are not balanced.
+
+You can also display the mortalities associated with each group by supplying the
+argument `morts = T` to the `print` function.
+
+```{r Ecopath morts}
+print(REco, morts = T)
+```
+
+`summary(Rpath.obj)` will display some summary statistics on the model as well as
+a list of sttributes you can access.  To access any of the other attributes simply
+use the standard list notation.
+
+```{r Ecopath summaries}
+summary(REco)
+REco$TL
+```
+
+One of the advantages of R is its graphical ability.  Users can feel free to develop
+their own graphical routines for the Rpath outputs.  However, we have included
+a basic foodweb plot.  The routine can include fisheries, display group numbers or 
+names, and even highlight a particular group.
+
+```{r Food Web Plots, fig.align = 'center', fig.height = 7, fig.width = 7}
+webplot(REco)
+webplot(REco, labels = T)
+webplot(REco, fleets = T, highlight = 'AduRoundfish1')
+```
+
+## Running Ecosim
+
+Running the dynamic simulation model, ecosim, is a two part process.  The first
+part is to initialize the ecosim model.  This converts the parameters from ecopath
+to rates for ecosim.  This also requires a juvenile parameter file even if you do 
+not have any groups with adult and juvenile stanzas.  Another variable that must
+be passed to `ecosim.init` is the number of years for the simulation.
+
+```{r Ecosim init}
+REco.init <- ecosim.init(REco, juvfile, years = 100)
+```
+
+
