@@ -14,19 +14,28 @@
 #'
 #'@param modfile Comma deliminated model parameter file.
 #'@param dietfile Comma deliminated diet matrix file.
-#'@param pedfile Comma deliminated pedigree file.
 #'@param eco.name Optional name of the ecosystem which becomes an attribute of
 #'    rpath object.
 #'
 #'@return Returns an Rpath object that can be supplied to the ecosim.init function.
 #'@import data.table
 #'@export
-ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
+ecopath <- function(modfile, dietfile, eco.name = NA){
   
-  #Read in parameter files
-  model <- as.data.table(read.csv(modfile))  # Basic parameters, detritus fate, catch, discards in that order
-  diet  <- as.data.table(read.csv(dietfile)) # diet matrix
-  ped   <- as.data.table(read.csv(pedfile))  # pedigree file
+  #Read in parameter files - either as file path or data.table object
+  # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
+  if(is.character(modfile)){
+    model <- as.data.table(read.csv(modfile))
+  } else {
+    model <- as.data.table(modfile)
+  }
+  #Diet Parameters - diet matrix, predators as columns, prey as rows - include
+  #producers as predators even though they do not consume any groups
+  if(is.character(dietfile)){
+    diet  <- as.data.table(read.csv(dietfile))
+  } else {
+    diet <- as.data.table(dietfile)
+  }
   
   #Check that all columns of model are numeric and not logical
   if(length(which(sapply(model, class) == 'logical')) > 0){
@@ -209,9 +218,6 @@ ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
   detfatem                            <- as.matrix(detfate)
   dimnames(detfatem)                  <- list(NULL, NULL)
   detfatem[is.na(detfatem)]           <- 0
-  pedm                                <- as.matrix(ped)
-  dimnames(pedm)                      <- list(NULL, NULL)
-  pedm[is.na(pedm)]                   <- 0
 
   # list structure for sim inputs
   path.model <- list(NUM_GROUPS = ngroups,     #define NUM_GROUPS 80  INCLUDES GEAR
@@ -228,7 +234,6 @@ ecopath <- function(modfile, dietfile, pedfile, eco.name = NA){
                 BA         = model[, BioAcc],  #float path_BA[1..NUM_GROUPS] vector
                 GS         = model[, Unassim], #float path_GS[1..NUM_GROUPS] vector
                 GE         = balanced$GE,      #float path_GS[1..NUM_GROUPS] vector
-                pedigree   = pedm,             #float pedigree[B,PB,QB,Diet,1..NUM_GEARS][1..NUM_LIVING+NUM_DEAD]  matrix
                 DC         = dietm,            #float path_DC[1..NUM_GROUPS][1..NUM_GROUPS]  matrix in [prey][pred] order     NUM_LIVING?
                 DetFate    = detfatem,         #float path_DetFate[1..NUM_DEAD][1..NUM_GROUPS]  matrix in [det][groups] order
                 Catch      = catchmatm,        #float path_Catch[1..NUM_GEARS][1..NUM_GROUPS]  matrix

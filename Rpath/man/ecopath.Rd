@@ -4,14 +4,12 @@
 \alias{ecopath}
 \title{Ecopath modual of Rpath}
 \usage{
-ecopath(modfile, dietfile, pedfile, eco.name = NA)
+ecopath(modfile, dietfile, eco.name = NA)
 }
 \arguments{
 \item{modfile}{Comma deliminated model parameter file.}
 
 \item{dietfile}{Comma deliminated diet matrix file.}
-
-\item{pedfile}{Comma deliminated pedigree file.}
 
 \item{eco.name}{Optional name of the ecosystem which becomes an attribute of
    rpath object.}
