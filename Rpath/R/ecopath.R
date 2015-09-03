@@ -258,7 +258,7 @@ return(path.model)
 #'@param highlight Box number to highlight connections.
 #'@param eco.name Optional name of the ecosystem.  Default is the eco.name attribute from the
 #'    rpath object.
-#'@param highlight Set to the group number to highlight the connections of that group.
+#'@param highlight Set to the group number or name to highlight the connections of that group.
 #'@param highlight.col Color of the connections to the highlighted group.
 #'@param labels Logical whether or not to display group names.  If True and label.pos is Null, no 
 #'  points will be ploted, just label names.
@@ -345,6 +345,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   }
   
   if(!is.null(highlight)){
+    if(is.character(highlight)) highlight <- which(Rpath.obj$Group == highlight)
     pred.x <- pointmap[GroupNum == highlight, x.pos]
     pred.y <- pointmap[GroupNum == highlight, TL]
     if(pointmap[GroupNum == highlight, type] == 0){
