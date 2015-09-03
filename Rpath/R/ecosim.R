@@ -224,7 +224,12 @@ ecosim.rates <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 #'@export 
 ecosim.stanzas <- function(simpar, juvfile, steps_yr = 12, max_months = 400, min_rec_factor = 6.906754779){
-  juv          <- read.csv(juvfile)
+  #Juvenile Parameters
+  if(is.character(juvfile)){
+    juv  <- as.data.table(read.csv(juvfile))
+  } else {
+    juv <- as.data.table(juvfile)
+  }
   simpar$juv_N <- length(juv$JuvNum) 
     
   #fill monthly vectors for each species, rel weight and consumption at age
