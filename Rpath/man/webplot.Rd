@@ -40,7 +40,7 @@ of length 1 or 4.  Color order will be living, primary producers, detrital, and 
 
 \item{box.order}{Vector of box numbers to change the default plot order.  Must include all box numbers}
 
-\item{highlight}{Set to the group number to highlight the connections of that group.}
+\item{highlight}{Set to the group number or name to highlight the connections of that group.}
 }
 \value{
 Creates a figure of the food web.
