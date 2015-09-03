@@ -45,9 +45,9 @@ ecopath <- function(modfile, dietfile, eco.name = NA){
     }
   }
     
-  #Remove first column if names
-  if(sapply(diet, class)[1] == 'factor') diet <- diet[, 1 := NULL, with = F]
-  if(sapply(ped,  class)[1] == 'factor') ped  <- ped [, 1 := NULL, with = F]
+  #Remove first column if names (factor or character)
+  if(sapply(diet, class)[1] == 'factor')    diet <- diet[, 1 := NULL, with = F]
+  if(sapply(diet, class)[1] == 'character') diet <- diet[, 1 := NULL, with = F]
   
   #Convert NAs to zero in diet matrix
   diet[is.na(diet)] <- 0
