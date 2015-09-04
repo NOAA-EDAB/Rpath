@@ -347,8 +347,10 @@ knitr::kable(pedfile, caption = 'Pedigree parameter file for R Ecosystem')
 
 After creating the parameter files, running ecopath in R is relatively 
 straightforward.  It is just the function `ecopath` supplied with the model and
-diet parameter files.  Additionally, you can supply an ecosystem name for the
-output.
+diet parameter files.  The arguments modfile and dietfile can be either the R 
+objected created above or a file path to saved parameter files.  Additionally, 
+you can supply an ecosystem name for the output.
+
 ```{r Running ecopath}
 REco <- ecopath(modfile, dietfile, eco.name = 'R Ecosystem')
 REco
@@ -367,9 +369,12 @@ argument `morts = T` to the `print` function.
 print(REco, morts = T)
 ```
 
-`summary(Rpath.obj)` will display some summary statistics on the model as well as
-a list of sttributes you can access.  To access any of the other attributes simply
-use the standard list notation.
+Note that if you wish to save the `print` ouput you need to use the function
+`write.rpath`.  This function will also accept the argument 'morts = T'.
+
+The generic function `summary` will display some summary statistics on the model
+as well as a list of sttributes you can access.  To access any of the other 
+attributes simply use the standard list notation.
 
 ```{r Ecopath summaries}
 summary(REco)
@@ -390,13 +395,92 @@ webplot(REco, fleets = T, highlight = 'AduRoundfish1')
 ## Running Ecosim
 
 Running the dynamic simulation model, ecosim, is a two part process.  The first
-part is to initialize the ecosim model.  This converts the parameters from ecopath
-to rates for ecosim.  This also requires a juvenile parameter file even if you do 
-not have any groups with adult and juvenile stanzas.  Another variable that must
-be passed to `ecosim.init` is the number of years for the simulation.
+part initializes the model for ecosim.  The function `ecosim.init` is actually a
+conglomerate of three functions: `ecosim.rates`, `ecosim.stanzas`, and `ecosim.pack`.
+More advance users may wish to explore the flexibility of Rpath and adjust some
+of the default parameters, however for this vignette we are sticking with the default
+parameterization of ecosim.  The function `ecosim.stanzas` requires a juvenile
+parameter file to run.  So even if you do not have any groups with adult and 
+juvenile stanzas you need to supply a juvfile.  This can be passed as an argument
+to `ecosim.init`.  Another variable that must be passed to `ecosim.init` is the number
+of years for the simulation.
 
 ```{r Ecosim init}
 REco.init <- ecosim.init(REco, juvfile, years = 100)
 ```
+
+The second part of the ecosim process is the function `ecosim.run`.  We recommend
+making a copy of the Rpath.sim.init object before running `ecosim.run`.  Otherwise
+`ecosim.run` will change the initial starting conditions.  Other arguments passed to
+`ecosim.run` include the beginning year (BY) and ending year (EY).  You can also 
+indicate if this is the initial run or a pertibation.  This will make sense in the
+second example.  But first, here is a 100 year run at equilibrium.
+
+```{r ecosim equilibrium run}
+REco.base <- data.table::copy(REco.init)
+REco.base <- ecosim.run(REco.base, 0, 100)
+```
+
+The ouput from `ecosim.run` is another S3 object class called 'Rpath.sim'.  Similar
+to the Rpath object created by `ecopath`, the generic function `print` will give
+output similar to the 'Ecosim results' tab in EwE. If you want to save the `print`
+results you need to use the function `write.rpath.sim`.  The function `summary` just
+like for the Rpath object will display what other list items are available.
+
+```{r ecosim print}
+REco.base
+summary(REco.base)
+```
+
+Just like with `ecopath`, we have included a quick graphical routine for ploting
+biomass trajectories over time.  Other plots similar to the group plots are possible
+but at this time we do not have a built-in function.
+
+```{r ecosim equilibrium plot, fig.height = 7, fig.width = 7}
+ecosim.plot(REco.base)
+```
+
+Obviously running a model at equilibrium is not very exciting.  There are a number
+of ways to perturb the system.  Below is an example using a function we developed
+that adjusts the fishing mortality rate on a group.  Other adjustments might need
+to be done by hand but please feel free to suggest common adjustments that are 
+made and we can develop a tool.
+
+```{r ecosim adjustment 1}
+#Increase F on Adult roundfish 1
+REco.rf1 <- data.table::copy(REco.init)
+
+#Run an initial burn-in period
+REco.rf1 <- ecosim.run(REco.rf1, 0, 25)
+```
+```{r ftable1, eval = F}
+#Look at initial F rates
+frate.table(REco.rf1)
+```
+```{r ftable2, echo = F}
+knitr::kable(frate.table(REco.rf1), caption = 'Original F rates for R Ecosystem')
+```
+```{r ecosim adjustment 2}
+#Double F by all gears
+REco.rf1 <- frate.adjust(REco.rf1, 'AduRoundfish1', 'Trawlers', 2)
+REco.rf1 <- frate.adjust(REco.rf1, 'AduRoundfish1', 'Midwater', 2)
+REco.rf1 <- frate.adjust(REco.rf1, 'AduRoundfish1', 'Dredgers', 2)
+```
+```{r ftable3, eval = F}
+#Look at new F rates
+frate.table(REco.rf1)
+```
+```{r ftable4, echo = F}
+knitr::kable(frate.table(REco.rf1), caption = 'New F rates for R Ecosystem')
+```
+```{r ecosim adjustment3, fig.height = 7, fig.width = 7}
+#Run the model from the initial burn-in
+#Notice the init_run = F argument
+REco.rf1 <- ecosim.run(REco.rf1, 25, 100, init_run = F)
+
+#Plot pertubations
+ecosim.plot(REco.rf1)
+```
+
 
 
