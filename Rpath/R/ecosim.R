@@ -5,13 +5,18 @@
 #                       
 ################################################################################ 
 #'@export
-ecotest.run <- function(RP,YEARS=100){ 
-  return(Adams_test (RP$params, RP$state, RP$forcing, RP$fishing, 0 , YEARS));
+adams.run <- function(RP,YEARS=100){ 
+  return(Adams_run (RP$params, RP$state, RP$forcing, RP$fishing, 0 , YEARS));
   }
+################################################################################
+#'@export
+rk4.run <- function(RP,YEARS=100){ 
+  return(rk4_run (RP$params, RP$state, RP$forcing, RP$fishing, 0 , YEARS));
+}
 
 #####################################################################################
 #'@export
-ecotest.init <- function(Rpath, YEARS=100){
+ecosim.init <- function(Rpath, YEARS=100){
 
   # Set initial Ecosim parameters and state
     params <- ecosim.params(Rpath)
@@ -64,7 +69,7 @@ ecotest <- function(RP,y,m,d){
 
 #####################################################################################
 #'@export
-ecoderiv <- function(RP,y,m,d){ 
+ecoderiv.old <- function(RP,y,m,d){ 
   #Rcpp doesn't handle data frames well so need to convert to matrices
   #RP$force_byprey   <- as.matrix(RP$force_byprey)
   #RP$force_bymort   <- as.matrix(RP$force_bymort)
@@ -76,7 +81,7 @@ ecoderiv <- function(RP,y,m,d){
   #RP$out_CC         <- as.matrix(RP$out_CC)
   #RP$out_SSB        <- as.matrix(RP$out_SSB)       
   #RP$out_rec        <- as.matrix(RP$out_rec)
-  return(deriv_master(RP,y,m,d));
+  return(deriv_old(RP,y,m,d));
 }
 #'Initial set up for Ecosim modual of Rpath
 #'
@@ -286,7 +291,7 @@ ecosim.params <- function(Rpath){
 #'
 #'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 #'@export
-ecosim.init <- function(Rpath, juvfile, YEARS = 100){
+ecosim.init.old <- function(Rpath, juvfile, YEARS = 100){
   #Old path_to_rates--------------------------------------------------------------------
   MSCRAMBLE      <- 2.0
   MHANDLE        <- 1000.0
@@ -765,7 +770,7 @@ ecosim.init <- function(Rpath, juvfile, YEARS = 100){
 #'@useDynLib Rpath
 #'@importFrom Rcpp sourceCpp
 #'@export
-ecosim.run <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
+ecosim.run.old <- function(simpar, BYY = 0, EYY = 0, init_run = 0){
   
   if((EYY <= 0) | (EYY > simpar$YEARS)) EYY <- simpar$YEARS
   if(BYY < 0)                           BYY <- 0

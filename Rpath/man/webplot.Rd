@@ -51,8 +51,9 @@ Plots the food web associated with an Rpath object.
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.init}}; \code{\link{ecosim.params}};
-  \code{\link{ecosim.plot}}; \code{\link{ecosim.run}};
+  \code{\link{ecosim.init.old}};
+  \code{\link{ecosim.params}}; \code{\link{ecosim.plot}};
+  \code{\link{ecosim.run.old}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

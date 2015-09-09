@@ -7,24 +7,30 @@ Eped  <- "data/EBS_andre_ped.csv"
 Ejuv  <- "data/EBS_andre_juvs.csv"
 EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 
-Ebase <- "data/ECS_eis_base_July2015.csv"
-Ediet <- "data/ECS_eis_diet_Jun2015.csv"
-Eped  <- "data/ECS_eis_ped_Jun2015.csv"
-Ejuv  <- "data/ECS_eis_juv_July2015.csv"
-EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Chukchi')
+#Ebase <- "data/ECS_eis_base_July2015.csv"
+#Ediet <- "data/ECS_eis_diet_Jun2015.csv"
+#Eped  <- "data/ECS_eis_ped_Jun2015.csv"
+#Ejuv  <- "data/ECS_eis_juv_July2015.csv"
+#EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Chukchi')
 
 # Rpath - Sean branch
-  EBASE  <- ecosim.init(EBS,Ejuv)
+  EBASE  <- ecosim.init.old(EBS,Ejuv)
   EBASE$FORCED_FRATE[1:30,2]<-0.05
-  ERUN <- ecosim.run(EBASE,0,100)
+  ERUN <- ecosim.run.old(EBASE,0,100)
   plot(ERUN$out_BB[1:1200,2])
 
 # Ecotest - vectors
-  TBASE  <- ecotest.init(EBS)
+  TBASE  <- ecosim.init(EBS)
   TBASE$fishing$FRATE[1:30,2]<-0.05
-  TRUN <- ecotest.run(TBASE,100)
+  TRUN <- adams.run(TBASE,100)
   plot(TRUN$out_BB[,2])
 
+  TBASE  <- ecosim.init(EBS)
+  TBASE$fishing$FRATE[1:30,2]<-0.05  
+  TRUN <- rk4.run(TBASE,100)
+  plot(TRUN$out_BB[,2])
+  
+  
 # One random system
   TBASE  <- ecotest.init(EBS)
   TTEST <- TBASE

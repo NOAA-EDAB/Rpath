@@ -5,9 +5,9 @@
 
 using namespace Rcpp;
 
-// Adams_test
-List Adams_test(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
-RcppExport SEXP Rpath_Adams_test(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+// rk4_run
+List rk4_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+RcppExport SEXP Rpath_rk4_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -17,13 +17,29 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
-    __result = Rcpp::wrap(Adams_test(params, instate, forcing, fishing, StartYear, EndYear));
+    __result = Rcpp::wrap(rk4_run(params, instate, forcing, fishing, StartYear, EndYear));
     return __result;
 END_RCPP
 }
-// deriv_test
-List deriv_test(List params, List state, List forcing, List fishing, int y, int m, int d);
-RcppExport SEXP Rpath_deriv_test(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+// Adams_run
+List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+RcppExport SEXP Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< List >::type instate(instateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
+    Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
+    Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
+    __result = Rcpp::wrap(Adams_run(params, instate, forcing, fishing, StartYear, EndYear));
+    return __result;
+END_RCPP
+}
+// deriv_vector
+List deriv_vector(List params, List state, List forcing, List fishing, int y, int m, double tt);
+RcppExport SEXP Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP ySEXP, SEXP mSEXP, SEXP ttSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -33,14 +49,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
     Rcpp::traits::input_parameter< int >::type y(ySEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    __result = Rcpp::wrap(deriv_test(params, state, forcing, fishing, y, m, d));
+    Rcpp::traits::input_parameter< double >::type tt(ttSEXP);
+    __result = Rcpp::wrap(deriv_vector(params, state, forcing, fishing, y, m, tt));
     return __result;
 END_RCPP
 }
-// deriv_master
-int deriv_master(List mod, int y, int m, int d);
-RcppExport SEXP Rpath_deriv_master(SEXP modSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+// deriv_old
+int deriv_old(List mod, int y, int m, int d);
+RcppExport SEXP Rpath_deriv_old(SEXP modSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -48,7 +64,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type y(ySEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    __result = Rcpp::wrap(deriv_master(mod, y, m, d));
+    __result = Rcpp::wrap(deriv_old(mod, y, m, d));
     return __result;
 END_RCPP
 }
@@ -76,28 +92,16 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// Adams_Basforth
-int Adams_Basforth(List mod, int StartYear, int EndYear);
-RcppExport SEXP Rpath_Adams_Basforth(SEXP modSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+// Adams_Basforth_old
+int Adams_Basforth_old(List mod, int StartYear, int EndYear);
+RcppExport SEXP Rpath_Adams_Basforth_old(SEXP modSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< List >::type mod(modSEXP);
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
-    __result = Rcpp::wrap(Adams_Basforth(mod, StartYear, EndYear));
-    return __result;
-END_RCPP
-}
-// vpow
-NumericVector vpow(const NumericVector base, const NumericVector exp);
-RcppExport SEXP Rpath_vpow(SEXP baseSEXP, SEXP expSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const NumericVector >::type base(baseSEXP);
-    Rcpp::traits::input_parameter< const NumericVector >::type exp(expSEXP);
-    __result = Rcpp::wrap(vpow(base, exp));
+    __result = Rcpp::wrap(Adams_Basforth_old(mod, StartYear, EndYear));
     return __result;
 END_RCPP
 }

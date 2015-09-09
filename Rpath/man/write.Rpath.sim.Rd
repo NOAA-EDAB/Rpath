@@ -21,8 +21,9 @@ Outputs start/end biomass and catch to a .csv file.
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.init}}; \code{\link{ecosim.params}};
-  \code{\link{ecosim.plot}}; \code{\link{ecosim.run}};
-  \code{\link{webplot}}; \code{\link{write.Rpath}}
+  \code{\link{ecosim.init.old}};
+  \code{\link{ecosim.params}}; \code{\link{ecosim.plot}};
+  \code{\link{ecosim.run.old}}; \code{\link{webplot}};
+  \code{\link{write.Rpath}}
 }
 

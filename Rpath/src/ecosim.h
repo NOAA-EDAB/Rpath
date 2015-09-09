@@ -2,7 +2,7 @@
 using namespace Rcpp;
  
 // Various Constants
-#define STEPS_PER_MONTH    1        // Integration Steps per month (speed (5) vs. accuracy (10 to 30))
+//#define STEPS_PER_MONTH    1        // Integration Steps per month (speed (5) vs. accuracy (10 to 30))
 #define SPM                1.0      // Double version of same 
 #define MAX_MONTHS_STANZA  400      // Max number age pools within stanza calcs (months)
 #define LO_DISCARD         1e-4     // Discard Limit for sense
@@ -17,15 +17,15 @@ using namespace Rcpp;
 #define EPSILON            1E-8                 // Test threshold for "too close to zero"
 #define BIGNUM             1E+8                 // Test threshold for "too big"
 
-List deriv_test(List params, List state, List forcing, List fishing, int y, int m, int d);
-List Adams_test(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+List deriv_vector(List params, List state, List forcing, List fishing, int y, int m, double tt);
+List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+List rk4_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
 
-int deriv_master(List mod, int y, int m, int d);
+int deriv_old(List mod, int y, int m, int d);
 int SplitSetPred(List mod);
 int update_stanzas(List mod, int yr, int mon);
-int Adams_Basforth (List mod, int StartYear, int EndYear);
+int Adams_Basforth_old (List mod, int StartYear, int EndYear);
 
-// [[Rcpp::export]]
 NumericVector vpow(const NumericVector base, const NumericVector exp) {
   NumericVector out(base.size());
   std::transform(base.begin(), base.end(),

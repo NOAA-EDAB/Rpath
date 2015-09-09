@@ -2,12 +2,153 @@
 #include "ecosim.h"
 
 //################################################################----------
+// [[Rcpp::export]] 
+List rk4_run (List params, List instate, List forcing, List fishing, 
+                 int StartYear, int EndYear){
+
+// Input rates are in units of years or years^-1.  Integration is written so
+// that integration timesteps always line up with months, for data reasons.
+// STEPS_PER_YEAR should be 12 (for months), and STEPS_PER_MONTH sets the
+// rk4 integration timestep.  So effective integration timestep with respect
+// to input rates (years) is 1/(12*STEPS_PER_MONTH).
+
+#define MONSTEPS 4.0
+  
+  int y, m, dd, t; 
+
+  int STEPS_PER_MONTH = MONSTEPS;
+  double hh           = DELTA_T/MONSTEPS;
+
+  // Get some basic needed numbers from the params List
+     int NUM_LIVING = as<int>(params["NUM_LIVING"]);
+     int NUM_DEAD   = as<int>(params["NUM_DEAD"]);
+     int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+     int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
+     int NUM_GROUPS = NUM_LIVING+NUM_DEAD;
+
+  // Parameters needed directly for foraging time adjustment
+  NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
+  NumericVector FtimeAdj         = as<NumericVector>(params["FtimeAdj"]);
+  NumericVector FtimeQBOpt       = as<NumericVector>(params["FtimeQBOpt"]);
+  // FtimeAdj is monthly unit I think?  So adjust for sub-monthly
+  NumericVector FtimeStep     = FtimeAdj/STEPS_PER_MONTH;
+
+  // Monthly output matrices                     
+  NumericMatrix out_BB(EndYear*12+1, NUM_GROUPS+1);           
+  NumericMatrix out_CC(EndYear*12+1, NUM_GROUPS+1);          
+  NumericMatrix out_SSB(EndYear*12+1, NUM_GROUPS+1);        
+  NumericMatrix out_rec(EndYear*12+1, NUM_GROUPS+1);       
+
+  // Accumulator for monthly catch values
+  NumericMatrix cum_CC(NUM_GROUPS+1);
+
+  // Load state, set some initial values   
+  List state = instate;
+  dd =  StartYear * STEPS_PER_YEAR; 
+  
+  // MAIN LOOP STARTS HERE
+  for (y = StartYear; y < EndYear; y++){                                     
+   for (m = 0; m < STEPS_PER_YEAR; m++){
+       cum_CC = 0.0;  // monthly catch to accumulate   
+       dd     = y * STEPS_PER_YEAR + m;   // dd is index for monthly output
+
+       for (t=0; t< STEPS_PER_MONTH; t++){
+          double tt = (double)t*hh;     
+
+          // Previous state variables (note: this creates pointers, not new vals)
+          NumericVector old_BB    = as<NumericVector>(state["BB"]);
+          NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
+
+          // Calculate base derivative and RK-4 derivative steps (overwrites YY)   
+          List YY = state;
+          List k1 = deriv_vector(params,YY,forcing,fishing,y,m,tt);
+          NumericVector kk1 = as<NumericVector>(k1["DerivT"]);
+
+          YY["BB"] = old_BB + 0.5*kk1*hh;
+          List k2 = deriv_vector(params,YY,forcing,fishing,y,m,tt + 0.5*hh);
+          NumericVector kk2 = as<NumericVector>(k2["DerivT"]);
+
+          YY["BB"] = old_BB + 0.5*kk2*hh;
+          List k3 = deriv_vector(params,YY,forcing,fishing,y,m,tt + 0.5*hh);
+          NumericVector kk3 = as<NumericVector>(k3["DerivT"]);
+
+          YY["BB"] = old_BB + kk3*hh; 
+          List k4 = deriv_vector(params,YY,forcing,fishing,y,m,tt + hh);
+          NumericVector kk4 = as<NumericVector>(k4["DerivT"]);
+
+          NumericVector new_BB = old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/ 6.0;   
+
+          // pd term is used to indicate differrent values used for 
+          // age-structured species
+          NumericVector pd = old_BB;
+          NumericVector FoodGain = as<NumericVector>(k1["FoodGain"]);
+          NumericVector new_Ftime =    
+            ifelse((FoodGain>0)&(pd>0),
+             0.1 + 0.9*old_Ftime* 
+                 ((1.0-FtimeStep) + FtimeStep*FtimeQBOpt/(FoodGain/pd)),
+             old_Ftime);
+
+      // Accumulate Catch (small timestep, so linear average)
+         NumericVector FishingLoss = as<NumericVector>(k1["FishingLoss"]);
+         cum_CC += (hh * FishingLoss/old_BB) * (new_BB+old_BB)/2.0;
+
+      // Set old values (and state, via pointers) to new values
+         state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
+         state["Ftime"] = pmin(new_Ftime, 2.0); 
+       
+      } // end of sub-monthly (t-indexed) loop
+
+      // Insert Monthly Stanza (split pool) update here
+        
+      // If the run is during the "burn-in" years, and biomass goes
+      // into the discard range, set flag to exit the loop.  
+      NumericVector cur_BB = as<NumericVector>(state["BB"]);
+      if (y < BURN_YEARS){
+          cur_BB =  
+           ifelse((cur_BB<B_BaseRef*LO_DISCARD)|(cur_BB>B_BaseRef*HI_DISCARD),
+           NA_REAL,cur_BB);
+      }
+      
+      // If biomass goes crazy, exit loop with crash signal.  Note it should
+      // still write the NA or INF values back to the output.
+      if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) ) {
+        CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+      }
+            
+      // Write to output matricies     				          									                    
+      out_BB( dd, _) = cur_BB;
+      out_SSB(dd, _) = cur_BB;
+      out_rec(dd, _) = cur_BB;
+      out_CC( dd, _) = cum_CC;                           
+      
+    }  // End of main months loop
+    
+  }// End of years loop
+  
+  // Write Last timestep 
+  out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
+  out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
+  out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
+  out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
+  
+  
+  List outdat = List::create(
+    _["endState"]=state,
+    _["out_BB"]=out_BB,
+    _["out_CC"]=out_CC);
+  
+  return(outdat);
+} 
+
+
+
+
 //-----#################################################################----
 // [[Rcpp::export]] 
-List Adams_test (List params, List instate, List forcing, List fishing, 
+List Adams_run (List params, List instate, List forcing, List fishing, 
                  int StartYear, int EndYear){
      
-int y, m, dd, sp, i; 
+int y, m, dd; 
 
 // Parse out List mod
    int NUM_LIVING = as<int>(params["NUM_LIVING"]);
@@ -45,7 +186,8 @@ int y, m, dd, sp, i;
 // TODO init versus non init_run     if (init_run){
 // Load state and call initial derivative    
    List state = instate;
-   List dyt   = deriv_test(params,state,forcing,fishing,0,0,0);
+   List dyt   = deriv_vector(params,state,forcing,fishing,0,0,0);
+   dd = StartYear * STEPS_PER_YEAR;
    //Rprintf("%d\n",4); 
 
 // MAIN LOOP STARTS HERE
@@ -60,7 +202,7 @@ int y, m, dd, sp, i;
  				 NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
  	       NumericVector dydt0     = as<NumericVector>(dyt["DerivT"]);
       // Calculate new derivative    
- 	       dyt   = deriv_test(params,state,forcing,fishing,y,m,0);
+ 	       dyt   = deriv_vector(params,state,forcing,fishing,y,m,0);
       // Extract needed parts of the derivative
          NumericVector dydt1       = as<NumericVector>(dyt["DerivT"]); 
  				 NumericVector FoodGain    = as<NumericVector>(dyt["FoodGain"]);					
@@ -152,9 +294,9 @@ return(outdat);
 
 //##############################################################----------
 // [[Rcpp::export]] 
-List deriv_test(List params, List state, List forcing, List fishing, int y, int m, int d){
+List deriv_vector(List params, List state, List forcing, List fishing, int y, int m, double tt){
 
-int sp, links, prey, pred, gr, dest, i;
+int sp, links, prey, pred, gr, dest;
 
   // Parse out List mod
   int NUM_GROUPS                 = as<int>(params["NUM_GROUPS"]);
@@ -463,10 +605,10 @@ int sp, links, prey, pred, gr, dest, i;
    return(deriv);
 }
 
-
+//################################################################----------
 // Deriv master calculates the biomass dynamics derivative
 // [[Rcpp::export]]
-int deriv_master(List mod, int y, int m, int d){
+int deriv_old(List mod, int y, int m, int d){
  //if (!mod.inherits("Rpath.sim")) stop("Input must be a Rpath model");
 
   // Functional response vars     
@@ -786,7 +928,7 @@ return 0;
 }
 
 
-
+//################################################################----------
 // SplitSetPred function called in sim stanza initialize and update
 // This function simply sums up across juvenile and adult age structure to get 
 // population-level Biomass, Numbers, and Consumption 
@@ -850,7 +992,7 @@ return(0);
 }
 
 
-
+//################################################################----------
 // Update juvenile adult or "stanza" age structure during sim run 
 // on monthly timesteps (not hardwiring months, but recommended)
 // [[Rcpp::export]] 
@@ -975,9 +1117,9 @@ double Su, Gf, Nt;
 return(0); 
 }
 
-
+//################################################################----------
 // [[Rcpp::export]] 
-int Adams_Basforth (List mod, int StartYear, int EndYear){
+int Adams_Basforth_old (List mod, int StartYear, int EndYear){
      
 int y, m, dd;//c, j, 
 int sp, i; //t, ageMo, s, link, prey,pred,links,gr
@@ -1025,8 +1167,8 @@ double old_B, new_B, pd; //nn, ww, bb,
     // If not starting from previous timestep, call derivative twice to
  	 // set deriv and deriv(t-1)
       if (init_run){
-         deriv_master(mod, 0, 0, 0);
-         deriv_master(mod, 0, 0, 0);
+         deriv_old(mod, 0, 0, 0);
+         deriv_old(mod, 0, 0, 0);
       }
 
     // MAIN LOOP STARTS HERE     
@@ -1055,20 +1197,20 @@ double old_B, new_B, pd; //nn, ww, bb,
  		      // for (d=0; d<STEPS_PER_MONTH; d++){
 
  		          // Calculate Derivative for a given timestep
- 	               deriv_master(mod, y, m, 0);
+ 	               deriv_old(mod, y, m, 0);
 
  	            // Loop through species, applying Adams-Basforth or fast
  	            // equilibrium depending on species.
  	            
  								 for (sp=1; sp <= NUM_LIVING + NUM_DEAD; sp++){                    
-
+                   // KYA 9/9/2015 changed STEPS_PER_MONTH to 1.0
                   // Adjust feeding time 
  	                   if (NoIntegrate[sp] < 0){pd = stanzaPred[sp];}
  	                   else                         {pd = state_BB[sp];}	                      					       
                      if ((pd > 0) && (FoodGain[sp] > 0)){
  										      state_Ftime[sp] = 0.1 + 0.9 * state_Ftime[sp] * 
-                                 ((1.0 - FtimeAdj[sp] / (double)STEPS_PER_MONTH) 
- 																+ FtimeAdj[sp] / (double)STEPS_PER_MONTH * 
+                                 ((1.0 - FtimeAdj[sp] / (double)1.0) 
+ 																+ FtimeAdj[sp] / (double)1.0 * 
  										             FtimeQBOpt[sp] / (FoodGain[sp] / pd));
                           }	
                      MAX_THRESHOLD(state_Ftime[sp], 2.0);
