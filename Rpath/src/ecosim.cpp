@@ -11,13 +11,11 @@ List rk4_run (List params, List instate, List forcing, List fishing,
 // STEPS_PER_YEAR should be 12 (for months), and STEPS_PER_MONTH sets the
 // rk4 integration timestep.  So effective integration timestep with respect
 // to input rates (years) is 1/(12*STEPS_PER_MONTH).
-
-#define MONSTEPS 4.0
   
   int y, m, dd, t; 
 
-  int STEPS_PER_MONTH = MONSTEPS;
-  double hh           = DELTA_T/MONSTEPS;
+  int STEPS_PER_MONTH = as<int>(params["RK4_STEPS"]);
+  double hh           = DELTA_T/(double)STEPS_PER_MONTH;
 
   // Get some basic needed numbers from the params List
      int NUM_LIVING = as<int>(params["NUM_LIVING"]);
@@ -139,8 +137,6 @@ List rk4_run (List params, List instate, List forcing, List fishing,
   
   return(outdat);
 } 
-
-
 
 
 //-----#################################################################----
@@ -569,6 +565,7 @@ int sp, links, prey, pred, gr, dest;
      TotGain = FoodGain + DetritalGain + FishingGain;      
      LossPropToQ = UnAssimLoss + ActiveRespLoss;
      LossPropToB = FoodLoss    + MzeroLoss + FishingLoss  + DetritalLoss; 
+     TotGain[0]     = 0;
      LossPropToB[0] = 0;  
      LossPropToQ[0] = 0;
      TotLoss = LossPropToQ + LossPropToB;      

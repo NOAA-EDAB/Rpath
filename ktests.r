@@ -27,8 +27,13 @@ EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 
   TBASE  <- ecosim.init(EBS)
   TBASE$fishing$FRATE[1:30,2]<-0.05  
+  TBASE$params$RK4_STEPS <- 2
   TRUN <- rk4.run(TBASE,100)
   plot(TRUN$out_BB[,2])
+
+  require(microbenchmark)
+  TBASE$params$RK4_STEPS <- 4
+  microbenchmark(adams.run(TBASE,100),times=100L)  
   
   
 # One random system

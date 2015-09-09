@@ -110,7 +110,6 @@ ecosim.params <- function(Rpath){
   simpar$NUM_LIVING <- Rpath$NUM_LIVING
   simpar$NUM_DEAD   <- Rpath$NUM_DEAD
   simpar$NUM_GEARS  <- Rpath$NUM_GEARS
-  
   simpar$spname     <- c("Outside", Rpath$Group)
   simpar$spnum      <- 0:length(Rpath$BB) 
   
@@ -139,10 +138,10 @@ ecosim.params <- function(Rpath){
   
   #NoIntegrate
   STEPS_PER_YEAR  <- 12
-  STEPS_PER_MONTH <- 1
+  #STEPS_PER_MONTH <- 1
   simpar$NoIntegrate <- ifelse(c(0, Rpath$PB) / 
                                  (1.0 - simpar$ActiveRespFrac - simpar$UnassimRespFrac) > 
-                                 2 * STEPS_PER_YEAR * STEPS_PER_MONTH, 
+                                 2 * STEPS_PER_YEAR * 1.0, 
                                0, 
                                simpar$spnum)  
   
@@ -267,6 +266,7 @@ ecosim.params <- function(Rpath){
   simpar$BURN_YEARS <- -1
   simpar$COUPLED    <-  1
   simpar$CRASH_YEAR <- -1
+  simpar$RK4_STEPS  <- 4.0 
   
   return(simpar)
 }
