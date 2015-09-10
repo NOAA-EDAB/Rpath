@@ -14,22 +14,22 @@ List rk4_run (List params, List instate, List forcing, List fishing,
 // STEPS_PER_YEAR should be 12 (for months), and STEPS_PER_MONTH sets the
 // rk4 integration timestep.  So effective integration timestep with respect
 // to input rates (years) is 1/(12*STEPS_PER_MONTH).
-   int STEPS_PER_MONTH = as<int>(params["RK4_STEPS"]);
-   double hh           = DELTA_T/(double)STEPS_PER_MONTH;
+   const int STEPS_PER_MONTH = as<int>(params["RK4_STEPS"]);
+   const double hh           = DELTA_T/(double)STEPS_PER_MONTH;
 
 // Get some basic needed numbers from the params List
-   int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
+   const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
 
 // Switches for run modes
-   int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+   const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
    int CRASH_YEAR = -1;
 
 // Parameters needed directly for foraging time adjustment
-   NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
-   NumericVector FtimeAdj         = as<NumericVector>(params["FtimeAdj"]);
-   NumericVector FtimeQBOpt       = as<NumericVector>(params["FtimeQBOpt"]);
+   const NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
+   const NumericVector FtimeAdj         = as<NumericVector>(params["FtimeAdj"]);
+   const NumericVector FtimeQBOpt       = as<NumericVector>(params["FtimeQBOpt"]);
 // FtimeAdj is monthly unit so adjust for sub-monthly integration
-   NumericVector FtimeStep     = FtimeAdj/STEPS_PER_MONTH;
+   const NumericVector FtimeStep     = FtimeAdj/STEPS_PER_MONTH;
 
 // Monthly output matrices                     
    NumericMatrix out_BB(EndYear*12+1, NUM_BIO+1);           
@@ -153,19 +153,19 @@ List Adams_run (List params, List instate, List forcing, List fishing,
 int y, m, dd; 
 
 // Get some basic needed numbers from the params List
-   int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
+   const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
 
 // Switches for run modes
-   int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+   const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
    int CRASH_YEAR = -1;
 
 // Flag for group-sepcific Integration method (NoIntegrate=0 means Fast Eq)   
-   NumericVector NoIntegrate = as<NumericVector>(params["NoIntegrate"]);
+   const NumericVector NoIntegrate = as<NumericVector>(params["NoIntegrate"]);
 
 // Parameters needed directly for foraging time adjustment
-   NumericVector B_BaseRef  = as<NumericVector>(params["B_BaseRef"]);
-   NumericVector FtimeAdj   = as<NumericVector>(params["FtimeAdj"]);
-   NumericVector FtimeQBOpt = as<NumericVector>(params["FtimeQBOpt"]);
+   const NumericVector B_BaseRef  = as<NumericVector>(params["B_BaseRef"]);
+   const NumericVector FtimeAdj   = as<NumericVector>(params["FtimeAdj"]);
+   const NumericVector FtimeQBOpt = as<NumericVector>(params["FtimeQBOpt"]);
 
 // Needed for Age Structure (NOJUV means commented out)
    //NOJUV NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
@@ -304,45 +304,45 @@ List deriv_vector(List params, List state, List forcing, List fishing, int y, in
 int sp, links, prey, pred, gr, dest;
 
 // forcing time index (in months)
-   int dd = y*STEPS_PER_YEAR+m;
+   const int dd = y*STEPS_PER_YEAR+m;
 
 // Base model size - number of groups and number of links (flows) by type
-   int NUM_GROUPS                = as<int>(params["NUM_GROUPS"]);
-   int NUM_LIVING                = as<int>(params["NUM_LIVING"]);
-   int NUM_DEAD                  = as<int>(params["NUM_DEAD"]);
-   int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
-   int NumFishingLinks           = as<int>(params["NumFishingLinks"]);
-   int NumDetLinks               = as<int>(params["NumDetLinks"]);
+   const int NUM_GROUPS                = as<int>(params["NUM_GROUPS"]);
+   const int NUM_LIVING                = as<int>(params["NUM_LIVING"]);
+   const int NUM_DEAD                  = as<int>(params["NUM_DEAD"]);
+   const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
+   const int NumFishingLinks           = as<int>(params["NumFishingLinks"]);
+   const int NumDetLinks               = as<int>(params["NumDetLinks"]);
    //NOJUV  int juv_N                      = as<int>(params["juv_N"]);
-   int COUPLED                   = as<int>(params["COUPLED"]);
+   const int COUPLED                   = as<int>(params["COUPLED"]);
  
 // NUM_GROUPS length input vectors
-   NumericVector B_BaseRef       = as<NumericVector>(params["B_BaseRef"]);
-   NumericVector MzeroMort       = as<NumericVector>(params["MzeroMort"]);
-   NumericVector UnassimRespFrac = as<NumericVector>(params["UnassimRespFrac"]);
-   NumericVector ActiveRespFrac  = as<NumericVector>(params["ActiveRespFrac"]);
-   NumericVector HandleSelf      = as<NumericVector>(params["HandleSelf"]);
-   NumericVector ScrambleSelf    = as<NumericVector>(params["ScrambleSelf"]);
-   NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
+   const NumericVector B_BaseRef       = as<NumericVector>(params["B_BaseRef"]);
+   const NumericVector MzeroMort       = as<NumericVector>(params["MzeroMort"]);
+   const NumericVector UnassimRespFrac = as<NumericVector>(params["UnassimRespFrac"]);
+   const NumericVector ActiveRespFrac  = as<NumericVector>(params["ActiveRespFrac"]);
+   const NumericVector HandleSelf      = as<NumericVector>(params["HandleSelf"]);
+   const NumericVector ScrambleSelf    = as<NumericVector>(params["ScrambleSelf"]);
+   const NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
 
 // NumPredPreyLinks Length vectors
-   IntegerVector PreyFrom        = as<IntegerVector>(params["PreyFrom"]);
-   IntegerVector PreyTo          = as<IntegerVector>(params["PreyTo"]);
-   NumericVector QQ              = as<NumericVector>(params["QQ"]);
-   NumericVector DD              = as<NumericVector>(params["DD"]);
-   NumericVector VV              = as<NumericVector>(params["VV"]);
-   NumericVector HandleSwitch    = as<NumericVector>(params["HandleSwitch"]);
-   NumericVector PredPredWeight  = as<NumericVector>(params["PredPredWeight"]);
-   NumericVector PreyPreyWeight  = as<NumericVector>(params["PreyPreyWeight"]);
+   const IntegerVector PreyFrom        = as<IntegerVector>(params["PreyFrom"]);
+   const IntegerVector PreyTo          = as<IntegerVector>(params["PreyTo"]);
+   const NumericVector QQ              = as<NumericVector>(params["QQ"]);
+   const NumericVector DD              = as<NumericVector>(params["DD"]);
+   const NumericVector VV              = as<NumericVector>(params["VV"]);
+   const NumericVector HandleSwitch    = as<NumericVector>(params["HandleSwitch"]);
+   const NumericVector PredPredWeight  = as<NumericVector>(params["PredPredWeight"]);
+   const NumericVector PreyPreyWeight  = as<NumericVector>(params["PreyPreyWeight"]);
 
 // NumFishingLinks lenghted vectors
-   IntegerVector FishFrom        = as<IntegerVector>(params["FishFrom"]);
-   IntegerVector FishThrough     = as<IntegerVector>(params["FishThrough"]);
-   IntegerVector FishTo          = as<IntegerVector>(params["FishTo"]);
-   NumericVector FishQ           = as<NumericVector>(params["FishQ"]);
-   IntegerVector DetFrom         = as<IntegerVector>(params["DetFrom"]);
-   IntegerVector DetTo           = as<IntegerVector>(params["DetTo"]);
-   NumericVector DetFrac         = as<NumericVector>(params["DetFrac"]);
+   const IntegerVector FishFrom        = as<IntegerVector>(params["FishFrom"]);
+   const IntegerVector FishThrough     = as<IntegerVector>(params["FishThrough"]);
+   const IntegerVector FishTo          = as<IntegerVector>(params["FishTo"]);
+   const NumericVector FishQ           = as<NumericVector>(params["FishQ"]);
+   const IntegerVector DetFrom         = as<IntegerVector>(params["DetFrom"]);
+   const IntegerVector DetTo           = as<IntegerVector>(params["DetTo"]);
+   const NumericVector DetFrac         = as<NumericVector>(params["DetFrac"]);
 
 // Age-structured parameters
    //NOJUV NumericVector stanzaPred     = as<NumericVector>(params["stanzaPred"]);
@@ -351,8 +351,8 @@ int sp, links, prey, pred, gr, dest;
    //NOJUV NumericVector AduNum         = as<NumericVector>(params["AduNum"]);
 
 // State vectors
-   NumericVector state_BB        = as<NumericVector>(state["BB"]);
-   NumericVector state_Ftime     = as<NumericVector>(state["Ftime"]);
+   const NumericVector state_BB        = as<NumericVector>(state["BB"]);
+   const NumericVector state_Ftime     = as<NumericVector>(state["Ftime"]);
 
 //FISHING  NumericVector TerminalF        = as<NumericVector>(params["TerminalF"]);
 //FISHING    NumericVector TARGET_BIO       = as<NumericVector>(params["TARGET_BIO"]);
@@ -360,11 +360,13 @@ int sp, links, prey, pred, gr, dest;
 //FISHING    NumericVector ALPHA            = as<NumericVector>(params["ALPHA"]);
 
 // "Environmental" forcing matrices (dd-indexed month x species)
+// SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
    NumericMatrix force_byprey     = as<NumericMatrix>(forcing["byprey"]);
    NumericMatrix force_bymort     = as<NumericMatrix>(forcing["bymort"]);
    NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["bysearch"]);
 
 // Fishing forcing matrices (indexed year x species)  
+// SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
    NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
    NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["CATCH"]);
    NumericMatrix EffortMat        = as<NumericMatrix>(fishing["EFFORT"]); 
@@ -392,7 +394,7 @@ int sp, links, prey, pred, gr, dest;
 // Set effective biomass for pred/prey response
 // default is B/Bref
    NumericVector preyYY = state_Ftime * state_BB/B_BaseRef;
-   NumericVector predYY = state_Ftime * state_BB/B_BaseRef * force_bysearch(dd, _);
+   NumericVector predYY = state_Ftime * state_BB/B_BaseRef * force_bysearch(dd,_);
 
 // Set functional response biomass for juvenile and adult groups (including foraging time) 
    //NOJUV   for (i=1; i<=juv_N; i++){
@@ -419,7 +421,7 @@ int sp, links, prey, pred, gr, dest;
    NumericVector PySuite = HandleSuite[PreyTo];
    NumericVector Hself   = HandleSelf[PreyTo]; 
    NumericVector Sself   = ScrambleSelf[PreyTo];
-   
+
 //   // Main VECTOR CALC to calculate functional response for each predator/prey link
 //     // (3) Additive version: primary used and published in Aydin (2004) 
 //     // KYA 3/2/2012 setting "COUPLED" to zero means species are density dependent
@@ -526,7 +528,7 @@ int sp, links, prey, pred, gr, dest;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
  		}		
-    NumericVector FORCE_F = FORCED_FRATE(y,_);
+    NumericVector FORCE_F = (NumericVector)FORCED_FRATE(y,_);
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
              caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_BB[sp];
