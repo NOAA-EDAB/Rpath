@@ -22,7 +22,7 @@ List rk4_run (List params, List instate, List forcing, List fishing,
 
 // Switches for run modes
    int BURN_YEARS = as<int>(params["BURN_YEARS"]);
-   int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
+   int CRASH_YEAR = -1;
 
 // Parameters needed directly for foraging time adjustment
    NumericVector B_BaseRef        = as<NumericVector>(params["B_BaseRef"]);
@@ -132,9 +132,10 @@ List rk4_run (List params, List instate, List forcing, List fishing,
   
 // Create Rcpp list to output  
    List outdat = List::create(
-     _["endState"]=state,
      _["out_BB"]=out_BB,
-     _["out_CC"]=out_CC);
+     _["out_CC"]=out_CC,
+     _["end_state"]=state,
+     _["crash_year"]=CRASH_YEAR);
   
 // Return is an Rcpp List
    return(outdat);
@@ -156,7 +157,7 @@ int y, m, dd;
 
 // Switches for run modes
    int BURN_YEARS = as<int>(params["BURN_YEARS"]);
-   int CRASH_YEAR = as<int>(params["CRASH_YEAR"]);
+   int CRASH_YEAR = -1;
 
 // Flag for group-sepcific Integration method (NoIntegrate=0 means Fast Eq)   
    NumericVector NoIntegrate = as<NumericVector>(params["NoIntegrate"]);
@@ -283,9 +284,10 @@ int y, m, dd;
  
 // Create Rcpp list to output  
    List outdat = List::create(
-     _["endState"]=state,
      _["out_BB"]=out_BB,
-     _["out_CC"]=out_CC);
+     _["out_CC"]=out_CC,
+     _["end_state"]=state,
+     _["crash_year"]=CRASH_YEAR);
   
 // Return is an Rcpp List
    return(outdat);

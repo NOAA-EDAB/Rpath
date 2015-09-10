@@ -22,14 +22,14 @@ EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 # Ecotest - vectors
   TBASE  <- ecosim.init(EBS)
   TBASE$fishing$FRATE[1:30,2]<-0.05
-  TRUN <- adams.run(TBASE,100)
-  plot(TRUN$out_BB[,2])
+  TRUNa <- adams.run(TBASE,10)
+  plot(TRUNa$out_BB[,2])
 
   TBASE  <- ecosim.init(EBS)
   TBASE$fishing$FRATE[1:30,2]<-0.05  
   TBASE$params$RK4_STEPS <- 2
-  TRUN <- rk4.run(TBASE,100)
-  plot(TRUN$out_BB[,2])
+  TRUNr <- rk4.run(TBASE,10)
+  plot(TRUNr$out_BB[,2])
 
   require(microbenchmark)
   TBASE$params$RK4_STEPS <- 4

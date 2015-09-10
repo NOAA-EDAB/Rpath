@@ -6,12 +6,12 @@
 ################################################################################ 
 #'@export
 adams.run <- function(RP,YEARS=100){ 
-  return(Adams_run (RP$params, RP$state, RP$forcing, RP$fishing, 0 , YEARS));
+  return(Adams_run (RP$params, RP$start_state, RP$forcing, RP$fishing, 0 , YEARS));
   }
 ################################################################################
 #'@export
 rk4.run <- function(RP,YEARS=100){ 
-  return(rk4_run (RP$params, RP$state, RP$forcing, RP$fishing, 0 , YEARS));
+  return(rk4_run (RP$params, RP$start_state, RP$forcing, RP$fishing, 0 , YEARS));
 }
 
 #####################################################################################
@@ -19,8 +19,8 @@ rk4.run <- function(RP,YEARS=100){
 ecosim.init <- function(Rpath, YEARS=100){
   # Set initial Ecosim parameters and state
     params <- ecosim.params(Rpath)
-    state  <- list(BB    = params$B_BaseRef, 
-                   Ftime = rep(1, length(params$B_BaseRef) + 1))
+    start_state  <- list(BB    = params$B_BaseRef, 
+                    Ftime = rep(1, length(params$B_BaseRef) + 1))
 
   # monthly and yearly matrices initialized to 1.0 for forcing, 0 for fishing 
     MF <- (matrix(1.0, YEARS * 12 + 1, params$NUM_GROUPS + 1))
@@ -36,7 +36,7 @@ ecosim.init <- function(Rpath, YEARS=100){
                     FRATE=YF,
                     CATCH=YF) 
   
-  rsim = list(params=params,state=state,forcing=forcing,fishing=fishing)
+  rsim = list(params=params,start_state=start_state,forcing=forcing,fishing=fishing)
   return(rsim)   
 }
 
@@ -264,7 +264,6 @@ ecosim.params <- function(Rpath){
   #simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
   simpar$BURN_YEARS <- -1
   simpar$COUPLED    <-  1
-  simpar$CRASH_YEAR <- -1
   simpar$RK4_STEPS  <- 4.0 
   
   return(simpar)
