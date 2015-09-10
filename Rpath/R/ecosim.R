@@ -17,7 +17,6 @@ rk4.run <- function(RP,YEARS=100){
 #####################################################################################
 #'@export
 ecosim.init <- function(Rpath, YEARS=100){
-
   # Set initial Ecosim parameters and state
     params <- ecosim.params(Rpath)
     state  <- list(BB    = params$B_BaseRef, 
