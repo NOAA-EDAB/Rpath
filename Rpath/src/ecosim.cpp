@@ -40,8 +40,8 @@ List rk4_run (List params, List instate, List forcing, List fishing,
 // Accumulator for monthly catch values
    NumericMatrix cum_CC(NUM_BIO+1);
 
-// Load state, set some initial values   
-   List state = instate;
+// Load state, set some initial values.  Make sure state is COPY, not pointer   
+   List state = clone(instate);
    dd =  StartYear * STEPS_PER_YEAR;  // dd is monthly index for data storage
   
 // MAIN LOOP STARTS HERE with years loop
@@ -185,8 +185,9 @@ int y, m, dd;
 // Update sums of split groups to total biomass for derivative calcs
    //NOJUV      SplitSetPred(mod); 
 
-// Load state and call initial derivative (todo: allow other start times)   
-   List state = instate;
+// Load state and call initial derivative (todo: allow other start times)
+// Use Clone to make sure state is a copy of instate, not a pointer   
+   List state = clone(instate);
    List dyt   = deriv_vector(params,state,forcing,fishing,0,0,0);
    dd = StartYear * STEPS_PER_YEAR;
 
