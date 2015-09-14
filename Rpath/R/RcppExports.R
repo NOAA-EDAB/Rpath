@@ -13,19 +13,3 @@ deriv_vector <- function(params, state, forcing, fishing, y, m, tt) {
     .Call('Rpath_deriv_vector', PACKAGE = 'Rpath', params, state, forcing, fishing, y, m, tt)
 }
 
-deriv_old <- function(mod, y, m, d) {
-    .Call('Rpath_deriv_old', PACKAGE = 'Rpath', mod, y, m, d)
-}
-
-SplitSetPred <- function(mod) {
-    .Call('Rpath_SplitSetPred', PACKAGE = 'Rpath', mod)
-}
-
-update_stanzas <- function(mod, yr, mon) {
-    .Call('Rpath_update_stanzas', PACKAGE = 'Rpath', mod, yr, mon)
-}
-
-Adams_Basforth_old <- function(mod, StartYear, EndYear) {
-    .Call('Rpath_Adams_Basforth_old', PACKAGE = 'Rpath', mod, StartYear, EndYear)
-}
-

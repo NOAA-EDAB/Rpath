@@ -13,12 +13,6 @@ EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 #Ejuv  <- "data/ECS_eis_juv_July2015.csv"
 #EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Chukchi')
 
-# Rpath - Sean branch
-  EBASE  <- ecosim.init.old(EBS,Ejuv)
-  EBASE$FORCED_FRATE[1:30,2]<-0.05
-  ERUN <- ecosim.run.old(EBASE,0,100)
-  plot(ERUN$out_BB[1:1200,2])
-
 # Ecotest - vectors
   TBASE  <- ecosim.init(EBS)
   TBASE$fishing$FRATE[1:30,2]<-0.05
