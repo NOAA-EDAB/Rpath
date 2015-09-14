@@ -1,8 +1,0 @@
-Group,Top Predators,Piscivores,Detritivores,Benthivores,Zooplankton,Phytoplankton
-Top Predators,0,,,,,
-Piscivores,0.1,0.2,,,,
-Detritivores,0.2,0.3,,,,
-Benthivores,0.2,0.3,,,,
-Zooplankton,0.5,0.2,0.3,0.8,,
-Phytoplankton,,,,,0.95,
-Detritus,,,0.7,0.2,0.05,
