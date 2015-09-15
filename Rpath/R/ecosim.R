@@ -15,8 +15,8 @@ Rsim.scenario <- function(Rpath, YEARS=100){
   
   params      <- Rsim.params(Rpath)
   start_state <- Rsim.state(params)
-  forcing     <- Rsim.forcing(params)
-  fishing     <- Rsim.fishing(params)
+  forcing     <- Rsim.forcing(params,YEARS)
+  fishing     <- Rsim.fishing(params,YEARS)
   
   rsim = list(params=params,start_state=start_state,forcing=forcing,fishing=fishing)
   class(rsim) <- append(class(rsim),"Rsim.scenario")
