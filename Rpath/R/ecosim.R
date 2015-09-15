@@ -5,70 +5,83 @@
 #
 #'@useDynLib Rpath
 #'@importFrom Rcpp sourceCpp
-################################################################################ 
-#'@export
-adams.run <- function(RP,YEARS=100){ 
-  return(Adams_run (RP$params, RP$start_state, RP$forcing, RP$fishing, 0 , YEARS));
-  }
-################################################################################
-#'@export
-rk4.run <- function(RP,YEARS=100){ 
-  return(rk4_run (RP$params, RP$start_state, RP$forcing, RP$fishing, 0 , YEARS));
-}
 
 #####################################################################################
+# Rsim.scenario takes a balanced Ecopath model (Rpath) and creates a scenario
+# consisting of 4 objects:  Rsim.params, Rsim.state (start state), Rsim.forcing
+# and Rsim.fishing.  All objects are List base class.
 #'@export
-ecosim.init <- function(Rpath, YEARS=100){
-  # Set initial Ecosim parameters and state
-    params <- ecosim.params(Rpath)
-    start_state  <- list(BB    = params$B_BaseRef, 
-                    Ftime = rep(1, length(params$B_BaseRef) + 1))
-
-  # monthly and yearly matrices initialized to 1.0 for forcing, 0 for fishing 
-    MF <- (matrix(1.0, YEARS * 12 + 1, params$NUM_GROUPS + 1))
-    YF <- (matrix(0.0, YEARS + 1, params$NUM_GROUPS + 1))  
+Rsim.scenario <- function(Rpath, YEARS=100){
   
-  # monthly environmental forcing   
-    forcing <- list(byprey=MF, 
-                    bymort=MF, 
-                    byrecs=MF, 
-                    bysearch=MF)
-  # fishing 
-    fishing <- list(EFFORT=(matrix(1.0, YEARS + 1, params$NUM_GEARS + 1)),
-                    FRATE=YF,
-                    CATCH=YF) 
+  params      <- Rsim.params(Rpath)
+  start_state <- Rsim.state(params)
+  forcing     <- Rsim.forcing(params)
+  fishing     <- Rsim.fishing(params)
   
   rsim = list(params=params,start_state=start_state,forcing=forcing,fishing=fishing)
+  class(rsim) <- append(class(rsim),"Rsim.scenario")
   return(rsim)   
 }
 
-#####################################################################################
+################################################################################ 
+# adams.run runs an Rsim.scenario forward from start_state for YEARS years
+# using Adams-Basforth with monthly timesteps, and returns an Rsim.output
 #'@export
-ecotest <- function(RP,y,m,d){
-  YEARS <- 100
-  
-  # monthly forcing matrix of 1.0s
-    MF  <- (matrix(1.0, YEARS * 12 + 1, RP$NUM_GROUPS + 1))
-  
-  # yearly forcing matrix of 1.0s  
-    YF <- (matrix(0.0, YEARS + 1, RP$NUM_GROUPS + 1))
-  
-   state   <- list(BB    = RP$state_BB, 
-                   Ftime = RP$state_Ftime)
-  
-  forcing <- list(byprey=MF, 
-                 bymort=MF, 
-                 byrecs=MF, 
-                 bysearch=MF)
-  fishing <- list(
-                 EFFORT=(matrix(1.0, YEARS + 1, RP$NUM_GEARS + 1)),
-                 FRATE=YF,
-                 CATCH=YF
-                 )  
-  return(deriv_test(RP,state,forcing,fishing,y,m,d));
+adams.run <- function(RP,YEARS=100){
+  #TODO check length of fishing and forcing inputs against YEARS
+  rout <- Adams_run(RP$params, RP$start_state, RP$forcing, RP$fishing, 0, YEARS)
+  class(rout) <- append(class(rout),"Rsim.output")
+  return(rout)
 }
 
+################################################################################ 
+# rk4.run runs an Rsim.scenario forward from start_state for YEARS years
+# using Runge-Kutta with supplied timesteps, and returns an Rsim.output
+#'@export
+rk4.run <- function(RP,YEARS=100){ 
+  #TODO check length of fishing and forcing inputs against YEARS
+  rout <- rk4_run(RP$params, RP$start_state, RP$forcing, RP$fishing, 0 , YEARS)
+  class(rout) <- append(class(rout),"Rsim.output")
+  return(rout)
+}
 
+#####################################################################################
+#'@export
+Rsim.fishing <- function(params,YEARS=100){
+# Yearly index defaulting to to 0.0, for fishing forcing list
+  YF <- (matrix(0.0, YEARS + 1, params$NUM_GROUPS + 1))  
+  fishing <- list(EFFORT=(matrix(1.0, YEARS + 1, params$NUM_GEARS + 1)),
+                  FRATE=YF,
+                  CATCH=YF)   
+
+  class(fishing) <- append(class(fishing),"Rsim.fishing")
+  return (fishing)
+}
+
+#####################################################################################
+#'@export
+Rsim.forcing <- function(params,YEARS=100){
+# Monthly index defaulting to to 1.0, for environmental forcing list
+  MF <- (matrix(1.0, YEARS * 12 + 1, params$NUM_GROUPS + 1))      
+  forcing <- list(byprey=MF, 
+                  bymort=MF, 
+                  byrecs=MF, 
+                  bysearch=MF)
+  
+  class(forcing) <- append(class(forcing),"Rsim.forcing")
+  return (forcing)
+}
+
+#####################################################################################
+#'@export
+Rsim.state <- function(params){
+  state  <- list(BB    = params$B_BaseRef, 
+                 Ftime = rep(1, length(params$B_BaseRef) + 1))
+  class(state) <- append(class(state),"Rsim.state")
+  return(state)
+}
+
+#####################################################################################
 #'Initial set up for Ecosim modual of Rpath
 #'
 #'Performs initial set up for Ecosim by converting ecopath values to rates,
@@ -81,7 +94,7 @@ ecotest <- function(RP,y,m,d){
 #'
 #'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 #'@export
-ecosim.params <- function(Rpath){
+Rsim.params <- function(Rpath){
   #Old path_to_rates--------------------------------------------------------------------
   MSCRAMBLE      <- 2.0
   MHANDLE        <- 1000.0
@@ -253,5 +266,6 @@ ecosim.params <- function(Rpath){
   simpar$COUPLED    <-  1
   simpar$RK4_STEPS  <- 4.0 
   
+  class(simpar) <- append(class(simpar),"Rsim.params")
   return(simpar)
 }

@@ -1,76 +1,56 @@
   
 library(Rpath)
- 
-Ebase <- "data/EBS_andre_base.csv"
-Ediet <- "data/EBS_andre_diet.csv"
-Eped  <- "data/EBS_andre_ped.csv"
-Ejuv  <- "data/EBS_andre_juvs.csv"
-EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
 
-#Ebase <- "data/ECS_eis_base_July2015.csv"
-#Ediet <- "data/ECS_eis_diet_Jun2015.csv"
-#Eped  <- "data/ECS_eis_ped_Jun2015.csv"
-#Ejuv  <- "data/ECS_eis_juv_July2015.csv"
-#EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'Chukchi')
+# Files containing initial ecosystem data
+  Ebase <- "data/EBS_andre_base.csv"  # Base biomass, production, fishing
+  Ediet <- "data/EBS_andre_diet.csv"  # Diet matrix
+  Eped  <- "data/EBS_andre_ped.csv"   # Data pedigree = quality of input data
+  Ejuv  <- "data/EBS_andre_juvs.csv"  # Juvenile/Adult file if needed
 
-# Ecotest - vectors
-  TBASE  <- ecosim.init(EBS)
+# Create an ECOPATH (balanced linear equation) model
+  EBS   <- ecopath(Ebase, Ediet, Eped, eco.name = 'E. Bering')
+
+# Create an ECOSIM SCENARIO (TBASE) from an input balanced ecosystem. 
+# A Scenario created by ecosim.init is a List of Lists, consisting of:
+# params:  
+#     List containing the parameters of the system (i.e. the
+#     parameter set that defines a particular ecosystem).
+# start_state:
+#     a List containing start values of state variables.
+# forcing:
+#     a List of Month x Species matrices (default value 1.0) that
+#     are used to apply "environmental forcing" in monthly timesteps.
+# fishing:
+#     a List of Year x Species matrices for fishing (annual targets
+#     for catch, or effort)
+  TBASE <- Rsim.scenario(EBS)
+
+# Manually change the fishing rate for species 2, years 1:30
   TBASE$fishing$FRATE[1:30,2]<-0.05
-  TRUNa <- adams.run(TBASE,10)
+
+# Run for 50 years using Adams-Basforth, plot result  
+  TRUNa <- adams.run(TBASE,50)
   plot(TRUNa$out_BB[,2])
 
-  TBASE  <- ecosim.init(EBS)
-  TBASE$fishing$FRATE[1:30,2]<-0.05  
+# Run for 50 years Using Rk4, setting stepsize = 2/month, and plot
   TBASE$params$RK4_STEPS <- 2
-  TRUNr <- rk4.run(TBASE,10)
+  TRUNr <- rk4.run(TBASE,50)
   plot(TRUNr$out_BB[,2])
 
+  
+# OLDER STUFF (not guaranteed to work)
   require(microbenchmark)
-  TBASE$params$RK4_STEPS <- 4
   microbenchmark(adams.run(TBASE,100),times=100L)  
   
   
-# One random system
-  TBASE  <- ecotest.init(EBS)
-  TTEST <- TBASE
-  EBS$pedigree[,2]<-1.0
-  TTEST$params <- ecosim.random.params(EBS)
-  TRUN <- ecotest.run(TTEST,100)
-  plot(TRUN$out_BB[,2])
+
 
   
 
 
 
 
-etest.plot(TRUN$out_BB)
-
-etest.plot<-function(outBB) {
-  N <- length(outBB[1,])
-  plot( c(1,1201), c(0,2) ,type='n') 
-  for (i in 1:N) {
-    lines(1:1201, outBB[,i]/outBB[1,i])    
-   }  
-}
 
 
 
-test <- Adamstest(EBASE)
-tderiv<-ecotest(EBASE,1,1,1)
 
-microbenchmark()
-
-
-#
-as.data.frame(ecotest(ERUN,1,1,1))
-
-require(microbenchmark)
-microbenchmark(ecosim.run(EBASE,0,100),times=100L)
-
-
-
-#EBS_0 <- ecosim.init(EBS,Ejuv,YEARS=100)
-Estate <- ecosim.state(Epar) #optional argument for state  #return Rpath.sim.state
-Eforce <- ecosim.forcing(Epar) #optional argument for forcing  #return Rpath.sim.forcing
-
-Erun   <- ecosim.run1(Epar,Estate,Eforce,)

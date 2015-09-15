@@ -22,8 +22,8 @@ Logical check that the parameter files are filled out correctly, i.e. data is en
 expected.
 }
 \seealso{
-Other Rpath.functions: \code{\link{create.rpath.param}};
-  \code{\link{ecopath}}; \code{\link{ecosim.params}};
+Other Rpath.functions: \code{\link{Rsim.params}};
+  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.plot}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }

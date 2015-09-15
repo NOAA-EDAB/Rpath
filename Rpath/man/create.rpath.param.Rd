@@ -29,8 +29,8 @@ Creates a shell of the parameter files that can then be filled out in R, Excel, 
 another spreadsheet program.
 }
 \seealso{
-Other Rpath.functions: \code{\link{check.rpath.param}};
-  \code{\link{ecopath}}; \code{\link{ecosim.params}};
+Other Rpath.functions: \code{\link{Rsim.params}};
+  \code{\link{check.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.plot}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }

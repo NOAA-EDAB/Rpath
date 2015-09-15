@@ -19,9 +19,10 @@ from an Rpath.sim object.
 Outputs start/end biomass and catch to a .csv file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{Rsim.params}};
+  \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.params}}; \code{\link{ecosim.plot}};
-  \code{\link{webplot}}; \code{\link{write.Rpath}}
+  \code{\link{ecosim.plot}}; \code{\link{webplot}};
+  \code{\link{write.Rpath}}
 }
 
