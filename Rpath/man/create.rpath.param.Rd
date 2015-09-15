@@ -30,9 +30,8 @@ another spreadsheet program.
 }
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
-  \code{\link{ecopath}}; \code{\link{ecosim.init.old}};
-  \code{\link{ecosim.params}}; \code{\link{ecosim.plot}};
-  \code{\link{ecosim.run.old}}; \code{\link{webplot}};
+  \code{\link{ecopath}}; \code{\link{ecosim.params}};
+  \code{\link{ecosim.plot}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 
