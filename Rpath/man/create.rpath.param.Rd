@@ -30,12 +30,18 @@ Creates a shell of the parameter files that can then be filled out in R, Excel, 
 another spreadsheet program.
 }
 \seealso{
+<<<<<<< HEAD
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{ecopath}}; \code{\link{ecosim.init}};
   \code{\link{ecosim.pack}}; \code{\link{ecosim.plot}};
   \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
   \code{\link{ecosim.stanzas}}; \code{\link{frate.adjust}};
   \code{\link{frate.table}}; \code{\link{webplot}};
+=======
+Other Rpath.functions: \code{\link{Rsim.params}};
+  \code{\link{check.rpath.param}}; \code{\link{ecopath}};
+  \code{\link{ecosim.plot}}; \code{\link{webplot}};
+>>>>>>> 2fe677a10d7b9e1846b962d00a99b1f73155fc7e
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

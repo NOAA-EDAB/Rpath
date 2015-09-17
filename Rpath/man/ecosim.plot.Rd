@@ -16,12 +16,18 @@ Creates a figure of relative biomass.
 Plots the relative biomass of each group from a run of ecosim.
 }
 \seealso{
-Other Rpath.functions: \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{Rsim.params}};
+  \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
+<<<<<<< HEAD
   \code{\link{ecosim.init}}; \code{\link{ecosim.pack}};
   \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
   \code{\link{ecosim.stanzas}}; \code{\link{frate.adjust}};
   \code{\link{frate.table}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
+=======
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}}
+>>>>>>> 2fe677a10d7b9e1846b962d00a99b1f73155fc7e
 }
 

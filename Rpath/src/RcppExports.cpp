@@ -5,54 +5,52 @@
 
 using namespace Rcpp;
 
-// deriv_master
-int deriv_master(List mod, int y, int m, int d);
-RcppExport SEXP Rpath_deriv_master(SEXP modSEXP, SEXP ySEXP, SEXP mSEXP, SEXP dSEXP) {
+// rk4_run
+List rk4_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+RcppExport SEXP Rpath_rk4_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
-    Rcpp::traits::input_parameter< int >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    __result = Rcpp::wrap(deriv_master(mod, y, m, d));
-    return __result;
-END_RCPP
-}
-// SplitSetPred
-int SplitSetPred(List mod);
-RcppExport SEXP Rpath_SplitSetPred(SEXP modSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
-    __result = Rcpp::wrap(SplitSetPred(mod));
-    return __result;
-END_RCPP
-}
-// update_stanzas
-int update_stanzas(List mod, int yr, int mon);
-RcppExport SEXP Rpath_update_stanzas(SEXP modSEXP, SEXP yrSEXP, SEXP monSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
-    Rcpp::traits::input_parameter< int >::type yr(yrSEXP);
-    Rcpp::traits::input_parameter< int >::type mon(monSEXP);
-    __result = Rcpp::wrap(update_stanzas(mod, yr, mon));
-    return __result;
-END_RCPP
-}
-// Adams_Basforth
-int Adams_Basforth(List mod, int StartYear, int EndYear);
-RcppExport SEXP Rpath_Adams_Basforth(SEXP modSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< List >::type mod(modSEXP);
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< List >::type instate(instateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
-    __result = Rcpp::wrap(Adams_Basforth(mod, StartYear, EndYear));
+    __result = Rcpp::wrap(rk4_run(params, instate, forcing, fishing, StartYear, EndYear));
+    return __result;
+END_RCPP
+}
+// Adams_run
+List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+RcppExport SEXP Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< List >::type instate(instateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
+    Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
+    Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
+    __result = Rcpp::wrap(Adams_run(params, instate, forcing, fishing, StartYear, EndYear));
+    return __result;
+END_RCPP
+}
+// deriv_vector
+List deriv_vector(List params, List state, List forcing, List fishing, int y, int m, double tt);
+RcppExport SEXP Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP ySEXP, SEXP mSEXP, SEXP ttSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< List >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
+    Rcpp::traits::input_parameter< int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type tt(ttSEXP);
+    __result = Rcpp::wrap(deriv_vector(params, state, forcing, fishing, y, m, tt));
     return __result;
 END_RCPP
 }
