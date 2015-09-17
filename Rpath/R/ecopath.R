@@ -130,7 +130,8 @@ ecopath <- function(modfile, dietfile, eco.name = NA){
   living[, M0 := PB * (1 - EE)]
   living[, QBloss := QB]
   living[is.na(QBloss), QBloss := 0]
-  loss <- c((living[, M0] * living[, B]) + (living[, B] * living[, QBloss] * living[, Unassim]),
+  loss <- c((living[, M0] * living[, B]) + (living[, B] * living[, QBloss] * 
+                                              living[, Unassim]),
             model[Type ==2, DetInput], 
             geardisc)
   detinputs  <- colSums(loss * detfate)
@@ -169,15 +170,21 @@ ecopath <- function(modfile, dietfile, eco.name = NA){
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
   Bplus  <- c(living[, B], DetB, rep(0.0, ngear))
+  
   PBplus <- model[, PB] 
   PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
   PBplus[is.na(PBplus)] <- 0.0
+  
   EEplus <- c(EE, rep(0.0, ngear))
+  
   QBplus <- model[, QB]
   QBplus[is.na(QBplus)] <- 0.0
+  
   GE[is.na(GE)] <- 0.0
+  
   RemPlus <- model[, totcatch]
   RemPlus[is.na(RemPlus)] <- 0.0
+  
   balanced <- list(Group    = model[, Group], 
                    TL       = TL, 
                    Biomass  = Bplus, 

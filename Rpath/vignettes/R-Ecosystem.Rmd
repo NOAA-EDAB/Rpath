@@ -71,7 +71,7 @@ knitr::kable(modfile, caption = 'Example table created using the
 
 Note there is the option to save the parameter file by passing a name to the 
 "filename" argument.  Each of the parameter files are created as data tables.
-Data tables are an extention of the classic data frame class.  They allow for 
+Data tables are an extension of the classic data frame class.  They allow for 
 simplified indexing which can help populate the files in R.  For example you can
 add data to a specific slot or fill an entire column.
 
@@ -330,7 +330,7 @@ knitr::kable(juvfile, caption = 'Juvenile parameter file for R Ecosystem')
 
 #### Pedigree parameter file
 
-Rpath does not currently use pedigrees however, future Rpath extentions will use
+Rpath does not currently use pedigrees however, future Rpath extensions will use
 them.  Therefore we provide a means of creating a pedigree parameter file.  The
 default values are 1 (low confidence).  These defaults are not changed for R
 Ecosystem but can obviously be changed in a similar manner to the other parameter
@@ -369,11 +369,11 @@ argument `morts = T` to the `print` function.
 print(REco, morts = T)
 ```
 
-Note that if you wish to save the `print` ouput you need to use the function
+Note that if you wish to save the `print` output you need to use the function
 `write.rpath`.  This function will also accept the argument 'morts = T'.
 
 The generic function `summary` will display some summary statistics on the model
-as well as a list of sttributes you can access.  To access any of the other 
+as well as a list of attributes you can access.  To access any of the other 
 attributes simply use the standard list notation.
 
 ```{r Ecopath summaries}
@@ -383,7 +383,7 @@ REco$TL
 
 One of the advantages of R is its graphical ability.  Users can feel free to develop
 their own graphical routines for the Rpath outputs.  However, we have included
-a basic foodweb plot.  The routine can include fisheries, display group numbers or 
+a basic food web plot.  The routine can include fisheries, display group numbers or 
 names, and even highlight a particular group.
 
 ```{r Food Web Plots, fig.align = 'center', fig.height = 7, fig.width = 7}
@@ -413,7 +413,7 @@ The second part of the ecosim process is the function `ecosim.run`.  We recommen
 making a copy of the Rpath.sim.init object before running `ecosim.run`.  Otherwise
 `ecosim.run` will change the initial starting conditions.  Other arguments passed to
 `ecosim.run` include the beginning year (BY) and ending year (EY).  You can also 
-indicate if this is the initial run or a pertibation.  This will make sense in the
+indicate if this is the initial run or a perturbation.  This will make sense in the
 second example.  But first, here is a 100 year run at equilibrium.
 
 ```{r ecosim equilibrium run}
@@ -421,7 +421,7 @@ REco.base <- data.table::copy(REco.init)
 REco.base <- ecosim.run(REco.base, 0, 100)
 ```
 
-The ouput from `ecosim.run` is another S3 object class called 'Rpath.sim'.  Similar
+The output from `ecosim.run` is another S3 object class called 'Rpath.sim'.  Similar
 to the Rpath object created by `ecopath`, the generic function `print` will give
 output similar to the 'Ecosim results' tab in EwE. If you want to save the `print`
 results you need to use the function `write.rpath.sim`.  The function `summary` just
@@ -432,7 +432,7 @@ REco.base
 summary(REco.base)
 ```
 
-Just like with `ecopath`, we have included a quick graphical routine for ploting
+Just like with `ecopath`, we have included a quick graphical routine for plotting
 biomass trajectories over time.  Other plots similar to the group plots are possible
 but at this time we do not have a built-in function.
 
