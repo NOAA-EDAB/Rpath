@@ -31,3 +31,16 @@ for(i in unique(stanzas[, isp])){
   }
 }
     
+stanza.out[, bs.denom := rowSums(.SD), .SDcols = c('s1', 's2')]
+stanza.out[, bs1 := s1 / bs.denom]
+stanza.out[, bs2 := s2 / bs.denom]
+
+Bio <- data.table(isp = c(1, 2),
+                  bio = c(1.39, 5.553))
+stanza.bio <- merge(stanza.out, Bio, by = 'isp')
+
+stanza.bio[, B := bio / bs2]
+stanza.bio[, B1 := bs1 * B]
+stanza.bio[, B2 := bio]
+
+
