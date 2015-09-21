@@ -2,16 +2,67 @@
 library(data.table)
 
 #First two stanzas from REco
-stanzas <- data.table(isp    = c(1, 1, 2, 2),
-                      first  = c(0, 25, 0, 25),
-                      second = c(24, 400, 24, 400),
-                      z      = c(2.026, 0.42, 2.1, 0.425),
-                      bab    = c(0, 0, 0, 0))
+groups <- data.table(GroupNum = c(1, 2),
+                     Group    = c('Roundfish1', 'Roundfish2'),
+                     nstanzas = c(2, 2),
+                     VBGF_Ksp = c(0.145, 0.295),
+                     VBGF_d   = c(0.66667, 0.66667),
+                     Wmat     = c(0.0577, .421))
 
-vbgf <- data.table(isp  = c(1, 2),
-                   k    = c(0.145, 0.295),
-                   d    = c(0.66667, 0.66667),
-                   Wmat = c(0.0577, 0.421))
+stanzas <- data.table(GroupNum = c(1, 1, 2, 2),
+                      Stanza   = c(1, 2, 1, 2),
+                      First    = c(0, 24, 0, 25),
+                      Last     = c(23, 400, 24, 400),
+                      Z        = c(2.026, 0.42, 2.1, 0.425),
+                      Leading  = c(F, T, F, T),
+                      Biomass  = c(0, 1.39, 0, 5.553))
+
+ngroup <- max(groups[, GroupNum])
+
+#Vector of survival rates from 1 stanza to the next
+prev.surv <- 1
+
+
+for(i in 1:ngroup){
+  
+  #Calculate last month adult
+  stan.last <- groups[GroupNum == i, nstanzas]
+  #Convert to generalized k from Ksp and make monthly
+  k <- (groups[GroupNum == i, VBGF_Ksp] * 3) / 12
+  d <- groups[GroupNum == i, VBGF_d]
+  #Months to get to 90% Winf
+  t90 <- floor(log(1 - 0.9^(1 - d)) / (-1 * k * (1 - d)))
+  stanzas[GroupNum == i & Stanza == stan.last, Last := t90]
+  
+  #Calculate the relative number of animals at age a
+  for(j in 1:stan.last){
+    #Grab the first and last month within the stanza
+    a <- stanzas[GroupNum == i & Stanza == j, First]:stanzas[GroupNum == i & 
+                                                               Stanza == j, Last]
+    #Convert Z to a monthly Z
+    z <- stanzas[GroupNum == i & Stanza == j, Z] / 12
+    
+    la <- data.table(age  = a,
+                     z    = z,
+                     surv = exp(-z) ^ (a - a[1]))
+
+    la[, wa := (1 - exp(-k * (1 - d) * (age))) ^ (1 / 1 - d)]
+    la[, lawa := surv * wa]
+    stanzas[GroupNum == i & Stanza == j, bs.num := la[, sum(lawa)]]
+    prev.surv[j + 1] <- exp(-z) ^ (max(a) - min(a))
+  }
+  
+  stanzas[GroupNum == i, bs.denom := sum(bs.num)]
+  stanzas[GroupNum == i, bs := bs.num / bs.denom]
+  
+  #Use leading group to calculate other biomasses
+  B <- stanzas[GroupNum == i & Leading == T, Biomass / bs]
+  stanzas[GroupNum == i, Biomass := bs * B]
+}
+
+#Calculate biomass in other stanzas
+
+
 
 stanza.out <- data.table(isp = unique(stanzas[, isp]),
                          s1  = as.numeric(NA),
