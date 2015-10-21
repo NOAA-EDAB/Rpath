@@ -21,11 +21,19 @@ if(Sys.info()['sysname']=="Linux"){
 
 library(Rpath); library(data.table)
 
-#file skeletons
-modfile  <- paste(data.dir, 'REco_mod_2.csv',  sep = '')
-dietfile <- paste(data.dir, 'REco_diet.csv', sep = '')
-pedfile  <- paste(data.dir, 'REco_ped.csv',  sep = '')
-juvfile  <- paste(data.dir, 'REco_juv_2.csv',  sep = '')
+#Groups and types for the R Ecosystem
+
+groups <- c('Seabirds', 'Whales', 'Seals', 'JuvRoundfish1', 'AduRoundfish1', 
+            'JuvRoundfish2', 'AduRoundfish2', 'JuvFlatfish1', 'AduFlatfish1',
+            'JuvFlatfish2', 'AduFlatfish2', 'OtherGroundfish', 'Foragefish1',
+            'Foragefish2', 'OtherForagefish', 'Megabenthos', 'Shellfish',
+            'Macrobenthos', 'Zooplankton', 'Phytoplankton', 'Detritus', 
+            'Discards', 'Trawlers', 'Midwater', 'Dredgers')
+
+types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
+
+modfile <- create.rpath.param(parameter = 'model', group = groups, type = types)
+
 
 #Run ecosim on the R Ecosystem parameter files
 REco <- ecopath(modfile, dietfile, pedfile, 'R Ecosystem')
