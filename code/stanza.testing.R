@@ -11,8 +11,8 @@ groups <- data.table(GroupNum = c(1, 2),
 
 stanzas <- data.table(GroupNum = c(1, 1, 2, 2),
                       Stanza   = c(1, 2, 1, 2),
-                      First    = c(0, 24, 0, 25),
-                      Last     = c(23, 400, 24, 400),
+                      First    = c(0, 24, 0, 24),
+                      Last     = c(23, 400, 23, 400),
                       Z        = c(2.026, 0.42, 2.1, 0.425),
                       Leading  = c(F, T, F, T),
                       Biomass  = c(0, 1.39, 0, 5.553))
@@ -44,12 +44,12 @@ for(i in 1:ngroup){
     
     la <- data.table(age  = a,
                      z    = z,
-                     surv = exp(-z) ^ (a - a[1]))
+                     surv = prev.surv[j] * (exp(-z) ^ ((a + 1) - a[1])))
 
-    la[, wa := (1 - exp(-k * (1 - d) * (age))) ^ (1 / 1 - d)]
+    la[, wa := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
     la[, lawa := surv * wa]
     stanzas[GroupNum == i & Stanza == j, bs.num := la[, sum(lawa)]]
-    prev.surv[j + 1] <- exp(-z) ^ (max(a) - min(a))
+    prev.surv[j + 1] <- la[nrow(la), surv]
   }
   
   stanzas[GroupNum == i, bs.denom := sum(bs.num)]
@@ -60,38 +60,74 @@ for(i in 1:ngroup){
   stanzas[GroupNum == i, Biomass := bs * B]
 }
 
-#Calculate biomass in other stanzas
+stanzas[, c('bs.num', 'bs.denom', 'bs') := NULL]
+r.stanzas <- copy(stanzas)
 
-
-
-stanza.out <- data.table(isp = unique(stanzas[, isp]),
-                         s1  = as.numeric(NA),
-                         s2  = as.numeric(NA))
-for(i in unique(stanzas[, isp])){
-  ind.stanza <- stanzas[isp == i, ]
-  ind.stanza[, month.z := z/12]
-  n.stanzas <- nrow(ind.stanza)
-  for(j in 1:n.stanzas){
-    l <- data.table(a = ind.stanza[j, first]:ind.stanza[j, second])
-    l[, z := ind.stanza[j, month.z]]
-    l[, bab := ind.stanza[j, bab]]
-    l[, la := exp(-1 * z * a)]
-    l[, wa := (1-exp(-1 * vbgf[isp == ind.stanza[1, isp], k / 12] * a)) ^ 3]
-    l[, bs.num := sum(la*wa)]
-    stanza.out[i, j + 1] <- l[1, bs.num]
+#EwE version
+#Note EwE code indexes to 0 but R can not...so all indexes for Survive are one
+#higher in this code
+for(i in 1:ngroup){
+  BaseStanza <- stanzas[GroupNum == i & Leading == T, Stanza]
+  Bio <- stanzas[GroupNum == i & Leading == T, Biomass]
+  k <- (groups[GroupNum == i, VBGF_Ksp] * 3) / 12
+  d <- groups[GroupNum == i, VBGF_d]
+  
+  SplitWage <- c()
+  for(Age in 0:stanzas[GroupNum == i, max(Last)]){
+    SplitWage[Age] <- (1 - exp(-k * (1 - d) * (Age))) ^ (1 / (1 - d))  
   }
+  
+  Survive <- 1
+  PrevSurv <- 1
+  
+  for(Grp in 1:groups[GroupNum == i, nstanzas]){
+    Surv <- exp(-1 * stanzas[GroupNum == i & Stanza == Grp, Z] / 12)
+    first  <- stanzas[GroupNum == i & Stanza == Grp, First]
+    second <- stanzas[GroupNum == i & Stanza == Grp, Last]
+    if(Surv > 0){
+      if(first > 0){
+        Survive[first + 1] <- Survive[first] * PrevSurv
+      }
+      for(Age in (first + 1):second){
+        Survive[Age + 1] <- Survive[Age] * Surv
+      }
+      PrevSurv <- Surv
+    }
+  }
+  #Not sure why this is in the code
+  if(Surv < 1) Survive[Age] <- Survive[Age] / (1 - Surv)
+  
+  SumB <- 0
+  first <- stanzas[GroupNum == i & Stanza == BaseStanza, First]
+  second <- stanzas[GroupNum == i & Stanza == BaseStanza, Last]
+  for(Age in first:second){
+    SumB <- SumB + Survive[Age + 1] * SplitWage[Age]
+  }
+  
+  Recruits <- Bio / SumB
+  
+  SplitNo <- c()
+  for(Age in 0:stanzas[GroupNum == i, max(Last)]){
+    SplitNo[Age] <- Recruits * Survive[Age + 1]
+  }
+  
+  for(Grp in 1:groups[GroupNum == i, nstanzas]){
+    first  <- stanzas[GroupNum == i & Stanza == Grp, First]
+    second <- stanzas[GroupNum == i & Stanza == Grp, Last]
+    biot <- 0
+    for(Age in first:second){
+      if(Age > 0) biot <- biot + SplitNo[Age] * SplitWage[Age]
+    }
+    stanzas[GroupNum == i & Stanza == Grp, Biomass := biot]
+  } 
 }
-    
-stanza.out[, bs.denom := rowSums(.SD), .SDcols = c('s1', 's2')]
-stanza.out[, bs1 := s1 / bs.denom]
-stanza.out[, bs2 := s2 / bs.denom]
 
-Bio <- data.table(isp = c(1, 2),
-                  bio = c(1.39, 5.553))
-stanza.bio <- merge(stanza.out, Bio, by = 'isp')
 
-stanza.bio[, B := bio / bs2]
-stanza.bio[, B1 := bs1 * B]
-stanza.bio[, B2 := bio]
+r.stanzas
+stanzas
+
+
+
+
 
 
