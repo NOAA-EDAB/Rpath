@@ -9,6 +9,7 @@
 #'
 #'@param group Vector of group names.  If parameter equals "juvenile", this should be a vector of 
 #'  stanza groups only (Juvenile and Adults in one group).
+#'@param stanza Vector of stanza group names.
 #'@param type Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
 #'  Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.
 #'@param filename Name of the output file saved as a .csv. If NA the file will not be written.
@@ -21,8 +22,8 @@
 #'  correctly (NOTE: This does not ensure data is correct just that it is in the right places).
 #'@import data.table
 #'@export
-create.rpath.param <- function(parameter = 'model', group = NA, type = NA,  
-                               filename = NA){
+create.rpath.param <- function(parameter = 'model', group = NA, stanza = NA,
+                               type = NA, filename = NA){
   pred.group  <- group[which(type < 2)]
   prey.group  <- group[which(type < 3)]
   det.group   <- group[which(type == 2)]
@@ -30,16 +31,17 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
   
   #Base model
   if(parameter == 'model'){
-    out <- data.table(Group    = group, 
-                      Type     = type, 
-                      Biomass  = as.numeric(NA),
-                      PB       = as.numeric(NA),
-                      QB       = as.numeric(NA),
-                      EE       = as.numeric(NA),
-                      ProdCons = as.numeric(NA),
-                      BioAcc   = as.numeric(NA),
-                      Unassim  = as.numeric(NA),
-                      DetInput = as.numeric(NA))
+    out <- data.table(Group       = group, 
+                      StanzaGroup = NA,
+                      Type        = type, 
+                      Biomass     = as.numeric(NA),
+                      PB          = as.numeric(NA),
+                      QB          = as.numeric(NA),
+                      EE          = as.numeric(NA),
+                      ProdCons    = as.numeric(NA),
+                      BioAcc      = as.numeric(NA),
+                      Unassim     = as.numeric(NA),
+                      DetInput    = as.numeric(NA))
     
     #Add detritial groups
     for(i in 1:length(det.group)){
