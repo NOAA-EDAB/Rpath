@@ -4,8 +4,8 @@
 \alias{create.rpath.param}
 \title{Create shells for the Rpath parameter files}
 \usage{
-create.rpath.param(parameter = "model", group = NA, type = NA,
-  filename = NA)
+create.rpath.param(parameter = "model", group = NA, stanza = NA,
+  type = NA, filename = NA)
 }
 \arguments{
 \item{parameter}{The type of parameter file you are creating.  Choices include "model",
@@ -13,6 +13,8 @@ create.rpath.param(parameter = "model", group = NA, type = NA,
 
 \item{group}{Vector of group names.  If parameter equals "juvenile", this should be a vector of
 stanza groups only (Juvenile and Adults in one group).}
+
+\item{stanza}{Vector of stanza group names.}
 
 \item{type}{Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
 Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.}
@@ -30,18 +32,10 @@ Creates a shell of the parameter files that can then be filled out in R, Excel, 
 another spreadsheet program.
 }
 \seealso{
-<<<<<<< HEAD
-Other Rpath.functions: \code{\link{check.rpath.param}};
-  \code{\link{ecopath}}; \code{\link{ecosim.init}};
-  \code{\link{ecosim.pack}}; \code{\link{ecosim.plot}};
-  \code{\link{ecosim.rates}}; \code{\link{ecosim.run}};
-  \code{\link{ecosim.stanzas}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{webplot}};
-=======
 Other Rpath.functions: \code{\link{Rsim.params}};
   \code{\link{check.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.plot}}; \code{\link{webplot}};
->>>>>>> 2fe677a10d7b9e1846b962d00a99b1f73155fc7e
+  \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
+  \code{\link{frate.table}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

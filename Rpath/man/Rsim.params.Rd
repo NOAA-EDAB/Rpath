@@ -4,24 +4,37 @@
 \alias{Rsim.params}
 \title{Initial set up for Ecosim modual of Rpath}
 \usage{
-Rsim.params(Rpath)
+Rsim.params(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
+  scrambleselfwt = 1, handleselfwt = 1, steps_yr = 12, steps_m = 1)
 }
 \arguments{
 \item{Rpath}{Rpath object containing a balanced model.}
 
-\item{juvfile}{Comma deliminated file with multi-stanza parameters.}
+\item{mscramble}{}
+
+\item{mhandle}{}
+
+\item{preyswitch}{}
+
+\item{scrambleselfwt}{Value of 1 indicates no overlap while 0 indicates complete overlap.}
+
+\item{handleselfwt}{Value of 1 indicates no overlap while 0 indicates complete overlap.}
+
+\item{steps_yr}{Number of time steps per year.}
+
+\item{steps_m}{Number of time steps per month.}
 }
 \value{
 Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 }
 \description{
-Performs initial set up for Ecosim by converting ecopath values to rates,
-initializing stanzas, and packing everything together to run.
+Converts the outputs from ecopath into rates for use in ecosim.
 }
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.plot}}; \code{\link{webplot}};
+  \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
+  \code{\link{frate.table}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 
