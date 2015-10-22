@@ -425,4 +425,74 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   }
   
 }
+
+
+#'Calculate biomass and consumption for multistanza groups
+#'
+#'Uses the leading stanza to calculate the biomass and consumption of other stanzas
+#'necessary to support the leading stanza.
+#'
+#'@family Rpath functions
+#'
+#'@param modfile Object containing the model parameters.
+#'@param groupfile Object containing the group specific characteristics.
+#'@param stanzafile Object containing the stanza specific characteristics.
+#'
+#'@return Adds the biomass and consumption to the relative groups in the model parameter
+#'object
+#'@import data.table
+#'@export 
+rpath.stanzas <- function(Rpath, groupfile, stanzafile){
+  #Determine the total number of groups with multistanzas
+  ngroups <- max(groupfile[, StGroupNum])
   
+  for(i in 1:ngroups){  
+    #Calculate last month adult
+    last <- groupfile[StGroupNum == i, nstanzas]
+    #Convert to generalized k from Ksp and make monthly
+    k <- (groupfile[StGroupNum == i, VBGF_Ksp] * 3) / 12
+    d <-  groupfile[StGroupNum == i, VBGF_d]
+    #Months to get to 90% Winf
+    t90 <- floor(log(1 - 0.9^(1 - d)) / (-1 * k * (1 - d)))
+    stanzafile[StGroupNum == i & Stanza == last, Last := t90]
+    
+    #Vector of survival rates from 1 stanza to the next
+    prev.surv <- 1
+    #Calculate the relative number of animals at age a
+    for(j in 1:last){
+      #Grab the first and last month within the stanza
+      a <- stanzafile[StGroupNum == i & Stanza == j, First]:
+           stanzafile[StGroupNum == i & Stanza == j, Last]
+      
+      #Convert Z to a monthly Z
+      z <- stanzafile[StGroupNum == i & Stanza == j, Z] / 12
+      
+      la <- data.table(age  = a,
+                       z    = z,
+                       surv = prev.surv[j] * (exp(-z) ^ ((a + 1) - a[1])))
+      
+      la[, wa := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
+      la[, lawa := surv * wa]
+      stanzafile[StGroupNum == i & Stanza == j, bs.num := la[, sum(lawa)]]
+      prev.surv[j + 1] <- la[nrow(la), surv]
+    }
+    
+    stanzafile[StGroupNum == i, bs.denom := sum(bs.num)]
+    stanzafile[StGroupNum == i, bs := bs.num / bs.denom]
+    
+    #Use leading group to calculate other biomasses
+    stanzafile[StGroupNum == i & Leading == T, 
+               Biomass := modfile[Group == stanzafile[StGroupNum == i & 
+                                                        Leading == T, Group], Biomass]]
+    B <- stanzafile[StGroupNum == i & Leading == T, Biomass / bs]
+    stanzafile[StGroupNum == i, Biomass := bs * B]
+  }
+  #Drop extra columns
+  stanzafile[, c('bs.num', 'bs.denom', 'bs') := NULL]
+  
+  #Push biomass to modfile
+  for(i in 1:nrow(stanzafile)){
+    modfile[Group == stanzafile[i, Group], Biomass := stanzafile[i, Biomass]]
+  }
+  
+} 
