@@ -30,9 +30,43 @@ groups <- c('Seabirds', 'Whales', 'Seals', 'JuvRoundfish1', 'AduRoundfish1',
             'Macrobenthos', 'Zooplankton', 'Phytoplankton', 'Detritus', 
             'Discards', 'Trawlers', 'Midwater', 'Dredgers')
 
+stanzas <- c(rep(NA, 3), rep('Roundfish1', 2), rep('Roundfish2', 2), 
+             rep('Flatfish1', 2), rep ('Flatfish2', 2), rep(NA, 14))
+
 types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 
 modfile <- create.rpath.param(parameter = 'model', group = groups, type = types)
+
+#Fill appropriate columns
+biomass <- c(0.0149, 0.454, NA, NA, 1.39, NA, 5.553, NA, 5.766, NA,
+             0.739, 7.4, 5.1, 4.7, 5.1, NA, 7, 17.4, 23, 10, rep(NA, 5))
+
+modfile <- modfile[, Biomass := biomass]
+
+#Calculate the multistanza biomass/consumption
+groups <- data.table(StGroupNum  = 1:4,
+                     StanzaGroup = c('Roundfish1', 'Roundfish2', 
+                                     'Flatfish1', 'Flatfish2'),
+                     nstanzas    = rep(2, 4),
+                     VBGF_Ksp    = c(0.145, 0.295, 0.0761, 0.112),
+                     VBGF_d      = rep(0.66667, 4),
+                     Wmat        = c(0.0577, 0.421, 0.0879, 0.241))
+
+stanzas <- data.table(StGroupNum = c(1, 1, 2, 2, 3, 3, 4, 4),
+                      Stanza     = rep(c(1, 2), 4),
+                      Group      = c('JuvRoundfish1', 'AduRoundfish1', 
+                                     'JuvRoundfish2', 'AduRoundfish2', 
+                                     'JuvFlatfish1', 'AduFlatfish1',
+                                     'JuvFlatfish2', 'AduFlatfish2'),
+                      First      = c(rep(c(0, 24), 3), 0, 48),
+                      Last       = c(rep(c(23, 400), 3), 47, 400),
+                      Z          = c(2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18),
+                      Leading    = rep(c(F, T), 4))
+
+
+
+rpath.stanzas(modfile, groups, stanzas)
+
 
 
 #Run ecosim on the R Ecosystem parameter files
