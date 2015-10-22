@@ -25,7 +25,8 @@ expected.
 Other Rpath.functions: \code{\link{Rsim.params}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
+  \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}}
 }
 
