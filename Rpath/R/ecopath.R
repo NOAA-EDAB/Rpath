@@ -437,14 +437,20 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@param modfile Object containing the model parameters.
 #'@param groupfile Object containing the group specific characteristics.
 #'@param stanzafile Object containing the stanza specific characteristics.
+#'@param output Logical value indicating whether relative abundance, weight at age,
+#'and consumption at age should be output from function.  This is for use with the
+#'stanzaplot function.
 #'
 #'@return Adds the biomass and consumption to the relative groups in the model parameter
 #'object
 #'@import data.table
 #'@export 
-rpath.stanzas <- function(Rpath, groupfile, stanzafile){
+rpath.stanzas <- function(modfile, groupfile, stanzafile, output = F){
   #Determine the total number of groups with multistanzas
   ngroups <- max(groupfile[, StGroupNum])
+  
+  #Set up output for plotting
+  stanza.out <- list()
   
   for(i in 1:ngroups){  
     #Calculate last month adult
@@ -458,6 +464,12 @@ rpath.stanzas <- function(Rpath, groupfile, stanzafile){
     
     #Vector of survival rates from 1 stanza to the next
     prev.surv <- 1
+    
+    StGroup <- data.table(age = stanzafile[StGroupNum == i & Stanza == 1, First]:
+                            t90)
+    StGroup[, wa := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
+    StGroup[, wwa := wa ^ d]
+    
     #Calculate the relative number of animals at age a
     for(j in 1:last){
       #Grab the first and last month within the stanza
@@ -465,20 +477,36 @@ rpath.stanzas <- function(Rpath, groupfile, stanzafile){
            stanzafile[StGroupNum == i & Stanza == j, Last]
       
       #Convert Z to a monthly Z
-      z <- stanzafile[StGroupNum == i & Stanza == j, Z] / 12
+      month.z <- stanzafile[StGroupNum == i & Stanza == j, Z] / 12
       
-      la <- data.table(age  = a,
-                       z    = z,
-                       surv = prev.surv[j] * (exp(-z) ^ ((a + 1) - a[1])))
+      StGroup[age %in% a, z := month.z]
+      for(age in a[1]:(a[length(a)] + 1)){
+        StGroup[age == age, la := prev.surv[j] * (exp(-z) ^ ((age + 1) - a[1]))]
+        
+      }
       
-      la[, wa := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
-      la[, lawa := surv * wa]
-      stanzafile[StGroupNum == i & Stanza == j, bs.num := la[, sum(lawa)]]
-      prev.surv[j + 1] <- la[nrow(la), surv]
+      StGroup[age %in% a, lawa  := la * wa]
+      StGroup[age %in% a, lawwa := la * wwa]
+      
+      #Numerator for the relative biomass/consumption calculations
+      wa.num  <- StGroup[age %in% a, sum(lawa)]
+      wwa.num <- StGroup[age %in% a, sum(lawwa)]
+      
+      stanzafile[StGroupNum == i & Stanza == j, bs.num := wa.num]
+      stanzafile[StGroupNum == i & Stanza == j, qs.num := wwa.num]
+      
+      prev.surv[j + 1] <- StGroup[age == a[length(a)], la]
     }
+    #Save relative calculations for plot routine
+    stanza.out[[i]] <- StGroup
     
+    #Calculate relative biomass
     stanzafile[StGroupNum == i, bs.denom := sum(bs.num)]
     stanzafile[StGroupNum == i, bs := bs.num / bs.denom]
+    
+    #Calculate relative consumption
+    stanzafile[StGroupNum == i, qs.denom := sum(qs.num)]
+    stanzafile[StGroupNum == i, qs := qs.num / qs.denom]
     
     #Use leading group to calculate other biomasses
     stanzafile[StGroupNum == i & Leading == T, 
@@ -486,13 +514,30 @@ rpath.stanzas <- function(Rpath, groupfile, stanzafile){
                                                         Leading == T, Group], Biomass]]
     B <- stanzafile[StGroupNum == i & Leading == T, Biomass / bs]
     stanzafile[StGroupNum == i, Biomass := bs * B]
+    
+    #Use leading group to calculate other consumption
+    stanzafile[StGroupNum == i & Leading == T, 
+               Cons := modfile[Group == stanzafile[StGroupNum == i & Leading == T, 
+                                                   Group], QB] *
+                 modfile[Group == stanzafile[StGroupNum == i & Leading == T, Group],
+                         Biomass]]
+    Q <- stanzafile[StGroupNum == i & Leading == T, Cons / qs]
+    stanzafile[StGroupNum == i, Cons := qs * Q]
+    stanzafile[, QB := Cons / Biomass]
   }
+  
   #Drop extra columns
-  stanzafile[, c('bs.num', 'bs.denom', 'bs') := NULL]
+  stanzafile[, c('bs.num', 'bs.denom', 'bs', 'qs.num', 'qs.denom', 'qs') := NULL]
   
   #Push biomass to modfile
   for(i in 1:nrow(stanzafile)){
     modfile[Group == stanzafile[i, Group], Biomass := stanzafile[i, Biomass]]
   }
   
+  #Push consumption to modfile
+  for(i in 1:nrow(stanzafile)){
+    modfile[Group == stanzafile[i, Group], QB := stanzafile[i, QB]]
+  }
+  
+  if(output == T) return(stanza.out)
 } 
