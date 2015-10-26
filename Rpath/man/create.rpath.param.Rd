@@ -4,8 +4,8 @@
 \alias{create.rpath.param}
 \title{Create shells for the Rpath parameter files}
 \usage{
-create.rpath.param(parameter = "model", group = NA, stanza = NA,
-  type = NA, filename = NA)
+create.rpath.param(parameter = "model", group = NA, type = NA,
+  filename = NA)
 }
 \arguments{
 \item{parameter}{The type of parameter file you are creating.  Choices include "model",
@@ -13,8 +13,6 @@ create.rpath.param(parameter = "model", group = NA, stanza = NA,
 
 \item{group}{Vector of group names.  If parameter equals "juvenile", this should be a vector of
 stanza groups only (Juvenile and Adults in one group).}
-
-\item{stanza}{Vector of stanza group names.}
 
 \item{type}{Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
 Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.}
@@ -36,7 +34,7 @@ Other Rpath.functions: \code{\link{Rsim.params}};
   \code{\link{check.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
   \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
-  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}}
+  \code{\link{stanzaplot}}; \code{\link{webplot}};
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 

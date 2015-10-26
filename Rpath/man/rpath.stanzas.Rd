@@ -4,14 +4,18 @@
 \alias{rpath.stanzas}
 \title{Calculate biomass and consumption for multistanza groups}
 \usage{
-rpath.stanzas(Rpath, groupfile, stanzafile)
+rpath.stanzas(modfile, groupfile, stanzafile, output = F)
 }
 \arguments{
+\item{modfile}{Object containing the model parameters.}
+
 \item{groupfile}{Object containing the group specific characteristics.}
 
 \item{stanzafile}{Object containing the stanza specific characteristics.}
 
-\item{Rpath.obj}{Rpath model created by the ecopath() function.}
+\item{output}{Logical value indicating whether relative abundance, weight at age,
+and consumption at age should be output from function.  This is for use with the
+stanzaplot function.}
 }
 \value{
 Adds the biomass and consumption to the relative groups in the model parameter
@@ -26,7 +30,8 @@ Other Rpath.functions: \code{\link{Rsim.params}};
   \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
+  \code{\link{frate.table}}; \code{\link{stanzaplot}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}}
 }
 
