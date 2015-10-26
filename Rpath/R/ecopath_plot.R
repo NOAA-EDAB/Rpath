@@ -195,16 +195,16 @@ stanzaplot <- function(Rpath.stanza, stanzafile, StanzaNum,
   
   #Plot the total biomass
   plot(stanza.data[, age], stanza.data[, lawa.scale], xlab = '', ylab = '', 
-       type = 'l', lwd = 3, axes = F, col = line.col[1])
+       type = 'l', lwd = 3, axes = F, col = line.cols[1])
   
   #Add total number line and weight at age line
-  lines(stanza.data[, age], stanza.data[, la], lwd = 3, col = line.col[2])
-  lines(stanza.data[, age], stanza.data[, wa], lwd = 3, col = line.col[3])
+  lines(stanza.data[, age], stanza.data[, la], lwd = 3, col = line.cols[2])
+  lines(stanza.data[, age], stanza.data[, wa], lwd = 3, col = line.cols[3])
   
   #Add Stanza breaks
   breaks <- stanzafile[StGroupNum == StanzaNum, Last]
   breaks <- breaks[1:(length(breaks) - 1)]
-  abline(v = breaks, lwd = 3, col = line.col[4])
+  abline(v = breaks, lwd = 3, col = line.cols[4])
   
   #Add axes, labels, and legend
   axis(1)
@@ -214,5 +214,5 @@ stanzaplot <- function(Rpath.stanza, stanzafile, StanzaNum,
   mtext(2, text = 'Normalized value', line = 2.5)
   legend('top', legend = c('Population Biomass', 'Number', 'Individual Weight', 
                                 'Stanza Separation'), 
-         lwd = 2, bty = 'n', col = line.col, xpd = T, inset = -.2, ncol = 4)
+         lwd = 2, bty = 'n', col = line.cols, xpd = T, inset = -.2, ncol = 4)
 }
