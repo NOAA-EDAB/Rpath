@@ -1,4 +1,4 @@
-################################################################################
+ ################################################################################
 # R version of ecosim 
 # originally developed by Kerim Aydin
 # modified by Sean Lucey
@@ -28,28 +28,22 @@ Rsim.scenario <- function(Rpath, YEARS = 100){
 }
 
 ################################################################################ 
-# adams.run runs an Rsim.scenario forward from start_state for YEARS years
-# using Adams-Basforth with monthly timesteps, and returns an Rsim.output
+# Runs Ecosim
 #'@export
-adams.run <- function(RP, YEARS = 100){
-  #TODO check length of fishing and forcing inputs against YEARS
-  rout <- Adams_run(RP$params, RP$start_state, RP$forcing, RP$fishing, 0, YEARS)
-  class(rout) <- append(class(rout),"Rsim.output")
+rsim.run <- function(Rpath, method = 'RK4', years = 100){
+  if(method == 'RK4'){
+    rout <- rk4_run(Rpath$params, Rpath$start_state, Rpath$forcing, Rpath$fishing,
+                    0, years)
+  }
+  if(method == 'AB'){
+    rout <- Adams_run(Rpath$params, Rpath$start_state, Rpath$forcing, Rpath$fishing,
+                      0, years)
+  }
+  class(rout) <- 'Rsim.output'
   return(rout)
 }
-
-################################################################################ 
-# rk4.run runs an Rsim.scenario forward from start_state for YEARS years
-# using Runge-Kutta with supplied timesteps, and returns an Rsim.output
-#'@export
-rk4.run <- function(RP, YEARS = 100){ 
-  #TODO check length of fishing and forcing inputs against YEARS
-  rout <- rk4_run(RP$params, RP$start_state, RP$forcing, RP$fishing, 0 , YEARS)
-  class(rout) <- append(class(rout),"Rsim.output")
-  return(rout)
-}
-
-#####################################################################################
+ 
+################################################################################
 #'@export
 Rsim.fishing <- function(params,YEARS=100){
 # Yearly index defaulting to to 0.0, for fishing forcing list
