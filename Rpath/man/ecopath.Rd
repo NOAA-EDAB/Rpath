@@ -22,12 +22,12 @@ Performs initial mass balance using a model parameter file and diet
 matrix file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{Rsim.params}};
-  \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
   \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
   \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
-  \code{\link{stanzaplot}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
+  \code{\link{rsim.params}}; \code{\link{stanzaplot}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}}
 }
 

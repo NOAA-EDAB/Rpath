@@ -7,7 +7,8 @@
 check.rpath.param(filename, type = "model")
 }
 \arguments{
-\item{filename}{Name of the parameter file.  Must be a .csv.}
+\item{filename}{Name of the parameter file.  Can be the path to a .csv or an R
+object.}
 
 \item{type}{The type of parameter file you are checking.  Choices include "model",
  "diet", "juvenile", and "pedigree".}
@@ -22,10 +23,10 @@ Logical check that the parameter files are filled out correctly, i.e. data is en
 expected.
 }
 \seealso{
-Other Rpath.functions: \code{\link{Rsim.params}};
-  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
+Other Rpath.functions: \code{\link{create.rpath.param}};
+  \code{\link{ecopath}}; \code{\link{ecosim.plot}};
+  \code{\link{frate.adjust}}; \code{\link{frate.table}};
+  \code{\link{rpath.stanzas}}; \code{\link{rsim.params}};
   \code{\link{stanzaplot}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }

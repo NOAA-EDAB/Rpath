@@ -30,10 +30,10 @@ Creates a shell of the parameter files that can then be filled out in R, Excel, 
 another spreadsheet program.
 }
 \seealso{
-Other Rpath.functions: \code{\link{Rsim.params}};
-  \code{\link{check.rpath.param}}; \code{\link{ecopath}};
-  \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
+  \code{\link{ecopath}}; \code{\link{ecosim.plot}};
+  \code{\link{frate.adjust}}; \code{\link{frate.table}};
+  \code{\link{rpath.stanzas}}; \code{\link{rsim.params}};
   \code{\link{stanzaplot}}; \code{\link{webplot}};
   \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }

@@ -26,12 +26,11 @@ Uses the leading stanza to calculate the biomass and consumption of other stanza
 necessary to support the leading stanza.
 }
 \seealso{
-Other Rpath.functions: \code{\link{Rsim.params}};
-  \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}}; \code{\link{ecopath}};
   \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{stanzaplot}};
-  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}}
+  \code{\link{frate.table}}; \code{\link{rsim.params}};
+  \code{\link{stanzaplot}}; \code{\link{webplot}};
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
 }
 
