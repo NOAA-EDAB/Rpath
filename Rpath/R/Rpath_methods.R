@@ -71,7 +71,32 @@ print.Rpath.sim <- function(x, rows = NA, ...){
   }
   if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
 }
-  
+
+#Print Rsim.scenario
+#'@export
+print.Rsim.scenario <- function(x, ...){
+  cat(paste("Rpath scenario for", attr(x, 'eco.name'), "\n\n"))
+  cat("$params contains the parameters from rpath
+$forcing contains the forcing parameters
+$fishing contains the fishing parameters
+$state contains the initial state parameters \n
+Modify $forcing or $fishing to alter scenario run")
+}
+
+#Print Rsim.scenario
+#'@export
+print.Rsim.params <- function(x, ...){
+  cat(paste("Rsim parameters for", attr(x, 'eco.name'), "\n\n"))
+  out <- data.frame(Num.Groups   = x$NUM_GROUPS,
+                    Num.Living   = x$NUM_LIVING,
+                    Num.Detritus = x$NUM_DEAD,
+                    Num.Fleets   = x$NUM_GEARS)
+  print(out)
+  cat("\n$params also includes:\n")
+  print(names(x))
+}
+
+
 #Summary for Rpath
 #'@export
 summary.Rpath <- function(x, ...){
@@ -100,8 +125,8 @@ summary.Rpath <- function(x, ...){
 
 #Summary for Rpath.sim
 #'@export
-summary.Rpath.sim <- function(x, ...){
-  cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
+summary.Rsim.output <- function(x, ...){
+  cat(paste("Rsim parameters fos:", attr(x, 'eco.name'),"\n"))
   if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
   totbiomass.start <- sum(x$out_BB[1, ],                       na.rm = T)
