@@ -263,22 +263,21 @@ return(path.model)
 #'@family Rpath functions
 #'
 #'@param modfile Object containing the model parameters.
-#'@param groupfile Object containing the group specific characteristics.
-#'@param stanzafile Object containing the stanza specific characteristics.
-#'@param output Logical value indicating whether relative abundance, weight at age,
-#'and consumption at age should be output from function.  This is for use with the
-#'stanzaplot function.
+#'@param juvfile Object containing the group and stanza specific characteristics.
 #'
 #'@return Adds the biomass and consumption to the relative groups in the model parameter
-#'object
+#'  object.  Need to assign the output to the juvfile if you want to plot stanza group
+#'  relative biomass.
 #'@import data.table
 #'@export 
-rpath.stanzas <- function(modfile, groupfile, stanzafile, output = F){
+rpath.stanzas <- function(modfile, juvfile){
   #Determine the total number of groups with multistanzas
-  ngroups <- max(groupfile[, StGroupNum])
+  ngroups    <- juvfile$NStanzaGroups
+  groupfile  <- juvfile$stgroups
+  stanzafile <- juvfile$stanzas
   
-  #Set up output for plotting
-  stanza.out <- list()
+  #Create list of stanza parameters per month
+  juvfile$stanzabio <- list()
   
   for(i in 1:ngroups){  
     #Calculate last month adult
@@ -326,7 +325,7 @@ rpath.stanzas <- function(modfile, groupfile, stanzafile, output = F){
       prev.surv[j + 1] <- StGroup[age == a[length(a)], la]
     }
     #Save relative calculations for plot routine
-    stanza.out[[i]] <- StGroup
+    juvfile$stanzabio[[i]] <- StGroup
     
     #Calculate relative biomass
     stanzafile[StGroupNum == i, bs.denom := sum(bs.num)]
@@ -366,6 +365,5 @@ rpath.stanzas <- function(modfile, groupfile, stanzafile, output = F){
   for(i in 1:nrow(stanzafile)){
     modfile[Group == stanzafile[i, Group], QB := stanzafile[i, QB]]
   }
-  
-  if(output == T) return(stanza.out)
+  return(juvfile)
 } 

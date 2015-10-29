@@ -4,22 +4,17 @@
 \alias{rpath.stanzas}
 \title{Calculate biomass and consumption for multistanza groups}
 \usage{
-rpath.stanzas(modfile, groupfile, stanzafile, output = F)
+rpath.stanzas(modfile, juvfile)
 }
 \arguments{
 \item{modfile}{Object containing the model parameters.}
 
-\item{groupfile}{Object containing the group specific characteristics.}
-
-\item{stanzafile}{Object containing the stanza specific characteristics.}
-
-\item{output}{Logical value indicating whether relative abundance, weight at age,
-and consumption at age should be output from function.  This is for use with the
-stanzaplot function.}
+\item{juvfile}{Object containing the group and stanza specific characteristics.}
 }
 \value{
 Adds the biomass and consumption to the relative groups in the model parameter
-object
+ object.  Need to assign the output to the juvfile if you want to plot stanza group
+ relative biomass.
 }
 \description{
 Uses the leading stanza to calculate the biomass and consumption of other stanzas
