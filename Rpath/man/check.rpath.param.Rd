@@ -4,14 +4,13 @@
 \alias{check.rpath.param}
 \title{Check Rpath parameter files}
 \usage{
-check.rpath.param(filename, type = "model")
+check.rpath.param(filename, parameter = "model")
 }
 \arguments{
 \item{filename}{Name of the parameter file.  Can be the path to a .csv or an R
 object.}
 
-\item{type}{The type of parameter file you are checking.  Choices include "model",
- "diet", "juvenile", and "pedigree".}
+\item{parameter}{The type of parameter file you are checking.  Choices include}
 }
 \value{
 Checks Rpath parameter files for consistency.  An error message will be produced if one of
