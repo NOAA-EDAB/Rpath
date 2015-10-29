@@ -76,14 +76,15 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
   #Juvenile file
   if(parameter == 'juvenile'){
     out <- list()
-    NStanzas <- length(stgroup)
+    NStanzaGroups <- length(stgroup)
+    out$NStanzaGroups <- NStanzaGroups
     
     #Create stanza group parameters
-    stgroups <- data.table(StGroupNum  = 1:NStanzas,
+    stgroups <- data.table(StGroupNum  = 1:NStanzaGroups,
                            StanzaGroup = stgroup,
                            nstanzas    = nstanzas,
                            VBGF_Ksp    = NA,
-                           VBGF_d      = NA,
+                           VBGF_d      = 0.66667,
                            Wmat        = NA)
     out$stgroups <- stgroups
     
@@ -97,7 +98,7 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
       stanza.total <- stanza.total + length(stanza.count)
     }
     
-    stanzas <- data.table(StGroupNum = rep(stgroups[, StanzaGroup], 
+    stanzas <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
                                            stgroups[, nstanzas]),
                           Stanza     = stanza.rep,
                           Group      = group,
