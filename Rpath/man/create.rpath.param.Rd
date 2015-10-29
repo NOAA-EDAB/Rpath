@@ -5,17 +5,24 @@
 \title{Create shells for the Rpath parameter files}
 \usage{
 create.rpath.param(parameter = "model", group = NA, type = NA,
-  filename = NA)
+  stgroup = NA, nstanzas = NA, filename = NA)
 }
 \arguments{
 \item{parameter}{The type of parameter file you are creating.  Choices include "model",
- "diet", "juvenile", and "pedigree".}
+"diet", "juvenile", and "pedigree".}
 
-\item{group}{Vector of group names.  If parameter equals "juvenile", this should be a vector of
-stanza groups only (Juvenile and Adults in one group).}
+\item{group}{Vector of group names.  If parameter equals "juvenile", this should
+only be the groups involved in multistanza groups.  Be sure to have them in
+asending order within a multistanza group and in the same order as stgroup.}
 
 \item{type}{Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
 Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.}
+
+\item{stgroup}{Vector of multistanza group names.  Only necessary for parameter =
+'juvenile'.}
+
+\item{nstanzas}{Numeric vector of the number of stanzas per multistanza groups.  Only
+necessary to supply for parameter type = 'juvenile'.}
 
 \item{filename}{Name of the output file saved as a .csv. If NA the file will not be written.}
 }

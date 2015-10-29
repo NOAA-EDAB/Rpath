@@ -7,13 +7,18 @@
 #'
 #'@family Rpath functions
 #'
-#'@param group Vector of group names.  If parameter equals "juvenile", this should be a vector of 
-#'  stanza groups only (Juvenile and Adults in one group).
-#'@param type Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
-#'  Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.
-#'@param filename Name of the output file saved as a .csv. If NA the file will not be written.
 #'@param parameter The type of parameter file you are creating.  Choices include "model",
 #'  "diet", "juvenile", and "pedigree".
+#'@param group Vector of group names.  If parameter equals "juvenile", this should 
+#'  only be the groups involved in multistanza groups.  Be sure to have them in
+#'  asending order within a multistanza group and in the same order as stgroup.
+#'@param type Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
+#'  Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.
+#'@param stgroup Vector of multistanza group names.  Only necessary for parameter =
+#'  'juvenile'.  
+#'@param nstanzas Numeric vector of the number of stanzas per multistanza groups.  Only
+#'  necessary to supply for parameter type = 'juvenile'.
+#'@param filename Name of the output file saved as a .csv. If NA the file will not be written.
 #'
 #'@return Outputs a shell of the parameter file indicated by the parameter variable.  The shell
 #'  is populated with values of NA or logical default values.  Values can then be filled in using
@@ -22,7 +27,7 @@
 #'@import data.table
 #'@export
 create.rpath.param <- function(parameter = 'model', group = NA, type = NA, 
-                               filename = NA){
+                               stgroup = NA, nstanzas = NA, filename = NA){
   pred.group  <- group[which(type < 2)]
   prey.group  <- group[which(type < 3)]
   det.group   <- group[which(type == 2)]
@@ -70,20 +75,37 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
   
   #Juvenile file
   if(parameter == 'juvenile'){
-    out <- data.table(StanzaName = group,
-                      JuvNum     = as.numeric(NA),
-                      AduNum     = as.numeric(NA),
-                      RecAge     = as.numeric(NA),
-                      RecMonth   = as.numeric(NA),
-                      VonBK      = as.numeric(NA),
-                      AduZ_BAB   = as.numeric(NA),
-                      JuvZ_BAB   = as.numeric(NA),
-                      VonBD      = 0.6667,
-                      Wmat50     = as.numeric(NA),
-                      Wmat001    = as.numeric(NA),
-                      Amat50     = as.numeric(NA),
-                      Amat001    = as.numeric(NA),
-                      RecPower   = 1)
+    out <- list()
+    NStanzas <- length(stgroup)
+    
+    #Create stanza group parameters
+    stgroups <- data.table(StGroupNum  = 1:NStanzas,
+                           StanzaGroup = stgroup,
+                           nstanzas    = nstanzas,
+                           VBGF_Ksp    = NA,
+                           VBGF_d      = NA,
+                           Wmat        = NA)
+    out$stgroups <- stgroups
+    
+    #Create stanza parameters
+    #Need vector of 1:nstanzas per StGroupNum
+    stanza.rep <- c()
+    stanza.total <- 0
+    for(i in 1:NStanzas){
+      stanza.count <- 1:stgroups[i, nstanzas]
+      stanza.rep[(stanza.total + 1):(length(stanza.count) + stanza.total)] <- stanza.count
+      stanza.total <- stanza.total + length(stanza.count)
+    }
+    
+    stanzas <- data.table(StGroupNum = rep(stgroups[, StanzaGroup], 
+                                           stgroups[, nstanzas]),
+                          Stanza     = stanza.rep,
+                          Group      = group,
+                          First      = NA,
+                          Last       = NA,
+                          Z          = NA,
+                          Leading    = NA)
+    out$stanzas <- stanzas
   }
   
   #Pedigree
