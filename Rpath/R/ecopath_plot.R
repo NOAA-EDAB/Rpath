@@ -175,9 +175,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.stanza Rpath.stanza object created by the rpath.stanza() function.
-#'@param stanzafile Object containing the stanza specific characteristics use in the
-#'rpath.stanza.stanza() function.
+#'@param juvfile Rpath juvenile parameter file modified by the rpath.stanza() function.
 #'@param StanzaNum The Stanza group's number in the stanzafile.
 #'@param line.cols A vector of four colors used to represent the population biomass,
 #'relative number, indvidual weights, and stanza separation lines.
@@ -185,9 +183,9 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@return Creates a figure of the food web.
 #'@import data.table
 #'@export
-stanzaplot <- function(Rpath.stanza, stanzafile, StanzaNum, 
-                       line.cols = c('black', 'green', 'blue', 'red')){
-  stanza.data <- copy(Rpath.stanza[[StanzaNum]])
+stanzaplot <- function(juvfile, StanzaNum, line.cols = c('black', 'green', 
+                                                         'blue', 'red')){
+  stanza.data <- copy(juvfile$stanzabio[[StanzaNum]])
   #Scale data between 0 and 1
   stanza.data[, lawa.scale := (lawa - min(lawa)) / (max(lawa) - min(lawa))] 
   stanza.data[, la.scale := (la - min(la)) / (max(la) - min(la))]
@@ -202,7 +200,7 @@ stanzaplot <- function(Rpath.stanza, stanzafile, StanzaNum,
   lines(stanza.data[, age], stanza.data[, wa], lwd = 3, col = line.cols[3])
   
   #Add Stanza breaks
-  breaks <- stanzafile[StGroupNum == StanzaNum, Last]
+  breaks <- juvfile$stanzas[StGroupNum == StanzaNum, Last]
   breaks <- breaks[1:(length(breaks) - 1)]
   abline(v = breaks, lwd = 3, col = line.cols[4])
   
@@ -212,7 +210,9 @@ stanzaplot <- function(Rpath.stanza, stanzafile, StanzaNum,
   box(lwd = 2)
   mtext(1, text = 'Age in Months', line = 2.5)
   mtext(2, text = 'Normalized value', line = 2.5)
+  mtext(3, text = juvfile$stgroups[StGroupNum == StanzaNum, StanzaGroup], 
+        line = 2.3, cex = 2)
   legend('top', legend = c('Population Biomass', 'Number', 'Individual Weight', 
                                 'Stanza Separation'), 
-         lwd = 2, bty = 'n', col = line.cols, xpd = T, inset = -.2, ncol = 4)
+         lwd = 2, bty = 'n', col = line.cols, xpd = T, inset = -.15, ncol = 4)
 }

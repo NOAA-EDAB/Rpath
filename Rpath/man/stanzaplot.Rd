@@ -4,14 +4,10 @@
 \alias{stanzaplot}
 \title{Plot routine for Ecopath multistanzas}
 \usage{
-stanzaplot(Rpath.stanza, stanzafile, StanzaNum, line.cols = c("black",
-  "green", "blue", "red"))
+stanzaplot(juvfile, StanzaNum, line.cols = c("black", "green", "blue", "red"))
 }
 \arguments{
-\item{Rpath.stanza}{Rpath.stanza object created by the rpath.stanza() function.}
-
-\item{stanzafile}{Object containing the stanza specific characteristics use in the
-rpath.stanza.stanza() function.}
+\item{juvfile}{Rpath juvenile parameter file modified by the rpath.stanza() function.}
 
 \item{StanzaNum}{The Stanza group's number in the stanzafile.}
 
