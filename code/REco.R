@@ -32,6 +32,8 @@ groups <- c('Seabirds', 'Whales', 'Seals', 'JuvRoundfish1', 'AduRoundfish1',
 
 types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 
+#-------------------------------------------------------------------------------
+#Create Model File
 modfile <- create.rpath.param(parameter = 'model', group = groups, type = types)
 
 #Fill appropriate columns
@@ -87,79 +89,131 @@ modfile <- modfile[, Dredgers.disc := dredge.d]
 
 
 #Calculate the multistanza biomass/consumption
-groups <- data.table(StGroupNum  = 1:4,
-                     StanzaGroup = c('Roundfish1', 'Roundfish2', 
-                                     'Flatfish1', 'Flatfish2'),
-                     nstanzas    = rep(2, 4),
-                     VBGF_Ksp    = c(0.145, 0.295, 0.0761, 0.112),
-                     VBGF_d      = rep(0.66667, 4),
-                     Wmat        = c(0.0577, 0.421, 0.0879, 0.241))
+#Need to develop create.rpath.param for these
+stanza.groups  <- c('Roundfish1', 'Roundfish2', 'Flatfish1', 'Flatfish2')
+groups.in.stan <- c('JuvRoundfish1', 'AduRoundfish1', 
+                    'JuvRoundfish2', 'AduRoundfish2', 
+                    'JuvFlatfish1', 'AduFlatfish1',
+                    'JuvFlatfish2', 'AduFlatfish2')
 
-stanzas <- data.table(StGroupNum = c(1, 1, 2, 2, 3, 3, 4, 4),
-                      Stanza     = rep(c(1, 2), 4),
-                      Group      = c('JuvRoundfish1', 'AduRoundfish1', 
-                                     'JuvRoundfish2', 'AduRoundfish2', 
-                                     'JuvFlatfish1', 'AduFlatfish1',
-                                     'JuvFlatfish2', 'AduFlatfish2'),
-                      First      = c(rep(c(0, 24), 3), 0, 48),
-                      Last       = c(rep(c(23, 400), 3), 47, 400),
-                      Z          = c(2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18),
-                      Leading    = rep(c(F, T), 4))
+juvfile <- create.rpath.param(parameter = 'juvenile', group = groups.in.stan,
+                              stgroup = stanza.groups, nstanzas = rep(2, 4))
 
+juvfile$stgroups$VBGF_Ksp <- c(0.145, 0.295, 0.0761, 0.112)
+juvfile$stgroups$Wmat     <- c(0.0577, 0.421, 0.0879, 0.241)
 
+juvfile$stanzas$First   <- c(rep(c(0, 24), 3), 0, 48)
+juvfile$stanzas$Last    <- c(rep(c(23, 400), 3), 47, 400)
+juvfile$stanzas$Z       <- c(2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18)
+juvfile$stanzas$Leading <- rep(c(F, T), 4)
 
-stanza.to.plot <- rpath.stanzas(modfile, groups, stanzas, output = T)
+juvfile <- rpath.stanzas(modfile, juvfile)
 
 #Plot multistanza plots
-stanzaplot(stanza.to.plot, stanzas, 1)
-stanzaplot(stanza.to.plot, stanzas, 2)
-stanzaplot(stanza.to.plot, stanzas, 3)
-stanzaplot(stanza.to.plot, stanzas, 4)
+stanzaplot(juvfile, 1)
+stanzaplot(juvfile, 2)
+stanzaplot(juvfile, 3)
+stanzaplot(juvfile, 4)
 
 #Check model parameter file
-check.rpath.param(modfile, type = 'model')
+check.rpath.param(modfile, parameter = 'model')
 
+#-------------------------------------------------------------------------------
+#Create Diet File
+dietfile <- create.rpath.param(parameter = 'diet', group = groups, type = types)
 
+dietfile[, Seabirds        := c(rep(NA, 11), 0.1, 0.25, 0.2, 0.15, rep(NA, 6), 0.3)]
+dietfile[, Whales          := c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, NA, 0.01, 
+                                rep(NA, 4), 0.1, rep(NA, 3), 0.86, rep(NA, 3))]
+dietfile[, Seals           := c(rep(NA, 3), 0.05, 0.1, 0.05, 0.2, 0.005, 0.05, 0.005, 
+                                0.01, 0.24, rep(0.05, 4), 0.09, rep(NA, 5))]
+dietfile[, JuvRoundfish1   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, rep(NA, 2), 
+                                0.05, 1e-4, NA, .02, .7785, .1, .05, NA)]
+dietfile[, AduRoundfish1   := c(rep(NA, 5), 1e-3, 0.01, 1e-3, 0.05, 1e-3, 0.01, 0.29, 
+                                0.1, 0.1, 0.347, 0.03, NA, 0.05, 0.01, rep(NA, 3))]
+dietfile[, JuvRoundfish2   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, rep(NA, 2), 
+                                0.05, 1e-4, NA, .02, .7785, .1, .05, NA)]
+dietfile[, AduRoundfish2   := c(rep(NA, 3), 1e-4, NA, 1e-4, NA, rep(1e-4, 4), 0.1, 
+                                rep(0.05, 3), 0.2684, 0.01, 0.37, 0.001, NA, 0.1, NA)]
+dietfile[, JuvFlatfish1    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
+                                rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, NA)]
+dietfile[, AduFlatfish1    := c(rep(NA, 7), rep(1e-4, 5), rep(NA, 2), 0.001, 0.05, 
+                                0.001, 0.6, 0.2475, NA, 0.1, NA)]
+dietfile[, JuvFlatfish2    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
+                                rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, NA)]
+dietfile[, AduFlatfish2    := c(rep(NA, 7), 1e-4, NA, 1e-4, rep(NA, 4), rep(1e-4, 3), 
+                                0.44, 0.3895, NA, 0.17, NA)]
+dietfile[, OtherGroundfish := c(rep(NA, 3), rep(1e-4, 8), 0.05, 0.08, 0.0992, 0.3, 
+                                0.15, 0.01, 0.3, 0.01, rep(NA, 3))]
+dietfile[, Foragefish1     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 0.8196, 
+                                0.06, 0.12, NA)]
+dietfile[, Foragefish2     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 0.8196, 
+                                0.06, 0.12, NA)]
+dietfile[, OtherForagefish := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 0.8196, 
+                                0.06, 0.12, NA)]
+dietfile[, Megabenthos     := c(rep(NA, 15), 0.1, 0.03, 0.55, rep(NA, 2), 0.32, NA)]
+dietfile[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA)]
+dietfile[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)]
+dietfile[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
 
+#Check diet parameter file
+check.rpath.param(dietfile, parameter = 'diet')
 
-#Run ecosim on the R Ecosystem parameter files
-REco <- ecopath(modfile, dietfile, pedfile, 'R Ecosystem')
+#-------------------------------------------------------------------------------
+#Create generic pedigree file
+pedfile <- create.rpath.param(parameter = 'pedigree', group = groups, type = types)
 
-# #There is an rpath method for generic functions print and summary
-# REco
-# summary(REco)
-# 
-# #print also includes the mortalities toggle
-# print(REco, morts = T)
-# 
-# #Summary table of parameters or mortalities can be output
-# write.Rpath(REco, file = paste(out.dir, 'R_Ecosystem_Parameters.csv', sep = ''))
-# write.Rpath(REco, file = paste(out.dir, 'R_Ecosystem_Mortalities.csv', sep = ''), morts = T)
-# 
-# #Webplot plots the resultant food web
-# set.seed(34)
-# #Set the plot order to avoid overlapping titles/points (optional)
-# my.order <- c(c(22, 20, 21), c(17, 19, 18), c(8, 4, 2, 14, 11, 13, 10, 15, 16, 9, 6),
-#               c(25, 1, 7, 12), c(3, 5, 24), 23)
-# 
-# tiff(file = paste(out.dir, 'R_Ecosystem.tif'), height = 1500, width = 1700, res = 300)
-# webplot(REco, labels = T, fleets = T, box.order = my.order, label.cex = 0.65)
-# dev.off()
-# 
-# #Highlight example
-# set.seed(34)
-# tiff(file = paste(out.dir, 'Highlight_AduRoundfish1.tif'), height = 1800, width = 2000, res = 300)
-# webplot(REco, fleets = T, highlight = 5, box.order = my.order, label.cex = 0.65)
-# dev.off()
+#-------------------------------------------------------------------------------
+#Ecopath
+#Note will be changing function name to rpath from ecopath...
+REco <- ecopath(modfile, dietfile, 'R Ecosystem')
+
+#There is an rpath method for generic functions print and summary
+REco
+summary(REco)
+ 
+#print also includes the mortalities toggle
+print(REco, morts = T)
+
+#Summary table of parameters or mortalities can be output
+write.Rpath(REco, file = paste(out.dir, 'R_Ecosystem_Parameters.csv', sep = ''))
+write.Rpath(REco, file = paste(out.dir, 'R_Ecosystem_Mortalities.csv', sep = ''), 
+            morts = T)
+
+#Webplot plots the resultant food web
+set.seed(34)
+#Set the plot order to avoid overlapping titles/points (optional)
+my.order <- c(c(22, 20, 21), c(17, 19, 18), c(8, 4, 2, 14, 11, 13, 10, 15, 16, 9, 6),
+              c(25, 1, 7, 12), c(3, 5, 24), 23)
+
+tiff(file = paste(out.dir, 'R_Ecosystem.tif'), height = 1500, width = 1700, res = 300)
+webplot(REco, labels = T, fleets = T, box.order = my.order, label.cex = 0.65)
+dev.off()
+
+#Highlight example
+set.seed(34)
+tiff(file = paste(out.dir, 'Highlight_AduRoundfish1.tif'), height = 1800, width = 2000, 
+     res = 300)
+webplot(REco, fleets = T, highlight = 5, box.order = my.order, label.cex = 0.65)
+dev.off()
 
 #----------------------------------------------------------------------------------------------------------------------
+#Ecosim
 #Use the Rpath object from above to run a 100 year Ecosim
 #Scenario 1 - Equilibrium
-REco.init <- ecosim.init(REco, years = 100, juvfile)
-REco.init$NoIntegrate[2]  <- 1
-REco.init$NoIntegrate[4]  <- 3
-REco.base   <- copy(REco.init)
-REco.base   <- ecosim.run(REco.base, 0, 100)
+REco.init <- rsim.scenario(REco, juvfile, 100)
+
+REco.1 <- rsim.run(REco.init, method = 'AB', years = 100)
+
+
+
+
+
+
+
+
+
+
 
 # #Write out the basic outputs from ecosim
 # write.Rpath.sim(REco.s1, file = paste(out.dir, 'R_Ecosystem_Ecosim_s1.csv', sep = ''))

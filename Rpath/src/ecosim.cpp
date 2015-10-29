@@ -5,7 +5,7 @@
 // Runge-Kutta 4th order method for integrating Ecosim equations
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
-List rk4_run (List params, List instate, List forcing, List fishing, 
+List rk4_run (List params, List instate, List forcing, List fishing, List stanzas,
                  int StartYear, int EndYear){
 
    int y, m, dd, t; 
@@ -59,19 +59,19 @@ List rk4_run (List params, List instate, List forcing, List fishing,
 
             // Calculate base derivative and RK-4 derivative steps (overwrites YY)   
                List YY = state;
-               List k1 = deriv_vector(params,YY,forcing,fishing,y,m,tt);
+               List k1 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt);
                NumericVector kk1 = as<NumericVector>(k1["DerivT"]);
 
                YY["BB"] = old_BB + 0.5*kk1*hh;
-               List k2 = deriv_vector(params,YY,forcing,fishing,y,m,tt + 0.5*hh);
+               List k2 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + 0.5*hh);
                NumericVector kk2 = as<NumericVector>(k2["DerivT"]);
 
                YY["BB"] = old_BB + 0.5*kk2*hh;
-               List k3 = deriv_vector(params,YY,forcing,fishing,y,m,tt + 0.5*hh);
+               List k3 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + 0.5*hh);
                NumericVector kk3 = as<NumericVector>(k3["DerivT"]);
 
                YY["BB"] = old_BB + kk3*hh; 
-               List k4 = deriv_vector(params,YY,forcing,fishing,y,m,tt + hh);
+               List k4 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + hh);
                NumericVector kk4 = as<NumericVector>(k4["DerivT"]);
 
             // Take an rk4 step          
@@ -147,7 +147,7 @@ List rk4_run (List params, List instate, List forcing, List fishing,
 // for faster-turnover species.
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
-List Adams_run (List params, List instate, List forcing, List fishing, 
+List Adams_run (List params, List instate, List forcing, List fishing, List stanzas,
                  int StartYear, int EndYear){
      
 int y, m, dd; 
@@ -188,7 +188,7 @@ int y, m, dd;
 // Load state and call initial derivative (todo: allow other start times)
 // Use Clone to make sure state is a copy of instate, not a pointer   
    List state = clone(instate);
-   List dyt   = deriv_vector(params,state,forcing,fishing,0,0,0);
+   List dyt   = deriv_vector(params,state,forcing,fishing,stanzas,0,0,0);
    dd = StartYear * STEPS_PER_YEAR;
 
 // MAIN LOOP STARTS HERE
@@ -202,7 +202,7 @@ int y, m, dd;
  				 NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
  	       NumericVector dydt0     = as<NumericVector>(dyt["DerivT"]);
       // Calculate new derivative    
- 	       dyt   = deriv_vector(params,state,forcing,fishing,y,m,0);
+ 	       dyt   = deriv_vector(params,state,forcing,fishing,stanzas,y,m,0);
       // Extract needed parts of the derivative
          NumericVector dydt1       = as<NumericVector>(dyt["DerivT"]); 
  				 NumericVector FoodGain    = as<NumericVector>(dyt["FoodGain"]);					
@@ -299,7 +299,7 @@ int y, m, dd;
 // Main derivative (dB/dt) calculations for ecosim model, using Rcpp vector
 // package.
 // [[Rcpp::export]] 
-List deriv_vector(List params, List state, List forcing, List fishing, int y, int m, double tt){
+List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, int y, int m, double tt){
 
 int sp, links, prey, pred, gr, dest;
 

@@ -92,7 +92,7 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
     #Need vector of 1:nstanzas per StGroupNum
     stanza.rep <- c()
     stanza.total <- 0
-    for(i in 1:NStanzas){
+    for(i in 1:NStanzaGroups){
       stanza.count <- 1:stgroups[i, nstanzas]
       stanza.rep[(stanza.total + 1):(length(stanza.count) + stanza.total)] <- stanza.count
       stanza.total <- stanza.total + length(stanza.count)

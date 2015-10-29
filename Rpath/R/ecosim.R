@@ -11,7 +11,7 @@
 # consisting of 4 objects:  Rsim.params, Rsim.state (start state), Rsim.forcing
 # and Rsim.fishing.  All objects are List base class.
 #'@export
-rsim.scenario <- function(Rpath, years = 100){
+rsim.scenario <- function(Rpath, juvfile, years = 100){
   
   params      <- rsim.params(Rpath)
   start_state <- rsim.state(params)
@@ -21,7 +21,8 @@ rsim.scenario <- function(Rpath, years = 100){
   rsim = list(params      = params, 
               start_state = start_state,
               forcing     = forcing,
-              fishing     = fishing)
+              fishing     = fishing,
+              stanzas     = juvfile)
   
   class(rsim) <- 'Rsim.scenario'
   attr(rsim, 'eco.name') <- attr(Rpath, 'eco.name')

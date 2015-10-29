@@ -15,9 +15,12 @@ using namespace Rcpp;
 #define MAX_THRESHOLD(x,y) if ((x)>(y))(x)=(y)  // Set x to max y if too big
 
 // Functions in ecosim.cpp 
-   List deriv_vector(List params, List state, List forcing, List fishing, int y, int m, double tt);
-   List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
-   List rk4_run(List params, List instate, List forcing, List fishing, int StartYear, int EndYear);
+   List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, 
+                     int y, int m, double tt);
+   List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, 
+                  int EndYear);
+   List rk4_run(List params, List instate, List forcing, List fishing, int StartYear, 
+                int EndYear);
 
    int deriv_old(List mod, int y, int m, int d);
    int SplitSetPred(List mod);
