@@ -13,10 +13,10 @@
 #'@export
 rsim.scenario <- function(Rpath, years = 100){
   
-  params      <- Rsim.params(Rpath)
-  start_state <- Rsim.state(params)
-  forcing     <- Rsim.forcing(params, years)
-  fishing     <- Rsim.fishing(params, years)
+  params      <- rsim.params(Rpath)
+  start_state <- rsim.state(params)
+  forcing     <- rsim.forcing(params, years)
+  fishing     <- rsim.fishing(params, years)
   
   rsim = list(params      = params, 
               start_state = start_state,
