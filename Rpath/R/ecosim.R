@@ -17,12 +17,13 @@ rsim.scenario <- function(Rpath, juvfile, years = 100){
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
+  stanzas     <- rsim.stanzas(juvfile)
   
   rsim = list(params      = params, 
               start_state = start_state,
               forcing     = forcing,
               fishing     = fishing,
-              stanzas     = juvfile)
+              stanzas     = stanzas)
   
   class(rsim) <- 'Rsim.scenario'
   attr(rsim, 'eco.name') <- attr(Rpath, 'eco.name')
@@ -35,11 +36,11 @@ rsim.scenario <- function(Rpath, juvfile, years = 100){
 rsim.run <- function(Rpath, method = 'RK4', years = 100){
   if(method == 'RK4'){
     rout <- rk4_run(Rpath$params, Rpath$start_state, Rpath$forcing, Rpath$fishing,
-                    0, years)
+                    Rpath$stanzas, 0, years)
   }
   if(method == 'AB'){
     rout <- Adams_run(Rpath$params, Rpath$start_state, Rpath$forcing, Rpath$fishing,
-                      0, years)
+                      Rpath$stanzas, 0, years)
   }
   class(rout) <- 'Rsim.output'
   return(rout)
@@ -266,3 +267,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   class(simpar) <- "Rsim.params"
   return(simpar)
 }
+ 
+ #####################################################################################
+ #'@export
+ rsim.stanzas <- function(juvfile){
+   
+   return(rstan)
+ }

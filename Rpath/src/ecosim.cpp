@@ -299,7 +299,8 @@ int y, m, dd;
 // Main derivative (dB/dt) calculations for ecosim model, using Rcpp vector
 // package.
 // [[Rcpp::export]] 
-List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, int y, int m, double tt){
+List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, 
+                  int y, int m, double tt){
 
 int sp, links, prey, pred, gr, dest;
 
@@ -619,3 +620,33 @@ int sp, links, prey, pred, gr, dest;
    return(deriv);
 }
 
+// SplitSetPred function called in sim stanza initialize and update
+// This function simply sums up across stanzas to get population-level
+// Biomass, Numbers, and Consumption
+// [[Rcpp::export]]
+int SplitSetPred(List stanzas){
+  int isp, ist, ia;
+  double Bt, pt, Nt;
+  
+  const int NStanzaGroups      = as<int>(stanzas["NStanzaGroups"]);     
+  const NumericVector NStanzas = as<NumericVector>(stanzas["NStanzas"]);
+  NumericMatrix NageS          = as<NumericMatrix>(stanzas["NageS"]);
+  NumericMatrix WageS          = as<NumericMatrix>(stanzas["WageS"]);
+  NumericMatrix WWa            = as<NumericMatrix>(stanzas["WWa"]);
+  NumericMatrix First          = as<NumericMatrix>(stanzas["First"]);
+  NumericMatrix Second         = as<NumericMatrix>(stanzas["Second"]);
+  
+  for (isp = 1; isp <= NStanzaGroups; isp++){
+    for (ist = 1; ist <= NStanzas[isp]; ist++){
+      Bt = 1e-30;
+      pt = 1e-30;
+      Nt = 1e-30;
+      for (ia = First(ist, isp); ia <= Second(ist, isp); ia++){
+        Bt = Bt + NageS(ia, isp) * WageS(ia, isp);
+        pt = pt + NageS(ia, isp) * WWa(isp, ia);
+        Nt = Nt + NageS(ia, isp);
+      }
+    }
+  }
+  return(0);
+}
