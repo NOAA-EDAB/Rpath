@@ -185,24 +185,29 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@export
 stanzaplot <- function(juvfile, StanzaNum, line.cols = c('black', 'green', 
                                                          'blue', 'red')){
-  stanza.data <- copy(juvfile$stanzabio[[StanzaNum]])
+  stanza.data <- data.table(B     = juvfile$B[, StanzaNum],
+                            NageS = juvfile$NageS[, StanzaNum],
+                            WageS = juvfile$WageS[, StanzaNum])
+  stanza.data <- stanza.data[!is.na(B), ]
+  stanza.data[, age := 0:(nrow(stanza.data) - 1)]
+  
   #Scale data between 0 and 1
-  stanza.data[, lawa.scale := (lawa - min(lawa)) / (max(lawa) - min(lawa))] 
-  stanza.data[, la.scale := (la - min(la)) / (max(la) - min(la))]
-  stanza.data[, wa.scale := (wa - min(wa)) / (max(wa) - min(wa))]
+  stanza.data[, B.scale     := (B     - min(B))     / (max(B)     - min(B))] 
+  stanza.data[, NageS.scale := (NageS - min(NageS)) / (max(NageS) - min(NageS))]
+  stanza.data[, WageS.scale := (WageS - min(WageS)) / (max(WageS) - min(WageS))]
   
   #Plot the total biomass
-  plot(stanza.data[, age], stanza.data[, lawa.scale], xlab = '', ylab = '', 
+  plot(stanza.data[, age], stanza.data[, B.scale], xlab = '', ylab = '', 
        type = 'l', lwd = 3, axes = F, col = line.cols[1])
   
   #Add total number line and weight at age line
-  lines(stanza.data[, age], stanza.data[, la], lwd = 3, col = line.cols[2])
-  lines(stanza.data[, age], stanza.data[, wa], lwd = 3, col = line.cols[3])
+  lines(stanza.data[, age], stanza.data[, NageS.scale], lwd = 3, col = line.cols[2])
+  lines(stanza.data[, age], stanza.data[, WageS.scale], lwd = 3, col = line.cols[3])
   
   #Add Stanza breaks
   breaks <- juvfile$stanzas[StGroupNum == StanzaNum, Last]
   breaks <- breaks[1:(length(breaks) - 1)]
-  abline(v = breaks, lwd = 3, col = line.cols[4])
+  abline(v = breaks + 1, lwd = 3, col = line.cols[4])
   
   #Add axes, labels, and legend
   axis(1)
