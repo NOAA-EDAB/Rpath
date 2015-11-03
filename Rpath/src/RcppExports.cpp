@@ -58,13 +58,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // SplitSetPred
-int SplitSetPred(List stanzas);
-RcppExport SEXP Rpath_SplitSetPred(SEXP stanzasSEXP) {
+int SplitSetPred(List stanzas, List state);
+RcppExport SEXP Rpath_SplitSetPred(SEXP stanzasSEXP, SEXP stateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< List >::type stanzas(stanzasSEXP);
-    __result = Rcpp::wrap(SplitSetPred(stanzas));
+    Rcpp::traits::input_parameter< List >::type state(stateSEXP);
+    __result = Rcpp::wrap(SplitSetPred(stanzas, state));
     return __result;
 END_RCPP
 }

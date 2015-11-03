@@ -102,10 +102,11 @@ juvfile <- create.rpath.param(parameter = 'juvenile', group = groups.in.stan,
 juvfile$stgroups$VBGF_Ksp <- c(0.145, 0.295, 0.0761, 0.112)
 juvfile$stgroups$Wmat     <- c(0.0577, 0.421, 0.0879, 0.241)
 
-juvfile$stanzas$First   <- c(rep(c(0, 24), 3), 0, 48)
-juvfile$stanzas$Last    <- c(rep(c(23, 400), 3), 47, 400)
-juvfile$stanzas$Z       <- c(2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18)
-juvfile$stanzas$Leading <- rep(c(F, T), 4)
+juvfile$stanzas$GroupNum <- 4:11
+juvfile$stanzas$First    <- c(rep(c(0, 24), 3), 0, 48)
+juvfile$stanzas$Last     <- c(rep(c(23, 400), 3), 47, 400)
+juvfile$stanzas$Z        <- c(2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18)
+juvfile$stanzas$Leading  <- rep(c(F, T), 4)
 
 juvfile <- rpath.stanzas(modfile, juvfile)
 

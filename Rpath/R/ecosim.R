@@ -17,7 +17,7 @@ rsim.scenario <- function(Rpath, juvfile, years = 100){
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
-  stanzas     <- rsim.stanzas(juvfile)
+  stanzas     <- rsim.stanzas(juvfile, start_state)
   
   rsim = list(params      = params, 
               start_state = start_state,
@@ -77,6 +77,7 @@ rsim.forcing <- function(params, years = 100){
 #'@export
 rsim.state <- function(params){
   state  <- list(BB    = params$B_BaseRef, 
+                 NN    = rep(0, params$NUM_GROUPS + 1),
                  Ftime = rep(1, length(params$B_BaseRef) + 1))
   class(state) <- "Rsim.state"
   return(state)
@@ -270,7 +271,66 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  
  #####################################################################################
  #'@export
- rsim.stanzas <- function(juvfile){
+ rsim.stanzas <- function(juvfile, state){
+   #Set up multistanza parameters to pass to C
+   rstan <- list()
+   rstan$Nsplit      <- juvfile$NStanzaGroups
+   rstan$Nstanzas    <- juvfile$stgroups$nstanzas
+   rstan$EcopathCode <- matrix(NA, rstan$Nsplit, max(rstan$Nstanzas))
+   rstan$Age1        <- matrix(NA, rstan$Nsplit, max(rstan$Nstanzas))
+   rstan$Age2        <- matrix(NA, rstan$Nsplit, max(rstan$Nstanzas))
+   rstan$WageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit)
+   rstan$NageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit)
+   rstan$WWa         <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit)
+   rstan$pred        <- matrix(NA, rstan$Nsplit, max(rstan$Nstanzas))
+   
+   for(isp in 1:rstan$Nsplit){
+     for(ist in 1:rstan$Nstanzas[isp]){
+       rstan$EcopathCode[isp, ist] <- juvfile$stanzas[StGroupNum == isp &
+                                                        Stanza == ist, GroupNum]
+       rstan$Age1[isp, ist] <- juvfile$stanzas[StGroupNum == isp & 
+                                                 Stanza == ist, First]
+       rstan$Age2[isp, ist] <- juvfile$stanzas[StGroupNum == isp & 
+                                                 Stanza == ist, Last]
+     }
+     rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp] <- juvfile$StGroup[[isp]]$WageS
+     rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp] <- juvfile$StGroup[[isp]]$NageS
+     rstan$WWa[1:nrow(juvfile$StGroup[[isp]]), isp]   <- juvfile$StGroup[[isp]]$WWa
+   }
+   
+   rstan$Wmat         <- juvfile$stgroup$Wmat
+   #Energy required to grow a unit in weight(scaled to Winf = 1)
+   rstan$vBM          <- 1 - 3 * juvfile$stgroups$VBGF_Ksp / 12
+   
+   BaseEggsStanza <- c()
+   EggsStanza     <- c()
+   for(isp in 1:rstan$Nsplit){
+     #id which weight at age is higher than Wmat
+     EggsStanza[isp] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp], 
+                                               sum(NageS * (WageS - rstan$Wmat[isp]))]
+   }
+   
+   SplitSetPred(rstan, state)
+   
+   #initialize splitalpha growth coefficients using pred information
+   rstan$SplitAlpha <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit)
+   for(isp in 1:rstan$Nsplit){
+     for(ist in 1:rstan$Nstanzas[isp]){
+       first <- rstan$Age1[isp, ist]
+       last  <- rstan$Age2[isp, ist]
+       pred <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
+       StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
+       
+       #May need to caluclate out through ia.....
+       SplitAlpha <- juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
+         rstan$vBM[isp] * juvfile$StGroup[[isp]][, WageS] * pred / StartEatenBy
+       rstan$SplitAlpha[(first + 1):(last + 1), isp] <- SplitAlpha[(first + 1):
+                                                                     (last + 1)]
+       rstan$pred[isp, ist] <- pred
+     }
+     rstan$SplitAlpha[rstan$Age2[isp, rstan$Nstanzas[isp]] + 1, isp] <- 
+       rstan$SplitAlpha[rstan$Age2[isp, rstan$Nstanza[isp]], isp]
+   }
    
    return(rstan)
  }

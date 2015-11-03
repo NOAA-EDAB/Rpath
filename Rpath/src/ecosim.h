@@ -23,7 +23,7 @@ using namespace Rcpp;
                 int EndYear);
 
    int deriv_old(List mod, int y, int m, int d);
-   int SplitSetPred(List stanzas);
+   int SplitSetPred(List stanzas, List state);
    int update_stanzas(List mod, int yr, int mon);
    int Adams_Basforth_old (List mod, int StartYear, int EndYear);
 

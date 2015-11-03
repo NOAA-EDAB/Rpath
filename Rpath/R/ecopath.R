@@ -271,8 +271,9 @@ return(path.model)
 #'@import data.table
 #'@export 
 rpath.stanzas <- function(modfile, juvfile){
+  out <- juvfile
   #Determine the total number of groups with multistanzas
-  ngroups    <- juvfile$NStanzaGroups
+  Nsplit    <- nrow(juvfile$stgroups)
   groupfile  <- juvfile$stgroups
   stanzafile <- juvfile$stanzas
   
@@ -281,40 +282,43 @@ rpath.stanzas <- function(modfile, juvfile){
   groupfile[, last := floor(log(1 - 0.9^(1 - VBGF_d)) / (-1 * (VBGF_Ksp * 3 / 12) * 
                                                            (1 - VBGF_d)))]
   #Generate blank indexs
-  blank <- matrix(NA, ngroups, max(groupfile[, nstanzas]))
-  juvfile$EcopathCodes <- blank
-  juvfile$First        <- blank
-  juvfile$Second       <- blank
+#   blank <- matrix(NA, ngroups, max(groupfile[, nstanzas]))
+#   juvfile$EcopathCodes <- blank
+#   juvfile$First        <- blank
+#   juvfile$Second       <- blank
+#   
+#   blank2 <- matrix(NA, max(groupfile[, last]) + 1, ngroups)
+#   juvfile$WageS <- blank2
+#   juvfile$NageS <- blank2
+#   juvfile$WWa   <- blank2
+#   juvfile$B     <- blank2
   
-  blank2 <- matrix(NA, max(groupfile[, last]) + 1, ngroups)
-  juvfile$WageS <- blank2
-  juvfile$NageS <- blank2
-  juvfile$WWa   <- blank2
-  juvfile$B     <- blank2
-  
-  for(i in 1:ngroups){
-    nstanzas <- groupfile[StGroupNum == i, nstanzas]
-    t90 <- groupfile[StGroupNum == i, last]
-    stanzafile[StGroupNum == i & Stanza == nstanzas, Last := t90]
+  for(isp in 1:Nsplit){
+    nstanzas <- groupfile[StGroupNum == isp, nstanzas]
+    t90 <- groupfile[StGroupNum == isp, last]
+    stanzafile[StGroupNum == isp & Stanza == nstanzas, Last := t90]
     
     #Grab ecopath group codes
-    group.codes <- which(modfile[, Group] %in% stanzafile[StGroupNum == i, Group])
+    group.codes <- which(modfile[, Group] %in% stanzafile[StGroupNum == isp, Group])
     
     #Grab index for first and last months for stanzas
-    first <- stanzafile[StGroupNum == i, First]
-    second  <- stanzafile[StGroupNum == i, Last]
+    first   <- stanzafile[StGroupNum == isp, First]
+    second  <- stanzafile[StGroupNum == isp, Last]
     
     #Push index to juvfile
-    for(j in 1:nstanzas){
-      juvfile$EcopathCodes[i, j] <- group.codes[j]
-      juvfile$First[i, j]        <- first[j]
-      juvfile$Second[i, j]       <- second[j]
-    }
+#     for(j in 1:nstanzas){
+#       juvfile$EcopathCodes[i, j] <- group.codes[j]
+#       juvfile$First[i, j]        <- first[j]
+#       juvfile$Second[i, j]       <- second[j]
+#     }
     
     
     #Calculate weight and consumption at age    
-    StGroup <- data.table(age = stanzafile[StGroupNum == i & Stanza == 1, First]:
+    StGroup <- data.table(age = stanzafile[StGroupNum == isp & Stanza == 1, First]:
                             t90)
+    #Calculate monthly generalized k: (Ksp * 3) / 12
+    k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
+    d <-  groupfile[StGroupNum == isp, VBGF_d]
     StGroup[, WageS := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
     StGroup[, WWa   := WageS ^ d]
     
@@ -322,17 +326,17 @@ rpath.stanzas <- function(modfile, juvfile){
     #Vector of survival rates from 1 stanza to the next
     StGroup[age == 0, Survive := 1]
     prev.surv <- 1
-    for(j in 1:stanzas){
+    for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
-      month.z <- stanzafile[StGroupNum == i & Stanza == j, Z] / 12
-      StGroup[age %in% first[j]:second[j], surv := exp(-1*month.z)]
+      month.z <- stanzafile[StGroupNum == isp & Stanza == ist, Z] / 12
+      StGroup[age %in% first[ist]:second[ist], surv := exp(-1*month.z)]
       
-      if(first[j] > 0){
-        StGroup[age == first[j], Survive := StGroup[age == first[j] - 1, 
+      if(first[ist] > 0){
+        StGroup[age == first[ist], Survive := StGroup[age == first[ist] - 1, 
                                                     Survive] * prev.surv]
       }
       
-      for(a in (first[j] + 1):second[j]){
+      for(a in (first[ist] + 1):second[ist]){
         StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * surv]
       }
       
@@ -340,49 +344,50 @@ rpath.stanzas <- function(modfile, juvfile){
       StGroup[, Q := Survive * WWa]
       
       #Numerator for the relative biomass/consumption calculations
-      b.num <- StGroup[age %in% first[j]:second[j], sum(B)]
-      q.num <- StGroup[age %in% first[j]:second[j], sum(Q)]
+      b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]
+      q.num <- StGroup[age %in% first[ist]:second[ist], sum(Q)]
       
-      stanzafile[StGroupNum == i & Stanza == j, bs.num := b.num]
-      stanzafile[StGroupNum == i & Stanza == j, qs.num := q.num]
+      stanzafile[StGroupNum == isp & Stanza == ist, bs.num := b.num]
+      stanzafile[StGroupNum == isp & Stanza == ist, qs.num := q.num]
       
       prev.surv <- exp(-1 * month.z)
     }
       
     #Scale numbers up to total recruits
-    BaseStanza <- stanzafile[StGroupNum == i & Leading == T, ]
+    BaseStanza <- stanzafile[StGroupNum == isp & Leading == T, ]
     BioPerEgg <- StGroup[age %in% BaseStanza[, First]:BaseStanza[, Last], sum(B)]
     recruits <- modfile[Group == BaseStanza[, Group], Biomass] / BioPerEgg
     #Numbers at age S
     StGroup[, NageS := Survive * recruits]
     
     #Calculate relative biomass
-    stanzafile[StGroupNum == i, bs.denom := sum(bs.num)]
-    stanzafile[StGroupNum == i, bs := bs.num / bs.denom]
+    stanzafile[StGroupNum == isp, bs.denom := sum(bs.num)]
+    stanzafile[StGroupNum == isp, bs := bs.num / bs.denom]
     
     #Calculate relative consumption
-    stanzafile[StGroupNum == i, qs.denom := sum(qs.num)]
-    stanzafile[StGroupNum == i, qs := qs.num / qs.denom]
+    stanzafile[StGroupNum == isp, qs.denom := sum(qs.num)]
+    stanzafile[StGroupNum == isp, qs := qs.num / qs.denom]
     
     #Use leading group to calculate other biomasses
-    stanzafile[StGroupNum == i & Leading == T, 
+    stanzafile[StGroupNum == isp & Leading == T, 
                Biomass := modfile[Group == BaseStanza[, Group], Biomass]]
-    B <- stanzafile[StGroupNum == i & Leading == T, Biomass / bs]
-    stanzafile[StGroupNum == i, Biomass := bs * B]
+    B <- stanzafile[StGroupNum == isp & Leading == T, Biomass / bs]
+    stanzafile[StGroupNum == isp, Biomass := bs * B]
     
     #Use leading group to calculate other consumption
-    stanzafile[StGroupNum == i & Leading == T, 
+    stanzafile[StGroupNum == isp & Leading == T, 
                Cons := modfile[Group == BaseStanza[, Group], QB] *
                  modfile[Group == BaseStanza[, Group], Biomass]]
-    Q <- stanzafile[StGroupNum == i & Leading == T, Cons / qs]
-    stanzafile[StGroupNum == i, Cons := qs * Q]
+    Q <- stanzafile[StGroupNum == isp & Leading == T, Cons / qs]
+    stanzafile[StGroupNum == isp, Cons := qs * Q]
     stanzafile[, QB := Cons / Biomass]
     
-    #Save outputs
-    juvfile$WageS[1:nrow(StGroup), i] <- StGroup[, WageS]
-    juvfile$NageS[1:nrow(StGroup), i] <- StGroup[, NageS]
-    juvfile$WWa  [1:nrow(StGroup), i] <- StGroup[, WWa]
-    juvfile$B    [1:nrow(StGroup), i] <- StGroup[, B]
+#     #Save outputs
+#     juvfile$WageS[1:nrow(StGroup), i] <- StGroup[, WageS]
+#     juvfile$NageS[1:nrow(StGroup), i] <- StGroup[, NageS]
+#     juvfile$WWa  [1:nrow(StGroup), i] <- StGroup[, WWa]
+#     juvfile$B    [1:nrow(StGroup), i] <- StGroup[, B]
+  out$StGroup[[isp]] <- StGroup
   }
   
   #Drop extra columns
@@ -397,5 +402,5 @@ rpath.stanzas <- function(modfile, juvfile){
   for(i in 1:nrow(stanzafile)){
     modfile[Group == stanzafile[i, Group], QB := stanzafile[i, QB]]
   }
-  return(juvfile)
+  return(out)
 } 

@@ -624,28 +624,37 @@ int sp, links, prey, pred, gr, dest;
 // This function simply sums up across stanzas to get population-level
 // Biomass, Numbers, and Consumption
 // [[Rcpp::export]]
-int SplitSetPred(List stanzas){
-  int isp, ist, ia;
+int SplitSetPred(List stanzas, List state){
+  int isp, ist, ia, ieco;
   double Bt, pt, Nt;
   
-  const int NStanzaGroups      = as<int>(stanzas["NStanzaGroups"]);     
-  const NumericVector NStanzas = as<NumericVector>(stanzas["NStanzas"]);
+  //stanza parameters
+  const int Nsplit             = as<int>(stanzas["Nsplit"]);     
+  const NumericVector Nstanzas = as<NumericVector>(stanzas["Nstanzas"]);
   NumericMatrix NageS          = as<NumericMatrix>(stanzas["NageS"]);
   NumericMatrix WageS          = as<NumericMatrix>(stanzas["WageS"]);
   NumericMatrix WWa            = as<NumericMatrix>(stanzas["WWa"]);
-  NumericMatrix First          = as<NumericMatrix>(stanzas["First"]);
-  NumericMatrix Second         = as<NumericMatrix>(stanzas["Second"]);
-  
-  for (isp = 1; isp <= NStanzaGroups; isp++){
-    for (ist = 1; ist <= NStanzas[isp]; ist++){
+  NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
+  NumericMatrix Age2           = as<NumericMatrix>(stanzas["Age2"]);
+  NumericMatrix EcopathCode    = as<NumericMatrix>(stanzas["EcopathCode"]);
+
+  //state parameters
+  NumericVector state_BB = as<NumericVector>(state["BB"]);
+  NumericVector state_NN = as<NumericVector>(state["NN"]);
+
+  for (isp = 0; isp < Nsplit; isp++){
+    for (ist = 0; ist < Nstanzas[isp]; ist++){
+      ieco = EcopathCode(isp, ist);
       Bt = 1e-30;
       pt = 1e-30;
       Nt = 1e-30;
-      for (ia = First(ist, isp); ia <= Second(ist, isp); ia++){
+      for (ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         Bt = Bt + NageS(ia, isp) * WageS(ia, isp);
         pt = pt + NageS(ia, isp) * WWa(isp, ia);
         Nt = Nt + NageS(ia, isp);
       }
+      state_BB[ieco] = Bt;
+      state_NN[ieco] = Nt;
     }
   }
   return(0);

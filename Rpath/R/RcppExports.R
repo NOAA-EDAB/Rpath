@@ -13,7 +13,7 @@ deriv_vector <- function(params, state, forcing, fishing, stanzas, y, m, tt) {
     .Call('Rpath_deriv_vector', PACKAGE = 'Rpath', params, state, forcing, fishing, stanzas, y, m, tt)
 }
 
-SplitSetPred <- function(stanzas) {
-    .Call('Rpath_SplitSetPred', PACKAGE = 'Rpath', stanzas)
+SplitSetPred <- function(stanzas, state) {
+    .Call('Rpath_SplitSetPred', PACKAGE = 'Rpath', stanzas, state)
 }
 
