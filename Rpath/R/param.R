@@ -85,7 +85,12 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
                            nstanzas    = nstanzas,
                            VBGF_Ksp    = NA,
                            VBGF_d      = 0.66667,
-                           Wmat        = NA)
+                           Wmat        = NA,
+                           Wmat001     = NA,
+                           Amat        = NA,
+                           Amat001     = NA,
+                           RecPower    = 1)
+    
     out$stgroups <- stgroups
     
     #Create stanza parameters
