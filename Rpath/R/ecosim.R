@@ -17,7 +17,7 @@ rsim.scenario <- function(Rpath, juvfile, years = 100){
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
-  stanzas     <- rsim.stanzas(juvfile, start_state)
+  stanzas     <- rsim.stanzas(juvfile, start_state, params)
   
   rsim = list(params      = params, 
               start_state = start_state,
@@ -271,7 +271,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  
  #####################################################################################
  #'@export
- rsim.stanzas <- function(juvfile, state){
+ rsim.stanzas <- function(juvfile, state, params){
    #Set up multistanza parameters to pass to C
    rstan <- list()
    rstan$Nsplit      <- juvfile$NStanzaGroups
