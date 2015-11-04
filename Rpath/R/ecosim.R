@@ -331,7 +331,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
          rstan$vBM[isp] * juvfile$StGroup[[isp]][, WageS] * pred / StartEatenBy
        rstan$SplitAlpha[(first + 1):(last + 1), isp + 1] <- SplitAlpha[(first + 1):
                                                                      (last + 1)]
-       rstan$pred[isp, ist] <- pred
+       rstan$pred[isp + 1, ist + 1] <- pred
      }
      rstan$SplitAlpha[rstan$Age2[isp, rstan$Nstanzas[isp]] + 1, isp] <- 
        rstan$SplitAlpha[rstan$Age2[isp, rstan$Nstanza[isp]], isp]
