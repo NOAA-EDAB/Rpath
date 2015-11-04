@@ -345,12 +345,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    #Misc parameters for C
    #KYA Spawn X is Beverton-Holt.  To turn off set to 10000. 2 is half saturation.
    #1.00001 or so is minimum
-   rstan$SpawnX       <- c(0, rep(10000, rstan$Nsplit))
-   rstan$SpawnEnergy  <- c(0, rep(1, rstan$Nsplit))
-   rstan$SpawnBio     <- rstan$EggsStanza
-   rstan$baseSpawnBio <- rstan$EggsStanza
-   rstan$RscaleSplit  <- c(0, rep(1, rstan$Nsplit))
-   
+   rstan$SpawnX         <- c(0, rep(10000, rstan$Nsplit))
+   rstan$SpawnEnergy    <- c(0, rep(1, rstan$Nsplit))
+   rstan$SpawnBio       <- rstan$EggsStanza
+   rstan$baseSpawnBio   <- rstan$EggsStanza
+   rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
+   rstan$stanzaBasePred <- rstan$pred
    
    return(rstan)
  }
