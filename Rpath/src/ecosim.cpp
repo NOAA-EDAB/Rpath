@@ -349,7 +349,7 @@ int sp, links, prey, pred, gr, dest, isp, ist, ieco;
    const NumericVector Nstanzas       = as<NumericVector>(stanzas["Nstanzas"]);
    const NumericVector stanzaPred     = as<NumericVector>(stanzas["pred"]);
    const NumericVector stanzaBasePred = as<NumericVector>(stanzas["stanzaBasePred"]);
-   NumericMatrix EcopathCode          = as<NumericMatrix>(params["EcopathCode"]);
+   NumericMatrix EcopathCode          = as<NumericMatrix>(stanzas["EcopathCode"]);
 
 // State vectors
    const NumericVector state_BB        = as<NumericVector>(state["BB"]);
