@@ -357,6 +357,9 @@ rpath.stanzas <- function(modfile, juvfile){
     BaseStanza <- stanzafile[StGroupNum == isp & Leading == T, ]
     BioPerEgg <- StGroup[age %in% BaseStanza[, First]:BaseStanza[, Last], sum(B)]
     recruits <- modfile[Group == BaseStanza[, Group], Biomass] / BioPerEgg
+    #Save recruits
+    groupfile[StGroupNum == isp, r := recruits]
+
     #Numbers at age S
     StGroup[, NageS := Survive * recruits]
     
@@ -382,11 +385,6 @@ rpath.stanzas <- function(modfile, juvfile){
     stanzafile[StGroupNum == isp, Cons := qs * Q]
     stanzafile[, QB := Cons / Biomass]
     
-#     #Save outputs
-#     juvfile$WageS[1:nrow(StGroup), i] <- StGroup[, WageS]
-#     juvfile$NageS[1:nrow(StGroup), i] <- StGroup[, NageS]
-#     juvfile$WWa  [1:nrow(StGroup), i] <- StGroup[, WWa]
-#     juvfile$B    [1:nrow(StGroup), i] <- StGroup[, B]
   out$StGroup[[isp]] <- StGroup
   }
   
