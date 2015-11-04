@@ -9,7 +9,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
                  int StartYear, int EndYear){
 
    int y, m, dd, t; 
-// Input rates are in units of years or years^-1.  Integration is written so
+// Input rates are in units of years or years^-1.  Integration is wri tten so
 // that integration timesteps always line up with months, for data reasons.
 // STEPS_PER_YEAR should be 12 (for months), and STEPS_PER_MONTH sets the
 // rk4 integration timestep.  So effective integration timestep with respect
@@ -302,7 +302,7 @@ int y, m, dd;
 List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, 
                   int y, int m, double tt){
 
-int sp, links, prey, pred, gr, dest;
+int sp, links, prey, pred, gr, dest, isp, ist, ieco;
 
 // forcing time index (in months)
    const int dd = y*STEPS_PER_YEAR+m;
@@ -314,7 +314,6 @@ int sp, links, prey, pred, gr, dest;
    const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
    const int NumFishingLinks           = as<int>(params["NumFishingLinks"]);
    const int NumDetLinks               = as<int>(params["NumDetLinks"]);
-   //NOJUV  int juv_N                      = as<int>(params["juv_N"]);
    const int COUPLED                   = as<int>(params["COUPLED"]);
  
 // NUM_GROUPS length input vectors
@@ -346,10 +345,11 @@ int sp, links, prey, pred, gr, dest;
    const NumericVector DetFrac         = as<NumericVector>(params["DetFrac"]);
 
 // Age-structured parameters
-   //NOJUV NumericVector stanzaPred     = as<NumericVector>(params["stanzaPred"]);
-   //NOJUV NumericVector stanzaBasePred = as<NumericVector>(params["stanzaBasePred"]);
-   //NOJUV NumericVector JuvNum         = as<NumericVector>(params["JuvNum"]);
-   //NOJUV NumericVector AduNum         = as<NumericVector>(params["AduNum"]);
+   const int Nsplit                   = as<int>(stanzas["Nsplit"]);
+   const NumericVector Nstanzas       = as<NumericVector>(stanzas["Nstanzas"]);
+   const NumericVector stanzaPred     = as<NumericVector>(stanzas["pred"]);
+   const NumericVector stanzaBasePred = as<NumericVector>(stanzas["stanzaBasePred"]);
+   NumericMatrix EcopathCode          = as<NumericMatrix>(params["EcopathCode"]);
 
 // State vectors
    const NumericVector state_BB        = as<NumericVector>(state["BB"]);
@@ -398,15 +398,16 @@ int sp, links, prey, pred, gr, dest;
    NumericVector predYY = state_Ftime * state_BB/B_BaseRef * force_bysearch(dd,_);
 
 // Set functional response biomass for juvenile and adult groups (including foraging time) 
-   //NOJUV   for (i=1; i<=juv_N; i++){
-   //NOJUV      if (stanzaBasePred[JuvNum[i]]>0){
-   //NOJUV        predYY[JuvNum[i]] = state_Ftime[JuvNum[i]] * 
-   //NOJUV          stanzaPred[JuvNum[i]]/stanzaBasePred[JuvNum[i]];
-   //NOJUV        predYY[AduNum[i]] = state_Ftime[AduNum[i]] * 
-   //NOJUV          stanzaPred[AduNum[i]]/stanzaBasePred[AduNum[i]];
-   //NOJUV      } 
-   //NOJUV    } 
-
+   for (isp = 1; isp <=Nsplit; isp++){
+     for(ist = 1; ist <= Nstanzas[isp]; ist++){
+       ieco = EcopathCode(isp, ist);
+       if (stanzaBasePred[ieco] > 0){
+         predYY[ieco] = state_Ftime[ieco] * stanzaPred(isp, ist) /
+                        stanzaBasePred(isp, ist);
+       }
+     }
+   }
+   
 // Unroll Biomass Vectors (match pred, prey biomass for all links)
    NumericVector PYY = preyYY[PreyFrom];
    NumericVector PDY = predYY[PreyTo];
