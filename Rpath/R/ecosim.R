@@ -303,6 +303,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    rstan$Wmat     <- c(0, juvfile$stgroup$Wmat)
    rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
    rstan$recruits <- c(0, juvfile$stgroup$r)
+   rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
    rstan$RzeroS   <- rstan$recruits
    
    #Energy required to grow a unit in weight(scaled to Winf = 1)

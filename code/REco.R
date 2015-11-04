@@ -100,7 +100,10 @@ juvfile <- create.rpath.param(parameter = 'juvenile', group = groups.in.stan,
                               stgroup = stanza.groups, nstanzas = rep(2, 4))
 
 juvfile$stgroups$VBGF_Ksp <- c(0.145, 0.295, 0.0761, 0.112)
-juvfile$stgroups$Wmat     <- c(0.0577, 0.421, 0.0879, 0.241)
+juvfile$stgroups$Wmat     <- c(0.0769, 0.561, 0.117,  0.321)
+juvfile$stgroups$Wmat001  <- c(0.0577, 0.421, 0.0879, 0.241)
+juvfile$stgroups$Amat     <- c(4, 4, 4, 8)
+juvfile$stgroups$Amat001  <- rep(-1e6, 4)
 
 juvfile$stanzas$GroupNum <- 4:11
 juvfile$stanzas$First    <- c(rep(c(0, 24), 3), 0, 48)

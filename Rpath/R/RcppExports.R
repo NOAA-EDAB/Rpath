@@ -17,3 +17,7 @@ SplitSetPred <- function(stanzas, state) {
     .Call('Rpath_SplitSetPred', PACKAGE = 'Rpath', stanzas, state)
 }
 
+SplitUpdate <- function(stanzas, state, forcing, deriv, yr, mon) {
+    .Call('Rpath_SplitUpdate', PACKAGE = 'Rpath', stanzas, state, forcing, deriv, yr, mon)
+}
+

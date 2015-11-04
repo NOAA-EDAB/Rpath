@@ -69,3 +69,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// SplitUpdate
+int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int mon);
+RcppExport SEXP Rpath_SplitUpdate(SEXP stanzasSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP derivSEXP, SEXP yrSEXP, SEXP monSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type stanzas(stanzasSEXP);
+    Rcpp::traits::input_parameter< List >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
+    Rcpp::traits::input_parameter< List >::type deriv(derivSEXP);
+    Rcpp::traits::input_parameter< int >::type yr(yrSEXP);
+    Rcpp::traits::input_parameter< int >::type mon(monSEXP);
+    __result = Rcpp::wrap(SplitUpdate(stanzas, state, forcing, deriv, yr, mon));
+    return __result;
+END_RCPP
+}

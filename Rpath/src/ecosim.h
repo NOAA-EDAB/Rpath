@@ -24,7 +24,7 @@ using namespace Rcpp;
 
    int deriv_old(List mod, int y, int m, int d);
    int SplitSetPred(List stanzas, List state);
-   int update_stanzas(List mod, int yr, int mon);
+   int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int mon);
    int Adams_Basforth_old (List mod, int StartYear, int EndYear);
 
 // Power function that works with NumericVectors
