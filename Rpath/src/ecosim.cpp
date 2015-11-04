@@ -642,8 +642,8 @@ int SplitSetPred(List stanzas, List state){
   NumericVector state_BB = as<NumericVector>(state["BB"]);
   NumericVector state_NN = as<NumericVector>(state["NN"]);
 
-  for (isp = 0; isp < Nsplit; isp++){
-    for (ist = 0; ist < Nstanzas[isp]; ist++){
+  for (isp = 1; isp <= Nsplit; isp++){
+    for (ist = 1; ist <= Nstanzas[isp]; ist++){
       ieco = EcopathCode(isp, ist);
       Bt = 1e-30;
       pt = 1e-30;
