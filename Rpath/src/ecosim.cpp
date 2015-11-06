@@ -170,7 +170,7 @@ int y, m, dd;
    NumericMatrix EcopathCode      = as<NumericMatrix>(stanzas["EcopathCode"]);
    NumericMatrix WageS            = as<NumericMatrix>(stanzas["WageS"]);
    NumericMatrix NageS            = as<NumericMatrix>(stanzas["NageS"]);
-   NumericVector stanzaPred       = as<NumericVector>(stanzas["pred"]);
+   NumericVector stanzaPred       = as<NumericVector>(stanzas["stanzaPred"]);
    NumericVector SpawnBio         = as<NumericVector>(stanzas["SpawnBio"]);
    //NumericVector firstMoAdu       = as<NumericVector>(stanza["firstMoAdu"]);
 
@@ -227,7 +227,8 @@ int y, m, dd;
      // Monthly Stanza (split pool) update
         SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
         SplitSetPred(stanzas, state);
-
+        new_BB = ifelse(NoIntegrate < 0, as<NumericVector>(state["BB"]), new_BB);
+        
      // Calculate catch assuming fixed Frate and exponential biomass change.
      // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
         NumericVector new_CC = (DELTA_T * FishingLoss / old_BB) * 
@@ -405,8 +406,8 @@ int sp, links, prey, pred, gr, dest, isp, ist, ieco;
      for(ist = 1; ist <= Nstanzas[isp]; ist++){
        ieco = EcopathCode(isp, ist);
        if (stanzaBasePred[ieco] > 0){
-         predYY[ieco] = state_Ftime[ieco] * stanzaPred(isp, ist) /
-                        stanzaBasePred(isp, ist);
+         predYY[ieco] = state_Ftime[ieco] * stanzaPred[ieco] /
+                        stanzaBasePred[ieco];
        }
      }
    }
