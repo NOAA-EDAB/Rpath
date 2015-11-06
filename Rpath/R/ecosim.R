@@ -19,6 +19,10 @@ rsim.scenario <- function(Rpath, juvfile, years = 100){
   fishing     <- rsim.fishing(params, years)
   stanzas     <- rsim.stanzas(juvfile, start_state, params)
   
+  #Set NoIntegrate Flags
+  ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
+  params$NoIntegrate[ieco + 1] <- -1 * ieco 
+  
   rsim = list(params      = params, 
               start_state = start_state,
               forcing     = forcing,
@@ -283,7 +287,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    rstan$WageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
    rstan$NageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
    rstan$WWa         <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-   rstan$pred        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
+   rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
    
    for(isp in 1:rstan$Nsplit){
      for(ist in 1:rstan$Nstanzas[isp + 1]){
@@ -317,30 +321,26 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    }
    rstan$EggsStanza <- rstan$baseEggsStanza
    
-   SplitSetPred(rstan, state)
-   
    #initialize splitalpha growth coefficients using pred information and
    rstan$SplitAlpha <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
    for(isp in 1:rstan$Nsplit){
      for(ist in 1:rstan$Nstanzas[isp + 1]){
+       ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
        first <- rstan$Age1[isp + 1, ist + 1]
        last  <- rstan$Age2[isp + 1, ist + 1]
-       pred <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
+       pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
        StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
        
        SplitAlpha <- juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
          rstan$vBM[isp] * juvfile$StGroup[[isp]][, WageS] * pred / StartEatenBy
        rstan$SplitAlpha[(first + 1):(last + 1), isp + 1] <- SplitAlpha[(first + 1):
                                                                      (last + 1)]
-       rstan$pred[isp + 1, ist + 1] <- pred
+       rstan$stanzaPred[ieco + 1] <- pred
      }
-     rstan$SplitAlpha[rstan$Age2[isp, rstan$Nstanzas[isp]] + 1, isp] <- 
-       rstan$SplitAlpha[rstan$Age2[isp, rstan$Nstanza[isp]], isp]
+     #Carry over final split alpha to plus group
+     rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanzas[isp + 1] + 1] + 1, isp + 1] <- 
+       rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanza[isp + 1]], isp + 1]
    }
-   
-   #Set NoIntegrate Flags
-   ieco <- as.vector(rstan$EcopathCode[which(!is.na(rstan$EcopathCode))])
-   params$NoIntegrate[ieco + 1] <- -1 * (ieco + 1)
    
    #Misc parameters for C
    #KYA Spawn X is Beverton-Holt.  To turn off set to 10000. 2 is half saturation.
@@ -350,7 +350,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    rstan$SpawnBio       <- rstan$EggsStanza
    rstan$baseSpawnBio   <- rstan$EggsStanza
    rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
-   rstan$stanzaBasePred <- rstan$pred
+   rstan$stanzaBasePred <- rstan$stanzaPred
+   
+  # SplitSetPred(rstan, state)
    
    return(rstan)
  }

@@ -94,7 +94,6 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
           // Set state to new values, including min/max traps
              state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
              state["Ftime"] = pmin(new_Ftime, 2.0);      
-
           }// end of sub-monthly (t-indexed) loop
 
       // Insert Monthly Stanza (split pool) update here
@@ -167,28 +166,27 @@ int y, m, dd;
    const NumericVector FtimeAdj   = as<NumericVector>(params["FtimeAdj"]);
    const NumericVector FtimeQBOpt = as<NumericVector>(params["FtimeQBOpt"]);
 
-// Needed for Age Structure (NOJUV means commented out)
-   //NOJUV NumericMatrix WageS            = as<NumericMatrix>(mod["WageS"]);
-   //NOJUV NumericMatrix NageS            = as<NumericMatrix>(mod["NageS"]);
-   //NOJUV NumericVector stanzaPred       = as<NumericVector>(mod["stanzaPred"]);
-   //NOJUV NumericVector SpawnBio         = as<NumericVector>(mod["SpawnBio"]);
-   //NOJUV NumericVector JuvNum           = as<NumericVector>(mod["JuvNum"]);
-   //NOJUV NumericVector AduNum           = as<NumericVector>(mod["AduNum"]);
-   //NOJUV NumericVector firstMoAdu       = as<NumericVector>(mod["firstMoAdu"]);
+// Needed for Age Structure
+   NumericMatrix EcopathCode      = as<NumericMatrix>(stanzas["EcopathCode"]);
+   NumericMatrix WageS            = as<NumericMatrix>(stanzas["WageS"]);
+   NumericMatrix NageS            = as<NumericMatrix>(stanzas["NageS"]);
+   NumericVector stanzaPred       = as<NumericVector>(stanzas["pred"]);
+   NumericVector SpawnBio         = as<NumericVector>(stanzas["SpawnBio"]);
+   //NumericVector firstMoAdu       = as<NumericVector>(stanza["firstMoAdu"]);
 
 // Monthly output matrices                     
-   NumericMatrix out_BB(EndYear*12+1, NUM_BIO+1);           
-   NumericMatrix out_CC(EndYear*12+1, NUM_BIO+1);          
-   NumericMatrix out_SSB(EndYear*12+1, NUM_BIO+1);        
-   NumericMatrix out_rec(EndYear*12+1, NUM_BIO+1);       
+   NumericMatrix out_BB( EndYear * 12 + 1, NUM_BIO + 1);           
+   NumericMatrix out_CC( EndYear * 12 + 1, NUM_BIO + 1);          
+   NumericMatrix out_SSB(EndYear * 12 + 1, NUM_BIO + 1);        
+   NumericMatrix out_rec(EndYear * 12 + 1, NUM_BIO + 1);       
 
 // Update sums of split groups to total biomass for derivative calcs
-   //NOJUV      SplitSetPred(mod); 
+   SplitSetPred(stanzas, instate); 
 
 // Load state and call initial derivative (todo: allow other start times)
 // Use Clone to make sure state is a copy of instate, not a pointer   
    List state = clone(instate);
-   List dyt   = deriv_vector(params,state,forcing,fishing,stanzas,0,0,0);
+   List dyt   = deriv_vector(params, state, forcing, fishing, stanzas, 0, 0, 0);
    dd = StartYear * STEPS_PER_YEAR;
 
 // MAIN LOOP STARTS HERE
@@ -199,36 +197,41 @@ int y, m, dd;
 				 dd = y * STEPS_PER_YEAR + m; // dd is index for monthly output                
       // Load old state and old derivative
          NumericVector old_BB    = as<NumericVector>(state["BB"]);
- 				 NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
+         NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
  	       NumericVector dydt0     = as<NumericVector>(dyt["DerivT"]);
+         
       // Calculate new derivative    
- 	       dyt   = deriv_vector(params,state,forcing,fishing,stanzas,y,m,0);
+ 	       dyt   = deriv_vector(params, state, forcing, fishing, stanzas, y, m, 0);
+      
       // Extract needed parts of the derivative
          NumericVector dydt1       = as<NumericVector>(dyt["DerivT"]); 
  				 NumericVector FoodGain    = as<NumericVector>(dyt["FoodGain"]);					
          NumericVector biomeq      = as<NumericVector>(dyt["biomeq"]);
          NumericVector FishingLoss = as<NumericVector>(dyt["FishingLoss"]);  
-      // Now Update the new State Biomass using Adams-Basforth                                                     										                       
-      // NOJUV ifelse(NoIntegrate==sp, is second part of statement if juvs*/ 
+      
+      // Now Update the new State Biomass using Adams-Basforth
          NumericVector new_BB = 
-                       ifelse( NoIntegrate==0,
-                         (1.0-SORWT)* biomeq + SORWT*old_BB,
-                         old_BB + (DELTA_T/2.0) * (3.0*dydt1 - dydt0) ); 
+                       ifelse( NoIntegrate == 0,
+                         (1.0 - SORWT) * biomeq + SORWT * old_BB,
+                         ifelse( NoIntegrate > 0,
+                         old_BB + (DELTA_T / 2.0) * (3.0 * dydt1 - dydt0),
+                         old_BB)); 
+      
       // Then Update Foraging Time 
-      // NOJUV  NumericVector pd = ifelse(NoIntegrate<0, stanzaPred, old_B);
-         NumericVector pd = old_BB;
-         NumericVector new_Ftime = ifelse((FoodGain>0)&(pd>0),
-                         0.1 + 0.9*old_Ftime* 
-                           ((1.0-FtimeAdj) + FtimeAdj*FtimeQBOpt/(FoodGain/pd)),
-                         old_Ftime);
+         NumericVector pd = ifelse(NoIntegrate < 0, stanzaPred, old_BB);
+         NumericVector new_Ftime = ifelse((FoodGain > 0) & (pd > 0),
+           0.1 + 0.9 * old_Ftime * ((1.0 - FtimeAdj) + FtimeAdj * FtimeQBOpt / 
+           (FoodGain / pd)),
+           old_Ftime);
 
      // Monthly Stanza (split pool) update
-        //NOJUV  update_stanzas(mod, y, m + 1);
-        //NOJUV  SplitSetPred(mod);
+        SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
+        SplitSetPred(stanzas, state);
 
      // Calculate catch assuming fixed Frate and exponential biomass change.
      // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
-        NumericVector new_CC = (DELTA_T*FishingLoss/old_BB)*(new_BB+old_BB)/2.0;
+        NumericVector new_CC = (DELTA_T * FishingLoss / old_BB) * 
+                               (new_BB + old_BB) / 2.0;
         // NumericVector new_CC = 
         //               ifelse( new_BB==old_BB,
         //                 FishingLoss*DELTA_T,
@@ -237,7 +240,7 @@ int y, m, dd;
         //               );       
 
      // Set state to new values, including min/max traps
-        state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
+        state["BB"]    = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON);
         state["Ftime"] = pmin(new_Ftime, 2.0);    
                                                                  										                         
      // If the run is during the "burn-in" years, and biomass goes
@@ -347,7 +350,7 @@ int sp, links, prey, pred, gr, dest, isp, ist, ieco;
 // Age-structured parameters
    const int Nsplit                   = as<int>(stanzas["Nsplit"]);
    const NumericVector Nstanzas       = as<NumericVector>(stanzas["Nstanzas"]);
-   const NumericVector stanzaPred     = as<NumericVector>(stanzas["pred"]);
+   const NumericVector stanzaPred     = as<NumericVector>(stanzas["stanzaPred"]);
    const NumericVector stanzaBasePred = as<NumericVector>(stanzas["stanzaBasePred"]);
    NumericMatrix EcopathCode          = as<NumericMatrix>(stanzas["EcopathCode"]);
 
@@ -638,6 +641,7 @@ int SplitSetPred(List stanzas, List state){
   NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
   NumericMatrix Age2           = as<NumericMatrix>(stanzas["Age2"]);
   NumericMatrix EcopathCode    = as<NumericMatrix>(stanzas["EcopathCode"]);
+  NumericMatrix stanzaPred = as<NumericMatrix>(stanzas["stanzaPred"]);
 
   //state parameters
   NumericVector state_BB = as<NumericVector>(state["BB"]);
@@ -651,11 +655,12 @@ int SplitSetPred(List stanzas, List state){
       Nt = 1e-30;
       for (ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         Bt = Bt + NageS(ia, isp) * WageS(ia, isp);
-        pt = pt + NageS(ia, isp) * WWa(isp, ia);
+        pt = pt + NageS(ia, isp) * WWa(ia, isp);
         Nt = Nt + NageS(ia, isp);
       }
       state_BB[ieco] = Bt;
       state_NN[ieco] = Nt;
+      stanzaPred[ieco] = pt;
     }
   }
   return(0);
@@ -690,7 +695,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
   NumericMatrix Age1                 = as<NumericMatrix>(stanzas["Age1"]);
   NumericMatrix Age2                 = as<NumericMatrix>(stanzas["Age2"]);
   NumericMatrix EcopathCode          = as<NumericMatrix>(stanzas["EcopathCode"]);
-  NumericMatrix stanzaPred           = as<NumericMatrix>(stanzas["pred"]);
+  NumericMatrix stanzaPred           = as<NumericMatrix>(stanzas["stanzaPred"]);
 
   //state parameters
   const NumericVector state_BB = as<NumericVector>(state["BB"]);
@@ -708,7 +713,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
     for(ist = 1; ist <= Nstanzas[isp]; ist++){
       ieco = EcopathCode(isp, ist);
       Su = exp(-LossPropToB[ieco] / STEPS_PER_YEAR / state_BB[ieco]);
-      Gf = FoodGain[ieco] / stanzaPred[ieco];
+      Gf = FoodGain[ieco] / stanzaPred(isp, ist);
       for(ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         NageS(ia, isp) = NageS(ia, isp) * Su;
         WageS(ia, isp) = vBM[isp] * WageS(ia, isp) + Gf * SplitAlpha(ia, isp);
