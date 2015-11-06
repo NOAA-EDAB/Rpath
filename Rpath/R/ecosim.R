@@ -82,7 +82,7 @@ rsim.forcing <- function(params, years = 100){
 rsim.state <- function(params){
   state  <- list(BB    = params$B_BaseRef, 
                  NN    = rep(0, params$NUM_GROUPS + 1),
-                 Ftime = rep(1, length(params$B_BaseRef) + 1))
+                 Ftime = rep(1, length(params$B_BaseRef)))
   class(state) <- "Rsim.state"
   return(state)
 }
@@ -330,9 +330,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        last  <- rstan$Age2[isp + 1, ist + 1]
        pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
        StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
-       
-       SplitAlpha <- juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
-         rstan$vBM[isp] * juvfile$StGroup[[isp]][, WageS] * pred / StartEatenBy
+
+       SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
+         rstan$vBM[isp + 1] * juvfile$StGroup[[isp]][, WageS]) * pred / StartEatenBy
        rstan$SplitAlpha[(first + 1):(last + 1), isp + 1] <- SplitAlpha[(first + 1):
                                                                      (last + 1)]
        rstan$stanzaPred[ieco + 1] <- pred
