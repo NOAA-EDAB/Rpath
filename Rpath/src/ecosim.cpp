@@ -641,7 +641,7 @@ int SplitSetPred(List stanzas, List state){
   NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
   NumericMatrix Age2           = as<NumericMatrix>(stanzas["Age2"]);
   NumericMatrix EcopathCode    = as<NumericMatrix>(stanzas["EcopathCode"]);
-  NumericMatrix stanzaPred = as<NumericMatrix>(stanzas["stanzaPred"]);
+  NumericVector stanzaPred     = as<NumericVector>(stanzas["stanzaPred"]);
 
   //state parameters
   NumericVector state_BB = as<NumericVector>(state["BB"]);
@@ -695,7 +695,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
   NumericMatrix Age1                 = as<NumericMatrix>(stanzas["Age1"]);
   NumericMatrix Age2                 = as<NumericMatrix>(stanzas["Age2"]);
   NumericMatrix EcopathCode          = as<NumericMatrix>(stanzas["EcopathCode"]);
-  NumericMatrix stanzaPred           = as<NumericMatrix>(stanzas["stanzaPred"]);
+  NumericVector stanzaPred           = as<NumericVector>(stanzas["stanzaPred"]);
 
   //state parameters
   const NumericVector state_BB = as<NumericVector>(state["BB"]);
@@ -713,7 +713,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
     for(ist = 1; ist <= Nstanzas[isp]; ist++){
       ieco = EcopathCode(isp, ist);
       Su = exp(-LossPropToB[ieco] / STEPS_PER_YEAR / state_BB[ieco]);
-      Gf = FoodGain[ieco] / stanzaPred(isp, ist);
+      Gf = FoodGain[ieco] / stanzaPred[ieco];
       for(ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         NageS(ia, isp) = NageS(ia, isp) * Su;
         WageS(ia, isp) = vBM[isp] * WageS(ia, isp) + Gf * SplitAlpha(ia, isp);
