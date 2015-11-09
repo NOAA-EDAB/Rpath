@@ -4,26 +4,21 @@
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.sim.obj Rpath ecosim run created by the ecosim.run() function.
+#'@param Rsim.output Rpath ecosim run created by the rsim.run() function.
 #'
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@export
-ecosim.plot <- function(Rpath.sim.obj){
-  n <- Rpath.sim.obj$NUM_LIVING + Rpath.sim.obj$NUM_DEAD
-  biomass <- as.data.table(Rpath.sim.obj$out_BB[, 2:(n + 1)])
-  rel.bio <- data.table(Month = 1:nrow(biomass))
-  for(i in 1:ncol(biomass)){
-    sp.bio.start <- biomass[1, i, with = F]
-    sp.rel.bio   <- biomass[ , i, with = F] / as.numeric(sp.bio.start)
-    rel.bio <- cbind(rel.bio, sp.rel.bio)
-  }
-  
-  ymax <- max(rel.bio[, 2:ncol(rel.bio), with = F])
-  ymax <- ymax + 0.1 * ymax
-  ymin <- min(rel.bio[, 2:ncol(rel.bio), with = F])
-  ymin <- ymin - 0.1 * ymin
-  xmax <- max(rel.bio[, Month])
+ecosim.plot <- function(Rsim.output, spname){
+  biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
+  n <- ncol(biomass)
+  start.bio <- biomass[1, ]
+  rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
+  for(isp in 1:n) rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
+
+  ymax <- max(rel.bio) + 0.1 * max(rel.bio)
+  ymin <- min(rel.bio) - 0.1 * min(rel.bio)
+  xmax <- nrow(biomass)
   
   #Plot relative biomass
   layout(matrix(c(1, 2), 1, 2), widths = c(4, 1))
@@ -36,12 +31,10 @@ ecosim.plot <- function(Rpath.sim.obj){
   mtext(1, text = 'Months', line = 2.5, cex = 1.8)
   mtext(2, text = 'Relative Biomass', line = 3, cex = 1.8)
   
-  line.col <- rainbow(ncol(rel.bio) - 1)
-  for(i in 1:(ncol(rel.bio) - 1)){
-    lines(rel.bio[, c(1, i + 1), with = F], col = line.col[i], lwd = 3)
-  }
+  line.col <- rainbow(n)
+  for(i in 1:n) lines(rel.bio[, i], col = line.col[i], lwd = 3)
   
   opar <- par(mar = c(0, 0, 0, 0))
   plot(0, 0, xlab = '', ylab = '', axes = F)
-  legend('center', legend = Rpath.sim.obj$spname[2:(n + 1)], fill = line.col, cex = .6)
+  legend('center', legend = spname, fill = line.col, cex = .6)
 }

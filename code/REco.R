@@ -209,6 +209,12 @@ REco.init <- rsim.scenario(REco, juvfile, 100)
 
 REco.1 <- rsim.run(REco.init, method = 'AB', years = 100)
 
+ecosim.plot(REco.1, groups[1:22])
+
+REco.2 <- rsim.run(REco.init, method = 'RK4', years = 100)
+
+ecosim.plot(REco.2, groups[1:22])
+
 
 
 
