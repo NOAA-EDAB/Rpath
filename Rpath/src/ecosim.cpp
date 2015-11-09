@@ -97,9 +97,11 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
          NumericVector biomeq4      = as<NumericVector>(k4["biomeq"]);  
 
             // Take an rk4 step          
-               NumericVector new_BB = ifelse( NoIntegrate == 0, (1.0 - SORWT) * biomeq4 + 
-                                                    SORWT * old_BB,
-                                                    old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0);   
+               NumericVector new_BB = ifelse( NoIntegrate == 0, 
+                                    (1.0 - SORWT) * biomeq4 + SORWT * old_BB,
+                                    ifelse( NoIntegrate > 0,
+                                    old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0,
+                                    old_BB));   
 
            // Update Foraging time state variable
            // pd term is used to indicate differrent values used for 
@@ -121,7 +123,12 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
           }// end of sub-monthly (t-indexed) loop
 
       // Insert Monthly Stanza (split pool) update here
-        
+      //SML
+         // Calculate new derivative    
+        List dyt = deriv_vector(params, state, forcing, fishing, stanzas, y, m, 0);
+        SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
+        SplitSetPred(stanzas, state);      
+      
       // If the run is during the "burn-in" years, and biomass goes
       // into the discard range, set flag to exit the loop.  Should set "bad"
       // biomass values to NA  
