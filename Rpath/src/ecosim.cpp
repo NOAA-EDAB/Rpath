@@ -321,7 +321,7 @@ int y, m, dd;
 List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, 
                   int y, int m, double tt){
 
-int sp, links, prey, pred, gr, dest, isp, ist, ieco;
+int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 
 // forcing time index (in months)
    const int dd = y*STEPS_PER_YEAR+m;
@@ -540,11 +540,13 @@ int sp, links, prey, pred, gr, dest, isp, ist, ieco;
 //   
  double caught;   
    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
+      NumericVector EFFORT = (NumericVector)EffortMat(y,_);
       for (links=1; links<=NumFishingLinks; links++){
  				 prey = FishFrom[links];
  				 gr   = FishThrough[links];
  				 dest = FishTo[links];
- 				 caught =  FishQ[links] * fish_Effort[gr] * state_BB[prey]; 
+         egr  = FishThrough[links] - (NUM_LIVING + NUM_DEAD);
+ 				 caught =  FishQ[links] * EFFORT[egr] * state_BB[prey]; 
           FishingLoss[prey] += caught;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
