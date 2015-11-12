@@ -68,40 +68,24 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
             // Calculate base derivative and RK-4 derivative steps (overwrites YY)   
                List YY = state;
                List k1 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt);
-               NumericVector kk1 = as<NumericVector>(k1["DerivT"]);
-//SML					
-         NumericVector biomeq1      = as<NumericVector>(k1["biomeq"]);  
+               NumericVector kk1 = as<NumericVector>(k1["DerivT"]);  
       
-               YY["BB"] = ifelse( NoIntegrate == 0, (1.0 - SORWT) * biomeq1 + 
-                                                    SORWT * old_BB,
-                                                    old_BB + 0.5*kk1*hh );
+               YY["BB"] = old_BB + 0.5*kk1*hh;
                List k2 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + 0.5*hh);
-               NumericVector kk2 = as<NumericVector>(k2["DerivT"]);
-//SML  				
-         NumericVector biomeq2      = as<NumericVector>(k2["biomeq"]);  
+               NumericVector kk2 = as<NumericVector>(k2["DerivT"]);  
 
-               YY["BB"] = ifelse( NoIntegrate == 0, (1.0 - SORWT) * biomeq2 + 
-                                                    SORWT * old_BB,
-                                                    old_BB + 0.5*kk2*hh);
+               YY["BB"] = old_BB + 0.5*kk2*hh;
                List k3 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + 0.5*hh);
                NumericVector kk3 = as<NumericVector>(k3["DerivT"]);
-//SML  				
-         NumericVector biomeq3      = as<NumericVector>(k3["biomeq"]);  
 
-               YY["BB"] = ifelse( NoIntegrate == 0, (1.0 - SORWT) * biomeq3 + 
-                                                    SORWT * old_BB,
-                                                    old_BB + kk3*hh); 
+               YY["BB"] = old_BB + kk3*hh; 
                List k4 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + hh);
-               NumericVector kk4 = as<NumericVector>(k4["DerivT"]);
-//SML  				
-         NumericVector biomeq4      = as<NumericVector>(k4["biomeq"]);  
+               NumericVector kk4 = as<NumericVector>(k4["DerivT"]);  
 
             // Take an rk4 step          
-               NumericVector new_BB = ifelse( NoIntegrate == 0, 
-                                    (1.0 - SORWT) * biomeq4 + SORWT * old_BB,
-                                    ifelse( NoIntegrate > 0,
+               NumericVector new_BB = ifelse( NoIntegrate > 0,
                                     old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0,
-                                    old_BB));   
+                                    old_BB);   
 
            // Update Foraging time state variable
            // pd term is used to indicate differrent values used for 
