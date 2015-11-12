@@ -180,27 +180,25 @@ int y, m, dd;
    const NumericVector B_BaseRef  = as<NumericVector>(params["B_BaseRef"]);
    const NumericVector FtimeAdj   = as<NumericVector>(params["FtimeAdj"]);
    const NumericVector FtimeQBOpt = as<NumericVector>(params["FtimeQBOpt"]);
-
-// Needed for Age Structure
-   NumericMatrix EcopathCode      = as<NumericMatrix>(stanzas["EcopathCode"]);
-   NumericMatrix WageS            = as<NumericMatrix>(stanzas["WageS"]);
-   NumericMatrix NageS            = as<NumericMatrix>(stanzas["NageS"]);
-   NumericVector stanzaPred       = as<NumericVector>(stanzas["stanzaPred"]);
-   NumericVector SpawnBio         = as<NumericVector>(stanzas["SpawnBio"]);
-   //NumericVector firstMoAdu       = as<NumericVector>(stanza["firstMoAdu"]);
-
+   
+// Parameters from stanzas
+   NumericVector stanzaPred = as<NumericVector>(stanzas["stanzaPred"]);
+   
 // Monthly output matrices                     
    NumericMatrix out_BB( EndYear * 12 + 1, NUM_BIO + 1);           
    NumericMatrix out_CC( EndYear * 12 + 1, NUM_BIO + 1);          
    NumericMatrix out_SSB(EndYear * 12 + 1, NUM_BIO + 1);        
    NumericMatrix out_rec(EndYear * 12 + 1, NUM_BIO + 1);       
 
-// Update sums of split groups to total biomass for derivative calcs
-   SplitSetPred(stanzas, instate); 
 
 // Load state and call initial derivative (todo: allow other start times)
-// Use Clone to make sure state is a copy of instate, not a pointer   
+// Use Clone to make sure state/stanzas are copies of instate/instanzas, not pointers   
    List state = clone(instate);
+   //List stanzas = clone(instanzas);
+   
+   // Update sums of split groups to total biomass for derivative calcs
+   SplitSetPred(stanzas, state); 
+   
    List dyt   = deriv_vector(params, state, forcing, fishing, stanzas, 0, 0, 0);
    dd = StartYear * STEPS_PER_YEAR;
 
