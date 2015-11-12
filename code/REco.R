@@ -207,13 +207,18 @@ dev.off()
 #Scenario 1 - Equilibrium
 REco.init <- rsim.scenario(REco, juvfile, 100)
 
-REco.1 <- rsim.run(REco.init, method = 'AB', years = 100)
+#Test Adams-Bashforth
+#A - base run
+REco.1A <- rsim.run(REco.init, method = 'AB', years = 100)
+ecosim.plot(REco.1A, groups[1:22])
+fish.table <- frate.table(REco.init)
 
-ecosim.plot(REco.1, groups[1:22])
 
-REco.2 <- rsim.run(REco.init, method = 'RK4', years = 100)
 
-ecosim.plot(REco.2, groups[1:22])
+
+REco.2B <- rsim.run(REco.init, method = 'RK4', years = 100)
+
+ecosim.plot(REco.2B, groups[1:22])
 
 
 

@@ -247,7 +247,11 @@ for (y in 0:1){
     
 
 
-
+   spname <- c("Seabirds", "Whales", "Seals", "JuvRoundfish1", "AduRoundfish1",
+               "JuvRoundfish2", "AduRoundfish2", "JuvFlatfish1", "AduFlatfish1",
+               "JuvFlatfish2", "AduFlatfish2", "OtherGroundfish", "Foragefish1",
+               "Foragefish2", "OtherForagefish", "Megabenthos", "Shellfish",
+               "Macrobenthos", "Zooplankton", "Phytoplankton")
 
 
 
