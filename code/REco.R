@@ -208,17 +208,24 @@ dev.off()
 REco.init <- rsim.scenario(REco, juvfile, 100)
 
 #Test Adams-Bashforth
+REco.1 <- REco.init
+
 #A - base run
-REco.1A <- rsim.run(REco.init, method = 'AB', years = 100)
+REco.1A <- rsim.run(REco.1, method = 'AB', years = 100)
 ecosim.plot(REco.1A, groups[1:22])
-fish.table <- frate.table(REco.init)
+
+#B - double trawling effort
+REco.1$fishing$EFFORT[26:101, 2] <- 2
+REco.1B <- rsim.run(REco.1, method = 'AB', years = 100)
+ecosim.plot(REco.1B, groups[1:22])
 
 
+#Test Runge-Kutta 4
+REco.2 <- REco.init
 
-
-REco.2B <- rsim.run(REco.init, method = 'RK4', years = 100)
-
-ecosim.plot(REco.2B, groups[1:22])
+#A - base run
+REco.2A <- rsim.run(REco.2, method = 'RK4', years = 100)
+ecosim.plot(REco.2A, groups[1:22])
 
 
 

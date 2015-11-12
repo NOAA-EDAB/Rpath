@@ -254,4 +254,72 @@ for (y in 0:1){
                "Macrobenthos", "Zooplankton", "Phytoplankton")
 
 
+   
+   
+   
+   
+cppFunction('
+List Fishing (List params, List fishing, List state, int y){
+double EPSILON = 1e-8;
+int links, prey, gr, dest, sp, egr;
 
+// NumFishingLinks lenghted vectors
+   const int NUM_GROUPS                = as<int>(params["NUM_GROUPS"]);
+   const int NUM_LIVING                = as<int>(params["NUM_LIVING"]);
+   const int NUM_DEAD                  = as<int>(params["NUM_DEAD"]);
+   const int NumFishingLinks           = as<int>(params["NumFishingLinks"]);
+   const IntegerVector FishFrom        = as<IntegerVector>(params["FishFrom"]);
+   const IntegerVector FishThrough     = as<IntegerVector>(params["FishThrough"]);
+   const IntegerVector FishTo          = as<IntegerVector>(params["FishTo"]);
+   const NumericVector FishQ           = as<NumericVector>(params["FishQ"]);
+   const NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
+
+   const NumericVector state_BB        = as<NumericVector>(state["BB"]);
+
+   NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
+   NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["CATCH"]);
+   NumericMatrix EffortMat        = as<NumericMatrix>(fishing["EFFORT"]);
+
+   NumericVector FishingGain(NUM_GROUPS+1);    
+   NumericVector FishingLoss(NUM_GROUPS+1);
+   NumericVector FishingThru(NUM_GROUPS+1);
+  
+   double caught;   
+   // Apply specified Effort by Gear to catch (using Ecopath-set Q)
+   NumericVector EFFORT = (NumericVector)EffortMat(y,_);
+   for (links=1; links<=NumFishingLinks; links++){
+   			 prey = FishFrom[links];
+ 				 gr   = FishThrough[links];
+ 				 dest = FishTo[links];
+         egr  = FishThrough[links] - (NUM_LIVING + NUM_DEAD);
+ 				 caught =  FishQ[links] * EFFORT[egr] * state_BB[prey];
+          FishingLoss[prey] += caught;
+          FishingThru[gr]   += caught;
+          FishingGain[dest] += caught;
+ 		}		
+    NumericVector FORCE_F = (NumericVector)FORCED_FRATE(y,_);
+    //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
+        for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+             caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_BB[sp];
+             // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
+                // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
+             if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
+             FishingLoss[sp] += caught;
+             FishingThru[0]  += caught;
+             FishingGain[0]  += caught;
+        }
+
+List out = List::create(
+     _["FishingLoss"] = FishingLoss,
+     _["FishingThru"] = FishingThru,
+     _["FishingGain"] = FishingGain);
+
+// Return is an Rcpp List     
+   return(out);
+}
+')
+
+Fishing(REco.init$params, REco.init$fishing, REco.init$start_state, 2)
+
+REco.init$fishing$EFFORT[, 2] <- 2
+REco.init$params$fish_Effort[24] <- 2
