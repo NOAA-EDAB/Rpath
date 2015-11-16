@@ -9,7 +9,7 @@
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@export
-ecosim.plot <- function(Rsim.output, spname){
+rsim.plot <- function(Rsim.output, spname){
   biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
   n <- ncol(biomass)
   start.bio <- biomass[1, ]

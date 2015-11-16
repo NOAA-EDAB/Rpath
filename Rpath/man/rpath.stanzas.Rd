@@ -23,9 +23,9 @@ necessary to support the leading stanza.
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
-  \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
-  \code{\link{frate.table}}; \code{\link{rpath}};
-  \code{\link{rsim.params}}; \code{\link{stanzaplot}};
+  \code{\link{frate.adjust}}; \code{\link{frate.table}};
+  \code{\link{rpath}}; \code{\link{rsim.params}};
+  \code{\link{rsim.plot}}; \code{\link{stanzaplot}};
   \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
   \code{\link{write.Rpath}}
 }
