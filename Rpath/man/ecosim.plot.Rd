@@ -4,10 +4,10 @@
 \alias{ecosim.plot}
 \title{Plot routine for Ecosim runs}
 \usage{
-ecosim.plot(Rpath.sim.obj)
+ecosim.plot(Rsim.output, spname)
 }
 \arguments{
-\item{Rpath.sim.obj}{Rpath ecosim run created by the ecosim.run() function.}
+\item{Rsim.output}{Rpath ecosim run created by the rsim.run() function.}
 }
 \value{
 Creates a figure of relative biomass.
@@ -17,10 +17,11 @@ Plots the relative biomass of each group from a run of ecosim.
 }
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
-  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
+  \code{\link{create.rpath.param}};
   \code{\link{frate.adjust}}; \code{\link{frate.table}};
-  \code{\link{rpath.stanzas}}; \code{\link{rsim.params}};
-  \code{\link{stanzaplot}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
+  \code{\link{rpath.stanzas}}; \code{\link{rpath}};
+  \code{\link{rsim.params}}; \code{\link{stanzaplot}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}}
 }
 

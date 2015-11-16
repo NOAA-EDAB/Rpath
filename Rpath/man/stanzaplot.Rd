@@ -22,10 +22,11 @@ Plots the biomass composition of multistanza groups from an Rpath.stanzas object
 }
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
-  \code{\link{create.rpath.param}}; \code{\link{ecopath}};
+  \code{\link{create.rpath.param}};
   \code{\link{ecosim.plot}}; \code{\link{frate.adjust}};
   \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
-  \code{\link{rsim.params}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}}
+  \code{\link{rpath}}; \code{\link{rsim.params}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}}
 }
 

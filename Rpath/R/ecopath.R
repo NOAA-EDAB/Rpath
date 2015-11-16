@@ -20,7 +20,7 @@
 #'@return Returns an Rpath object that can be supplied to the ecosim.init function.
 #'@import data.table
 #'@export
-ecopath <- function(modfile, dietfile, eco.name = NA){
+rpath <- function(modfile, dietfile, eco.name = NA){
   
   #Read in parameter files - either as file path or data.table object
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
