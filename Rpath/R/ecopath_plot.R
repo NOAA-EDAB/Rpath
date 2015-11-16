@@ -185,10 +185,9 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@export
 stanzaplot <- function(juvfile, StanzaNum, line.cols = c('black', 'green', 
                                                          'blue', 'red')){
-  stanza.data <- data.table(B     = juvfile$B[, StanzaNum],
-                            NageS = juvfile$NageS[, StanzaNum],
-                            WageS = juvfile$WageS[, StanzaNum])
-  stanza.data <- stanza.data[!is.na(B), ]
+  stanza.data <- data.table(B     = juvfile$StGroup[[StanzaNum]][, B],
+                            NageS = juvfile$StGroup[[StanzaNum]][,NageS],
+                            WageS = juvfile$StGroup[[StanzaNum]][,WageS])
   stanza.data[, age := 0:(nrow(stanza.data) - 1)]
   
   #Scale data between 0 and 1
