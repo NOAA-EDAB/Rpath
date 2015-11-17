@@ -17,7 +17,7 @@ if(Sys.info()['sysname']=="Linux"){
 # #This only needs to be done the first time you run the script
 # library(devtools)
 # devtools::install_github('slucey/Rpath/Rpath', 
-#                           auth_token = 'd95526d2fb3f6e34f9c8481b1740e0033ac1d623')
+#                           auth_token = '')
 
 library(Rpath); library(data.table)
 
