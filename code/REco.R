@@ -170,7 +170,7 @@ pedfile <- create.rpath.param(parameter = 'pedigree', group = groups, type = typ
 #-------------------------------------------------------------------------------
 #Ecopath
 #Note will be changing function name to rpath from ecopath...
-REco <- ecopath(modfile, dietfile, 'R Ecosystem')
+REco <- rpath(modfile, dietfile, 'R Ecosystem')
 
 #There is an rpath method for generic functions print and summary
 REco
@@ -204,30 +204,36 @@ dev.off()
 #----------------------------------------------------------------------------------------------------------------------
 #Ecosim
 #Use the Rpath object from above to run a 100 year Ecosim
-#Scenario 1 - Equilibrium
-REco.init <- rsim.scenario(REco, juvfile, 100)
+#Steps are:
+# 1 - rism.scenario
+# 2 - modify scenario
+# 3 - rsim.run
+# 4 - view results with rsim.plot
 
 #Test Adams-Bashforth
-REco.1 <- REco.init
-
 #A - base run
-REco.1A <- rsim.run(REco.1, method = 'AB', years = 100)
-ecosim.plot(REco.1A, groups[1:22])
+REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.AB.1 <- rsim.run(REco.sim, method = 'AB', years = 100)
+rsim.plot(REco.AB.1, groups[1:22])
 
 #B - double trawling effort
-REco.1$fishing$EFFORT[26:101, 2] <- 2
-REco.1B <- rsim.run(REco.1, method = 'AB', years = 100)
-ecosim.plot(REco.1B, groups[1:22])
+REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
+rsim.plot(REco.AB.2, groups[1:22])
 
 
 #Test Runge-Kutta 4
-REco.2 <- REco.init
-
 #A - base run
-REco.2A <- rsim.run(REco.2, method = 'RK4', years = 100)
-ecosim.plot(REco.2A, groups[1:22])
+REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.RK4.1 <- rsim.run(REco.sim, method = 'RK4', years = 100)
+rsim.plot(REco.RK4.1, groups[1:22])
 
-
+#B - double trawling effort
+REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.RK4.2 <- rsim.run(REco.sim, method = 'RK4', years = 100)
+rsim.plot(REco.RK4.2, groups[1:22])
 
 
 
