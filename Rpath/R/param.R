@@ -313,4 +313,103 @@ check.rpath.param <- function(filename, parameter = 'model'){
 cat(paste(parameter, 'parameter file is functional'))
 }
 
+#'Read Rpath parameters from .csv files
+#'
+#'Creates an Rpath.param object from a series of .csv files.
+#'
+#'@family Rpath functions
+#'
+#'@param modfile file location of the flat file containing the model parameters.
+#'@param dietfile file location of the flat file containing the diet parameters.
+#'@param stanzagroupfile file location of the flat file containing the group parameters
+#'  for multistanza groups.  If not specified a blank stanza list will be created.  
+#'@param stanzafile file location of the flat file containing the individual stanza 
+#'  parameters for multistanza groups.  If not specified a blank stanza list will 
+#'  be created.
+#'@param pedfile file location of the flat file containg the pedgigree parameters.
+#'@return Outputs an Rpath.param object that can be used for Rpath and subsequently
+#'  Rsim.  (NOTE: This does function does not ensure data is correct or in the 
+#'  correct locations...run check.rpath.params to ensure the appropriate columns are
+#'  present).
+#'@export
+read.rpath.params <- function(modfile, dietfile, stanzagroupfile = NA, 
+                              stanzafile = NA, pedfile){
+  Rpath.params <- list()
+  Rpath.params$model                 <- read.csv(modfile, header = T)
+  Rpath.params$diet                  <- read.csv(dietfile, header = T)
+  if(stanzagroupfile){
+    stanzagroup <- read.csv(stanzagroupfile, header = T)
+    Rpath.params$stanzas$NStanzaGroups <- nrow(stanzagroup)
+    Rpath.params$stanzas$stgroups      <- stanzagroup
+    Rpath.params$stanzas$stanzas       <- read.csv(stanzafile, header = T)
+  } else {
+    Rpath.params$stanzas$NStanzaGroups <- 0
+    Rpath.params$stanzas$stgroups      <- data.frame(StGroupNum  = NA,
+                                                     StanzaGroup = NA,
+                                                     nstanzas    = NA,
+                                                     VBGF_Ksp    = NA,
+                                                     VBGF_d      = NA,
+                                                     Wmat        = NA,
+                                                     RecPower    = NA)
+    Rpath.params$stanzas$stanzas       <- data.frame(StGroupNum  = NA,
+                                                     Stanza      = NA,
+                                                     GroupNum    = NA,
+                                                     Group       = NA,
+                                                     First       = NA,
+                                                     Last        = NA,
+                                                     Z           = NA,
+                                                     Leading     = NA)
+  }
+  Rpath.params$pedigree              <- read.csv(pedfile, header = T)
+  return(Rpath.params)
+}
 
+#'Write Rpath parameters to .csv files
+#'
+#'Creates a series of .csv files from an Rpath.param object.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath.params R object containing the Rpath parameters.  Most likely this
+#'  was created using create.rpath.params or read.rpath.params.
+#'@param eco.name ecosystem name that will be included in all the file names.
+#'@param path location for the output files.  
+#'@return Outputs a series of .csv files named by the provided eco.name and the 
+#'  parameters they represent.  For example the model parameters will be named 
+#'  "eco.name_model.csv".
+#'@export
+write.rpath.params <- function(Rpath.params, eco.name, path = ''){
+  if(Sys.info()['sysname']=="Windows"){
+    if(substr(path, nchar(path) - 1, nchar(path)) != '\\'){
+      path <- paste(path, '\\', sep = '')
+    }
+  }
+  if(Sys.info()['sysname']=="Linux"){
+    if(substr(path, nchar(path), nchar(path)) != '/'){
+      path <- paste(path, '/', sep = '')
+    }
+  }
+      #Need to figure out mac...
+    
+  write.csv(Rpath.params$model,    file = paste(path, eco.name, '_model.csv',
+                                                sep = ''), row.names = F)
+  write.csv(Rpath.params$diet,     file = paste(path, eco.name, '_diet.csv',     
+                                                sep = ''), row.names = F)
+  write.csv(Rpath.params$pedigree, file = paste(path, eco.name, '_pedigree.csv', 
+                                                sep = ''), row.names = F)
+  #Multistanza parameters are in several different files
+  write.csv(Rpath.params$stanzas$stgroups, file = paste(path, eco.name, 
+                                                        '_stanza_groups.csv', sep = ''),
+            row.names = F)
+  write.csv(Rpath.params$stanzas$stanzas,  file = paste(path, eco.name, 
+                                                        '_stanzas.csv', sep = ''),
+            row.names = F)
+  if(Rpath.params$stanzas$NStanzaGroups > 0){
+    for(isp in 1:Rpath.params$stanzas$NStanzaGroups){
+      write.csv(Rpath.params$stanzas$StGroup[[isp]], 
+                file = paste(path, eco.name, '_', 
+                             Rpath.params$stanzas$stgroups$StanzaGroup[isp], '.csv', 
+                             sep = ''), row.names = F)
+    }
+  }
+}
