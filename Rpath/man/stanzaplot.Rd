@@ -4,18 +4,20 @@
 \alias{stanzaplot}
 \title{Plot routine for Ecopath multistanzas}
 \usage{
-stanzaplot(juvfile, StanzaNum, line.cols = c("black", "green", "blue", "red"))
+stanzaplot(Rpath.params, StanzaNum, line.cols = c("black", "green", "blue",
+  "red"))
 }
 \arguments{
-\item{juvfile}{Rpath juvenile parameter file modified by the rpath.stanza() function.}
+\item{Rpath.params}{R object containing the Rpath parameters modified by the
+rpath.stanza function.}
 
-\item{StanzaNum}{The Stanza group's number in the stanzafile.}
+\item{StanzaNum}{The Stanza group's number to be plotted.}
 
 \item{line.cols}{A vector of four colors used to represent the population biomass,
 relative number, indvidual weights, and stanza separation lines.}
 }
 \value{
-Creates a figure of the food web.
+Creates a figure showing the break down of biomass and number per stanza.
 }
 \description{
 Plots the biomass composition of multistanza groups from an Rpath.stanzas object.
