@@ -262,36 +262,25 @@ return(path.model)
 #'
 #'@family Rpath functions
 #'
-#'@param modfile Object containing the model parameters.
-#'@param juvfile Object containing the group and stanza specific characteristics.
+#'@param Rpath.params Object containing the Rpath parameters generated either by 
+#'  create.rpath.params or read.rpath.params
 #'
-#'@return Adds the biomass and consumption to the relative groups in the model parameter
-#'  object.  Need to assign the output to the juvfile if you want to plot stanza group
-#'  relative biomass.
+#'@return Calculates and adds biomass and consumption for trailing stanza groups.  
+#'  Also adds weight at age and number at age for multi-staza groups.
+#'  
 #'@import data.table
 #'@export 
-rpath.stanzas <- function(modfile, juvfile){
-  out <- juvfile
+rpath.stanzas <- function(Rpath.params){
+  
   #Determine the total number of groups with multistanzas
-  Nsplit    <- nrow(juvfile$stgroups)
-  groupfile  <- juvfile$stgroups
-  stanzafile <- juvfile$stanzas
+  Nsplit     <- Rpath.params$stanza$NStanzaGroups
+  groupfile  <- Rpath.params$stanza$stgroups
+  stanzafile <- Rpath.params$stanza$stanzas
   
   #Calculate the last month for the final stanza
   #Months to get to 90% Winf
   groupfile[, last := floor(log(1 - 0.9^(1 - VBGF_d)) / (-1 * (VBGF_Ksp * 3 / 12) * 
                                                            (1 - VBGF_d)))]
-  #Generate blank indexs
-#   blank <- matrix(NA, ngroups, max(groupfile[, nstanzas]))
-#   juvfile$EcopathCodes <- blank
-#   juvfile$First        <- blank
-#   juvfile$Second       <- blank
-#   
-#   blank2 <- matrix(NA, max(groupfile[, last]) + 1, ngroups)
-#   juvfile$WageS <- blank2
-#   juvfile$NageS <- blank2
-#   juvfile$WWa   <- blank2
-#   juvfile$B     <- blank2
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
@@ -299,20 +288,12 @@ rpath.stanzas <- function(modfile, juvfile){
     stanzafile[StGroupNum == isp & Stanza == nstanzas, Last := t90]
     
     #Grab ecopath group codes
-    group.codes <- which(modfile[, Group] %in% stanzafile[StGroupNum == isp, Group])
+    group.codes <- stanzafile[StGroupNum == isp, GroupNum]
     
     #Grab index for first and last months for stanzas
     first   <- stanzafile[StGroupNum == isp, First]
     second  <- stanzafile[StGroupNum == isp, Last]
-    
-    #Push index to juvfile
-#     for(j in 1:nstanzas){
-#       juvfile$EcopathCodes[i, j] <- group.codes[j]
-#       juvfile$First[i, j]        <- first[j]
-#       juvfile$Second[i, j]       <- second[j]
-#     }
-    
-    
+        
     #Calculate weight and consumption at age    
     StGroup <- data.table(age = stanzafile[StGroupNum == isp & Stanza == 1, First]:
                             t90)
@@ -356,7 +337,7 @@ rpath.stanzas <- function(modfile, juvfile){
     #Scale numbers up to total recruits
     BaseStanza <- stanzafile[StGroupNum == isp & Leading == T, ]
     BioPerEgg <- StGroup[age %in% BaseStanza[, First]:BaseStanza[, Last], sum(B)]
-    recruits <- modfile[Group == BaseStanza[, Group], Biomass] / BioPerEgg
+    recruits <- Rpath.params$model[Group == BaseStanza[, Group], Biomass] / BioPerEgg
     #Save recruits
     groupfile[StGroupNum == isp, r := recruits]
 
@@ -373,19 +354,20 @@ rpath.stanzas <- function(modfile, juvfile){
     
     #Use leading group to calculate other biomasses
     stanzafile[StGroupNum == isp & Leading == T, 
-               Biomass := modfile[Group == BaseStanza[, Group], Biomass]]
+               Biomass := Rpath.params$model[Group == BaseStanza[, Group], Biomass]]
     B <- stanzafile[StGroupNum == isp & Leading == T, Biomass / bs]
     stanzafile[StGroupNum == isp, Biomass := bs * B]
     
     #Use leading group to calculate other consumption
     stanzafile[StGroupNum == isp & Leading == T, 
-               Cons := modfile[Group == BaseStanza[, Group], QB] *
-                 modfile[Group == BaseStanza[, Group], Biomass]]
+               Cons := Rpath.params$model[Group == BaseStanza[, Group], QB] *
+                 Rpath.params$model[Group == BaseStanza[, Group], Biomass]]
     Q <- stanzafile[StGroupNum == isp & Leading == T, Cons / qs]
     stanzafile[StGroupNum == isp, Cons := qs * Q]
     stanzafile[, QB := Cons / Biomass]
     
-  out$StGroup[[isp]] <- StGroup
+  Rpath.params$stanzas$StGroup[[isp]] <- StGroup
+  
   }
   
   #Drop extra columns
@@ -393,12 +375,13 @@ rpath.stanzas <- function(modfile, juvfile){
   
   #Push biomass to modfile
   for(i in 1:nrow(stanzafile)){
-    modfile[Group == stanzafile[i, Group], Biomass := stanzafile[i, Biomass]]
+    Rpath.params$model[Group == stanzafile[i, Group], Biomass := stanzafile[i, Biomass]]
   }
   
   #Push consumption to modfile
   for(i in 1:nrow(stanzafile)){
-    modfile[Group == stanzafile[i, Group], QB := stanzafile[i, QB]]
+    Rpath.params$model[Group == stanzafile[i, Group], QB := stanzafile[i, QB]]
   }
-  return(out)
+  
+  return(Rpath.params)
 } 
