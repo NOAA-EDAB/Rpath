@@ -4,13 +4,15 @@
 \alias{read.rpath.params}
 \title{Read Rpath parameters from .csv files}
 \usage{
-read.rpath.params(modfile, dietfile, stanzagroupfile = NA, stanzafile = NA,
-  pedfile)
+read.rpath.params(modfile, dietfile, pedfile, stanzagroupfile = NA,
+  stanzafile = NA)
 }
 \arguments{
 \item{modfile}{file location of the flat file containing the model parameters.}
 
 \item{dietfile}{file location of the flat file containing the diet parameters.}
+
+\item{pedfile}{file location of the flat file containg the pedgigree parameters.}
 
 \item{stanzagroupfile}{file location of the flat file containing the group parameters
 for multistanza groups.  If not specified a blank stanza list will be created.}
@@ -18,8 +20,6 @@ for multistanza groups.  If not specified a blank stanza list will be created.}
 \item{stanzafile}{file location of the flat file containing the individual stanza
 parameters for multistanza groups.  If not specified a blank stanza list will
 be created.}
-
-\item{pedfile}{file location of the flat file containg the pedgigree parameters.}
 }
 \value{
 Outputs an Rpath.param object that can be used for Rpath and subsequently

@@ -2,39 +2,30 @@
 % Please edit documentation in R/param.R
 \name{create.rpath.param}
 \alias{create.rpath.param}
-\title{Create shells for the Rpath parameter files}
+\title{Creates a shell for the Rpath.params object}
 \usage{
-create.rpath.param(parameter = "model", group = NA, type = NA,
-  stgroup = NA, nstanzas = NA, filename = NA)
+create.rpath.param(group, type, stgroup = NA, nstanzas = NA)
 }
 \arguments{
-\item{parameter}{The type of parameter file you are creating.  Choices include "model",
-"diet", "juvenile", and "pedigree".}
-
-\item{group}{Vector of group names.  If parameter equals "juvenile", this should
-only be the groups involved in multistanza groups.  Be sure to have them in
-asending order within a multistanza group and in the same order as stgroup.}
+\item{group}{Vector of group names.}
 
 \item{type}{Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
-Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.}
+Fleet = 3.}
 
-\item{stgroup}{Vector of multistanza group names.  Only necessary for parameter =
-'juvenile'.}
+\item{stgroup}{Vector of multistanza group names.  Include NA for non-stanza groups.}
 
-\item{nstanzas}{Numeric vector of the number of stanzas per multistanza groups.  Only
-necessary to supply for parameter type = 'juvenile'.}
-
-\item{filename}{Name of the output file saved as a .csv. If NA the file will not be written.}
+\item{nstanzas}{Numeric vector of the number of stanzas per multistanza groups.}
 }
 \value{
-Outputs a shell of the parameter file indicated by the parameter variable.  The shell
- is populated with values of NA or logical default values.  Values can then be filled in using
- R or any spreadsheet program.  Use check.rpath.param() to ensure parameter files are filled out
- correctly (NOTE: This does not ensure data is correct just that it is in the right places).
+Outputs a list object of Rpath parameters which are populated with values
+ of NA or logical default values.  Values can then be filled in using
+ R.  Use check.rpath.param() to ensure parameter files are filled out
+ correctly (NOTE: This does not ensure data is correct just that it is
+ in the right places).
 }
 \description{
-Creates a shell of the parameter files that can then be filled out in R, Excel, or
-another spreadsheet program.
+Creates a shell of the Rpath.params list object which contains the model, diet,
+multistanza, and pedigree parameters.
 }
 \seealso{
 Other Rpath.functions: \code{\link{check.rpath.param}};
