@@ -12,30 +12,22 @@
 #'
 #'@family Rpath functions
 #'
-#'@param modfile Comma deliminated model parameter file.
-#'@param dietfile Comma deliminated diet matrix file.
+#'@param Rpath.params R object containing the Rpath parameters.  This is generated
+#'  either by the create.rpath.params or read.rpath.params functions.
 #'@param eco.name Optional name of the ecosystem which becomes an attribute of
 #'    rpath object.
 #'
-#'@return Returns an Rpath object that can be supplied to the ecosim.init function.
+#'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
 #'@import data.table
 #'@export
-rpath <- function(modfile, dietfile, eco.name = NA){
+rpath <- function(Rpath.params, eco.name = NA){
   
-  #Read in parameter files - either as file path or data.table object
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
-  if(is.character(modfile)){
-    model <- as.data.table(read.csv(modfile))
-  } else {
-    model <- as.data.table(modfile)
-  }
+  model <- Rpath.params$model
+  
   #Diet Parameters - diet matrix, predators as columns, prey as rows - include
   #producers as predators even though they do not consume any groups
-  if(is.character(dietfile)){
-    diet  <- as.data.table(read.csv(dietfile))
-  } else {
-    diet <- as.data.table(dietfile)
-  }
+  diet <- Rpath.params$diet
   
   #Check that all columns of model are numeric and not logical
   if(length(which(sapply(model, class) == 'logical')) > 0){

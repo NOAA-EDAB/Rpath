@@ -4,18 +4,17 @@
 \alias{rpath}
 \title{Ecopath modual of Rpath}
 \usage{
-rpath(modfile, dietfile, eco.name = NA)
+rpath(Rpath.params, eco.name = NA)
 }
 \arguments{
-\item{modfile}{Comma deliminated model parameter file.}
-
-\item{dietfile}{Comma deliminated diet matrix file.}
+\item{Rpath.params}{R object containing the Rpath parameters.  This is generated
+either by the create.rpath.params or read.rpath.params functions.}
 
 \item{eco.name}{Optional name of the ecosystem which becomes an attribute of
    rpath object.}
 }
 \value{
-Returns an Rpath object that can be supplied to the ecosim.init function.
+Returns an Rpath object that can be supplied to the rsim.scenario function.
 }
 \description{
 Performs initial mass balance using a model parameter file and diet
