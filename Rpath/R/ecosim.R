@@ -3,21 +3,33 @@
 # originally developed by Kerim Aydin
 # modified by Sean Lucey
 #
+#####################################################################################
+
+
+#'Rsim modual of Rpath
+#'
+#'Prepares a balanced Rpath model and creates a scenario consisting of 5 list objects:
+#'params, start_state, forcing, fishing, and stanzas.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath R object containing a balanced Rpath model.
+#'@param Rpath.params R object containing the Rpath parameters.  This is generated
+#'  either by the create.rpath.params or read.rpath.params functions.
+#'@param years The length of the simulation.
+#'
+#'@return Returns an Rsim.scenario object that can be supplied to the rsim.run function.
+#'@import data.table
 #'@useDynLib Rpath
 #'@importFrom Rcpp sourceCpp
-
-#####################################################################################
-# Rsim.scenario takes a balanced Ecopath model (Rpath) and creates a scenario
-# consisting of 4 objects:  Rsim.params, Rsim.state (start state), Rsim.forcing
-# and Rsim.fishing.  All objects are List base class.
 #'@export
-rsim.scenario <- function(Rpath, juvfile, years = 100){
+rsim.scenario <- function(Rpath, Rpath.params, years = 100){
   
   params      <- rsim.params(Rpath)
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
-  stanzas     <- rsim.stanzas(juvfile, start_state, params)
+  stanzas     <- rsim.stanzas(Rpath.params$stanzas, start_state, params)
   
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])

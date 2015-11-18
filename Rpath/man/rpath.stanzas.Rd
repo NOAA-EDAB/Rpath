@@ -24,8 +24,9 @@ Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{frate.adjust}}; \code{\link{frate.table}};
   \code{\link{read.rpath.params}}; \code{\link{rpath}};
   \code{\link{rsim.params}}; \code{\link{rsim.plot}};
-  \code{\link{stanzaplot}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}};
+  \code{\link{rsim.scenario}}; \code{\link{stanzaplot}};
+  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
+  \code{\link{write.Rpath}};
   \code{\link{write.rpath.params}}
 }
 
