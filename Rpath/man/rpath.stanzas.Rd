@@ -4,17 +4,15 @@
 \alias{rpath.stanzas}
 \title{Calculate biomass and consumption for multistanza groups}
 \usage{
-rpath.stanzas(modfile, juvfile)
+rpath.stanzas(Rpath.params)
 }
 \arguments{
-\item{modfile}{Object containing the model parameters.}
-
-\item{juvfile}{Object containing the group and stanza specific characteristics.}
+\item{Rpath.params}{Object containing the Rpath parameters generated either by
+ create.rpath.params or read.rpath.params}
 }
 \value{
-Adds the biomass and consumption to the relative groups in the model parameter
- object.  Need to assign the output to the juvfile if you want to plot stanza group
- relative biomass.
+Calculates and adds biomass and consumption for trailing stanza groups.
+ Also adds weight at age and number at age for multi-staza groups.
 }
 \description{
 Uses the leading stanza to calculate the biomass and consumption of other stanzas
@@ -24,9 +22,11 @@ necessary to support the leading stanza.
 Other Rpath.functions: \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
   \code{\link{frate.adjust}}; \code{\link{frate.table}};
-  \code{\link{rpath}}; \code{\link{rsim.params}};
-  \code{\link{rsim.plot}}; \code{\link{stanzaplot}};
+  \code{\link{read.rpath.params}}; \code{\link{rpath}};
+  \code{\link{rsim.params}}; \code{\link{rsim.plot}};
+  \code{\link{rsim.scenario}}; \code{\link{stanzaplot}};
   \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}}
+  \code{\link{write.Rpath}};
+  \code{\link{write.rpath.params}}
 }
 

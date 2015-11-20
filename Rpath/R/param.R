@@ -1,41 +1,35 @@
 ## Rpath functions for creating and checking parameter files  
 
-#'Create shells for the Rpath parameter files
+#'Creates a shell for the Rpath.params object
 #'
-#'Creates a shell of the parameter files that can then be filled out in R, Excel, or
-#'another spreadsheet program.
+#'Creates a shell of the Rpath.params list object which contains the model, diet,
+#'multistanza, and pedigree parameters.
 #'
 #'@family Rpath functions
 #'
-#'@param parameter The type of parameter file you are creating.  Choices include "model",
-#'  "diet", "juvenile", and "pedigree".
-#'@param group Vector of group names.  If parameter equals "juvenile", this should 
-#'  only be the groups involved in multistanza groups.  Be sure to have them in
-#'  asending order within a multistanza group and in the same order as stgroup.
+#'@param group Vector of group names.
 #'@param type Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
-#'  Fleet = 3. Default NA is used for the juvenile and pedigree parameter files.
-#'@param stgroup Vector of multistanza group names.  Only necessary for parameter =
-#'  'juvenile'.  
-#'@param nstanzas Numeric vector of the number of stanzas per multistanza groups.  Only
-#'  necessary to supply for parameter type = 'juvenile'.
-#'@param filename Name of the output file saved as a .csv. If NA the file will not be written.
+#'  Fleet = 3.
+#'@param stgroup Vector of multistanza group names.  Include NA for non-stanza groups.
+#'@param nstanzas Numeric vector of the number of stanzas per multistanza groups.
 #'
-#'@return Outputs a shell of the parameter file indicated by the parameter variable.  The shell
-#'  is populated with values of NA or logical default values.  Values can then be filled in using
-#'  R or any spreadsheet program.  Use check.rpath.param() to ensure parameter files are filled out
-#'  correctly (NOTE: This does not ensure data is correct just that it is in the right places).
+#'@return Outputs a list object of Rpath parameters which are populated with values 
+#'  of NA or logical default values.  Values can then be filled in using
+#'  R.  Use check.rpath.param() to ensure parameter files are filled out
+#'  correctly (NOTE: This does not ensure data is correct just that it is 
+#'  in the right places).
 #'@import data.table
 #'@export
-create.rpath.param <- function(parameter = 'model', group = NA, type = NA, 
-                               stgroup = NA, nstanzas = NA, filename = NA){
+create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
+  Rpath.params <- list()
+  
   pred.group  <- group[which(type < 2)]
   prey.group  <- group[which(type < 3)]
   det.group   <- group[which(type == 2)]
   fleet.group <- group[which(type == 3)]
   
-  #Base model
-  if(parameter == 'model'){
-    out <- data.table(Group       = group, 
+  #Model parameters
+  model <- data.table(Group       = group, 
                       Type        = type, 
                       Biomass     = as.numeric(NA),
                       PB          = as.numeric(NA),
@@ -45,95 +39,112 @@ create.rpath.param <- function(parameter = 'model', group = NA, type = NA,
                       BioAcc      = as.numeric(NA),
                       Unassim     = as.numeric(NA),
                       DetInput    = as.numeric(NA))
-    
-    #Add detritial groups
-    for(i in 1:length(det.group)){
-      out[Group %in% det.group, DetInput := 0]
-      out[, V1 := as.numeric(NA)]
-      setnames(out, "V1", det.group[i])
-    }
-    
-    #Add fleets twice - Landings and Discards
-    for(i in 1:length(fleet.group)){
-      out[, V1 := c(rep(0, length(group) - length(fleet.group)), rep(NA, length(fleet.group)))]
-      setnames(out, "V1", fleet.group[i])
-    }
-    for(i in 1:length(fleet.group)){
-      out[, V1 := c(rep(0, length(group) - length(fleet.group)), rep(NA, length(fleet.group)))]
-      setnames(out, "V1", paste(fleet.group[i], '.disc', sep = ''))
-    }
+
+  #Add detritial groups
+  for(i in 1:length(det.group)){
+    model[Group %in% det.group, DetInput := 0]
+    model[, V1 := as.numeric(NA)]
+    setnames(model, "V1", det.group[i])
   }
+    
+  #Add fleets twice - Landings and Discards
+  for(i in 1:length(fleet.group)){
+    model[, V1 := c(rep(0, length(group) - length(fleet.group)), 
+                    rep(NA, length(fleet.group)))]
+    setnames(model, "V1", fleet.group[i])
+  }
+  for(i in 1:length(fleet.group)){
+    model[, V1 := c(rep(0, length(group) - length(fleet.group)), 
+                    rep(NA, length(fleet.group)))]
+    setnames(model, "V1", paste(fleet.group[i], '.disc', sep = ''))
+  }
+  Rpath.params$model <- model
   
   #Diet matrix
-  if(parameter == 'diet'){
-    out <- data.table(Group = prey.group)
-    for(i in 1:length(pred.group)){
-      out[, V1 := as.numeric(NA)]
-      setnames(out, "V1", pred.group[i])
-    }
+  diet <- data.table(Group = prey.group)
+  for(i in 1:length(pred.group)){
+    diet[, V1 := as.numeric(NA)]
+    setnames(diet, "V1", pred.group[i])
   }
+  Rpath.params$diet <- diet
   
-  #Juvenile file
-  if(parameter == 'juvenile'){
-    out <- list()
-    NStanzaGroups <- length(stgroup)
-    out$NStanzaGroups <- NStanzaGroups
+  #Multistanza parameters
+  if(length(stgroup) > 1){
+    #Group Parameters
+    StanzaGroups <- unique(stgroup[!is.na(stgroup)])
+    NStanzaGroups <- length(StanzaGroups)
+    Rpath.params$stanzas$NStanzaGroups <- NStanzaGroups
     
-    #Create stanza group parameters
     stgroups <- data.table(StGroupNum  = 1:NStanzaGroups,
-                           StanzaGroup = stgroup,
+                           StanzaGroup = StanzaGroups,
                            nstanzas    = nstanzas,
                            VBGF_Ksp    = NA,
                            VBGF_d      = 0.66667,
                            Wmat        = NA,
-                           Wmat001     = NA,
-                           Amat        = NA,
-                           Amat001     = NA,
                            RecPower    = 1)
     
-    out$stgroups <- stgroups
-    
-    #Create stanza parameters
-    #Need vector of 1:nstanzas per StGroupNum
-    stanza.rep <- c()
-    stanza.total <- 0
+    #Individual Stanza Parameters
+    #Need vector of stanza number
+    stanza.num <- c()
+    total <- 0
     for(i in 1:NStanzaGroups){
-      stanza.count <- 1:stgroups[i, nstanzas]
-      stanza.rep[(stanza.total + 1):(length(stanza.count) + stanza.total)] <- stanza.count
-      stanza.total <- stanza.total + length(stanza.count)
+      stanza.reps <- 1:stgroups[i, nstanzas]
+      stanza.num[(total + 1):(length(stanza.reps) + total)] <- stanza.reps
+      total <- total + length(stanza.reps)
     }
-    
+    ind.stanza.group <- model[!is.na(stgroup), Group]
+    ieco <- which(!is.na(stgroup))
     stanzas <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
                                            stgroups[, nstanzas]),
-                          Stanza     = stanza.rep,
-                          GroupNum   = NA,
-                          Group      = group,
+                          Stanza     = stanza.num,
+                          GroupNum   = ieco,
+                          Group      = ind.stanza.group,
                           First      = NA,
                           Last       = NA,
                           Z          = NA,
                           Leading    = NA)
-    out$stanzas <- stanzas
+  
+    } else {
+      
+    Rpath.params$stanzas$NStanzaGroups <- 0
+    
+    stgroups <- data.table(StGroupNum  = NA,
+                           StanzaGroup = NA,
+                           nstanzas    = NA,
+                           VBGF_Ksp    = NA,
+                           VBGF_d      = NA,
+                           Wmat        = NA,
+                           RecPower    = NA)
+    
+    stanzas <- data.table(StGroupNum = NA,
+                          Stanza     = NA,
+                          GroupNum   = NA,
+                          Group      = NA,
+                          First      = NA,
+                          Last       = NA,
+                          Z          = NA,
+                          Leading    = NA)
   }
   
+  Rpath.params$stanzas$stgroups <- stgroups
+  Rpath.params$stanzas$stanzas <- stanzas
+    
   #Pedigree
-  if(parameter == 'pedigree'){
-    out <- data.table(Group = group,
-                      B     = 1,
-                      PB    = 1,
-                      QB    = 1,
-                      Diet  = 1)
-    #Add fleet pedigree
-    for(i in 1:length(fleet.group)){
-      out[, V1 := 1]
-      setnames(out, "V1", fleet.group[i])
-    }
+  pedigree <- data.table(Group = group,
+                         B     = 1,
+                         PB    = 1,
+                         QB    = 1,
+                         Diet  = 1)
+  #Add fleet pedigree
+  for(i in 1:length(fleet.group)){
+    pedigree[, V1 := 1]
+    setnames(pedigree, "V1", fleet.group[i])
   }
-if(!is.na(filename)){
-  write.csv(out, file = filename, row.names = F)
-}else{
-  return(out)
+  Rpath.params$pedigree <- pedigree
+  
+  return(Rpath.params)
 }
-}
+
 
 #'Check Rpath parameter files
 #'
@@ -313,4 +324,103 @@ check.rpath.param <- function(filename, parameter = 'model'){
 cat(paste(parameter, 'parameter file is functional'))
 }
 
+#'Read Rpath parameters from .csv files
+#'
+#'Creates an Rpath.param object from a series of .csv files.
+#'
+#'@family Rpath functions
+#'
+#'@param modfile file location of the flat file containing the model parameters.
+#'@param dietfile file location of the flat file containing the diet parameters.
+#'@param stanzagroupfile file location of the flat file containing the group parameters
+#'  for multistanza groups.  If not specified a blank stanza list will be created.  
+#'@param stanzafile file location of the flat file containing the individual stanza 
+#'  parameters for multistanza groups.  If not specified a blank stanza list will 
+#'  be created.
+#'@param pedfile file location of the flat file containg the pedgigree parameters.
+#'@return Outputs an Rpath.param object that can be used for Rpath and subsequently
+#'  Rsim.  (NOTE: This does function does not ensure data is correct or in the 
+#'  correct locations...run check.rpath.params to ensure the appropriate columns are
+#'  present).
+#'@export
+read.rpath.params <- function(modfile, dietfile, pedfile,
+                              stanzagroupfile = NA, stanzafile = NA){
+  Rpath.params <- list()
+  Rpath.params$model                 <- read.csv(modfile, header = T)
+  Rpath.params$diet                  <- read.csv(dietfile, header = T)
+  if(!is.na(stanzagroupfile)){
+    stanzagroup <- read.csv(stanzagroupfile, header = T)
+    Rpath.params$stanzas$NStanzaGroups <- nrow(stanzagroup)
+    Rpath.params$stanzas$stgroups      <- stanzagroup
+    Rpath.params$stanzas$stanzas       <- read.csv(stanzafile, header = T)
+  } else {
+    Rpath.params$stanzas$NStanzaGroups <- 0
+    Rpath.params$stanzas$stgroups      <- data.frame(StGroupNum  = NA,
+                                                     StanzaGroup = NA,
+                                                     nstanzas    = NA,
+                                                     VBGF_Ksp    = NA,
+                                                     VBGF_d      = NA,
+                                                     Wmat        = NA,
+                                                     RecPower    = NA)
+    Rpath.params$stanzas$stanzas       <- data.frame(StGroupNum  = NA,
+                                                     Stanza      = NA,
+                                                     GroupNum    = NA,
+                                                     Group       = NA,
+                                                     First       = NA,
+                                                     Last        = NA,
+                                                     Z           = NA,
+                                                     Leading     = NA)
+  }
+  Rpath.params$pedigree              <- read.csv(pedfile, header = T)
+  return(Rpath.params)
+}
 
+#'Write Rpath parameters to .csv files
+#'
+#'Creates a series of .csv files from an Rpath.param object.
+#'
+#'@family Rpath functions
+#'
+#'@param Rpath.params R object containing the Rpath parameters.  Most likely this
+#'  was created using create.rpath.params or read.rpath.params.
+#'@param eco.name ecosystem name that will be included in all the file names.
+#'@param path location for the output files.  
+#'@return Outputs a series of .csv files named by the provided eco.name and the 
+#'  parameters they represent.  For example the model parameters will be named 
+#'  "eco.name_model.csv".
+#'@export
+write.rpath.params <- function(Rpath.params, eco.name, path = ''){
+  if(Sys.info()['sysname']=="Windows"){
+    if(substr(path, nchar(path) - 1, nchar(path)) != '\\'){
+      path <- paste(path, '\\', sep = '')
+    }
+  }
+  if(Sys.info()['sysname']=="Linux"){
+    if(substr(path, nchar(path), nchar(path)) != '/'){
+      path <- paste(path, '/', sep = '')
+    }
+  }
+      #Need to figure out mac...
+    
+  write.csv(Rpath.params$model,    file = paste(path, eco.name, '_model.csv',
+                                                sep = ''), row.names = F)
+  write.csv(Rpath.params$diet,     file = paste(path, eco.name, '_diet.csv',     
+                                                sep = ''), row.names = F)
+  write.csv(Rpath.params$pedigree, file = paste(path, eco.name, '_pedigree.csv', 
+                                                sep = ''), row.names = F)
+  #Multistanza parameters are in several different files
+  write.csv(Rpath.params$stanzas$stgroups, file = paste(path, eco.name, 
+                                                        '_stanza_groups.csv', sep = ''),
+            row.names = F)
+  write.csv(Rpath.params$stanzas$stanzas,  file = paste(path, eco.name, 
+                                                        '_stanzas.csv', sep = ''),
+            row.names = F)
+  if(Rpath.params$stanzas$NStanzaGroups > 0){
+    for(isp in 1:Rpath.params$stanzas$NStanzaGroups){
+      write.csv(Rpath.params$stanzas$StGroup[[isp]], 
+                file = paste(path, eco.name, '_', 
+                             Rpath.params$stanzas$stgroups$StanzaGroup[isp], '.csv', 
+                             sep = ''), row.names = F)
+    }
+  }
+}

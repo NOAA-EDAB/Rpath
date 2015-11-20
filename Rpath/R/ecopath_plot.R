@@ -175,19 +175,21 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'
 #'@family Rpath functions
 #'
-#'@param juvfile Rpath juvenile parameter file modified by the rpath.stanza() function.
-#'@param StanzaNum The Stanza group's number in the stanzafile.
+#'@param Rpath.params R object containing the Rpath parameters modified by the 
+#'  rpath.stanza function.
+#'@param StanzaNum The Stanza group's number to be plotted.
 #'@param line.cols A vector of four colors used to represent the population biomass,
 #'relative number, indvidual weights, and stanza separation lines.
 #'
-#'@return Creates a figure of the food web.
+#'@return Creates a figure showing the break down of biomass and number per stanza.
 #'@import data.table
 #'@export
-stanzaplot <- function(juvfile, StanzaNum, line.cols = c('black', 'green', 
-                                                         'blue', 'red')){
-  stanza.data <- data.table(B     = juvfile$StGroup[[StanzaNum]][, B],
-                            NageS = juvfile$StGroup[[StanzaNum]][,NageS],
-                            WageS = juvfile$StGroup[[StanzaNum]][,WageS])
+stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green', 
+                                                              'blue', 'red')){
+  StGroup <- Rpath.params$stanzas$StGroup[[StanzaNum]]
+  stanza.data <- data.table(B     = StGroup[, B],
+                            NageS = StGroup[,NageS],
+                            WageS = StGroup[,WageS])
   stanza.data[, age := 0:(nrow(stanza.data) - 1)]
   
   #Scale data between 0 and 1
@@ -204,7 +206,7 @@ stanzaplot <- function(juvfile, StanzaNum, line.cols = c('black', 'green',
   lines(stanza.data[, age], stanza.data[, WageS.scale], lwd = 3, col = line.cols[3])
   
   #Add Stanza breaks
-  breaks <- juvfile$stanzas[StGroupNum == StanzaNum, Last]
+  breaks <- Rpath.params$stanzas$stanzas[StGroupNum == StanzaNum, Last]
   breaks <- breaks[1:(length(breaks) - 1)]
   abline(v = breaks + 1, lwd = 3, col = line.cols[4])
   
@@ -214,7 +216,7 @@ stanzaplot <- function(juvfile, StanzaNum, line.cols = c('black', 'green',
   box(lwd = 2)
   mtext(1, text = 'Age in Months', line = 2.5)
   mtext(2, text = 'Normalized value', line = 2.5)
-  mtext(3, text = juvfile$stgroups[StGroupNum == StanzaNum, StanzaGroup], 
+  mtext(3, text = Rpath.params$stanzas$stgroups[StGroupNum == StanzaNum, StanzaGroup], 
         line = 2.3, cex = 2)
   legend('top', legend = c('Population Biomass', 'Number', 'Individual Weight', 
                                 'Stanza Separation'), 

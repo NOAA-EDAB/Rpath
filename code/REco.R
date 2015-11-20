@@ -16,8 +16,8 @@ if(Sys.info()['sysname']=="Linux"){
 #To download Rpath
 # #This only needs to be done the first time you run the script
 # library(devtools)
-# devtools::install_github('slucey/Rpath/Rpath', 
-#                           auth_token = '')
+# devtools::install_github('slucey/RpathDev/Rpath')
+
 
 library(Rpath); library(data.table)
 
@@ -29,51 +29,54 @@ groups <- c('Seabirds', 'Whales', 'Seals', 'JuvRoundfish1', 'AduRoundfish1',
             'Foragefish2', 'OtherForagefish', 'Megabenthos', 'Shellfish',
             'Macrobenthos', 'Zooplankton', 'Phytoplankton', 'Detritus', 
             'Discards', 'Trawlers', 'Midwater', 'Dredgers')
+stgroups <- c(rep(NA, 3), rep('Roundfish1', 2), rep('Roundfish2', 2), 
+              rep('Flatfish1', 2), rep('Flatfish2', 2), rep(NA, 14))
 
 types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 
 #-------------------------------------------------------------------------------
 #Create Model File
-modfile <- create.rpath.param(parameter = 'model', group = groups, type = types)
+REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
+                                  nstanzas = rep(2,4))
 
 #Fill appropriate columns
+#Model
 biomass <- c(0.0149, 0.454, NA, NA, 1.39, NA, 5.553, NA, 5.766, NA,
              0.739, 7.4, 5.1, 4.7, 5.1, NA, 7, 17.4, 23, 10, rep(NA, 5))
 
-#EE's
-modfile[Group %in% c('Seals', 'Megabenthos'), EE := 0.8]
-
-#PB and QB
 pb <- c(0.098, 0.031, 0.100, 2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18, 0.6,
         0.61, 0.65, 1.5, 0.9, 1.3, 7, 39, 240, rep(NA, 5))
 
 qb <- c(76.750, 6.976, 34.455, NA, 2.19, NA, 3.78, NA, 1.44, NA, 1.69,
         1.764, 3.52, 5.65, 3.6, 2.984, rep (NA, 9))
 
-modfile <- modfile[, Biomass := biomass]
-modfile <- modfile[, PB := pb]
-modfile <- modfile[, QB := qb]
+REco.params$model[, Biomass := biomass]
+REco.params$model[, PB := pb]
+REco.params$model[, QB := qb]
+
+#EE for groups w/o biomass
+REco.params$model[Group %in% c('Seals', 'Megabenthos'), EE := 0.8]
 
 #Production to Consumption for those groups without a QB
-modfile <- modfile[Group %in% c('Shellfish', 'Zooplankton'), ProdCons:= 0.25]
-modfile <- modfile[Group == 'Macrobenthos', ProdCons := 0.35]
+REco.params$model[Group %in% c('Shellfish', 'Zooplankton'), ProdCons:= 0.25]
+REco.params$model[Group == 'Macrobenthos', ProdCons := 0.35]
 
 #Biomass accumulation and unassimilated production
-modfile <- modfile[, BioAcc  := c(rep(0, 22), rep(NA, 3))]
-modfile <- modfile[, Unassim := c(rep(0.2, 18), 0.4, rep(0, 3), rep(NA, 3))]
+REco.params$model[, BioAcc  := c(rep(0, 22), rep(NA, 3))]
+REco.params$model[, Unassim := c(rep(0.2, 18), 0.4, rep(0, 3), rep(NA, 3))]
 
 #Detrital Fate
-modfile <- modfile[, Detritus := c(rep(1, 20), rep(0, 5))]
-modfile <- modfile[, Discards := c(rep(0, 22), rep(1, 3))]
+REco.params$model[, Detritus := c(rep(1, 20), rep(0, 5))]
+REco.params$model[, Discards := c(rep(0, 22), rep(1, 3))]
 
 #Fisheries
 #Landings
 trawl  <- c(rep(0, 4), 0.08, 0, 0.32, 0, 0.09, 0, 0.05, 0.2, rep(0, 10), rep(NA, 3))
 mid    <- c(rep(0, 12), 0.3, 0.08, 0.02, rep(0, 7), rep(NA, 3))
 dredge <- c(rep(0, 15), 0.1, 0.5, rep(0, 5), rep(NA, 3))
-modfile <- modfile[, Trawlers := trawl]
-modfile <- modfile[, Midwater := mid]
-modfile <- modfile[, Dredgers := dredge]
+REco.params$model[, Trawlers := trawl]
+REco.params$model[, Midwater := mid]
+REco.params$model[, Dredgers := dredge]
 
 #Discards
 trawl.d  <- c(1e-5, 1e-7, 0.001, 0.001, 0.005, 0.001, 0.009, 0.001, 0.04, 0.001,
@@ -82,95 +85,79 @@ mid.d    <- c(rep(0, 2), 0.001, 0.001, 0.01, 0.001, 0.01, rep(0, 4), 0.05, 0.05,
               0.01, 0.01, rep(0, 7), rep(NA, 3))
 dredge.d <- c(rep(0, 3), 0.001, 0.05, 0.001, 0.05, 0.001, 0.05, 0.001, 0.01, 0.05,
               rep(0, 3), 0.09, 0.01, 1e-4, rep(0, 4), rep(NA, 3))
-modfile <- modfile[, Trawlers.disc := trawl.d]
-modfile <- modfile[, Midwater.disc := mid.d]
-modfile <- modfile[, Dredgers.disc := dredge.d]
-
-
+REco.params$model[, Trawlers.disc := trawl.d]
+REco.params$model[, Midwater.disc := mid.d]
+REco.params$model[, Dredgers.disc := dredge.d]
 
 #Calculate the multistanza biomass/consumption
-#Need to develop create.rpath.param for these
-stanza.groups  <- c('Roundfish1', 'Roundfish2', 'Flatfish1', 'Flatfish2')
-groups.in.stan <- c('JuvRoundfish1', 'AduRoundfish1', 
-                    'JuvRoundfish2', 'AduRoundfish2', 
-                    'JuvFlatfish1', 'AduFlatfish1',
-                    'JuvFlatfish2', 'AduFlatfish2')
+#Group parameters
+REco.params$stanzas$stgroups[, VBGF_Ksp := c(0.145, 0.295, 0.0761, 0.112)]
+REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
 
-juvfile <- create.rpath.param(parameter = 'juvenile', group = groups.in.stan,
-                              stgroup = stanza.groups, nstanzas = rep(2, 4))
+#Individual stanza parameters
+REco.params$stanzas$stanzas[, First   := c(rep(c(0, 24), 3), 0, 48)]
+REco.params$stanzas$stanzas[, Last    := c(rep(c(23, 400), 3), 47, 400)]
+REco.params$stanzas$stanzas[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
+                                           0.26, 1.1, 0.18)]
+REco.params$stanzas$stanzas[, Leading := rep(c(F, T), 4)]
 
-juvfile$stgroups$VBGF_Ksp <- c(0.145, 0.295, 0.0761, 0.112)
-juvfile$stgroups$Wmat     <- c(0.0769, 0.561, 0.117,  0.321)
-juvfile$stgroups$Wmat001  <- c(0.0577, 0.421, 0.0879, 0.241)
-juvfile$stgroups$Amat     <- c(4, 4, 4, 8)
-juvfile$stgroups$Amat001  <- rep(-1e6, 4)
-
-juvfile$stanzas$GroupNum <- 4:11
-juvfile$stanzas$First    <- c(rep(c(0, 24), 3), 0, 48)
-juvfile$stanzas$Last     <- c(rep(c(23, 400), 3), 47, 400)
-juvfile$stanzas$Z        <- c(2.026, 0.42, 2.1, 0.425, 1.5, 0.26, 1.1, 0.18)
-juvfile$stanzas$Leading  <- rep(c(F, T), 4)
-
-juvfile <- rpath.stanzas(modfile, juvfile)
+REco.params <- rpath.stanzas(REco.params)
 
 #Plot multistanza plots
-stanzaplot(juvfile, 1)
-stanzaplot(juvfile, 2)
-stanzaplot(juvfile, 3)
-stanzaplot(juvfile, 4)
-
-#Check model parameter file
-check.rpath.param(modfile, parameter = 'model')
+stanzaplot(REco.params, StanzaNum = 1)
+stanzaplot(REco.params, StanzaNum = 2)
+stanzaplot(REco.params, StanzaNum = 3)
+stanzaplot(REco.params, StanzaNum = 4)
 
 #-------------------------------------------------------------------------------
-#Create Diet File
-dietfile <- create.rpath.param(parameter = 'diet', group = groups, type = types)
-
-dietfile[, Seabirds        := c(rep(NA, 11), 0.1, 0.25, 0.2, 0.15, rep(NA, 6), 0.3)]
-dietfile[, Whales          := c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, NA, 0.01, 
-                                rep(NA, 4), 0.1, rep(NA, 3), 0.86, rep(NA, 3))]
-dietfile[, Seals           := c(rep(NA, 3), 0.05, 0.1, 0.05, 0.2, 0.005, 0.05, 0.005, 
-                                0.01, 0.24, rep(0.05, 4), 0.09, rep(NA, 5))]
-dietfile[, JuvRoundfish1   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, rep(NA, 2), 
-                                0.05, 1e-4, NA, .02, .7785, .1, .05, NA)]
-dietfile[, AduRoundfish1   := c(rep(NA, 5), 1e-3, 0.01, 1e-3, 0.05, 1e-3, 0.01, 0.29, 
-                                0.1, 0.1, 0.347, 0.03, NA, 0.05, 0.01, rep(NA, 3))]
-dietfile[, JuvRoundfish2   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, rep(NA, 2), 
-                                0.05, 1e-4, NA, .02, .7785, .1, .05, NA)]
-dietfile[, AduRoundfish2   := c(rep(NA, 3), 1e-4, NA, 1e-4, NA, rep(1e-4, 4), 0.1, 
-                                rep(0.05, 3), 0.2684, 0.01, 0.37, 0.001, NA, 0.1, NA)]
-dietfile[, JuvFlatfish1    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
-                                rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, NA)]
-dietfile[, AduFlatfish1    := c(rep(NA, 7), rep(1e-4, 5), rep(NA, 2), 0.001, 0.05, 
-                                0.001, 0.6, 0.2475, NA, 0.1, NA)]
-dietfile[, JuvFlatfish2    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
-                                rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, NA)]
-dietfile[, AduFlatfish2    := c(rep(NA, 7), 1e-4, NA, 1e-4, rep(NA, 4), rep(1e-4, 3), 
-                                0.44, 0.3895, NA, 0.17, NA)]
-dietfile[, OtherGroundfish := c(rep(NA, 3), rep(1e-4, 8), 0.05, 0.08, 0.0992, 0.3, 
-                                0.15, 0.01, 0.3, 0.01, rep(NA, 3))]
-dietfile[, Foragefish1     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 0.8196, 
-                                0.06, 0.12, NA)]
-dietfile[, Foragefish2     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 0.8196, 
-                                0.06, 0.12, NA)]
-dietfile[, OtherForagefish := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 0.8196, 
-                                0.06, 0.12, NA)]
-dietfile[, Megabenthos     := c(rep(NA, 15), 0.1, 0.03, 0.55, rep(NA, 2), 0.32, NA)]
-dietfile[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA)]
-dietfile[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)]
-dietfile[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
-
-#Check diet parameter file
-check.rpath.param(dietfile, parameter = 'diet')
-
-#-------------------------------------------------------------------------------
-#Create generic pedigree file
-pedfile <- create.rpath.param(parameter = 'pedigree', group = groups, type = types)
+#Modify Diet File
+REco.params$diet[, Seabirds        := c(rep(NA, 11), 0.1, 0.25, 0.2, 0.15, 
+                                         rep(NA, 6), 0.3)]
+REco.params$diet[, Whales          := c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, 
+                                         NA, 0.01, rep(NA, 4), 0.1, rep(NA, 3), 
+                                         0.86, rep(NA, 3))]
+REco.params$diet[, Seals           := c(rep(NA, 3), 0.05, 0.1, 0.05, 0.2, 0.005, 
+                                         0.05, 0.005, 0.01, 0.24, rep(0.05, 4), 
+                                         0.09, rep(NA, 5))]
+REco.params$diet[, JuvRoundfish1   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, 
+                                         rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
+                                         0.1, 0.05, NA)]
+REco.params$diet[, AduRoundfish1   := c(rep(NA, 5), 1e-3, 0.01, 1e-3, 0.05, 1e-3, 
+                                         0.01, 0.29, 0.1, 0.1, 0.347, 0.03, NA, 
+                                         0.05, 0.01, rep(NA, 3))]
+REco.params$diet[, JuvRoundfish2   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, 
+                                         rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
+                                         0.1, .05, NA)]
+REco.params$diet[, AduRoundfish2   := c(rep(NA, 3), 1e-4, NA, 1e-4, NA, rep(1e-4, 4), 
+                                         0.1, rep(0.05, 3), 0.2684, 0.01, 0.37, 0.001, 
+                                         NA, 0.1, NA)]
+REco.params$diet[, JuvFlatfish1    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
+                                         rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
+                                         NA)]
+REco.params$diet[, AduFlatfish1    := c(rep(NA, 7), rep(1e-4, 5), rep(NA, 2), 0.001, 
+                                         0.05, 0.001, 0.6, 0.2475, NA, 0.1, NA)]
+REco.params$diet[, JuvFlatfish2    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3),
+                                         rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
+                                         NA)]
+REco.params$diet[, AduFlatfish2    := c(rep(NA, 7), 1e-4, NA, 1e-4, rep(NA, 4), 
+                                         rep(1e-4, 3), 0.44, 0.3895, NA, 0.17, NA)]
+REco.params$diet[, OtherGroundfish := c(rep(NA, 3), rep(1e-4, 8), 0.05, 0.08, 0.0992, 
+                                         0.3, 0.15, 0.01, 0.3, 0.01, rep(NA, 3))]
+REco.params$diet[, Foragefish1     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
+                                         0.8196, 0.06, 0.12, NA)]
+REco.params$diet[, Foragefish2     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
+                                         0.8196, 0.06, 0.12, NA)]
+REco.params$diet[, OtherForagefish := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
+                                         0.8196, 0.06, 0.12, NA)]
+REco.params$diet[, Megabenthos     := c(rep(NA, 15), 0.1, 0.03, 0.55, rep(NA, 2), 0.32,
+                                         NA)]
+REco.params$diet[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA)]
+REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)]
+REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
 
 #-------------------------------------------------------------------------------
 #Ecopath
-#Note will be changing function name to rpath from ecopath...
-REco <- rpath(modfile, dietfile, 'R Ecosystem')
+REco <- rpath(REco.params, 'R Ecosystem')
 
 #There is an rpath method for generic functions print and summary
 REco
@@ -212,12 +199,12 @@ dev.off()
 
 #Test Adams-Bashforth
 #A - base run
-REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim <- rsim.scenario(REco, REco.params, 100)
 REco.AB.1 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.AB.1, groups[1:22])
 
 #B - double trawling effort
-REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim <- rsim.scenario(REco, REco.params, 100)
 REco.sim$fishing$EFFORT[26:101, 2] <- 2
 REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.AB.2, groups[1:22])
