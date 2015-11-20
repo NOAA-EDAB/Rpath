@@ -49,16 +49,27 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
 ################################################################################ 
 # Runs Ecosim
 #'@export
-rsim.run <- function(Rpath, method = 'RK4', years = 100){
+rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
   if(method == 'RK4'){
-    rout <- rk4_run(Rpath$params, Rpath$start_state, Rpath$forcing, Rpath$fishing,
-                    Rpath$stanzas, 0, years)
+    rout <- rk4_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
+                    Rpath.scenario$forcing, Rpath.scenario$fishing,
+                    Rpath.scenario$stanzas, 0, years)
   }
   if(method == 'AB'){
-    rout <- Adams_run(Rpath$params, Rpath$start_state, Rpath$forcing, Rpath$fishing,
-                      Rpath$stanzas, 0, years)
+    rout <- Adams_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
+                      Rpath.scenario$forcing, Rpath.scenario$fishing,
+                      Rpath.scenario$stanzas, 0, years)
   }
+  
+  rout$start_state       <- Rpath.scenario$start_state
+  rout$params$NUM_LIVING <- Rpath.scenario$params$NUM_LIVING
+  rout$params$NUM_DEAD   <- Rpath.scenario$params$NUM_DEAD
+  rout$params$NUM_GEARS  <- Rpath.scenario$params$NUM_GEARS
+  rout$params$spname     <- Rpath.scenario$params$spname
+  
   class(rout) <- 'Rsim.output'
+  attr(rout, 'eco.name') <- attr(Rpath.scenario, 'eco.name')
+  
   return(rout)
 }
  

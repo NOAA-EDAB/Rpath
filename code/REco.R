@@ -199,8 +199,8 @@ dev.off()
 #Test Adams-Bashforth
 #A - base run
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.AB.1 <- rsim.run(REco.sim, method = 'AB', years = 100)
-rsim.plot(REco.AB.1, groups[1:22])
+REco.run1 <- rsim.run(REco.sim, method = 'AB', years = 100)
+rsim.plot(REco.run1, groups[1:22])
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
