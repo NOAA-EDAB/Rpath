@@ -83,9 +83,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
                NumericVector kk4 = as<NumericVector>(k4["DerivT"]);  
 
             // Take an rk4 step          
-               NumericVector new_BB = ifelse( NoIntegrate > 0,
-                                    old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0,
-                                    old_BB);   
+               NumericVector new_BB = old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0;   
 
            // Update Foraging time state variable
            // pd term is used to indicate differrent values used for 
