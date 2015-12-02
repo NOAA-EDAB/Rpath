@@ -299,83 +299,100 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  #####################################################################################
  #'@export
  rsim.stanzas <- function(juvfile, state, params){
-   #Set up multistanza parameters to pass to C
-   rstan <- list()
-   rstan$Nsplit      <- juvfile$NStanzaGroups
-   #Need leading zeros (+1 col/row) to make indexing in C++ easier
-   rstan$Nstanzas    <- c(0, juvfile$stgroups$nstanzas)
-   rstan$EcopathCode <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
-   rstan$Age1        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
-   rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
-   rstan$WageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-   rstan$NageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-   rstan$WWa         <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-   rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
-   
-   for(isp in 1:rstan$Nsplit){
-     for(ist in 1:rstan$Nstanzas[isp + 1]){
-       rstan$EcopathCode[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp &
-                                                        Stanza == ist, GroupNum]
-       rstan$Age1[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
-                                                 Stanza == ist, First]
-       rstan$Age2[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
-                                                 Stanza == ist, Last]
+   if(juvfile$NStanzaGroups > 0){
+     #Set up multistanza parameters to pass to C
+     rstan <- list()
+     rstan$Nsplit      <- juvfile$NStanzaGroups
+     #Need leading zeros (+1 col/row) to make indexing in C++ easier
+     rstan$Nstanzas    <- c(0, juvfile$stgroups$nstanzas)
+     rstan$EcopathCode <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
+     rstan$Age1        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
+     rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
+     rstan$WageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$NageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$WWa         <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
+     
+     for(isp in 1:rstan$Nsplit){
+       for(ist in 1:rstan$Nstanzas[isp + 1]){
+         rstan$EcopathCode[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp &
+                                                          Stanza == ist, GroupNum]
+         rstan$Age1[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
+                                                   Stanza == ist, First]
+         rstan$Age2[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
+                                                   Stanza == ist, Last]
+       }
+       rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
+       rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
+       rstan$WWa[1:nrow(juvfile$StGroup[[isp]]), isp + 1]   <- juvfile$StGroup[[isp]]$WWa
      }
-     rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
-     rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-     rstan$WWa[1:nrow(juvfile$StGroup[[isp]]), isp + 1]   <- juvfile$StGroup[[isp]]$WWa
-   }
-   
-   #Maturity
-   rstan$Wmat     <- c(0, juvfile$stgroup$Wmat)
-   rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
-   rstan$recruits <- c(0, juvfile$stgroup$r)
-   rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
-   rstan$RzeroS   <- rstan$recruits
-   
-   #Energy required to grow a unit in weight(scaled to Winf = 1)
-   rstan$vBM <- c(0, (1 - 3 * juvfile$stgroups$VBGF_Ksp / 12))
-   
-   rstan$baseEggsStanza <- c(0)
-   for(isp in 1:rstan$Nsplit){
-     #id which weight at age is higher than Wmat
-     rstan$baseEggsStanza[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp], 
-                                               sum(NageS * (WageS - rstan$Wmat[isp]))]
-   }
-   rstan$EggsStanza <- rstan$baseEggsStanza
-   
-   #initialize splitalpha growth coefficients using pred information and
-   rstan$SplitAlpha <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-   for(isp in 1:rstan$Nsplit){
-     for(ist in 1:rstan$Nstanzas[isp + 1]){
-       ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
-       first <- rstan$Age1[isp + 1, ist + 1]
-       last  <- rstan$Age2[isp + 1, ist + 1]
-       pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
-       StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
-
-       SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
-         rstan$vBM[isp + 1] * juvfile$StGroup[[isp]][, WageS]) * pred / StartEatenBy
-       rstan$SplitAlpha[(first + 1):(last + 1), isp + 1] <- SplitAlpha[(first + 1):
-                                                                     (last + 1)]
-       rstan$stanzaPred[ieco + 1] <- pred
+     
+     #Maturity
+     rstan$Wmat     <- c(0, juvfile$stgroup$Wmat)
+     rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
+     rstan$recruits <- c(0, juvfile$stgroup$r)
+     rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
+     rstan$RzeroS   <- rstan$recruits
+     
+     #Energy required to grow a unit in weight(scaled to Winf = 1)
+     rstan$vBM <- c(0, (1 - 3 * juvfile$stgroups$VBGF_Ksp / 12))
+     
+     rstan$baseEggsStanza <- c(0)
+     for(isp in 1:rstan$Nsplit){
+       #id which weight at age is higher than Wmat
+       rstan$baseEggsStanza[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp], 
+                                                 sum(NageS * (WageS - rstan$Wmat[isp]))]
      }
-     #Carry over final split alpha to plus group
-     rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanzas[isp + 1] + 1] + 1, isp + 1] <- 
-       rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanza[isp + 1]], isp + 1]
+     rstan$EggsStanza <- rstan$baseEggsStanza
+     
+     #initialize splitalpha growth coefficients using pred information and
+     rstan$SplitAlpha <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     for(isp in 1:rstan$Nsplit){
+       for(ist in 1:rstan$Nstanzas[isp + 1]){
+         ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
+         first <- rstan$Age1[isp + 1, ist + 1]
+         last  <- rstan$Age2[isp + 1, ist + 1]
+         pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
+         StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
+  
+         SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
+           rstan$vBM[isp + 1] * juvfile$StGroup[[isp]][, WageS]) * pred / StartEatenBy
+         rstan$SplitAlpha[(first + 1):(last + 1), isp + 1] <- SplitAlpha[(first + 1):
+                                                                       (last + 1)]
+         rstan$stanzaPred[ieco + 1] <- pred
+       }
+       #Carry over final split alpha to plus group
+       rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanzas[isp + 1] + 1] + 1, isp + 1] <- 
+         rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanza[isp + 1]], isp + 1]
+     }
+     
+     #Misc parameters for C
+     #KYA Spawn X is Beverton-Holt.  To turn off set to 10000. 2 is half saturation.
+     #1.00001 or so is minimum
+     rstan$SpawnX         <- c(0, rep(10000, rstan$Nsplit))
+     rstan$SpawnEnergy    <- c(0, rep(1, rstan$Nsplit))
+     rstan$SpawnBio       <- rstan$EggsStanza
+     rstan$baseSpawnBio   <- rstan$EggsStanza
+     rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
+     rstan$stanzaBasePred <- rstan$stanzaPred
+     
+    # SplitSetPred(rstan, state)
    }
    
-   #Misc parameters for C
-   #KYA Spawn X is Beverton-Holt.  To turn off set to 10000. 2 is half saturation.
-   #1.00001 or so is minimum
-   rstan$SpawnX         <- c(0, rep(10000, rstan$Nsplit))
-   rstan$SpawnEnergy    <- c(0, rep(1, rstan$Nsplit))
-   rstan$SpawnBio       <- rstan$EggsStanza
-   rstan$baseSpawnBio   <- rstan$EggsStanza
-   rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
-   rstan$stanzaBasePred <- rstan$stanzaPred
-   
-  # SplitSetPred(rstan, state)
+   if(juvfile$NStanzaGroups == 0){
+     rstan <- list()
+     rstan$Nsplit      <- juvfile$NStanzaGroups
+     #Need leading zeros (+1 col/row) to make indexing in C++ easier
+     rstan$Nstanzas    <- 0
+     rstan$EcopathCode <- matrix(0, 1, 1)
+     rstan$Age1        <- matrix(0, 1, 1)
+     rstan$Age2        <- matrix(0, 1, 1)
+     rstan$WageS       <- matrix(0, 1, 1)
+     rstan$NageS       <- matrix(0, 1, 1)
+     rstan$WWa         <- matrix(0, 1, 1)
+     rstan$stanzaPred  <- 0
+   }
+     
    
    return(rstan)
  }
