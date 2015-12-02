@@ -383,14 +383,30 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan <- list()
      rstan$Nsplit      <- juvfile$NStanzaGroups
      #Need leading zeros (+1 col/row) to make indexing in C++ easier
-     rstan$Nstanzas    <- 0
-     rstan$EcopathCode <- matrix(0, 1, 1)
-     rstan$Age1        <- matrix(0, 1, 1)
-     rstan$Age2        <- matrix(0, 1, 1)
-     rstan$WageS       <- matrix(0, 1, 1)
-     rstan$NageS       <- matrix(0, 1, 1)
-     rstan$WWa         <- matrix(0, 1, 1)
-     rstan$stanzaPred  <- 0
+     rstan$Nstanzas       <- c(0, 0)
+     rstan$EcopathCode    <- matrix(rep(0, 4), 2, 2)
+     rstan$Age1           <- matrix(rep(0, 4), 2, 2)
+     rstan$Age2           <- matrix(rep(0, 4), 2, 2)
+     rstan$WageS          <- matrix(rep(0, 4), 2, 2)
+     rstan$NageS          <- matrix(rep(0, 4), 2, 2)
+     rstan$WWa            <- matrix(rep(0, 4), 2, 2)
+     rstan$stanzaPred     <- c(0, 0)
+     rstan$Wmat           <- c(0, 0)
+     rstan$RecPower       <- c(0, 0)
+     rstan$recruits       <- c(0, 0)
+     rstan$VBGFd          <- c(0, 0)
+     rstan$RzeroS         <- c(0, 0)
+     rstan$vBM            <- c(0, 0)
+     rstan$baseEggsStanza <- c(0, 0)
+     rstan$EggsStanza     <- c(0, 0)
+     rstan$SplitAlpha     <- matrix(rep(0, 4), 2, 2)
+     rstan$SpawnX         <- c(0, 0)
+     rstan$SpawnEnergy    <- c(0, 0)
+     rstan$SpawnBio       <- c(0, 0)
+     rstan$baseSpawnBio   <- c(0, 0)
+     rstan$RscaleSplit    <- c(0, 0)
+     rstan$stanzaBasePred <- c(0, 0)
+     
    }
      
    
