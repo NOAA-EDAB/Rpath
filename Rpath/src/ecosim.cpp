@@ -34,6 +34,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 // FtimeAdj is monthly unit so adjust for sub-monthly integration
    const NumericVector FtimeStep     = FtimeAdj/STEPS_PER_MONTH;
 
+// Number of split groups
+   const int Nsplit = as<int>(stanzas["Nsplit"]);
+   
 // Monthly output matrices                     
    NumericMatrix out_BB(EndYear*12+1, NUM_BIO+1);           
    NumericMatrix out_CC(EndYear*12+1, NUM_BIO+1);          
@@ -45,7 +48,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
 //SML
 // Update sums of split groups to total biomass for derivative calcs
-   SplitSetPred(stanzas, instate); 
+   if(Nsplit > 0){ 
+     SplitSetPred(stanzas, instate);
+   }
 //SML
 
 // Load state, set some initial values.  Make sure state is COPY, not pointer   
@@ -108,8 +113,10 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
       //SML
          // Calculate new derivative    
         List dyt = deriv_vector(params, state, forcing, fishing, stanzas, y, m, 0);
-        SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
-        SplitSetPred(stanzas, state);      
+        if(Nsplit > 0){ 
+          SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
+          SplitSetPred(stanzas, state);
+        }
       
       // If the run is during the "burn-in" years, and biomass goes
       // into the discard range, set flag to exit the loop.  Should set "bad"
@@ -180,6 +187,7 @@ int y, m, dd;
    const NumericVector FtimeQBOpt = as<NumericVector>(params["FtimeQBOpt"]);
    
 // Parameters from stanzas
+   const int Nsplit         = as<int>(stanzas["Nsplit"]);
    NumericVector stanzaPred = as<NumericVector>(stanzas["stanzaPred"]);
    
 // Monthly output matrices                     
@@ -195,7 +203,9 @@ int y, m, dd;
    //List stanzas = clone(instanzas);
    
    // Update sums of split groups to total biomass for derivative calcs
-   SplitSetPred(stanzas, state); 
+   if(Nsplit > 0){
+     SplitSetPred(stanzas, state); 
+   } 
    
    List dyt   = deriv_vector(params, state, forcing, fishing, stanzas, 0, 0, 0);
    dd = StartYear * STEPS_PER_YEAR;
@@ -236,8 +246,10 @@ int y, m, dd;
            old_Ftime);
 
      // Monthly Stanza (split pool) update
-        SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
-        SplitSetPred(stanzas, state);
+        if(Nsplit > 0){
+          SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
+          SplitSetPred(stanzas, state); 
+        }
         new_BB = ifelse(NoIntegrate < 0, as<NumericVector>(state["BB"]), new_BB);
         
      // Calculate catch assuming fixed Frate and exponential biomass change.
@@ -413,12 +425,14 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericVector predYY = state_Ftime * state_BB/B_BaseRef * force_bysearch(dd,_);
 
 // Set functional response biomass for juvenile and adult groups (including foraging time) 
-   for (isp = 1; isp <=Nsplit; isp++){
-     for(ist = 1; ist <= Nstanzas[isp]; ist++){
-       ieco = EcopathCode(isp, ist);
-       if (stanzaBasePred[ieco] > 0){
-         predYY[ieco] = state_Ftime[ieco] * stanzaPred[ieco] /
-                        stanzaBasePred[ieco];
+   if(Nsplit > 0){
+     for (isp = 1; isp <=Nsplit; isp++){
+       for(ist = 1; ist <= Nstanzas[isp]; ist++){
+         ieco = EcopathCode(isp, ist);
+         if (stanzaBasePred[ieco] > 0){
+           predYY[ieco] = state_Ftime[ieco] * stanzaPred[ieco] /
+                          stanzaBasePred[ieco];
+         }
        }
      }
    }
