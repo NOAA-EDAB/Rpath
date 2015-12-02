@@ -8,13 +8,15 @@ Authors@R: c(
     person("Sean", "Lucey",    email = "Sean.Lucey@NOAA.gov",    
            role = c("aut", "cre")),
     person("Sarah", "Gaichas", email = "Sarah.Gaichas@NOAA.gov", role = "aut"))
-Description: This package implements the core equations from the popular 
+Description: This package implements the core equations from the popular
     Ecopath with Ecosim mass balance model. (Need to expand)
 License: GPL (>= 2)
-Imports: 
+Imports:
     data.table,
     MASS,
     Rcpp (>= 0.11.3)
 LinkingTo: Rcpp
-Suggests: knitr
+Suggests:
+    knitr
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1

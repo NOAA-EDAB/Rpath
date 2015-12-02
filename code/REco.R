@@ -154,6 +154,8 @@ REco.params$diet[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA)]
 REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)]
 REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
 
+#Save rpath.params
+save(REco.params, file = paste(out.dir, 'REco_params.RData', sep = ''))
 #-------------------------------------------------------------------------------
 #Ecopath
 REco <- rpath(REco.params, 'R Ecosystem')
@@ -212,7 +214,9 @@ rsim.plot(REco.run1, groups[1:22])
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
+REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
+                           year = 25:100, value = 2)
 REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.AB.2, groups[1:22])
 
