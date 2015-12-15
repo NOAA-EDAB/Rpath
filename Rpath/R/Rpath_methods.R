@@ -57,18 +57,17 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 
 #Print Rpath.sim
 #'@export
-print.Rpath.sim <- function(x, rows = NA, ...){
+print.Rsim.output <- function(x, rows = NA, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
-  if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
-  out <- c()
-  for(i in 1:(x$NUM_LIVING + x$NUM_DEAD + 1)){
-    sp.out <- data.frame(Group      = x$spname[i],
-                         StartBio   = x$out_BB[1, i],
-                         EndBio     = x$out_BB[nrow(x$out_CC), i],
-                         StartCatch = x$out_CC[1, i] * 12,
-                         EndCatch   = x$out_CC[nrow(x$out_CC) - 1, i] * 12)
-    out <- rbind(out, sp.out)
-  }
+  if(x$crash_year > 0) cat(paste("Run crashed at", x$crash_year, "\n", sep = ''))
+  
+  spgroups <- x$params$NUM_LIVING + x$params$NUM_DEAD
+  out <- data.frame(Group      = x$params$spname[2:spgroups],
+                    StartBio   = x$start_state$BB[2:spgroups],
+                    EndBio     = x$end_state$BB[2:spgroups],
+                    StartCatch = x$out_CC[1, 2:spgroups] * 12,
+                    EndCatch   = x$out_CC[nrow(x$out_CC) - 1, 2:spgroups] * 12)
+  
   if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
 }
 

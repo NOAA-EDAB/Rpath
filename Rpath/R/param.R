@@ -163,164 +163,158 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
 #'  (NOTE: This does not ensure data is correct just that it is in the right places).
 #'@import data.table
 #'@export
-check.rpath.param <- function(filename, parameter = 'model'){
-  if(is.character(filename)){
-    parfile <- as.data.table(read.csv(filename))
-  } else {
-    parfile <- as.data.table(filename)
+check.rpath.param <- function(Rpath.params){
+
+  #Check to make sure all types are represented
+  if(length(Rpath.params$model[Type == 0, ]) == 0) stop('Model must contain at least 1 consumer')
+  if(length(Rpath.params$model[Type == 1, ]) == 0) stop('Model must contain a producer group')
+  if(length(Rpath.params$model[Type == 2, ]) == 0) stop('Model must contain at least 1 detrital group')
+  if(length(Rpath.params$model[Type == 3, ]) == 0) stop('Model must contain at least 1 fleet')
+  
+  #Check that there is the proper number of columns
+  n.groups <- nrow(Rpath.params$model)
+  n.dead   <- length(Rpath.params$model[Type == 2, Group])
+  n.fleet  <- length(Rpath.params$model[Type == 3, Group])
+  if(ncol(Rpath.params$model) != 10 + n.dead + 2 * n.fleet){
+    stop('Model does not have the correct number of column.  There should be 10 
+         columns plus one for each detrital group plus two for each fleet group 
+         (landings and discards).  Please double check your columns')
+  }
+    
+  #Check that either biomass or EE is entered and not both
+  if(length(Rpath.params$model[is.na(Biomass) & is.na(EE) & Type < 2, Group]) > 0){
+    stop(paste(Rpath.params$model[is.na(Biomass) & is.na(EE) & Type < 2, Group], 
+               'are missing both Biomass and EE...must enter one \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group]) > 0){
+    stop(paste(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
+               'have both Biomass and EE...only one should be entered \n', sep = ' '))
+    #consider making this a warning() since you can have both in EwE
+  }
+
+  #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 2 and 3
+  if(length(Rpath.params$model[Type > 1 & !is.na(Biomass), Group]) > 0){
+    stop(paste(Rpath.params$model[Type > 1 & !is.na(Biomass), Group], 
+               'are not living and should not have a biomass...set to NA \n', 
+               sep = ' '))
+  }
+  if(length(Rpath.params$model[Type > 1 & !is.na(PB), Group]) > 0){
+    stop(paste(Rpath.params$model[Type > 1 & !is.na(PB), Group], 
+               'are not living and should not have a PB...set to NA \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type > 1 & !is.na(QB), Group]) > 0){
+    stop(paste(Rpath.params$model[Type > 1 & !is.na(QB), Group], 
+               'are not living and should not have a QB...set to NA \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type > 1 & !is.na(EE), Group]) > 0){
+    stop(paste(Rpath.params$model[Type > 1 & !is.na(EE), Group], 
+               'are not living and should not have a EE...set to NA \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type > 1 & !is.na(ProdCons), Group]) > 0){
+    stop(paste(Rpath.params$model[Type > 1 & !is.na(ProdCons), Group], 
+               'are not living and should not have a ProdCons...set to NA \n', 
+               sep = ' '))
   }
   
-  if(parameter == 'model'){
-    #Check to make sure all types are represented
-    if(length(parfile[Type == 0, ]) == 0) stop('Model must contain at least 1 consumer')
-    if(length(parfile[Type == 1, ]) == 0) stop('Model must contain a producer group')
-    if(length(parfile[Type == 2, ]) == 0) stop('Model must contain at least 1 detrital group')
-    if(length(parfile[Type == 3, ]) == 0) stop('Model must contain at least 1 fleet')
-    
-    #Check that there is the proper number of columns
-    n.groups <- nrow(parfile)
-    n.dead   <- length(parfile[Type == 2, Group])
-    n.fleet  <- length(parfile[Type == 3, Group])
-    if(ncol(parfile) != 10 + n.dead + 2 * n.fleet){
-      stop('Model does not have the correct number of column.  There should be 10 
-           columns plus one for each detrital group plus two for each fleet group 
-           (landings and discards).  Please double check your columns')
-    }
-      
-    #Check that either biomass or EE is entered and not both
-    if(length(parfile[is.na(Biomass) & is.na(EE) & Type < 2, Group]) > 0){
-      stop(paste(parfile[is.na(Biomass) & is.na(EE) & Type < 2, Group], 
-                 'are missing both Biomass and EE...must enter one \n', sep = ' '))
-    }
-    if(length(parfile[!is.na(Biomass) & !is.na(EE) & Type < 2, Group]) > 0){
-      stop(paste(parfile[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
-                 'have both Biomass and EE...only one should be entered \n', sep = ' '))
-      #consider making this a warning() since you can have both in EwE
-    }
+  #Check that types 0 and 1 have a PB
+  if(length(Rpath.params$model[Type < 2 & is.na(PB), Group]) > 0){
+    stop(paste(Rpath.params$model[Type < 2 & is.na(PB), Group],
+               'are missing a PB...set to >= 0 \n', sep = ' '))
+  }
   
-    #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 2 and 3
-    if(length(parfile[Type > 1 & !is.na(Biomass), Group]) > 0){
-      stop(paste(parfile[Type > 1 & !is.na(Biomass), Group], 
-                 'are not living and should not have a biomass...set to NA \n', 
-                 sep = ' '))
-    }
-    if(length(parfile[Type > 1 & !is.na(PB), Group]) > 0){
-      stop(paste(parfile[Type > 1 & !is.na(PB), Group], 
-                 'are not living and should not have a PB...set to NA \n', sep = ' '))
-    }
-    if(length(parfile[Type > 1 & !is.na(QB), Group]) > 0){
-      stop(paste(parfile[Type > 1 & !is.na(QB), Group], 
-                 'are not living and should not have a QB...set to NA \n', sep = ' '))
-    }
-    if(length(parfile[Type > 1 & !is.na(EE), Group]) > 0){
-      stop(paste(parfile[Type > 1 & !is.na(EE), Group], 
-                 'are not living and should not have a EE...set to NA \n', sep = ' '))
-    }
-    if(length(parfile[Type > 1 & !is.na(ProdCons), Group]) > 0){
-      stop(paste(parfile[Type > 1 & !is.na(ProdCons), Group], 
-                 'are not living and should not have a ProdCons...set to NA \n', 
-                 sep = ' '))
-    }
-    
-    #Check that types 0 and 1 have a PB
-    if(length(parfile[Type < 2 & is.na(PB), Group]) > 0){
-      stop(paste(parfile[Type < 2 & is.na(PB), Group],
-                 'are missing a PB...set to >= 0 \n', sep = ' '))
-    }
-    
-    #Check that consumers have a QB or ProdCons but not both
-    if(length(parfile[is.na(QB) & is.na(ProdCons) & Type == 0, Group]) > 0){
-      stop(paste(parfile[is.na(QB) & is.na(ProdCons) & Type == 0, Group], 
-                 'are missing both QB and ProdCons...must enter one \n', sep = ' '))
-    }
-    if(length(parfile[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group]) > 0){
-      stop(paste(parfile[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group],
-                 'have both QB and ProdCons...only one should be entered \n', 
-                 sep = ' '))
-    }
-    
-    #Check that BioAcc / Unassim is NA for fleets and numeric for types < 3
-    if(length(parfile[Type == 3 & !is.na(BioAcc), Group]) > 0){
-      stop(paste(parfile[Type == 3 & !is.na(BioAcc), Group],
-                 'are fleets and should not have a BioAcc...set to NA \n', sep = ' '))
-    }
-    if(length(parfile[Type == 3 & !is.na(Unassim), Group]) > 0){
-      stop(paste(parfile[Type == 3 & !is.na(Unassim), Group],
-                 'are fleets and should not have an Unassim...set to NA \n', sep = ' '))
-    }
-    if(length(parfile[Type != 3 & is.na(BioAcc), Group]) > 0){
-      stop(paste(parfile[Type != 3 & is.na(BioAcc), Group],
-                 'must have a number for BioAcc...set to >= 0 \n', sep = ' '))
-    }
-    if(length(parfile[Type != 3 & is.na(Unassim), Group]) > 0){
-      stop(paste(parfile[Type != 3 & is.na(Unassim), Group],
-                 'must have a number for Unassim...set to >= 0 \n', sep = ' '))
-    }
-    
-    #Check that only Type 2 has DetInput set
-    if(length(parfile[Type != 2 & !is.na(DetInput), Group]) > 0){
-      stop(paste(parfile[Type != 2 & !is.na(DetInput), Group],
-                 'are not detritus...set DetInput to NA \n', sep = ' '))
-    }
-    if(length(parfile[Type == 2 & is.na(DetInput), Group]) >0){
-      stop(paste(parfile[Type == 2 & is.na(DetInput), Group],
-                 'are detritus...set DetInput to 0 \n', sep = ' '))
-    }
-    
-    #Check detritus fate is numeric and sum to 1
-    det.matrix <- parfile[, 11:(10 + n.dead), with = F]
-    test.rows  <- rowSums(det.matrix)
-    if(length(setdiff(which(parfile[, Type] == 2), which(test.rows != 1))) > 0){
-      stop(paste(parfile[, Group][setdiff(which(parfile[, Type] == 2), 
-                                            which(test.rows != 1))],
-                 'detrital fate does not sum to 1 \n', sep = ' '))
-    }
-    if(length(which(is.na(det.matrix))) > 0){
-      na.group <- which(is.na(det.matrix))
-      for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- 
-        na.group[i] - n.groups
-      na.group <- unique(na.group)
-      stop(paste(parfile[na.group, Group], 
-                 'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
-    }
-    
-    #Check that landings and discards are numbers for type < 3
-    fleet.matrix <- parfile[1:(n.groups - n.fleet), (11 + n.dead):ncol(parfile), 
-                              with = F]
-    if(length(which(is.na(fleet.matrix))) > 0){
-      na.group <- which(is.na(fleet.matrix))
-      for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- 
-        na.group[i] - n.groups
-      na.group <- unique(na.group)
-      stop(paste(parfile[na.group, Group], 
-                 'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
-    }
-    
-    #Check that fleets aren't catching other fleets
-    fleet.matrix.2 <- parfile[(n.groups - n.fleet + 1):n.groups, (11 + n.dead):
-                                  ncol(parfile), with = F]
-    if(length(which(!is.na(fleet.matrix.2))) > 0){
-      not.na.group <- which(!is.na(fleet.matrix.2))
-      for(i in 1:length(not.na.group)){
-        while(not.na.group[i] > n.fleet){
-          not.na.group[i] <- not.na.group[i] - n.fleet
-          not.na.group <- unique(not.na.group)
-        }
+  #Check that consumers have a QB or ProdCons but not both
+  if(length(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type == 0, Group]) > 0){
+    stop(paste(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type == 0, Group], 
+               'are missing both QB and ProdCons...must enter one \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group]) > 0){
+    stop(paste(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group],
+               'have both QB and ProdCons...only one should be entered \n', 
+               sep = ' '))
+  }
+  
+  #Check that BioAcc / Unassim is NA for fleets and numeric for types < 3
+  if(length(Rpath.params$model[Type == 3 & !is.na(BioAcc), Group]) > 0){
+    stop(paste(Rpath.params$model[Type == 3 & !is.na(BioAcc), Group],
+               'are fleets and should not have a BioAcc...set to NA \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type == 3 & !is.na(Unassim), Group]) > 0){
+    stop(paste(Rpath.params$model[Type == 3 & !is.na(Unassim), Group],
+               'are fleets and should not have an Unassim...set to NA \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type != 3 & is.na(BioAcc), Group]) > 0){
+    stop(paste(Rpath.params$model[Type != 3 & is.na(BioAcc), Group],
+               'must have a number for BioAcc...set to >= 0 \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type != 3 & is.na(Unassim), Group]) > 0){
+    stop(paste(Rpath.params$model[Type != 3 & is.na(Unassim), Group],
+               'must have a number for Unassim...set to >= 0 \n', sep = ' '))
+  }
+  
+  #Check that only Type 2 has DetInput set
+  if(length(Rpath.params$model[Type != 2 & !is.na(DetInput), Group]) > 0){
+    stop(paste(Rpath.params$model[Type != 2 & !is.na(DetInput), Group],
+               'are not detritus...set DetInput to NA \n', sep = ' '))
+  }
+  if(length(Rpath.params$model[Type == 2 & is.na(DetInput), Group]) >0){
+    stop(paste(Rpath.params$model[Type == 2 & is.na(DetInput), Group],
+               'are detritus...set DetInput to 0 \n', sep = ' '))
+  }
+  
+  #Check detritus fate is numeric and sum to 1
+  det.matrix <- Rpath.params$model[, 11:(10 + n.dead), with = F]
+  test.rows  <- rowSums(det.matrix)
+  if(length(setdiff(which(Rpath.params$model[, Type] == 2), which(test.rows != 1))) > 0){
+    stop(paste(Rpath.params$model[, Group][setdiff(which(Rpath.params$model[, Type] == 2), 
+                                          which(test.rows != 1))],
+               'detrital fate does not sum to 1 \n', sep = ' '))
+  }
+  if(length(which(is.na(det.matrix))) > 0){
+    na.group <- which(is.na(det.matrix))
+    for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- 
+      na.group[i] - n.groups
+    na.group <- unique(na.group)
+    stop(paste(Rpath.params$model[na.group, Group], 
+               'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
+  }
+  
+  #Check that landings and discards are numbers for type < 3
+  fleet.matrix <- Rpath.params$model[1:(n.groups - n.fleet), (11 + n.dead):ncol(Rpath.params$model), 
+                            with = F]
+  if(length(which(is.na(fleet.matrix))) > 0){
+    na.group <- which(is.na(fleet.matrix))
+    for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- 
+      na.group[i] - n.groups
+    na.group <- unique(na.group)
+    stop(paste(Rpath.params$model[na.group, Group], 
+               'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
+  }
+  
+  #Check that fleets aren't catching other fleets
+  fleet.matrix.2 <- Rpath.params$model[(n.groups - n.fleet + 1):n.groups, (11 + n.dead):
+                                ncol(Rpath.params$model), with = F]
+  if(length(which(!is.na(fleet.matrix.2))) > 0){
+    not.na.group <- which(!is.na(fleet.matrix.2))
+    for(i in 1:length(not.na.group)){
+      while(not.na.group[i] > n.fleet){
+        not.na.group[i] <- not.na.group[i] - n.fleet
+        not.na.group <- unique(not.na.group)
       }
-      stop(paste(parfile[not.na.group + (n.groups - n.fleet), Group], 
-                 'are catching another fleet...set to NA \n', sep = ' '))
     }
+    stop(paste(Rpath.params$model[not.na.group + (n.groups - n.fleet), Group], 
+               'are catching another fleet...set to NA \n', sep = ' '))
   }
-  if(parameter == 'diet'){
-    #Check that columns sum to 1
-    col.names <- names(parfile)[2:ncol(parfile)]
-    col.sums <- parfile[, lapply(.SD, sum, na.rm = T), .SDcols = col.names]
-    for(i in 1:length(which(col.sums != 1))){
-      warning(paste(col.names[which(col.sums != 1)][i], 'sum,', 
-                    col.sums[, which(col.sums !=1)[i], with = F], 
-                    'is not 1...if this is a producer group it should equal 0, otherwise it should sum to 1'))
-    }
+
+  #Diet
+  #Check that columns sum to 1
+  col.names <- names(Rpath.params$diet)[2:ncol(Rpath.params$model)]
+  col.sums <- Rpath.params$diet[, lapply(.SD, sum, na.rm = T), .SDcols = col.names]
+  for(i in 1:length(which(col.sums != 1))){
+    warning(paste(col.names[which(col.sums != 1)][i], 'sum,', 
+                  col.sums[, which(col.sums !=1)[i], with = F], 
+                  'is not 1...if this is a producer group it should equal 0, otherwise it should sum to 1'))
   }
+
 cat(paste(parameter, 'parameter file is functional'))
 }
 
@@ -343,26 +337,28 @@ cat(paste(parameter, 'parameter file is functional'))
 #'  correct locations...run check.rpath.params to ensure the appropriate columns are
 #'  present).
 #'@export
-read.rpath.params <- function(modfile, dietfile, pedfile,
+read.rpath.params <- function(modfile, dietfile, pedfile = NA,
                               stanzagroupfile = NA, stanzafile = NA){
   Rpath.params <- list()
-  Rpath.params$model                 <- read.csv(modfile, header = T)
-  Rpath.params$diet                  <- read.csv(dietfile, header = T)
+  Rpath.params$model <- as.data.table(read.csv(modfile,  header = T))
+  Rpath.params$diet  <- as.data.table(read.csv(dietfile, header = T))
+  
   if(!is.na(stanzagroupfile)){
-    stanzagroup <- read.csv(stanzagroupfile, header = T)
+    stanzagroup <- as.data.table(read.csv(stanzagroupfile, header = T))
     Rpath.params$stanzas$NStanzaGroups <- nrow(stanzagroup)
     Rpath.params$stanzas$stgroups      <- stanzagroup
-    Rpath.params$stanzas$stanzas       <- read.csv(stanzafile, header = T)
+    Rpath.params$stanzas$stanzas       <- as.data.table(read.csv(stanzafile, 
+                                                                 header = T))
   } else {
     Rpath.params$stanzas$NStanzaGroups <- 0
-    Rpath.params$stanzas$stgroups      <- data.frame(StGroupNum  = NA,
+    Rpath.params$stanzas$stgroups      <- data.table(StGroupNum  = NA,
                                                      StanzaGroup = NA,
                                                      nstanzas    = NA,
                                                      VBGF_Ksp    = NA,
                                                      VBGF_d      = NA,
                                                      Wmat        = NA,
                                                      RecPower    = NA)
-    Rpath.params$stanzas$stanzas       <- data.frame(StGroupNum  = NA,
+    Rpath.params$stanzas$stanzas       <- data.table(StGroupNum  = NA,
                                                      Stanza      = NA,
                                                      GroupNum    = NA,
                                                      Group       = NA,
@@ -371,7 +367,20 @@ read.rpath.params <- function(modfile, dietfile, pedfile,
                                                      Z           = NA,
                                                      Leading     = NA)
   }
-  Rpath.params$pedigree              <- read.csv(pedfile, header = T)
+  if(!is.na(pedfile)){
+    Rpath.params$pedigree <- as.data.table(read.csv(pedfile, header = T))
+  } else {
+    Rpath.params$pedigree <- data.table(Group = Rpath.params$model$Group,
+                                        B     = 1,
+                                        PB    = 1,
+                                        QB    = 1,
+                                        Diet  = 1)
+    fleets <- Rpath.params$model[Type == 3, Group]
+    for(i in 1:length(fleets)){
+      Rpath.params$pedigree[, V1 := 1]
+      setnames(Rpath.params$pedigree, 'V1', fleets[i])
+    }
+  }
   return(Rpath.params)
 }
 

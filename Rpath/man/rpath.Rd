@@ -21,9 +21,11 @@ Performs initial mass balance using a model parameter file and diet
 matrix file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{adjust.fishing}};
+  \code{\link{adjust.scenario}};
+  \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
-  \code{\link{frate.adjust}}; \code{\link{frate.table}};
+  \code{\link{frate.table}};
   \code{\link{read.rpath.params}};
   \code{\link{rpath.stanzas}}; \code{\link{rsim.params}};
   \code{\link{rsim.plot}}; \code{\link{rsim.scenario}};

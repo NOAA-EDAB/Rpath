@@ -4,7 +4,7 @@
 \alias{read.rpath.params}
 \title{Read Rpath parameters from .csv files}
 \usage{
-read.rpath.params(modfile, dietfile, pedfile, stanzagroupfile = NA,
+read.rpath.params(modfile, dietfile, pedfile = NA, stanzagroupfile = NA,
   stanzafile = NA)
 }
 \arguments{
@@ -31,14 +31,15 @@ Outputs an Rpath.param object that can be used for Rpath and subsequently
 Creates an Rpath.param object from a series of .csv files.
 }
 \seealso{
-Other Rpath.functions: \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{adjust.fishing}};
+  \code{\link{adjust.scenario}};
+  \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
-  \code{\link{frate.adjust}}; \code{\link{frate.table}};
-  \code{\link{rpath.stanzas}}; \code{\link{rpath}};
-  \code{\link{rsim.params}}; \code{\link{rsim.plot}};
-  \code{\link{rsim.scenario}}; \code{\link{stanzaplot}};
-  \code{\link{webplot}}; \code{\link{write.Rpath.sim}};
-  \code{\link{write.Rpath}};
+  \code{\link{frate.table}}; \code{\link{rpath.stanzas}};
+  \code{\link{rpath}}; \code{\link{rsim.params}};
+  \code{\link{rsim.plot}}; \code{\link{rsim.scenario}};
+  \code{\link{stanzaplot}}; \code{\link{webplot}};
+  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}};
   \code{\link{write.rpath.params}}
 }
 

@@ -4,7 +4,7 @@
 \alias{check.rpath.param}
 \title{Check Rpath parameter files}
 \usage{
-check.rpath.param(filename, parameter = "model")
+check.rpath.param(Rpath.params)
 }
 \arguments{
 \item{filename}{Name of the parameter file.  Can be the path to a .csv or an R
@@ -22,8 +22,10 @@ Logical check that the parameter files are filled out correctly, i.e. data is en
 expected.
 }
 \seealso{
-Other Rpath.functions: \code{\link{create.rpath.param}};
-  \code{\link{frate.adjust}}; \code{\link{frate.table}};
+Other Rpath.functions: \code{\link{adjust.fishing}};
+  \code{\link{adjust.scenario}};
+  \code{\link{create.rpath.param}};
+  \code{\link{frate.table}};
   \code{\link{read.rpath.params}};
   \code{\link{rpath.stanzas}}; \code{\link{rpath}};
   \code{\link{rsim.params}}; \code{\link{rsim.plot}};

@@ -19,9 +19,11 @@ Uses the leading stanza to calculate the biomass and consumption of other stanza
 necessary to support the leading stanza.
 }
 \seealso{
-Other Rpath.functions: \code{\link{check.rpath.param}};
+Other Rpath.functions: \code{\link{adjust.fishing}};
+  \code{\link{adjust.scenario}};
+  \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
-  \code{\link{frate.adjust}}; \code{\link{frate.table}};
+  \code{\link{frate.table}};
   \code{\link{read.rpath.params}}; \code{\link{rpath}};
   \code{\link{rsim.params}}; \code{\link{rsim.plot}};
   \code{\link{rsim.scenario}}; \code{\link{stanzaplot}};

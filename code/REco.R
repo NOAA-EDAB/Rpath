@@ -15,7 +15,8 @@ if(Sys.info()['sysname']=="Linux"){
 
 #To download Rpath
 # #This only needs to be done the first time you run the script
-# library(devtools)
+
+library(devtools)
 devtools::install_github('slucey/RpathDev/Rpath', build_vignettes = TRUE)
 
 
@@ -155,14 +156,24 @@ REco.params$diet[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA)]
 REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)]
 REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
 
+#Save rpath.params
+save(REco.params, file = paste(out.dir, 'REco_params.RData', sep = ''))
 #-------------------------------------------------------------------------------
 #Ecopath
+REco <- rpath(REco.params, 'R Ecosystem')
+
+#Show unbalanced model
+REco.params$model[Group == 'Foragefish1', Biomass := 2]
+REco <- rpath(REco.params, 'R Ecosystem')
+#Reset
+REco.params$model[Group == 'Foragefish1', Biomass := 5.1]
 REco <- rpath(REco.params, 'R Ecosystem')
 
 #There is an rpath method for generic functions print and summary
 REco
 summary(REco)
- 
+
+
 #print also includes the mortalities toggle
 print(REco, morts = T)
 
@@ -200,12 +211,14 @@ dev.off()
 #Test Adams-Bashforth
 #A - base run
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.AB.1 <- rsim.run(REco.sim, method = 'AB', years = 100)
-rsim.plot(REco.AB.1, groups[1:22])
+REco.run1 <- rsim.run(REco.sim, method = 'AB', years = 100)
+rsim.plot(REco.run1, groups[1:22])
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
+REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
+                           year = 25:100, value = 2)
 REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.AB.2, groups[1:22])
 
@@ -217,7 +230,7 @@ REco.RK4.1 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.1, groups[1:22])
 
 #B - double trawling effort
-REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim <- rsim.scenario(REco, REco.params, 100)
 REco.sim$fishing$EFFORT[26:101, 2] <- 2
 REco.RK4.2 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.2, groups[1:22])
@@ -227,174 +240,5 @@ rsim.plot(REco.RK4.2, groups[1:22])
 
 
 
-
-
-
-# #Write out the basic outputs from ecosim
-# write.Rpath.sim(REco.s1, file = paste(out.dir, 'R_Ecosystem_Ecosim_s1.csv', sep = ''))
-
-#Plot Relative biomass for sim run
-ecosim.plot(REco.base)
-
-#Compare with EwE
-ewe.base       <- as.data.table(read.csv(paste(out.dir, 'EwE_R_Ecosystem_base_Biomass.csv', sep = ''), skip = 9))
-ewe.base.catch <- as.data.table(read.csv(paste(out.dir, 'EwE_R_Ecosystem_base_Yield.csv',   sep = ''), skip = 9))
-r.base         <- as.data.table(REco.base$out_BB)
-r.base.catch   <- as.data.table(REco.base$out_CC * 12)
-
-r.base       <- r.base[1:1200, ]
-r.base.catch <- r.base.catch[1:1200, ]
-
-groups <- copy(names(ewe.base)[1:20])
-
-jpeg(file = paste(out.dir, 'R_Ecosystem_compare_EwE_R_Base.jpg', sep = ''),
-     height = 1700, width = 1500, res = 200)
-opar <- par(mfrow = c(5, 4), mar = c(2, 2, 2, 2), oma = c(2, 4, 0, 4))
-for(i in 1:length(groups)){
-  setnames(ewe.base,       groups[i], 'V1')
-  setnames(r.base,         groups[i], 'V1')
-  setnames(ewe.base.catch, groups[i], 'V1')
-  setnames(r.base.catch,   groups[i], 'V1')
-  
-  bio.y.max <- max(ewe.base$V1, r.base$V1) + .1 * max(ewe.base$V1, r.base$V1)
-  bio.y.min <- min(ewe.base$V1, r.base$V1) - .1 * min(ewe.base$V1, r.base$V1)
-  cat.y.max <- max(ewe.base.catch$V1, r.base.catch$V1) + .12 * max(ewe.base.catch$V1, r.base.catch$V1)
-  cat.y.min <- min(ewe.base.catch$V1, r.base.catch$V1) - .08 * min(ewe.base.catch$V1, r.base.catch$V1)
-  
-  plot(r.base$V1,    col = 'blue', typ = 'l', main = groups[i], xlab = '', ylab = '', ylim = c(bio.y.min, bio.y.max))
-  lines(ewe.base$V1, col = 'blue', lty = 2)
-  par(new = T)
-  plot(r.base.catch$V1,    col = 'red', typ = 'l', xlab = '', ylab = '', axes = F, ylim = c(cat.y.min, cat.y.max))
-  lines(ewe.base.catch$V1, col = 'red', lty = 2)
-  axis(4)
-  
-  setnames(ewe.base,       'V1', groups[i])
-  setnames(r.base,         'V1', groups[i])
-  setnames(ewe.base.catch, 'V1', groups[i])
-  setnames(r.base.catch,   'V1', groups[i])
-}
-
-mtext(1, text = 'Months', line = 1, outer = T)
-mtext(2, text = 'Biomass (blue)', line = 1, outer = T)
-mtext(4, text = 'Catch (red)', line = 1, outer = T)
-
-dev.off()
-
-#-------------------------------------------------------------------------------------------------------------------
-#Scenario 2 - Increase F on non-stanza group
-#Increase F on Shellfish
-REco.shell <- copy(REco.init)
-REco.shell <- ecosim.run(REco.shell, 0, 25)
-REco.shell <- frate.adjust(REco.shell, 'Shellfish', 'Dredgers', 2)
-#REco.shell <- frate.adjust(REco.shell, 'Shellfish', 'Dredgers', .14314, multiplier = F, discard = F)
-#REco.shell <- frate.adjust(REco.shell, 'Shellfish', 'Dredgers', .00286, multiplier = F, target  = F)
-frate.table(REco.shell)
-REco.shell <- ecosim.run(REco.shell, 25, 100, init_run = F)
-
-ecosim.plot(REco.shell)
-
-#Compare with EwE
-ewe.shell       <- as.data.table(read.csv(paste(out.dir, 'EwE_R_Ecosystem_doubleF_shellfish_Biomass.csv', sep = ''), skip = 9))
-ewe.shell.catch <- as.data.table(read.csv(paste(out.dir, 'EwE_R_Ecosystem_doubleF_shellfish_Yield.csv',   sep = ''), skip = 9))
-r.shell         <- as.data.table(REco.shell$out_BB)
-r.shell.catch   <- as.data.table(REco.shell$out_CC * 12)
-
-r.shell       <- r.shell[1:1200, ]
-r.shell.catch <- r.shell.catch[1:1200, ]
-
-groups <- copy(names(ewe.shell)[1:20])
-
-jpeg(file = paste(out.dir, 'R_Ecosystem_compare_EwE_R_doubleF_shellfish.jpg', sep = ''),
-     height = 1700, width = 1500, res = 200)
-opar <- par(mfrow = c(5, 4), mar = c(2, 2, 2, 2), oma = c(2, 4, 0, 4))
-for(i in 1:length(groups)){
-  setnames(ewe.shell,       groups[i], 'V1')
-  setnames(r.shell,         groups[i], 'V1')
-  setnames(ewe.shell.catch, groups[i], 'V1')
-  setnames(r.shell.catch,   groups[i], 'V1')
-  
-  bio.y.max <- max(ewe.shell$V1, r.shell$V1) + .1 * max(ewe.shell$V1, r.shell$V1)
-  bio.y.min <- min(ewe.shell$V1, r.shell$V1) - .1 * min(ewe.shell$V1, r.shell$V1)
-  cat.y.max <- max(ewe.shell.catch$V1, r.shell.catch$V1) + .12 * max(ewe.shell.catch$V1, r.shell.catch$V1)
-  cat.y.min <- min(ewe.shell.catch$V1, r.shell.catch$V1) - .08 * min(ewe.shell.catch$V1, r.shell.catch$V1)
-  
-  plot(r.shell$V1,    col = 'blue', typ = 'l', main = groups[i], xlab = '', ylab = '', ylim = c(bio.y.min, bio.y.max))
-  lines(ewe.shell$V1, col = 'blue', lty = 2)
-  par(new = T)
-  plot(r.shell.catch$V1,    col = 'red', typ = 'l', xlab = '', ylab = '', axes = F, ylim = c(cat.y.min, cat.y.max))
-  lines(ewe.shell.catch$V1, col = 'red', lty = 2)
-  axis(4)
-  
-  setnames(ewe.shell,       'V1', groups[i])
-  setnames(r.shell,         'V1', groups[i])
-  setnames(ewe.shell.catch, 'V1', groups[i])
-  setnames(r.shell.catch,   'V1', groups[i])
-}
-
-mtext(1, text = 'Months', line = 1, outer = T)
-mtext(2, text = 'Biomass (blue)', line = 1, outer = T)
-mtext(4, text = 'Catch (red)', line = 1, outer = T)
-
-dev.off()
-
-#---------------------------------------------------------------------------------------------------------
-#Scenario 3 - Increase F on stanza group
-#Increase F on Adult roundfish 1
-REco.rf1 <- copy(REco.init)
-REco.rf1 <- ecosim.run(REco.rf1, 0, 25)
-REco.rf1 <- frate.adjust(REco.rf1, 'AduRoundfish1', 'Trawlers', 2)
-REco.rf1 <- frate.adjust(REco.rf1, 'AduRoundfish1', 'Midwater', 2)
-REco.rf1 <- frate.adjust(REco.rf1, 'AduRoundfish1', 'Dredgers', 2)
-
-frate.table(REco.rf1)
-REco.rf1 <- ecosim.run(REco.rf1, 25, 100, init_run = F)
-
-ecosim.plot(REco.rf1)
-
-#Compare with EwE
-ewe.rf1       <- as.data.table(read.csv(paste(out.dir, 'EwE_R_Ecosystem_doubleF_rf1_Biomass.csv', sep = ''), skip = 9))
-ewe.rf1.catch <- as.data.table(read.csv(paste(out.dir, 'EwE_R_Ecosystem_doubleF_rf1_Yield.csv',   sep = ''), skip = 9))
-r.rf1         <- as.data.table(REco.rf1$out_BB)
-r.rf1.catch   <- as.data.table(REco.rf1$out_CC * 12)
-
-r.rf1       <- r.rf1[1:1200, ]
-r.rf1.catch <- r.rf1.catch[1:1200, ]
-
-groups <- copy(names(ewe.rf1)[1:20])
-
-jpeg(file = paste(out.dir, 'R_Ecosystem_compare_EwE_R_doubleF_rf1_2.jpg', sep = ''),
-     height = 1700, width = 1500, res = 200)
-opar <- par(mfrow = c(5, 4), mar = c(2, 2, 2, 2), oma = c(2, 4, 0, 4))
-for(i in 1:length(groups)){
-  setnames(ewe.rf1,       groups[i], 'V1')
-  setnames(r.rf1,         groups[i], 'V1')
-  setnames(ewe.rf1.catch, groups[i], 'V1')
-  setnames(r.rf1.catch,   groups[i], 'V1')
-  
-  bio.y.max <- max(ewe.rf1$V1, r.rf1$V1) + .1 * max(ewe.rf1$V1, r.rf1$V1)
-  bio.y.min <- min(ewe.rf1$V1, r.rf1$V1) - .1 * min(ewe.rf1$V1, r.rf1$V1)
-  cat.y.max <- max(ewe.rf1.catch$V1, r.rf1.catch$V1) + .12 * max(ewe.rf1.catch$V1, r.rf1.catch$V1)
-  cat.y.min <- min(ewe.rf1.catch$V1, r.rf1.catch$V1) - .08 * min(ewe.rf1.catch$V1, r.rf1.catch$V1)
-  
-  plot(r.rf1$V1,    col = 'blue', typ = 'l', main = groups[i], xlab = '', ylab = '', ylim = c(bio.y.min, bio.y.max))
-  lines(ewe.rf1$V1, col = 'blue', lty = 2)
-  par(new = T)
-  plot(r.rf1.catch$V1,    col = 'red', typ = 'l', xlab = '', ylab = '', axes = F, ylim = c(cat.y.min, cat.y.max))
-  lines(ewe.rf1.catch$V1, col = 'red', lty = 2)
-  axis(4)
-  
-  setnames(ewe.rf1,       'V1', groups[i])
-  setnames(r.rf1,         'V1', groups[i])
-  setnames(ewe.rf1.catch, 'V1', groups[i])
-  setnames(r.rf1.catch,   'V1', groups[i])
-}
-
-mtext(1, text = 'Months', line = 1, outer = T)
-mtext(2, text = 'Biomass (blue)', line = 1, outer = T)
-mtext(4, text = 'Catch (red)', line = 1, outer = T)
-
-dev.off()
-
-#---------------------------------------------------------------------------------------------------------
 
 
