@@ -15,10 +15,8 @@ if(Sys.info()['sysname']=="Linux"){
 
 #To download Rpath
 # #This only needs to be done the first time you run the script
-
 library(devtools)
 devtools::install_github('slucey/RpathDev/Rpath', build_vignettes = TRUE)
-
 
 library(Rpath); library(data.table)
 
