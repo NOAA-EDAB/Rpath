@@ -175,10 +175,13 @@ REco.sim <- rsim.scenario(REco, REco.params, years = 100)
 
 The second part of rsim is to add forcing functions or change the fishing behavior.
 This is accomplished by changing the appropriate list within the Rsim.scenario object
-created in the first step.  For example, we can double the effort of the trawler fleet after 25 years.
+created in the first step.  There are a series of adjust functions that will do this
+without having to know the specific group numbers.  For example, we can double the
+effort of the trawler fleet after 25 years using the `adjust.fishing` function.
 
 ```{r Change effort}
-REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', year = 25:100, 
+                           value = 2)
 ```
 
 The final part is to apply the modified Rsim.scenario function to the `rsim.run`
