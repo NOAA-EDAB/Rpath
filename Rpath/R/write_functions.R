@@ -71,10 +71,16 @@ write.Rpath <- function(x, file, morts = F, ...){
 #'@export
 #Write -- note, not a generic function
 write.Rsim <- function(Rsim.output, file, ...){
+  gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
+  start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
+  end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
   out <- data.frame(Group      = Rsim.output$params$spname,
                     StartBio   = Rsim.output$start_state$BB,
                     EndBio     = Rsim.output$end_state$BB,
-                    StartCatch = Rsim.output$start_state$CC,
-                    EndCatch   = Rsim.output$end_state$CC)
+                    ESBio      = Rsim.output$end_state$BB / 
+                                 Rsim.output$start_state$BB,
+                    StartCatch = start_CC * 12,
+                    EndCatch   = end_CC * 12,
+                    ESCatch    = (end_CC * 12) / (start_CC * 12))
   write.csv(out, file = file)
 }
