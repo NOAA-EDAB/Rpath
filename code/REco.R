@@ -15,8 +15,8 @@ if(Sys.info()['sysname']=="Linux"){
 
 #To download Rpath
 # #This only needs to be done the first time you run the script
-#library(devtools)
-#devtools::install_github('slucey/RpathDev/Rpath', ref = 'Public', build_vignettes = TRUE)
+library(devtools)
+devtools::install_github('slucey/RpathDev/Rpath', ref = 'Public', build_vignettes = TRUE)
 
 library(Rpath); library(data.table)
 
@@ -204,6 +204,7 @@ dev.off()
 # 2 - modify scenario
 # 3 - rsim.run
 # 4 - view results with rsim.plot
+# 5 - save outputs with write.rsim
 
 #Test Adams-Bashforth
 #A - base run
@@ -213,7 +214,7 @@ rsim.plot(REco.run1, groups[1:22])
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
+#REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
 REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
                            year = 25:100, value = 2)
 REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
@@ -222,7 +223,7 @@ rsim.plot(REco.AB.2, groups[1:22])
 
 #Test Runge-Kutta 4
 #A - base run
-REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim <- rsim.scenario(REco, REco.params, 100)
 REco.RK4.1 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.1, groups[1:22])
 
