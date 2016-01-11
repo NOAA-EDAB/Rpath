@@ -25,7 +25,7 @@ Other Rpath.functions: \code{\link{adjust.fishing}};
   \code{\link{rpath.stanzas}}; \code{\link{rpath}};
   \code{\link{rsim.params}}; \code{\link{rsim.scenario}};
   \code{\link{stanzaplot}}; \code{\link{webplot}};
-  \code{\link{write.Rpath.sim}}; \code{\link{write.Rpath}};
+  \code{\link{write.Rpath}}; \code{\link{write.Rsim}};
   \code{\link{write.rpath.params}}
 }
 

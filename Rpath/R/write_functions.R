@@ -63,22 +63,18 @@ write.Rpath <- function(x, file, morts = F, ...){
 #'
 #'@family Rpath functions
 #'
-#'@param x Rpath.sim object created by the ecosim.run() function.
+#'@param Rsim.output object created by the rsim.run() function.
 #'@param file file name for resultant .csv file.  Be sure to include ".csv".  
 #'
 #'@return Writes a .csv file with the start and end biomass and catch per group
 #' from an Rpath.sim object.
 #'@export
 #Write -- note, not a generic function
-write.Rpath.sim <- function(x, file, ...){
-    out <- c()
-    for(i in 1:(x$NUM_LIVING + x$NUM_DEAD)){
-      sp.out <- data.frame(Group      = x$spname[i],
-                           StartBio   = x$out_BB[1, i],
-                           EndBio     = x$out_BB[nrow(x$out_CC), i],
-                           StartCatch = x$out_CC[1, i],
-                           EndCatch   = x$out_CC[nrow(x$out_CC) - 1, i])
-      out <- rbind(out, sp.out)
-    }
-    write.csv(out, file = file)
+write.Rsim <- function(Rsim.output, file, ...){
+  out <- data.frame(Group      = Rsim.output$params$spname,
+                    StartBio   = Rsim.output$start_state$BB,
+                    EndBio     = Rsim.output$end_state$BB,
+                    StartCatch = Rsim.output$start_state$CC,
+                    EndCatch   = Rsim.output$end_state$CC)
+  write.csv(out, file = file)
 }
