@@ -48,12 +48,14 @@ ecopath.outputs <- cbind(TL, Bio, PB, QB, EE, GE)
 
 png(file = paste(out.dir, 'Ecopath_attributes.png', sep = ''), height = 1700,
     width = 2000, res = 200)
-boxplot(ecopath.outputs, axes = F)
-box()
-axis(1, at = axTicks(1), labels = c('TL','Bio', 'PB', 'QB', 'EE', 'GE'))
-axis(2, las = T)
-mtext(1, text = 'Ecopath attribute', line = 2.5)
-mtext(2, text = '% difference', line = 3)
+opar <- par(mar = c(5, 7, 1, 1))
+boxplot(ecopath.outputs, axes = F, cex = 3)
+box(lwd = 3)
+axis(1, at = axTicks(1), labels = c('TL','Bio', 'PB', 'QB', 'EE', 'GE'),
+     cex.axis = 2)
+axis(2, las = T, cex.axis = 2)
+mtext(1, text = 'Ecopath attribute', line = 3, cex = 2)
+mtext(2, text = '% difference', line = 5 , cex = 2)
 dev.off()
 
 #-------------------------------------------------------------------------------
