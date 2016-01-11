@@ -185,13 +185,13 @@ set.seed(34)
 my.order <- c(c(22, 20, 21), c(17, 19, 18), c(8, 4, 2, 14, 11, 13, 10, 15, 16, 9, 6),
               c(25, 1, 7, 12), c(3, 5, 24), 23)
 
-tiff(file = paste(out.dir, 'R_Ecosystem.tif'), height = 1500, width = 1700, res = 300)
+png(file = paste(out.dir, 'R_Ecosystem.png'), height = 1500, width = 1700, res = 300)
 webplot(REco, labels = T, fleets = T, box.order = my.order, label.cex = 0.65)
 dev.off()
 
 #Highlight example
 set.seed(34)
-tiff(file = paste(out.dir, 'Highlight_AduRoundfish1.tif'), height = 1800, width = 2000, 
+png(file = paste(out.dir, 'Highlight_AduRoundfish1.png'), height = 1800, width = 2000, 
      res = 300)
 webplot(REco, fleets = T, highlight = 5, box.order = my.order, label.cex = 0.65)
 dev.off()
