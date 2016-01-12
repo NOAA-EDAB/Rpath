@@ -77,10 +77,10 @@ write.Rsim <- function(Rsim.output, file, ...){
   out <- data.frame(Group      = Rsim.output$params$spname,
                     StartBio   = Rsim.output$start_state$BB,
                     EndBio     = Rsim.output$end_state$BB,
-                    ESBio      = Rsim.output$end_state$BB / 
+                    BioES      = Rsim.output$end_state$BB / 
                                  Rsim.output$start_state$BB,
                     StartCatch = start_CC * 12,
                     EndCatch   = end_CC * 12,
-                    ESCatch    = (end_CC * 12) / (start_CC * 12))
+                    CatchES    = (end_CC * 12) / (start_CC * 12))
   write.csv(out, file = file)
 }
