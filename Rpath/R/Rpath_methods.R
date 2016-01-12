@@ -57,7 +57,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 
 #Print Rpath.sim
 #'@export
-print.Rsim.output <- function(x, rows = NA, ...){
+print.Rsim.output <- function(Rsim.output, rows = NA, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
   if(x$crash_year > 0) cat(paste("Run crashed at", x$crash_year, "\n", sep = ''))
   
