@@ -91,7 +91,9 @@ REco.params$model[, Dredgers.disc := dredge.d]
 #Calculate the multistanza biomass/consumption
 #Group parameters
 REco.params$stanzas$stgroups[, VBGF_Ksp := c(0.145, 0.295, 0.0761, 0.112)]
-REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
+#REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
+REco.params$stanzas$stgroups[, Wmat     := c(0.0577, 0.421, 0.088, 0.241)]
+
 
 #Individual stanza parameters
 REco.params$stanzas$stanzas[, First   := c(rep(c(0, 24), 3), 0, 48)]
@@ -209,29 +211,35 @@ dev.off()
 #Test Adams-Bashforth
 #A - base run
 REco.sim <- rsim.scenario(REco, REco.params, 100)
+REco.sim$params$NoIntegrate[c(2, 4)] <- c(1, 3)
 REco.run1 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.run1, groups[1:22])
+write.Rsim(REco.run1, file = paste(out.dir, 'REco_baserun_AB.csv', sep = ''))
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
+REco.sim$params$NoIntegrate[c(2, 4)] <- c(1, 3)
 #REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
 REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
                            year = 25:100, value = 2)
 REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.AB.2, groups[1:22])
-
+write.Rsim(REco.AB.2, file = paste(out.dir, 'REco_doubletrawl_AB.csv', sep = ''))
 
 #Test Runge-Kutta 4
 #A - base run
 REco.sim <- rsim.scenario(REco, REco.params, 100)
 REco.RK4.1 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.1, groups[1:22])
+write.Rsim(REco.RK4.1, file = paste(out.dir, 'REco_baserun_RK4.csv', sep = ''))
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
+                           year = 25:100, value = 2)
 REco.RK4.2 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.2, groups[1:22])
+write.Rsim(REco.RK4.2, file = paste(out.dir, 'REco_doubletrawl_RK4.csv', sep = ''))
 
 
 
