@@ -58,8 +58,9 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 #Print Rpath.sim
 #'@export
 print.Rsim.output <- function(Rsim.output, rows = NA, ...){
-  cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
-  if(x$crash_year > 0) cat(paste("Run crashed at", x$crash_year, "\n", sep = ''))
+  cat(paste("Rpath sim results:", attr(Rsim.output, 'eco.name'),"\n"))
+  if(Rsim.output$crash_year > 0) cat(paste("Run crashed at", 
+                                           Rsim.output$crash_year, "\n", sep = ''))
   
   gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
   start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
