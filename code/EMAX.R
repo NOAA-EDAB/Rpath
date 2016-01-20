@@ -8,8 +8,8 @@ if(Sys.info()['sysname']=="Windows"){
     memory.limit(4000)
 }
 if(Sys.info()['sysname']=="Linux"){
-    data.dir <- "/home/slucey/slucey/Rpath/data/"
-    out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
+    data.dir <- "/home/slucey/slucey/Rpath/data"
+    out.dir  <- "/home/slucey/slucey/Rpath/outputs"
 }
 
 #-------------------------------------------------------------------------------
@@ -189,6 +189,10 @@ GB.params$diet[, 'Sea Birds' := c(rep(NA, 4), 0.034, NA, 0.137, rep(NA, 7), 0.01
                                   0.041, 0.013, rep(NA, 5), 0.126, NA)]
                
 GB <- rpath(GB.params, 'Georges Bank')
+
+#Save summary for comparison
+write.Rpath(GB, file = file.path(out.dir, 'EMAX_GB_Parameters.csv'))
+
 
 #Webplot plots the resultant food web
 png(file = paste(out.dir, 'Georges_Bank_EMAX_Foodweb.png', sep = ''),
