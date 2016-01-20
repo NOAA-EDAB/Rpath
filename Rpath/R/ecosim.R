@@ -29,7 +29,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
-  stanzas     <- rsim.stanzas(Rpath.params$stanzas, start_state, params)
+  stanzas     <- rsim.stanzas(Rpath.params, start_state, params)
   
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
@@ -298,8 +298,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  
  #####################################################################################
  #'@export
- rsim.stanzas <- function(juvfile, state, params){
-   if(juvfile$NStanzaGroups > 0){
+ rsim.stanzas <- function(Rpath.params, state, params){
+   if(Rpath.params$stanzas$NStanzaGroups > 0){
+     juvfile <- Rpath.params$stanzas
      #Set up multistanza parameters to pass to C
      rstan <- list()
      rstan$Nsplit      <- juvfile$NStanzaGroups
