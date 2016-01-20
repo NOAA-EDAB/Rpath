@@ -17,6 +17,45 @@ library(Rpath); library(data.table)
 
 #-------------------------------------------------------------------------------
 #User functions
+EwE.ecopath.fix <- function(ewe.file){
+  #Fix EwE columns
+  setnames(ewe.file, c('Group.name', 'Trophic.level', 'Biomass..t.km..', 
+                  'Production...biomass...year.', 'Consumption...biomass...year.',
+                  'Ecotrophic.efficiency', 'Production...consumption'),
+           c('Group', 'TL', 'Biomass', 'PB', 'QB', 'EE', 'GE'))
+  ewe.file[is.na(PB), PB := Z...year.]
+  
+  #Remove extra rows/columns
+  ewe.file <- ewe.file[!is.na(X), ]
+  ewe.file[, c('Habitat.area..fraction.', 'Biomass.in.habitat.area..t.km..',
+          'Z...year.', 'X.1') := NULL]
+  return(ewe.file)
+}
+
+Rpath.ecopath.fix <- function(rpath.file){
+  rpath.file <- rpath.file[type != 3, ]
+  rpath.file[, c('type', 'Removals') := NULL]
+  return(rpath.file)
+}
+
+compare.ecopath <- function(rpath.file, ewe.file){
+  TL  <- ((ewe.file[, TL] - rpath.file[, TL]) / 
+            ((ewe.file[, TL] + rpath.file[, TL]) / 2)) * 100
+  Bio <- ((ewe.file[, Biomass] - rpath.file[, Biomass]) / 
+            ((ewe.file[, Biomass] + rpath.file[, Biomass]) / 2)) * 100
+  PB <- ((ewe.file[, PB] - rpath.file[, PB]) / 
+           ((ewe.file[, PB] + rpath.file[, PB]) / 2)) * 100
+  QB <- ((ewe.file[, QB] - rpath.file[, QB]) / 
+           ((ewe.file[, QB] + rpath.file[, QB]) / 2)) * 100
+  EE <- ((ewe.file[, EE] - rpath.file[, EE]) / 
+           ((ewe.file[, EE] + rpath.file[, EE]) / 2)) * 100
+  GE <- ((ewe.file[, GE] - rpath.file[, GE]) / 
+           ((ewe.file[, GE] + rpath.file[, GE]) / 2)) * 100
+  
+  ecopath.outputs <- cbind(TL, Bio, PB, QB, EE, GE)
+  return(ecopath.outputs)
+}
+
 EwE.summary <- function(directory){
   EwE.bio   <- as.data.table(read.csv(file.path(directory, 'Biomass_annual.csv'), 
                                       skip = 9))
@@ -44,6 +83,33 @@ EwE.summary <- function(directory){
   return(EwE.sim)
 }
 #-------------------------------------------------------------------------------
+#EMAX comparison
+#Ecopath
+Rpath.GB <- as.data.table(read.csv(file.path(rpath.dir, 'EMAX_GB_Parameters.csv')))
+EwE.GB   <- as.data.table(read.csv(file.path(ewe.dir,  
+                                             'GB_EMAX2006-Basic estimates.csv')))
+
+#Make files similar
+EwE.GB <- EwE.ecopath.fix(EwE.GB)
+Rpath.GB <- Rpath.ecopath.fix(Rpath.GB)
+
+GB.ecopath <- compare.ecopath(Rpath.GB, EwE.GB)
+
+png(file = file.path(out.dir, 'Ecopath_attributes.png'), height = 1700,
+    width = 2000, res = 200)
+opar <- par(mar = c(5, 7, 1, 1))
+boxplot(GB.ecopath, axes = F, cex = 3)
+box(lwd = 3)
+axis(1, at = axTicks(1), labels = c('TL','Bio', 'PB', 'QB', 'EE', 'GE'),
+     cex.axis = 2)
+axis(2, las = T, cex.axis = 2)
+mtext(1, text = 'Ecopath attributes', line = 3, cex = 2)
+mtext(2, text = '% difference', line = 5 , cex = 2)
+dev.off()
+
+
+
+#R Ecosystem comparison
 #Compare Ecopath
 Rpath <- as.data.table(read.csv(file.path(rpath.dir, 
                                           'R_Ecosystem_Parameters.csv')))
