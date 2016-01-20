@@ -1,10 +1,3 @@
-## R version of Ecopath balance by Sarah Gaichas and Kerim Aydin
-## Modified by Sean Lucey
-## Version controled by git
-## Function ecopathR takes as input 3 csv files and optional
-## ecosystem name  
-
-
 #'Ecopath modual of Rpath
 #'
 #'Performs initial mass balance using a model parameter file and diet
@@ -55,7 +48,7 @@ rpath <- function(Rpath.params, eco.name = NA){
 
   # fill in GE and QB from inputs
   GE <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
-  QB <- ifelse(is.na(model[, QB]),       model[, QB := PB / GE], model[, QB])
+  QB <- ifelse(is.na(model[, QB]),       model[, PB / GE], model[, QB])
 
   # define catch, discards, necessary sums
   catchmat    <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
