@@ -192,15 +192,15 @@ check.rpath.param <- function(Rpath.params){
     #consider making this a warning() since you can have both in EwE
   }
 
-  #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 2 and 3
-  if(length(Rpath.params$model[Type > 1 & !is.na(Biomass), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(Biomass), Group], 
-               'are not living and should not have a biomass...set to NA \n', 
+  #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 3
+  if(length(Rpath.params$model[Type == 3 & !is.na(Biomass), Group]) > 0){
+    stop(paste(Rpath.params$model[Type == 3 & !is.na(Biomass), Group], 
+               'is a fleet and should not have a biomass...set to NA \n', 
                sep = ' '))
   }
-  if(length(Rpath.params$model[Type > 1 & !is.na(PB), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(PB), Group], 
-               'are not living and should not have a PB...set to NA \n', sep = ' '))
+  if(length(Rpath.params$model[Type == 3 & !is.na(PB), Group]) > 0){
+    stop(paste(Rpath.params$model[Type == 3 & !is.na(PB), Group], 
+               'is a fleet and should not have a PB...set to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type > 1 & !is.na(QB), Group]) > 0){
     stop(paste(Rpath.params$model[Type > 1 & !is.na(QB), Group], 
