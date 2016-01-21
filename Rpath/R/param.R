@@ -223,12 +223,12 @@ check.rpath.param <- function(Rpath.params){
   }
   
   #Check that consumers have a QB or ProdCons but not both
-  if(length(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type == 0, Group]) > 0){
-    stop(paste(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type == 0, Group], 
+  if(length(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type < 1, Group]) > 0){
+    stop(paste(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type < 1, Group], 
                'are missing both QB and ProdCons...must enter one \n', sep = ' '))
   }
-  if(length(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group]) > 0){
-    stop(paste(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group],
+  if(length(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group]) > 0){
+    stop(paste(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group],
                'have both QB and ProdCons...only one should be entered \n', 
                sep = ' '))
   }
@@ -287,7 +287,7 @@ check.rpath.param <- function(Rpath.params){
       na.group[i] - n.groups
     na.group <- unique(na.group)
     stop(paste(Rpath.params$model[na.group, Group], 
-               'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
+               'one or more catches are NA...set to >= 0 \n', sep = ' '))
   }
   
   #Check that fleets aren't catching other fleets
@@ -307,12 +307,15 @@ check.rpath.param <- function(Rpath.params){
 
   #Diet
   #Check that columns sum to 1
-  col.names <- names(Rpath.params$diet)[2:ncol(Rpath.params$model)]
+  col.names <- names(Rpath.params$diet)[2:ncol(Rpath.params$diet)]
   col.sums <- Rpath.params$diet[, lapply(.SD, sum, na.rm = T), .SDcols = col.names]
-  for(i in 1:length(which(col.sums != 1))){
-    warning(paste(col.names[which(col.sums != 1)][i], 'sum,', 
-                  col.sums[, which(col.sums !=1)[i], with = F], 
-                  'is not 1...if this is a producer group it should equal 0, otherwise it should sum to 1'))
+  #Check types (>0 & <=1 are primary producers)
+  types <- Rpath.params$model[Type < 2, Type]
+  dctype <- col.sums + types
+  for(i in 1:length(which(dctype != 1))){
+    stop(paste(col.names[which(dctype != 1)][i], 'sum,', 
+                  col.sums[, which(dctype !=1)[i], with = F], 
+                  'is not 1...check DC or proportion of primary production'))
   }
 
 cat(paste(parameter, 'parameter file is functional'))
