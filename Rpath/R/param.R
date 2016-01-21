@@ -312,13 +312,15 @@ check.rpath.param <- function(Rpath.params){
   #Check types (>0 & <=1 are primary producers)
   types <- Rpath.params$model[Type < 2, Type]
   dctype <- col.sums + types
-  for(i in 1:length(which(dctype != 1))){
+  if(length(which(dctype != 1)) > 0){
+    for(i in 1:length(which(dctype != 1))){
     stop(paste(col.names[which(dctype != 1)][i], 'sum,', 
                   col.sums[, which(dctype !=1)[i], with = F], 
                   'is not 1...check DC or proportion of primary production'))
+    }
   }
 
-cat(paste(parameter, 'parameter file is functional'))
+cat('Rpath parameter file is functional')
 }
 
 #'Read Rpath parameters from .csv files
