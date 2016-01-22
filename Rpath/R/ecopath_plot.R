@@ -98,7 +98,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
     if(is.character(highlight)) highlight <- which(Rpath.obj$Group == highlight)
     pred.x <- pointmap[GroupNum == highlight, x.pos]
     pred.y <- pointmap[GroupNum == highlight, TL]
-    if(pointmap[GroupNum == highlight, type] == 0){
+    if(pointmap[GroupNum == highlight, type] < 1){
       prey       <- which(Rpath.obj$DC[, highlight] > 0)
       group.pred <- which(Rpath.obj$DC[highlight, ] > 0)
       fleet.pred <- which(tot.catch[highlight, ] > 0)
