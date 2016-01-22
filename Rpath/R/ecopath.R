@@ -47,8 +47,9 @@ rpath <- function(Rpath.params, eco.name = NA){
   model[is.na(DetInput), DetInput := 0]
 
   # fill in GE and QB from inputs
-  GE <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
-  QB <- ifelse(is.na(model[, QB]),       model[, PB / GE], model[, QB])
+  GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
+  QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE], model[, QB])
+  model[, QB := QB.1]
 
   # define catch, discards, necessary sums
   catchmat    <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
