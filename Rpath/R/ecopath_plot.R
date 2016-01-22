@@ -75,7 +75,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   
   #Web connections
   tot.catch <- Rpath.obj$Catch + Rpath.obj$Discards
-  pred      <- pointmap[type %in% c(0, 3), GroupNum]
+  pred      <- pointmap[!type %in% 1:2, GroupNum]
   
   for(i in pred){
     pred.x <- pointmap[GroupNum == i, x.pos] 
