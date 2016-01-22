@@ -150,7 +150,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
              pch = 16, col = type.col, ncol = 4, xpd = T, inset = c(0, -.1))
     }
     if(length(type.col) < 4) type.col <- rep(type.col[1], 4)
-    points(pointmap[type == 0, x.pos], pointmap[type == 0, TL], pch = 16, col = type.col[1])
+    points(pointmap[type <  1, x.pos], pointmap[type <  1, TL], pch = 16, col = type.col[1])
     points(pointmap[type == 1, x.pos], pointmap[type == 1, TL], pch = 16, col = type.col[2])
     points(pointmap[type == 2, x.pos], pointmap[type == 2, TL], pch = 16, col = type.col[3])
     points(pointmap[type == 3, x.pos], pointmap[type == 3, TL], pch = 16, col = type.col[4])
