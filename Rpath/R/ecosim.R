@@ -180,7 +180,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                      1:length(Rpath$PB),
                      0)
   primFrom <- rep(0, length(Rpath$PB))
-  primQ    <- Rpath$PB * Rpath$BB * Rpath$type
+  primQ    <- Rpath$PB * Rpath$BB
+  #Change production to consumption for mixotrophs
+  mixotrophs <- which(Rpath$type > 0 & Rpath$type < 1)
+  primQ[mixotrophs] <- primQ[mixotrophs] / Rpath$GE[mixotrophs] * 
+    Rpath$type[mixotrophs] 
   
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
