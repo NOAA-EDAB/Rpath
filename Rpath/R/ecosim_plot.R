@@ -41,8 +41,8 @@ rsim.plot <- function(Rsim.output, spname, indplot = F){
   
   line.col <- rainbow(n)
   for(i in 1:n){
-    ifelse(indplot, lines(rel.bio, col = line.col[i], lwd = 3),
-           lines(rel.bio[, i], col = line.col[i], lwd = 3))
+    if(indplot == T) lines(rel.bio,      col = line.col[i], lwd = 3)
+    if(indplot == F) lines(rel.bio[, i], col = line.col[i], lwd = 3)
   }
   
   opar <- par(mar = c(0, 0, 0, 0))
