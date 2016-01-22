@@ -176,11 +176,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #primary production links
   #primTo   <- ifelse(Rpath$PB>0 & Rpath$QB<=0, 1:length(Rpath$PB),0 )
-  primTo   <- ifelse(Rpath$type == 1, 
+  primTo   <- ifelse(Rpath$type > 0 & Rpath$type <= 1, 
                      1:length(Rpath$PB),
                      0)
   primFrom <- rep(0, length(Rpath$PB))
-  primQ    <- Rpath$PB * Rpath$BB 
+  primQ    <- Rpath$PB * Rpath$BB * Rpath$type
   
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
