@@ -299,8 +299,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  #####################################################################################
  #'@export
  rsim.stanzas <- function(Rpath.params, state, params){
+   juvfile <- Rpath.params$stanzas
    if(Rpath.params$stanzas$NStanzaGroups > 0){
-     juvfile <- Rpath.params$stanzas
      #Set up multistanza parameters to pass to C
      rstan <- list()
      rstan$Nsplit      <- juvfile$NStanzaGroups
