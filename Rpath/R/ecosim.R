@@ -164,8 +164,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                                1.0) 
   
   #NoIntegrate
-  simpar$NoIntegrate <- ifelse(c(0, Rpath$PB) / 
-                               (1.0 - simpar$ActiveRespFrac - simpar$UnassimRespFrac) > 
+  simpar$NoIntegrate <- ifelse(simpar$MzeroMort * simpar$B_BaseRef > 
                                2 * steps_yr * steps_m, 
                              0, 
                              simpar$spnum)  
