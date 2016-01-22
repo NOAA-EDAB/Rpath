@@ -31,7 +31,7 @@ groups <- c('Baleen_whales', 'Toothed_whales', 'Seals', 'Birds', 'Sharks_L',
             'Meiobenthos', 'Corals', 'Softcorals_sponges_etc', 'Krill', 
             'Zooplankton', 'Phytoplankton', 'Benthic plants', 'Detritus', 'Fleet1')
 
-types <- c(rep(0, 34), rep(1, 2), 2, 3)
+types <- c(rep(0, 30), 0.63, rep(0, 3), rep(1, 2), 2, 3)
 #Note - corals are partial primary producers....
 
 G37.params <- create.rpath.param(groups, types)
@@ -159,13 +159,14 @@ G37.params$diet[, Shrimps := c(rep(NA, 29), 0.1, rep(NA, 6), 0.9)]
 
 G37.params$diet[, Lobsters_crabs := c(rep(NA, 28), 0.2, 0.5, rep(NA, 6), 0.3)]
 
-G37.params$diet[, Macrobenthos := c(rep(NA, 28), 0.2, 0.6, rep(NA, 3), 0.02, NA,
+G37.params$diet[, Macrobenthos := c(rep(NA, 28), 0.02, 0.6, rep(NA, 3), 0.02, NA,
                                     0.01, 0.35)]
 
 G37.params$diet[, Meiobenthos := c(rep(NA, 29), 0.1, rep(NA, 3), 0.4, 0.2, NA, 
                                    0.3)]
 
-G37.params$diet[, Corals := c(rep(NA, 33), 0.5, 0.1, NA, 0.4)]
+#G37.params$diet[, Corals := c(rep(NA, 33), 0.5, 0.1, NA, 0.4)]
+G37.params$diet[, Corals := c(rep(NA, 33), 0.185, 0.037, NA, 0.148)]
 
 G37.params$diet[, Softcorals_sponges_etc := c(rep(NA, 33), 0.5, 0.1, NA, 0.4)]
 
@@ -173,4 +174,16 @@ G37.params$diet[, Krill := c(rep(NA, 32), 0.05, 0.7, 0.1, NA, 0.15)]
 
 G37.params$diet[, Zooplankton := c(rep(NA, 34), 0.9, NA, 0.1)]
 
+check.rpath.param(G37.params)
+
+#Ecopath
 G37 <- rpath(G37.params, 'Generic 37')
+
+webplot(G37, labels = T)
+
+#Ecosim
+G37.sim <- rsim.scenario(G37, G37.params, 100)
+G37.sim$params$NoIntegrate[2:5] <- 1:4
+G37.run1 <- rsim.run(G37.sim, method = 'AB', years = 100)
+rsim.plot(G37.run1, groups[1:37])
+write.Rsim(REco.run1, file = paste(out.dir, 'REco_baserun_AB.csv', sep = ''))

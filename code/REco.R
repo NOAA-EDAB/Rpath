@@ -4,13 +4,13 @@
 #User parameters - file locations
 #I have a windows machine and a linux machine, hence the windows toggle
 if(Sys.info()['sysname']=="Windows"){
-  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
-  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
+  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data"
+  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs"
 }
 
 if(Sys.info()['sysname']=="Linux"){
-  data.dir <- "/home/slucey/slucey/Rpath/data/"
-  out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
+  data.dir <- "/home/slucey/slucey/Rpath/data"
+  out.dir  <- "/home/slucey/slucey/Rpath/outputs"
 }
 
 #To download Rpath
@@ -157,7 +157,8 @@ REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59
 REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
 
 #Save rpath.params
-save(REco.params, file = paste(out.dir, 'REco_params.RData', sep = ''))
+save(REco.params, file = file.path(data.dir, 'REco_params.RData'))
+
 #-------------------------------------------------------------------------------
 #Ecopath
 REco <- rpath(REco.params, 'R Ecosystem')
