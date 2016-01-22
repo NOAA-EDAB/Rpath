@@ -9,16 +9,24 @@
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@export
-rsim.plot <- function(Rsim.output, spname){
-  biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
-  n <- ncol(biomass)
-  start.bio <- biomass[1, ]
-  rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
-  for(isp in 1:n) rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
-
+rsim.plot <- function(Rsim.output, spname, indplot = F){
+  if(indplot == F){
+    biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
+    n <- ncol(biomass)
+    start.bio <- biomass[1, ]
+    rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
+    for(isp in 1:n) rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
+  }
+  if(indplot == T){
+    spnum <- which(Rsim.output$params$spname == spname)
+    biomass <- Rsim.output$out_BB[, spnum]
+    n <- 1
+    rel.bio <- biomass / biomass[1]
+  }
+  
   ymax <- max(rel.bio) + 0.1 * max(rel.bio)
   ymin <- min(rel.bio) - 0.1 * min(rel.bio)
-  xmax <- nrow(biomass)
+  ifelse(indplot, xmax <- length(biomass), xmax <- nrow(biomass))
   
   #Plot relative biomass
   layout(matrix(c(1, 2), 1, 2), widths = c(4, 1))
@@ -32,7 +40,10 @@ rsim.plot <- function(Rsim.output, spname){
   mtext(2, text = 'Relative Biomass', line = 3, cex = 1.8)
   
   line.col <- rainbow(n)
-  for(i in 1:n) lines(rel.bio[, i], col = line.col[i], lwd = 3)
+  for(i in 1:n){
+    ifelse(indplot, lines(rel.bio, col = line.col[i], lwd = 3),
+           lines(rel.bio[, i], col = line.col[i], lwd = 3))
+  }
   
   opar <- par(mar = c(0, 0, 0, 0))
   plot(0, 0, xlab = '', ylab = '', axes = F)
