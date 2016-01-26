@@ -15,8 +15,8 @@ if(Sys.info()['sysname']=="Linux"){
 
 #To download Rpath
 # #This only needs to be done the first time you run the script
-library(devtools)
-devtools::install_github('slucey/RpathDev/Rpath', ref = 'Public', build_vignettes = TRUE)
+#library(devtools)
+#devtools::install_github('slucey/RpathDev/Rpath', ref = 'Public', build_vignettes = TRUE)
 
 library(Rpath); library(data.table)
 
@@ -35,8 +35,7 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 
 #-------------------------------------------------------------------------------
 #Create Model File
-REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
-                                  nstanzas = rep(2,4))
+REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups)
 
 #Fill appropriate columns
 #Model
@@ -96,19 +95,19 @@ REco.params$stanzas$stgroups[, Wmat     := c(0.0577, 0.421, 0.088, 0.241)]
 
 
 #Individual stanza parameters
-REco.params$stanzas$stanzas[, First   := c(rep(c(0, 24), 3), 0, 48)]
-REco.params$stanzas$stanzas[, Last    := c(rep(c(23, 400), 3), 47, 400)]
-REco.params$stanzas$stanzas[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
+REco.params$stanzas$stindiv[, First   := c(rep(c(0, 24), 3), 0, 48)]
+REco.params$stanzas$stindiv[, Last    := c(rep(c(23, 400), 3), 47, 400)]
+REco.params$stanzas$stindiv[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
                                            0.26, 1.1, 0.18)]
-REco.params$stanzas$stanzas[, Leading := rep(c(F, T), 4)]
+REco.params$stanzas$stindiv[, Leading := rep(c(F, T), 4)]
 
 REco.params <- rpath.stanzas(REco.params)
 
 #Plot multistanza plots
-stanzaplot(REco.params, StanzaNum = 1)
-stanzaplot(REco.params, StanzaNum = 2)
-stanzaplot(REco.params, StanzaNum = 3)
-stanzaplot(REco.params, StanzaNum = 4)
+stanzaplot(REco.params, StanzaGroup = 1)
+stanzaplot(REco.params, StanzaGroup = 2)
+stanzaplot(REco.params, StanzaGroup = 'Flatfish1')
+stanzaplot(REco.params, StanzaGroup = 'Flatfish2')
 
 #-------------------------------------------------------------------------------
 #Modify Diet File
