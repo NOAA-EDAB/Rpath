@@ -20,7 +20,7 @@
 #'  in the right places).
 #'@import data.table
 #'@export
-create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
+create.rpath.param <- function(group, type, stgroup = NA){
   Rpath.params <- list()
   
   pred.group  <- group[which(type < 2)]
@@ -72,6 +72,7 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
   if(length(stgroup) > 1){
     #Group Parameters
     StanzaGroups <- unique(stgroup[!is.na(stgroup)])
+    nstanzas     <- as.vector(table(stgroups)[order(table(stgroups), StanzaGroups)])
     NStanzaGroups <- length(StanzaGroups)
     Rpath.params$stanzas$NStanzaGroups <- NStanzaGroups
     
@@ -94,7 +95,7 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
     }
     ind.stanza.group <- model[!is.na(stgroup), Group]
     ieco <- which(!is.na(stgroup))
-    stanzas <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
+    stindiv <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
                                            stgroups[, nstanzas]),
                           Stanza     = stanza.num,
                           GroupNum   = ieco,
@@ -116,7 +117,7 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
                            Wmat        = NA,
                            RecPower    = NA)
     
-    stanzas <- data.table(StGroupNum = NA,
+    stindiv <- data.table(StGroupNum = NA,
                           Stanza     = NA,
                           GroupNum   = NA,
                           Group      = NA,
@@ -127,7 +128,7 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
   }
   
   Rpath.params$stanzas$stgroups <- stgroups
-  Rpath.params$stanzas$stanzas <- stanzas
+  Rpath.params$stanzas$stindiv  <- stindiv
     
   #Pedigree
   pedigree <- data.table(Group = group,
