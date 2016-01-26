@@ -261,7 +261,7 @@ rpath.stanzas <- function(Rpath.params){
   #Determine the total number of groups with multistanzas
   Nsplit     <- Rpath.params$stanza$NStanzaGroups
   groupfile  <- Rpath.params$stanza$stgroups
-  stanzafile <- Rpath.params$stanza$stanzas
+  stanzafile <- Rpath.params$stanza$stindiv
   
   #Calculate the last month for the final stanza
   #Months to get to 99% Winf (We don't use an accumulator function like EwE)
@@ -270,8 +270,8 @@ rpath.stanzas <- function(Rpath.params){
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
-    t90 <- groupfile[StGroupNum == isp, last]
-    stanzafile[StGroupNum == isp & Stanza == nstanzas, Last := t90]
+    t99 <- groupfile[StGroupNum == isp, last]
+    stanzafile[StGroupNum == isp & StanzaNum == nstanzas, Last := t99]
     
     #Grab ecopath group codes
     group.codes <- stanzafile[StGroupNum == isp, GroupNum]
@@ -281,8 +281,8 @@ rpath.stanzas <- function(Rpath.params){
     second  <- stanzafile[StGroupNum == isp, Last]
         
     #Calculate weight and consumption at age    
-    StGroup <- data.table(age = stanzafile[StGroupNum == isp & Stanza == 1, First]:
-                            t90)
+    StGroup <- data.table(age = stanzafile[StGroupNum == isp & StanzaNum == 1, First]:
+                            t99)
     #Calculate monthly generalized k: (Ksp * 3) / 12
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
@@ -295,7 +295,7 @@ rpath.stanzas <- function(Rpath.params){
     prev.surv <- 1
     for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
-      month.z <- stanzafile[StGroupNum == isp & Stanza == ist, Z] / 12
+      month.z <- stanzafile[StGroupNum == isp & StanzaNum == ist, Z] / 12
       StGroup[age %in% first[ist]:second[ist], surv := exp(-1*month.z)]
       
       if(first[ist] > 0){
@@ -314,8 +314,8 @@ rpath.stanzas <- function(Rpath.params){
       b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]
       q.num <- StGroup[age %in% first[ist]:second[ist], sum(Q)]
       
-      stanzafile[StGroupNum == isp & Stanza == ist, bs.num := b.num]
-      stanzafile[StGroupNum == isp & Stanza == ist, qs.num := q.num]
+      stanzafile[StGroupNum == isp & StanzaNum == ist, bs.num := b.num]
+      stanzafile[StGroupNum == isp & StanzaNum == ist, qs.num := q.num]
       
       prev.surv <- exp(-1 * month.z)
     }

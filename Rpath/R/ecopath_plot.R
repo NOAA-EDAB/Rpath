@@ -184,9 +184,14 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@return Creates a figure showing the break down of biomass and number per stanza.
 #'@import data.table
 #'@export
-stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green', 
-                                                              'blue', 'red')){
-  StGroup <- Rpath.params$stanzas$StGroup[[StanzaNum]]
+stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
+                                                                'blue', 'red')){
+  #Convert StanzaGroup to number
+  if(is.character(StanzaGroup)){
+    SGNum <- which(Rpath.params$stanzas$stgroups$StanzaGroup == StanzaGroup)
+  } else {SGNum <- StanzaGroup}
+  
+  StGroup <- Rpath.params$stanzas$StGroup[[SGNum]]
   stanza.data <- data.table(B     = StGroup[, B],
                             NageS = StGroup[,NageS],
                             WageS = StGroup[,WageS])
@@ -206,7 +211,7 @@ stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green',
   lines(stanza.data[, age], stanza.data[, WageS.scale], lwd = 3, col = line.cols[3])
   
   #Add Stanza breaks
-  breaks <- Rpath.params$stanzas$stanzas[StGroupNum == StanzaNum, Last]
+  breaks <- Rpath.params$stanzas$stindiv[StGroupNum == SGNum, Last]
   breaks <- breaks[1:(length(breaks) - 1)]
   abline(v = breaks + 1, lwd = 3, col = line.cols[4])
   
@@ -216,7 +221,7 @@ stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green',
   box(lwd = 2)
   mtext(1, text = 'Age in Months', line = 2.5)
   mtext(2, text = 'Normalized value', line = 2.5)
-  mtext(3, text = Rpath.params$stanzas$stgroups[StGroupNum == StanzaNum, StanzaGroup], 
+  mtext(3, text = Rpath.params$stanzas$stgroups[StGroupNum == SGNum, StanzaGroup], 
         line = 2.3, cex = 2)
   legend('top', legend = c('Population Biomass', 'Number', 'Individual Weight', 
                                 'Stanza Separation'), 
