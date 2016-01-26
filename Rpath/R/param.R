@@ -97,7 +97,7 @@ create.rpath.param <- function(group, type, stgroup = NA){
     ieco <- which(!is.na(stgroup))
     stindiv <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
                                            stgroups[, nstanzas]),
-                          Stanza     = stanza.num,
+                          StanzaNum  = stanza.num,
                           GroupNum   = ieco,
                           Group      = ind.stanza.group,
                           First      = NA,
@@ -118,7 +118,7 @@ create.rpath.param <- function(group, type, stgroup = NA){
                            RecPower    = NA)
     
     stindiv <- data.table(StGroupNum = NA,
-                          Stanza     = NA,
+                          StanzaNum  = NA,
                           GroupNum   = NA,
                           Group      = NA,
                           First      = NA,
