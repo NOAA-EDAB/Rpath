@@ -176,14 +176,25 @@ G37.params$diet[, Zooplankton := c(rep(NA, 34), 0.9, NA, 0.1)]
 
 check.rpath.param(G37.params)
 
+save(G37.params, file = file.path(data.dir, "Generic_37_params.RData"))
+
+G37.params$model[Group == 'Demersals_S', BioAcc := -.2]
 #Ecopath
 G37 <- rpath(G37.params, 'Generic 37')
 
 webplot(G37, labels = T)
 
 #Ecosim
-G37.sim <- rsim.scenario(G37, G37.params, 100)
-G37.sim$params$NoIntegrate[2:5] <- 1:4
-G37.run1 <- rsim.run(G37.sim, method = 'AB', years = 100)
+G37.sim <- rsim.scenario(G37, G37.params, 10)
+G37.run1 <- rsim.run(G37.sim, method = 'AB', years = 10)
 rsim.plot(G37.run1, groups[1:37])
 write.Rsim(REco.run1, file = paste(out.dir, 'REco_baserun_AB.csv', sep = ''))
+
+G37.sim <- rsim.scenario(G37, G37.params, 9)
+G37.sim <- adjust.fishing(G37.sim, 'EFFORT', gear = 'Fleet1', 
+                           year = 0:9, value = c(1, 2.279, 2.7, 2.846, 3.084,
+                                                 3.084, 3.084, 3.03, 2.993, 2.993))
+G37.run2 <- rsim.run(G37.sim, method = 'AB', years = 9)
+rsim.plot(G37.run2, groups[1:37])
+
+

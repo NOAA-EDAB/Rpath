@@ -24,6 +24,8 @@ BIGNUM            <- 1E+8
 
 load(file.path(data.dir, 'REco_params.RData'))
 
+library('Rpath'); library('data.table')
+
 REco <- rpath(REco.params, 'R Ecosystem')
 
 REco.sim <- rsim.scenario(REco, REco.params, 100)
@@ -40,6 +42,29 @@ SplitSetPred(stanzas, state)
 
 dyt <-  deriv_vector(params, state, forcing, fishing, stanzas, 0, 0, 0)
 
+library(Rcpp)
+
+cppFunction('
+NumericVector test(int NUM_GROUPS){
+  NumericVector dyt0(NUM_GROUPS);
+  return(dyt0);
+}
+')
+  
+cppFunction('
+int test2(int NUM_GROUPS, int y, int m){
+  int i;
+  NumericVector zero(NUM_GROUPS);
+  NumericVector one(NUM_GROUPS);
+  for(i = 0; i < NUM_GROUPS; i++){
+    one[i] = 1;
+  }
+  Rcpp::Rcout << one << std::endl;
+
+  return(0);
+}
+')
+
 dd = 1;
 StartYear <- 0
 EndYear <- 3
@@ -50,13 +75,13 @@ for (y in StartYear:EndYear){
   for (m in 1:12){   
     dd = y * 12 + m; # dd is index for monthly output                
     # Load old state and old derivative
-    old_BB    = as.vector(state["BB"]);
-    old_Ftime = as.vector(state["Ftime"]);         
-    dydt0     = as.vector(dyt["DerivT"]);
+    old_BB    = state$BB
+    old_Ftime = state$Ftime         
+    dydt0     = dyt$DerivT
     
     # Calculate new derivative    
     dyt   = deriv_vector(params, state, forcing, fishing, stanzas, y, m, 0);
-  
+    dydt1     = dyt$DerivT
     
     # Now Update the new State Biomass using Adams-Basforth
     new_BB = 
