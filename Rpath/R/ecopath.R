@@ -140,7 +140,7 @@ rpath <- function(Rpath.params, eco.name = NA){
   DetPB   <- detinputs / DetB
 
   # Trophic Level calcs
-  TL            <- rep(1, ngroups)
+  b             <- rep(1, ngroups)
   TLcoeff       <- matrix(0, ngroups, ngroups)
   diag(TLcoeff) <- rep(1, ngroups)
   gearcons      <- as.matrix(totcatchmat) / geartot[col(as.matrix(totcatchmat))]
@@ -151,7 +151,7 @@ rpath <- function(Rpath.params, eco.name = NA){
   dietplus <- rbind(dietplus, matrix(0, ngear, nliving))
   dietplus <- cbind(dietplus, matrix(0, ngroups, ndead), gearcons)
   TLcoeffA <- TLcoeff - dietplus
-  TL       <- solve(t(TLcoeffA), TL)     
+  TL       <- solve(t(TLcoeffA), b)     
 
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
