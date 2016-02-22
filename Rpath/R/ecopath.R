@@ -16,11 +16,11 @@
 rpath <- function(Rpath.params, eco.name = NA){
   
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
-  model <- Rpath.params$model
+  model <- copy(Rpath.params$model)
   
   #Diet Parameters - diet matrix, predators as columns, prey as rows - include
   #producers as predators even though they do not consume any groups
-  diet <- Rpath.params$diet
+  diet <- copy(Rpath.params$diet)
   
   #Check that all columns of model are numeric and not logical
   if(length(which(sapply(model, class) == 'logical')) > 0){
