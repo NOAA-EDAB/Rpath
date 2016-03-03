@@ -263,6 +263,12 @@ rpath.stanzas <- function(Rpath.params){
   groupfile  <- Rpath.params$stanza$stgroups
   stanzafile <- Rpath.params$stanza$stindiv
   
+  #Need to add vector of stanza number
+  for(isp in 1:Nsplit){
+    stnum <- order(stanzafile[StGroupNum == isp, First])
+    stanzafile[StGroupNum == isp, StanzaNum := stnum]
+  }
+  
   #Calculate the last month for the final stanza
   #Months to get to 99% Winf (We don't use an accumulator function like EwE)
   groupfile[, last := floor(log(1 - 0.9999^(1 - VBGF_d)) / 

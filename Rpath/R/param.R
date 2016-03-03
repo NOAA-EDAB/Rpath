@@ -71,8 +71,8 @@ create.rpath.param <- function(group, type, stgroup = NA){
   #Multistanza parameters
   if(length(stgroup) > 1){
     #Group Parameters
-    StanzaGroups <- unique(stgroup[!is.na(stgroup)])
-    nstanzas     <- as.vector(table(stgroups)[order(table(stgroups), StanzaGroups)])
+    StanzaGroups  <- unique(stgroup[!is.na(stgroup)])
+    nstanzas      <- as.vector(table(stgroups)[order(table(stgroups), StanzaGroups)])
     NStanzaGroups <- length(StanzaGroups)
     Rpath.params$stanzas$NStanzaGroups <- NStanzaGroups
     
@@ -85,19 +85,11 @@ create.rpath.param <- function(group, type, stgroup = NA){
                            RecPower    = 1)
     
     #Individual Stanza Parameters
-    #Need vector of stanza number
-    stanza.num <- c()
-    total <- 0
-    for(i in 1:NStanzaGroups){
-      stanza.reps <- 1:stgroups[i, nstanzas]
-      stanza.num[(total + 1):(length(stanza.reps) + total)] <- stanza.reps
-      total <- total + length(stanza.reps)
-    }
     ind.stanza.group <- model[!is.na(stgroup), Group]
     ieco <- which(!is.na(stgroup))
     stindiv <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
                                            stgroups[, nstanzas]),
-                          StanzaNum  = stanza.num,
+                          StanzaNum  = as.integer(0),
                           GroupNum   = ieco,
                           Group      = ind.stanza.group,
                           First      = NA,
