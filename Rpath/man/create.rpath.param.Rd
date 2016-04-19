@@ -2,7 +2,7 @@
 % Please edit documentation in R/param.R
 \name{create.rpath.param}
 \alias{create.rpath.param}
-\title{Creates a shell for the Rpath.params object}
+\title{Creates a shell for the Rpath.param object}
 \usage{
 create.rpath.param(group, type, stgroup = NA)
 }
@@ -24,7 +24,7 @@ Outputs a list object of Rpath parameters which are populated with values
  in the right places).
 }
 \description{
-Creates a shell of the Rpath.params list object which contains the model, diet,
+Creates a shell of the Rpath.param list object which contains the model, diet,
 multistanza, and pedigree parameters.
 }
 \seealso{
@@ -32,12 +32,11 @@ Other Rpath.functions: \code{\link{adjust.fishing}};
   \code{\link{adjust.scenario}};
   \code{\link{check.rpath.param}};
   \code{\link{frate.table}};
-  \code{\link{read.rpath.params}};
+  \code{\link{read.rpath.param}};
   \code{\link{rpath.stanzas}}; \code{\link{rpath}};
   \code{\link{rsim.params}}; \code{\link{rsim.plot}};
   \code{\link{rsim.scenario}}; \code{\link{stanzaplot}};
   \code{\link{webplot}}; \code{\link{write.Rpath}};
-  \code{\link{write.Rsim}};
-  \code{\link{write.rpath.params}}
+  \code{\link{write.Rsim}}; \code{\link{write.rpath.param}}
 }
 
