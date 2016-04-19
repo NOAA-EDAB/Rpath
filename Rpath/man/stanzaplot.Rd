@@ -4,17 +4,17 @@
 \alias{stanzaplot}
 \title{Plot routine for Ecopath multistanzas}
 \usage{
-stanzaplot(Rpath.params, StanzaNum, line.cols = c("black", "green", "blue",
+stanzaplot(Rpath.params, StanzaGroup, line.cols = c("black", "green", "blue",
   "red"))
 }
 \arguments{
 \item{Rpath.params}{R object containing the Rpath parameters modified by the
 rpath.stanza function.}
 
-\item{StanzaNum}{The Stanza group's number to be plotted.}
-
 \item{line.cols}{A vector of four colors used to represent the population biomass,
 relative number, indvidual weights, and stanza separation lines.}
+
+\item{StanzaNum}{The Stanza group's number to be plotted.}
 }
 \value{
 Creates a figure showing the break down of biomass and number per stanza.

@@ -4,7 +4,7 @@
 \alias{rsim.plot}
 \title{Plot routine for Ecosim runs}
 \usage{
-rsim.plot(Rsim.output, spname)
+rsim.plot(Rsim.output, spname, indplot = F)
 }
 \arguments{
 \item{Rsim.output}{Rpath ecosim run created by the rsim.run() function.}

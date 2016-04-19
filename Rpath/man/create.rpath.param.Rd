@@ -4,7 +4,7 @@
 \alias{create.rpath.param}
 \title{Creates a shell for the Rpath.params object}
 \usage{
-create.rpath.param(group, type, stgroup = NA, nstanzas = NA)
+create.rpath.param(group, type, stgroup = NA)
 }
 \arguments{
 \item{group}{Vector of group names.}
