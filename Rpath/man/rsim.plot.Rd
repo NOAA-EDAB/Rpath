@@ -4,7 +4,7 @@
 \alias{rsim.plot}
 \title{Plot routine for Ecosim runs}
 \usage{
-rsim.plot(Rsim.output, spname)
+rsim.plot(Rsim.output, spname, indplot = F)
 }
 \arguments{
 \item{Rsim.output}{Rpath ecosim run created by the rsim.run() function.}
@@ -21,11 +21,11 @@ Other Rpath.functions: \code{\link{adjust.fishing}};
   \code{\link{check.rpath.param}};
   \code{\link{create.rpath.param}};
   \code{\link{frate.table}};
-  \code{\link{read.rpath.params}};
+  \code{\link{read.rpath.param}};
   \code{\link{rpath.stanzas}}; \code{\link{rpath}};
   \code{\link{rsim.params}}; \code{\link{rsim.scenario}};
   \code{\link{stanzaplot}}; \code{\link{webplot}};
   \code{\link{write.Rpath}}; \code{\link{write.Rsim}};
-  \code{\link{write.rpath.params}}
+  \code{\link{write.rpath.param}}
 }
 
