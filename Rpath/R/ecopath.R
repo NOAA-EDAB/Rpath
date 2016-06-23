@@ -35,12 +35,12 @@ rpath <- function(Rpath.params, eco.name = NA){
   if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL, with = F]
 
   #Adjust diet comp of mixotrophs
-  mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
-  mix.Q <- 1 - model[mixotrophs, Type]
-  for(i in seq_along(mixotrophs)){
-    new.dc <- diet[, mixotrophs[i], with = F] * mix.Q[i]
-    diet[, mixotrophs[i] := new.dc, with = F]
-  }
+  #mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  #mix.Q <- 1 - model[mixotrophs, Type]
+  # for(i in seq_along(mixotrophs)){
+  #   new.dc <- diet[, mixotrophs[i], with = F] * mix.Q[i]
+  #   diet[, mixotrophs[i] := new.dc, with = F]
+  # }
   
   #Convert NAs to zero in diet matrix
   diet[is.na(diet)] <- 0
@@ -156,6 +156,12 @@ rpath <- function(Rpath.params, eco.name = NA){
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
+  #Adjust for mixotrophs (partial primary producers)
+  mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  mix.Q <- 1 - model[mixotrophs, Type]
+  for(i in seq_along(mixotrophs)){
+    dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
+  }
   dietplus <- rbind(dietplus, matrix(0, ngear, nliving))
   dietplus <- cbind(dietplus, matrix(0, ngroups, ndead), gearcons)
   TLcoeffA <- TLcoeff - dietplus
