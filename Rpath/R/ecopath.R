@@ -31,8 +31,16 @@ rpath <- function(Rpath.params, eco.name = NA){
   }
     
   #Remove first column if names (factor or character)
-  if(sapply(diet, class)[1] == 'factor')    diet <- diet[, 1 := NULL, with = F]
-  if(sapply(diet, class)[1] == 'character') diet <- diet[, 1 := NULL, with = F]
+  if(sapply(diet, class)[1] == 'factor')    diet[, 1 := NULL, with = F]
+  if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL, with = F]
+
+  #Adjust diet comp of mixotrophs
+  mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  mix.Q <- 1 - model[mixotrophs, Type]
+  for(i in seq_along(mixotrophs)){
+    new.dc <- diet[, mixotrophs[i], with = F] * mix.Q[i]
+    diet[, mixotrophs[i] := new.dc, with = F]
+  }
   
   #Convert NAs to zero in diet matrix
   diet[is.na(diet)] <- 0
