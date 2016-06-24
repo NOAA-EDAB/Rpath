@@ -31,6 +31,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                     labels = FALSE, label.pos = NULL, label.num = FALSE, label.cex = 1,
                     fleets = FALSE, type.col = 'black', box.order = NULL){
+  opar <- par()
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
@@ -166,7 +167,8 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
            pos = label.pos, cex = label.cex)
     }
   }
-  
+
+  par() <- opar  
 }
 
 #'Plot routine for Ecopath multistanzas
@@ -186,6 +188,8 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@export
 stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
                                                                 'blue', 'red')){
+  opar <- par()
+  
   #Convert StanzaGroup to number
   if(is.character(StanzaGroup)){
     SGNum <- which(Rpath.params$stanzas$stgroups$StanzaGroup == StanzaGroup)
@@ -226,4 +230,6 @@ stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green'
   legend('top', legend = c('Population Biomass', 'Number', 'Individual Weight', 
                                 'Stanza Separation'), 
          lwd = 2, bty = 'n', col = line.cols, xpd = T, inset = -.15, ncol = 4)
+  
+  par() <- opar
 }
