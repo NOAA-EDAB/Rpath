@@ -312,19 +312,19 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$EcopathCode <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$Age1        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
-     rstan$WageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-     rstan$NageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-     rstan$WWa         <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$WageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$NageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$WWa         <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
      
      for(isp in 1:rstan$Nsplit){
        for(ist in 1:rstan$Nstanzas[isp + 1]){
-         rstan$EcopathCode[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp &
-                                                          Stanza == ist, GroupNum]
-         rstan$Age1[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
-                                                   Stanza == ist, First]
-         rstan$Age2[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
-                                                   Stanza == ist, Last]
+         rstan$EcopathCode[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp &
+                                                          StanzaNum == ist, GroupNum]
+         rstan$Age1[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp & 
+                                                   StanzaNum == ist, First]
+         rstan$Age2[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp & 
+                                                   StanzaNum == ist, Last]
        }
        rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
@@ -350,14 +350,14 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$EggsStanza <- rstan$baseEggsStanza
      
      #initialize splitalpha growth coefficients using pred information and
-     rstan$SplitAlpha <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$SplitAlpha <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      for(isp in 1:rstan$Nsplit){
        for(ist in 1:rstan$Nstanzas[isp + 1]){
          ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
          first <- rstan$Age1[isp + 1, ist + 1]
          last  <- rstan$Age2[isp + 1, ist + 1]
          pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
-         StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
+         StartEatenBy <- juvfile$stindiv[StGroupNum == isp & StanzaNum == ist, Cons]
   
          SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
            rstan$vBM[isp + 1] * juvfile$StGroup[[isp]][, WageS]) * pred / StartEatenBy
