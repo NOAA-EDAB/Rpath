@@ -1,4 +1,4 @@
-#'Ecopath modual of Rpath
+#'Ecopath module of Rpath
 #'
 #'Performs initial mass balance using a model parameter file and diet
 #'matrix file.
