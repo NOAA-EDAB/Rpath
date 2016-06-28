@@ -25,7 +25,7 @@ open source version of Ecopath with Ecosim]).
 knitr::opts_chunk$set(
   comment = '#>',
   collapse = T)
-library(Rpath)
+library(Rpath); library(data.table)
 ````
 
 ## Running rsim
@@ -49,8 +49,7 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 stgroups <- c(rep(NA, 3), rep('Roundfish1', 2), rep('Roundfish2', 2), 
               rep('Flatfish1', 2), rep('Flatfish2', 2), rep(NA, 14))
 
-REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
-                                  nstanzas = rep(2,4))
+REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups)
 
 #Model
 biomass <- c(0.0149, 0.454, NA, NA, 1.39, NA, 5.553, NA, 5.766, NA,
@@ -106,11 +105,11 @@ REco.params$stanzas$stgroups[, VBGF_Ksp := c(0.145, 0.295, 0.0761, 0.112)]
 REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
 
 #Individual stanza parameters
-REco.params$stanzas$stanzas[, First   := c(rep(c(0, 24), 3), 0, 48)]
-REco.params$stanzas$stanzas[, Last    := c(rep(c(23, 400), 3), 47, 400)]
-REco.params$stanzas$stanzas[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
+REco.params$stanzas$stindiv[, First   := c(rep(c(0, 24), 3), 0, 48)]
+REco.params$stanzas$stindiv[, Last    := c(rep(c(23, 400), 3), 47, 400)]
+REco.params$stanzas$stindiv[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
                                            0.26, 1.1, 0.18)]
-REco.params$stanzas$stanzas[, Leading := rep(c(F, T), 4)]
+REco.params$stanzas$stindiv[, Leading := rep(c(F, T), 4)]
 
 REco.params <- rpath.stanzas(REco.params)
 

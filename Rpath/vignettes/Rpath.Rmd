@@ -25,7 +25,7 @@ open source version of Ecopath with Ecosim]).
 knitr::opts_chunk$set(
   comment = '#>',
   collapse = T)
-library(Rpath)
+library(Rpath); library(data.table)
 ````
 
 ## Setting up Ecopath
@@ -63,8 +63,7 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 stgroups <- c(rep(NA, 3), rep('Roundfish1', 2), rep('Roundfish2', 2), 
               rep('Flatfish1', 2), rep('Flatfish2', 2), rep(NA, 14))
 
-REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
-                                  nstanzas = rep(2,4))
+REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups)
 ```
 
 REco.params now contains a list of 4 objects: model, diet, stanzas, and pedigree.
@@ -184,16 +183,16 @@ REco.params$stanzas$stgroups[, VBGF_Ksp := c(0.145, 0.295, 0.0761, 0.112)]
 REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
 
 #Individual stanza parameters
-REco.params$stanzas$stanzas[, First   := c(rep(c(0, 24), 3), 0, 48)]
-REco.params$stanzas$stanzas[, Last    := c(rep(c(23, 400), 3), 47, 400)]
-REco.params$stanzas$stanzas[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
+REco.params$stanzas$stindiv[, First   := c(rep(c(0, 24), 3), 0, 48)]
+REco.params$stanzas$stindiv[, Last    := c(rep(c(23, 400), 3), 47, 400)]
+REco.params$stanzas$stindiv[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
                                            0.26, 1.1, 0.18)]
-REco.params$stanzas$stanzas[, Leading := rep(c(F, T), 4)]
+REco.params$stanzas$stindiv[, Leading := rep(c(F, T), 4)]
 
 ```
 ```{r Stanza Table initial, echo = F}
 knitr::kable(REco.params$stanzas$stgroups)
-knitr::kable(REco.params$stanzas$stanzas)
+knitr::kable(REco.params$stanzas$stindiv)
 ```
 
 The final month of the ultimate stanza can be set to any value.  The function 
@@ -212,7 +211,7 @@ knitr::kable(head(REco.params$stanzas$StGroup[[1]]),
 Output from the `rpath.stanzas` function can be plotted using the `stanzaplot`
 function.
 ```{r stanzaplot, fig.align = 'center', fig.height = 5, fig.width = 9}
-stanzaplot(REco.params, StanzaNum = 1)
+stanzaplot(REco.params, StanzaGroup = 1)
 ```
 Note: If you do not have multistanza groups in your model, you do not have to run
 `rpath.stanzas`.
