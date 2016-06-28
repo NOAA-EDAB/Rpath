@@ -168,7 +168,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
     }
   }
 
-  par() <- opar  
+  par(opar)  
 }
 
 #'Plot routine for Ecopath multistanzas
@@ -231,5 +231,5 @@ stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green'
                                 'Stanza Separation'), 
          lwd = 2, bty = 'n', col = line.cols, xpd = T, inset = -.15, ncol = 4)
   
-  par() <- opar
+  par(opar)
 }
