@@ -31,6 +31,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                     labels = FALSE, label.pos = NULL, label.num = FALSE, label.cex = 1,
                     fleets = FALSE, type.col = 'black', box.order = NULL){
+  opar <- par()
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
@@ -75,7 +76,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   
   #Web connections
   tot.catch <- Rpath.obj$Catch + Rpath.obj$Discards
-  pred      <- pointmap[type %in% c(0, 3), GroupNum]
+  pred      <- pointmap[!type %in% 1:2, GroupNum]
   
   for(i in pred){
     pred.x <- pointmap[GroupNum == i, x.pos] 
@@ -98,7 +99,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
     if(is.character(highlight)) highlight <- which(Rpath.obj$Group == highlight)
     pred.x <- pointmap[GroupNum == highlight, x.pos]
     pred.y <- pointmap[GroupNum == highlight, TL]
-    if(pointmap[GroupNum == highlight, type] == 0){
+    if(pointmap[GroupNum == highlight, type] < 1){
       prey       <- which(Rpath.obj$DC[, highlight] > 0)
       group.pred <- which(Rpath.obj$DC[highlight, ] > 0)
       fleet.pred <- which(tot.catch[highlight, ] > 0)
@@ -150,7 +151,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
              pch = 16, col = type.col, ncol = 4, xpd = T, inset = c(0, -.1))
     }
     if(length(type.col) < 4) type.col <- rep(type.col[1], 4)
-    points(pointmap[type == 0, x.pos], pointmap[type == 0, TL], pch = 16, col = type.col[1])
+    points(pointmap[type <  1, x.pos], pointmap[type <  1, TL], pch = 16, col = type.col[1])
     points(pointmap[type == 1, x.pos], pointmap[type == 1, TL], pch = 16, col = type.col[2])
     points(pointmap[type == 2, x.pos], pointmap[type == 2, TL], pch = 16, col = type.col[3])
     points(pointmap[type == 3, x.pos], pointmap[type == 3, TL], pch = 16, col = type.col[4])
@@ -166,7 +167,8 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
            pos = label.pos, cex = label.cex)
     }
   }
-  
+
+  par() <- opar  
 }
 
 #'Plot routine for Ecopath multistanzas
@@ -184,9 +186,16 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@return Creates a figure showing the break down of biomass and number per stanza.
 #'@import data.table
 #'@export
-stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green', 
-                                                              'blue', 'red')){
-  StGroup <- Rpath.params$stanzas$StGroup[[StanzaNum]]
+stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
+                                                                'blue', 'red')){
+  opar <- par()
+  
+  #Convert StanzaGroup to number
+  if(is.character(StanzaGroup)){
+    SGNum <- which(Rpath.params$stanzas$stgroups$StanzaGroup == StanzaGroup)
+  } else {SGNum <- StanzaGroup}
+  
+  StGroup <- Rpath.params$stanzas$StGroup[[SGNum]]
   stanza.data <- data.table(B     = StGroup[, B],
                             NageS = StGroup[,NageS],
                             WageS = StGroup[,WageS])
@@ -206,7 +215,7 @@ stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green',
   lines(stanza.data[, age], stanza.data[, WageS.scale], lwd = 3, col = line.cols[3])
   
   #Add Stanza breaks
-  breaks <- Rpath.params$stanzas$stanzas[StGroupNum == StanzaNum, Last]
+  breaks <- Rpath.params$stanzas$stindiv[StGroupNum == SGNum, Last]
   breaks <- breaks[1:(length(breaks) - 1)]
   abline(v = breaks + 1, lwd = 3, col = line.cols[4])
   
@@ -216,9 +225,11 @@ stanzaplot <- function(Rpath.params, StanzaNum, line.cols = c('black', 'green',
   box(lwd = 2)
   mtext(1, text = 'Age in Months', line = 2.5)
   mtext(2, text = 'Normalized value', line = 2.5)
-  mtext(3, text = Rpath.params$stanzas$stgroups[StGroupNum == StanzaNum, StanzaGroup], 
+  mtext(3, text = Rpath.params$stanzas$stgroups[StGroupNum == SGNum, StanzaGroup], 
         line = 2.3, cex = 2)
   legend('top', legend = c('Population Biomass', 'Number', 'Individual Weight', 
                                 'Stanza Separation'), 
          lwd = 2, bty = 'n', col = line.cols, xpd = T, inset = -.15, ncol = 4)
+  
+  par() <- opar
 }

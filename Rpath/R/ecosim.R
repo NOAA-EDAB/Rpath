@@ -29,7 +29,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
-  stanzas     <- rsim.stanzas(Rpath.params$stanzas, start_state, params)
+  stanzas     <- rsim.stanzas(Rpath.params, start_state, params)
   
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
@@ -164,8 +164,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                                1.0) 
   
   #NoIntegrate
-  simpar$NoIntegrate <- ifelse(c(0, Rpath$PB) / 
-                               (1.0 - simpar$ActiveRespFrac - simpar$UnassimRespFrac) > 
+  simpar$NoIntegrate <- ifelse(simpar$MzeroMort * simpar$B_BaseRef > 
                                2 * steps_yr * steps_m, 
                              0, 
                              simpar$spnum)  
@@ -176,11 +175,15 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #primary production links
   #primTo   <- ifelse(Rpath$PB>0 & Rpath$QB<=0, 1:length(Rpath$PB),0 )
-  primTo   <- ifelse(Rpath$type == 1, 
+  primTo   <- ifelse(Rpath$type > 0 & Rpath$type <= 1, 
                      1:length(Rpath$PB),
                      0)
   primFrom <- rep(0, length(Rpath$PB))
-  primQ    <- Rpath$PB * Rpath$BB 
+  primQ    <- Rpath$PB * Rpath$BB
+  #Change production to consumption for mixotrophs
+  mixotrophs <- which(Rpath$type > 0 & Rpath$type < 1)
+  primQ[mixotrophs] <- primQ[mixotrophs] / Rpath$GE[mixotrophs] * 
+    Rpath$type[mixotrophs] 
   
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
@@ -298,8 +301,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  
  #####################################################################################
  #'@export
- rsim.stanzas <- function(juvfile, state, params){
-   if(juvfile$NStanzaGroups > 0){
+ rsim.stanzas <- function(Rpath.params, state, params){
+   juvfile <- Rpath.params$stanzas
+   if(Rpath.params$stanzas$NStanzaGroups > 0){
      #Set up multistanza parameters to pass to C
      rstan <- list()
      rstan$Nsplit      <- juvfile$NStanzaGroups

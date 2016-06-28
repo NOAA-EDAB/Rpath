@@ -57,16 +57,22 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 
 #Print Rpath.sim
 #'@export
-print.Rsim.output <- function(x, rows = NA, ...){
-  cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
-  if(x$crash_year > 0) cat(paste("Run crashed at", x$crash_year, "\n", sep = ''))
+print.Rsim.output <- function(Rsim.output, rows = NA, ...){
+  cat(paste("Rpath sim results:", attr(Rsim.output, 'eco.name'),"\n"))
+  if(Rsim.output$crash_year > 0) cat(paste("Run crashed at", 
+                                           Rsim.output$crash_year, "\n", sep = ''))
   
-  spgroups <- x$params$NUM_LIVING + x$params$NUM_DEAD
-  out <- data.frame(Group      = x$params$spname[2:spgroups],
-                    StartBio   = x$start_state$BB[2:spgroups],
-                    EndBio     = x$end_state$BB[2:spgroups],
-                    StartCatch = x$out_CC[1, 2:spgroups] * 12,
-                    EndCatch   = x$out_CC[nrow(x$out_CC) - 1, 2:spgroups] * 12)
+  gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
+  start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
+  end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
+  out <- data.frame(Group      = Rsim.output$params$spname,
+                    StartBio   = Rsim.output$start_state$BB,
+                    EndBio     = Rsim.output$end_state$BB,
+                    BioES      = Rsim.output$end_state$BB / 
+                                 Rsim.output$start_state$BB,
+                    StartCatch = start_CC * 12,
+                    EndCatch   = end_CC * 12,
+                    CatchES    = (end_CC * 12) / (start_CC * 12))
   
   if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
 }

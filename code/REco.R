@@ -4,19 +4,19 @@
 #User parameters - file locations
 #I have a windows machine and a linux machine, hence the windows toggle
 if(Sys.info()['sysname']=="Windows"){
-  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data\\"
-  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs\\"
+  data.dir <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\data"
+  out.dir  <- "C:\\Users\\Sean.Lucey\\Desktop\\Rpath\\outputs"
 }
 
 if(Sys.info()['sysname']=="Linux"){
-  data.dir <- "/home/slucey/slucey/Rpath/data/"
-  out.dir  <- "/home/slucey/slucey/Rpath/outputs/"
+  data.dir <- "/home/slucey/slucey/Rpath/data"
+  out.dir  <- "/home/slucey/slucey/Rpath/outputs"
 }
 
 #To download Rpath
 # #This only needs to be done the first time you run the script
-library(devtools)
-devtools::install_github('slucey/RpathDev/Rpath', build_vignettes = TRUE)
+#library(devtools)
+#devtools::install_github('slucey/RpathDev/Rpath', ref = 'Public', build_vignettes = TRUE)
 
 library(Rpath); library(data.table)
 
@@ -35,8 +35,7 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 
 #-------------------------------------------------------------------------------
 #Create Model File
-REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
-                                  nstanzas = rep(2,4))
+REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups)
 
 #Fill appropriate columns
 #Model
@@ -91,22 +90,24 @@ REco.params$model[, Dredgers.disc := dredge.d]
 #Calculate the multistanza biomass/consumption
 #Group parameters
 REco.params$stanzas$stgroups[, VBGF_Ksp := c(0.145, 0.295, 0.0761, 0.112)]
-REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
+#REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
+REco.params$stanzas$stgroups[, Wmat     := c(0.0577, 0.421, 0.088, 0.241)]
+
 
 #Individual stanza parameters
-REco.params$stanzas$stanzas[, First   := c(rep(c(0, 24), 3), 0, 48)]
-REco.params$stanzas$stanzas[, Last    := c(rep(c(23, 400), 3), 47, 400)]
-REco.params$stanzas$stanzas[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
+REco.params$stanzas$stindiv[, First   := c(rep(c(0, 24), 3), 0, 48)]
+REco.params$stanzas$stindiv[, Last    := c(rep(c(23, 400), 3), 47, 400)]
+REco.params$stanzas$stindiv[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5, 
                                            0.26, 1.1, 0.18)]
-REco.params$stanzas$stanzas[, Leading := rep(c(F, T), 4)]
+REco.params$stanzas$stindiv[, Leading := rep(c(F, T), 4)]
 
 REco.params <- rpath.stanzas(REco.params)
 
 #Plot multistanza plots
-stanzaplot(REco.params, StanzaNum = 1)
-stanzaplot(REco.params, StanzaNum = 2)
-stanzaplot(REco.params, StanzaNum = 3)
-stanzaplot(REco.params, StanzaNum = 4)
+stanzaplot(REco.params, StanzaGroup = 1)
+stanzaplot(REco.params, StanzaGroup = 2)
+stanzaplot(REco.params, StanzaGroup = 'Flatfish1')
+stanzaplot(REco.params, StanzaGroup = 'Flatfish2')
 
 #-------------------------------------------------------------------------------
 #Modify Diet File
@@ -155,7 +156,8 @@ REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59
 REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
 
 #Save rpath.params
-save(REco.params, file = paste(out.dir, 'REco_params.RData', sep = ''))
+save(REco.params, file = file.path(data.dir, 'REco_params.RData'))
+
 #-------------------------------------------------------------------------------
 #Ecopath
 REco <- rpath(REco.params, 'R Ecosystem')
@@ -171,7 +173,6 @@ REco <- rpath(REco.params, 'R Ecosystem')
 REco
 summary(REco)
 
-
 #print also includes the mortalities toggle
 print(REco, morts = T)
 
@@ -186,13 +187,13 @@ set.seed(34)
 my.order <- c(c(22, 20, 21), c(17, 19, 18), c(8, 4, 2, 14, 11, 13, 10, 15, 16, 9, 6),
               c(25, 1, 7, 12), c(3, 5, 24), 23)
 
-tiff(file = paste(out.dir, 'R_Ecosystem.tif'), height = 1500, width = 1700, res = 300)
+png(file = paste(out.dir, 'R_Ecosystem.png'), height = 1500, width = 1700, res = 300)
 webplot(REco, labels = T, fleets = T, box.order = my.order, label.cex = 0.65)
 dev.off()
 
 #Highlight example
 set.seed(34)
-tiff(file = paste(out.dir, 'Highlight_AduRoundfish1.tif'), height = 1800, width = 2000, 
+png(file = paste(out.dir, 'Highlight_AduRoundfish1.png'), height = 1800, width = 2000, 
      res = 300)
 webplot(REco, fleets = T, highlight = 5, box.order = my.order, label.cex = 0.65)
 dev.off()
@@ -205,33 +206,40 @@ dev.off()
 # 2 - modify scenario
 # 3 - rsim.run
 # 4 - view results with rsim.plot
+# 5 - save outputs with write.rsim
 
 #Test Adams-Bashforth
 #A - base run
 REco.sim <- rsim.scenario(REco, REco.params, 100)
+REco.sim$params$NoIntegrate[c(2, 4)] <- c(1, 3)
 REco.run1 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.run1, groups[1:22])
+write.Rsim(REco.run1, file = paste(out.dir, 'REco_baserun_AB.csv', sep = ''))
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
+REco.sim$params$NoIntegrate[c(2, 4)] <- c(1, 3)
+#REco.sim <- adjust.scenario(REco.sim, 'VV', 'Foragefish1', 'AduRoundfish1', value = 10)
 REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
                            year = 25:100, value = 2)
 REco.AB.2 <- rsim.run(REco.sim, method = 'AB', years = 100)
 rsim.plot(REco.AB.2, groups[1:22])
-
+write.Rsim(REco.AB.2, file = paste(out.dir, 'REco_doubletrawl_AB.csv', sep = ''))
 
 #Test Runge-Kutta 4
 #A - base run
-REco.sim <- rsim.scenario(REco, juvfile, 100)
+REco.sim <- rsim.scenario(REco, REco.params, 100)
 REco.RK4.1 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.1, groups[1:22])
+write.Rsim(REco.RK4.1, file = paste(out.dir, 'REco_baserun_RK4.csv', sep = ''))
 
 #B - double trawling effort
 REco.sim <- rsim.scenario(REco, REco.params, 100)
-REco.sim$fishing$EFFORT[26:101, 2] <- 2
+REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', 
+                           year = 25:100, value = 2)
 REco.RK4.2 <- rsim.run(REco.sim, method = 'RK4', years = 100)
 rsim.plot(REco.RK4.2, groups[1:22])
+write.Rsim(REco.RK4.2, file = paste(out.dir, 'REco_doubletrawl_RK4.csv', sep = ''))
 
 
 
