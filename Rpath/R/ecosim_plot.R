@@ -50,5 +50,5 @@ rsim.plot <- function(Rsim.output, spname, indplot = F){
   plot(0, 0, xlab = '', ylab = '', axes = F)
   legend('center', legend = spname, fill = line.col, cex = .6)
   
-  par() <- opar
+  par(opar)
 }
