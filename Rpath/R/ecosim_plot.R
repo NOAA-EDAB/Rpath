@@ -15,6 +15,7 @@ rsim.plot <- function(Rsim.output, spname, indplot = F){
     biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
     n <- ncol(biomass)
     start.bio <- biomass[1, ]
+    start.bio[which(start.bio == 0)] <- 1
     rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
     for(isp in 1:n) rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
   }
