@@ -195,7 +195,7 @@ write.Rpath(GB, file = file.path(out.dir, 'EMAX_GB_Parameters.csv'))
 
 
 #Webplot plots the resultant food web
-png(file = paste(out.dir, 'Georges_Bank_EMAX_Foodweb.png', sep = ''),
+png(file = file.path(out.dir, 'Georges_Bank_EMAX_Foodweb.png'),
     height = 1700, width = 2200, res = 200)
 my.groups <- c(c(30, 1, 31), c(2, 3, 4, 7, 10, 13, 5, 9, 15, 11, 12), 
                c(6, 8, 14, 16, 18), c(27, 23, 20, 22, 19, 17),
@@ -203,3 +203,9 @@ my.groups <- c(c(30, 1, 31), c(2, 3, 4, 7, 10, 13, 5, 9, 15, 11, 12),
 webplot(GB, labels = T, box.order = my.groups)
 dev.off()
 
+#GB turn off fishing scenario
+GB.sim <- rsim.scenario(GB, GB.params, 100)
+GB.sim <- adjust.fishing(GB.sim, parameter = 'EFFORT', gear = 'Fishery', 
+                         year = 1:100, value = 0)
+GB.run <- rsim.run(GB.sim)
+rsim.plot(GB.run)

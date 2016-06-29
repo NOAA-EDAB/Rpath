@@ -165,8 +165,8 @@ G37.params$diet[, Macrobenthos := c(rep(NA, 28), 0.02, 0.6, rep(NA, 3), 0.02, NA
 G37.params$diet[, Meiobenthos := c(rep(NA, 29), 0.1, rep(NA, 3), 0.4, 0.2, NA, 
                                    0.3)]
 
-#G37.params$diet[, Corals := c(rep(NA, 33), 0.5, 0.1, NA, 0.4)]
-G37.params$diet[, Corals := c(rep(NA, 33), 0.185, 0.037, NA, 0.148)]
+G37.params$diet[, Corals := c(rep(NA, 33), 0.5, 0.1, NA, 0.4)]
+#G37.params$diet[, Corals := c(rep(NA, 33), 0.185, 0.037, NA, 0.148)]
 
 G37.params$diet[, Softcorals_sponges_etc := c(rep(NA, 33), 0.5, 0.1, NA, 0.4)]
 
@@ -178,7 +178,7 @@ check.rpath.param(G37.params)
 
 save(G37.params, file = file.path(data.dir, "Generic_37_params.RData"))
 
-G37.params$model[Group == 'Demersals_S', BioAcc := -.2]
+#G37.params$model[Group == 'Demersals_S', BioAcc := -.2]
 #Ecopath
 G37 <- rpath(G37.params, 'Generic 37')
 
