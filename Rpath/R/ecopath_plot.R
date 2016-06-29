@@ -31,7 +31,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                     labels = FALSE, label.pos = NULL, label.num = FALSE, label.cex = 1,
                     fleets = FALSE, type.col = 'black', box.order = NULL){
-  opar <- par()
+  opar <- par(no.readonly = T)
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
@@ -188,7 +188,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@export
 stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
                                                                 'blue', 'red')){
-  opar <- par()
+  opar <- par(no.readonly = T)
   
   #Convert StanzaGroup to number
   if(is.character(StanzaGroup)){

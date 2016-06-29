@@ -10,7 +10,7 @@
 #'@import data.table
 #'@export
 rsim.plot <- function(Rsim.output, spname, indplot = F){
-  opar <- par()
+  opar <- par(no.readonly = T)
   if(indplot == F){
     biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
     n <- ncol(biomass)
