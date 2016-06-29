@@ -373,7 +373,7 @@ read.rpath.param <- function(modfile, dietfile, pedfile = NA,
                                         PB    = 1,
                                         QB    = 1,
                                         Diet  = 1)
-    fleets <- Rpath.param$model[Type == 3, Group]
+    fleets <- as.character(Rpath.param$model[Type == 3, Group])
     for(i in 1:length(fleets)){
       Rpath.param$pedigree[, V1 := 1]
       setnames(Rpath.param$pedigree, 'V1', fleets[i])
