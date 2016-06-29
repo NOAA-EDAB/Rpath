@@ -397,37 +397,34 @@ read.rpath.param <- function(modfile, dietfile, pedfile = NA,
 #'  "eco.name_model.csv".
 #'@export
 write.rpath.param <- function(Rpath.param, eco.name, path = ''){
-  if(Sys.info()['sysname']=="Windows"){
-    if(substr(path, nchar(path) - 1, nchar(path)) != '\\'){
-      path <- paste(path, '\\', sep = '')
-    }
-  }
-  if(Sys.info()['sysname']=="Linux"){
-    if(substr(path, nchar(path), nchar(path)) != '/'){
-      path <- paste(path, '/', sep = '')
-    }
-  }
-      #Need to figure out mac...
     
-  write.csv(Rpath.param$model,    file = paste(path, eco.name, '_model.csv',
-                                                sep = ''), row.names = F)
-  write.csv(Rpath.param$diet,     file = paste(path, eco.name, '_diet.csv',     
-                                                sep = ''), row.names = F)
-  write.csv(Rpath.param$pedigree, file = paste(path, eco.name, '_pedigree.csv', 
-                                                sep = ''), row.names = F)
+  write.csv(Rpath.param$model,
+            file = file.path(path, paste(eco.name, '_model.csv', sep = '')), 
+            row.names = F)
+  
+  write.csv(Rpath.param$diet,
+            file = file.path(path, paste(eco.name, '_diet.csv', sep = '')), 
+            row.names = F)
+  
+  write.csv(Rpath.param$pedigree, 
+            file = file.path(path, paste(eco.name, '_pedigree.csv', sep = '')), 
+            row.names = F)
+  
   #Multistanza parameters are in several different files
-  write.csv(Rpath.param$stanzas$stgroups, file = paste(path, eco.name, 
-                                                        '_stanza_groups.csv', sep = ''),
+  write.csv(Rpath.param$stanzas$stgroups, 
+            file = file.path(path, paste(eco.name, '_stanza_groups.csv', sep = '')),
             row.names = F)
-  write.csv(Rpath.param$stanzas$stindiv,  file = paste(path, eco.name, 
-                                                        '_stanzas.csv', sep = ''),
+  
+  write.csv(Rpath.param$stanzas$stindiv,  
+            file = file.path(path, paste(eco.name, '_stanzas.csv', sep = '')),
             row.names = F)
+  
   if(Rpath.param$stanzas$NStanzaGroups > 0){
     for(isp in 1:Rpath.param$stanzas$NStanzaGroups){
       write.csv(Rpath.param$stanzas$StGroup[[isp]], 
-                file = paste(path, eco.name, '_', 
-                             Rpath.param$stanzas$stgroups$StanzaGroup[isp], '.csv', 
-                             sep = ''), row.names = F)
+                file = file.path(path, paste(eco.name, '_', 
+                             Rpath.param$stanzas$stgroups$StanzaGroup[isp], 
+                             '.csv', sep = '')), row.names = F)
     }
   }
 }
