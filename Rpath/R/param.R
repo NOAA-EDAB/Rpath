@@ -345,7 +345,7 @@ read.rpath.param <- function(modfile, dietfile, pedfile = NA,
     stanzagroup <- as.data.table(read.csv(stanzagroupfile, header = T))
     Rpath.param$stanzas$NStanzaGroups <- nrow(stanzagroup)
     Rpath.param$stanzas$stgroups      <- stanzagroup
-    Rpath.param$stanzas$stanzas       <- as.data.table(read.csv(stanzafile, 
+    Rpath.param$stanzas$stindiv       <- as.data.table(read.csv(stanzafile, 
                                                                  header = T))
   } else {
     Rpath.param$stanzas$NStanzaGroups <- 0
@@ -356,8 +356,8 @@ read.rpath.param <- function(modfile, dietfile, pedfile = NA,
                                                      VBGF_d      = NA,
                                                      Wmat        = NA,
                                                      RecPower    = NA)
-    Rpath.param$stanzas$stanzas       <- data.table(StGroupNum  = NA,
-                                                     Stanza      = NA,
+    Rpath.param$stanzas$stindiv       <- data.table(StGroupNum   = NA,
+                                                     StanzaNum   = NA,
                                                      GroupNum    = NA,
                                                      Group       = NA,
                                                      First       = NA,
@@ -419,7 +419,7 @@ write.rpath.param <- function(Rpath.param, eco.name, path = ''){
   write.csv(Rpath.param$stanzas$stgroups, file = paste(path, eco.name, 
                                                         '_stanza_groups.csv', sep = ''),
             row.names = F)
-  write.csv(Rpath.param$stanzas$stanzas,  file = paste(path, eco.name, 
+  write.csv(Rpath.param$stanzas$stindiv,  file = paste(path, eco.name, 
                                                         '_stanzas.csv', sep = ''),
             row.names = F)
   if(Rpath.param$stanzas$NStanzaGroups > 0){
