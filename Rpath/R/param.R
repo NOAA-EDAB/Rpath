@@ -72,7 +72,7 @@ create.rpath.param <- function(group, type, stgroup = NA){
   if(length(stgroup) > 1){
     #Group Parameters
     StanzaGroups  <- unique(stgroup[!is.na(stgroup)])
-    nstanzas      <- as.vector(table(stgroups)[StanzaGroups])
+    nstanzas      <- as.vector(table(stgroup)[StanzaGroups])
     NStanzaGroups <- length(StanzaGroups)
     Rpath.param$stanzas$NStanzaGroups <- NStanzaGroups
     
