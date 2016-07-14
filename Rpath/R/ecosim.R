@@ -118,9 +118,9 @@ rsim.state <- function(params){
 #'@family Rpath functions
 #'
 #'@param Rpath Rpath object containing a balanced model.
-#'@param mscramble
-#'@param mhandle
-#'@param preyswitch
+#'@param mscramble WILL REMOVE
+#'@param mhandle WILL REMOVE
+#'@param preyswitch WILL REMOVE - Adjust with adjust.scenario
 #'@param scrambleselfwt Value of 1 indicates no overlap while 0 indicates complete overlap.
 #'@param handleselfwt Value of 1 indicates no overlap while 0 indicates complete overlap.
 #'@param steps_yr Number of time steps per year.
