@@ -9,11 +9,13 @@
 #'  either by the create.rpath.params or read.rpath.params functions.
 #'@param eco.name Optional name of the ecosystem which becomes an attribute of
 #'    rpath object.
+#'@param eco.area Optional area of the ecosystem which becomes an attribute of the
+#'    rpath object.
 #'
 #'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
 #'@import data.table
 #'@export
-rpath <- function(Rpath.params, eco.name = NA){
+rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
   model <- copy(Rpath.params$model)
@@ -250,6 +252,7 @@ rpath <- function(Rpath.params, eco.name = NA){
 #Define class of output
 class(path.model) <- 'Rpath'
 attr(path.model, 'eco.name') <- eco.name
+attr(path.model, 'eco.area') <- eco.area
 
 return(path.model)
 }
