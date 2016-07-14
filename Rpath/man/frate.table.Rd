@@ -18,13 +18,14 @@ Creates a table of fishing mortalities by species group and gear for an Rpath.si
 \seealso{
 Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
-  \code{\link{check.rpath.param}},
-  \code{\link{create.rpath.param}},
-  \code{\link{read.rpath.param}},
+  \code{\link{check.rpath.params}},
+  \code{\link{create.rpath.params}},
+  \code{\link{read.rpath.params}},
   \code{\link{rpath.stanzas}}, \code{\link{rpath}},
   \code{\link{rsim.params}}, \code{\link{rsim.plot}},
   \code{\link{rsim.scenario}}, \code{\link{stanzaplot}},
   \code{\link{webplot}}, \code{\link{write.Rpath}},
-  \code{\link{write.Rsim}}, \code{\link{write.rpath.param}}
+  \code{\link{write.Rsim}},
+  \code{\link{write.rpath.params}}
 }
 
