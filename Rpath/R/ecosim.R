@@ -185,16 +185,27 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   primQ[mixotrophs] <- primQ[mixotrophs] / Rpath$GE[mixotrophs] * 
     Rpath$type[mixotrophs] 
   
+  #Import links
+  importTo <- ifelse(Rpath$DC[nrow(Rpath$DC), ] > 0,
+                     1:ncol(Rpath$DC),
+                     0)
+  importFrom <- rep(0, ncol(Rpath$DC))
+  importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$BB[1:nliving]
+  
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
   preyto    <- col(Rpath$DC)	
-  predpreyQ <- Rpath$DC * t(matrix(Rpath$QB[1:Rpath$NUM_LIVING] * Rpath$BB[1:Rpath$NUM_LIVING],
-                                   Rpath$NUM_LIVING, Rpath$NUM_LIVING + Rpath$NUM_DEAD))
+  predpreyQ <- Rpath$DC[1:(nliving + ndead), ] * 
+    t(matrix(Rpath$QB[1:Rpath$NUM_LIVING] * Rpath$BB[1:Rpath$NUM_LIVING],
+             Rpath$NUM_LIVING, Rpath$NUM_LIVING + Rpath$NUM_DEAD))
   
   #combined
-  simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0])
-  simpar$PreyTo   <- c(primTo  [primTo > 0], preyto   [predpreyQ > 0])
-  simpar$QQ       <- c(primQ   [primTo > 0], predpreyQ[predpreyQ > 0])             	
+  simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0], 
+                       importFrom[importTo > 0])
+  simpar$PreyTo   <- c(primTo  [primTo > 0], preyto   [predpreyQ > 0], 
+                       importTo  [importTo > 0])
+  simpar$QQ       <- c(primQ   [primTo > 0], predpreyQ[predpreyQ > 0],
+                       importQ   [importTo > 0])             	
   
   numpredprey <- length(simpar$QQ)
 
