@@ -61,7 +61,7 @@ create.rpath.params <- function(group, type, stgroup = NA){
   Rpath.params$model <- model
   
   #Diet matrix
-  diet <- data.table(Group = prey.group)
+  diet <- data.table(Group = c(prey.group, 'Import'))
   for(i in 1:length(pred.group)){
     diet[, V1 := as.numeric(NA)]
     setnames(diet, "V1", pred.group[i])
