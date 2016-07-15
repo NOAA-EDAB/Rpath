@@ -164,6 +164,13 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   for(i in seq_along(mixotrophs)){
     dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
   }
+  #Adjust for diet import (Consumption outside model)
+  import <- which(dietplus[nrow(diet), ] > 0)
+  for(i in seq_along(import)){
+    import.denom <- 1 - dietplus[nrow(diet), import[i]]
+    dietplus[, import[i]] <- dietplus[, import[i]] / import.denom
+  }
+  dietplus <- dietplus[1:(nliving + ndead), ]
   dietplus <- rbind(dietplus, matrix(0, ngear, nliving))
   dietplus <- cbind(dietplus, matrix(0, ngroups, ndead), gearcons)
   TLcoeffA <- TLcoeff - dietplus
