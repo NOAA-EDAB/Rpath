@@ -9,12 +9,23 @@
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@export
-rsim.plot <- function(Rsim.output, spname){
-  biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
-  n <- ncol(biomass)
-  start.bio <- biomass[1, ]
-  rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
-  for(isp in 1:n) rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
+
+rsim.plot <- function(Rsim.output, spname, indplot = F){
+  opar <- par(no.readonly = T)
+  if(indplot == F){
+    biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
+    n <- ncol(biomass)
+    start.bio <- biomass[1, ]
+    start.bio[which(start.bio == 0)] <- 1
+    rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
+    for(isp in 1:n) rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
+  }
+  if(indplot == T){
+    spnum <- which(Rsim.output$params$spname == spname)
+    biomass <- Rsim.output$out_BB[, spnum]
+    n <- 1
+    rel.bio <- biomass / biomass[1]
+  }
 
   ymax <- max(rel.bio) + 0.1 * max(rel.bio)
   ymin <- min(rel.bio) - 0.1 * min(rel.bio)

@@ -71,7 +71,8 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
   #Multistanza parameters
   if(length(stgroup) > 1){
     #Group Parameters
-    StanzaGroups <- unique(stgroup[!is.na(stgroup)])
+    StanzaGroups  <- unique(stgroup[!is.na(stgroup)])
+    nstanzas      <- as.vector(table(stgroup)[StanzaGroups])
     NStanzaGroups <- length(StanzaGroups)
     Rpath.params$stanzas$NStanzaGroups <- NStanzaGroups
     
@@ -375,7 +376,8 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
                                         PB    = 1,
                                         QB    = 1,
                                         Diet  = 1)
-    fleets <- Rpath.params$model[Type == 3, Group]
+
+    fleets <- as.character(Rpath.param$model[Type == 3, Group])
     for(i in 1:length(fleets)){
       Rpath.params$pedigree[, V1 := 1]
       setnames(Rpath.params$pedigree, 'V1', fleets[i])
