@@ -37,7 +37,7 @@ stanzas, and pedigree.  Parameter files can be created outside of R and read in 
 the `read.rpath.params` function.  This function will merge several different flat
 files into an R object of the list type.  A preferred alternative is to generate 
 the list file and populate it completely within R.  The function 
-`create.rpath.param` will generate an Rpath.param.  This ensures that all 
+`create.rpath.params` will generate an Rpath.param.  This ensures that all 
 of the correct columns are present in the parameter file.
 
 The parameter file contains all of the information you would normally enter in the
@@ -63,8 +63,9 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 stgroups <- c(rep(NA, 3), rep('Roundfish1', 2), rep('Roundfish2', 2), 
               rep('Flatfish1', 2), rep('Flatfish2', 2), rep(NA, 14))
 
-REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
-                                  nstanzas = rep(2,4))
+
+REco.params <- create.rpath.params(group = groups, type = types, stgroup = stgroups)
+
 ```
 
 REco.params now contains a list of 4 objects: model, diet, stanzas, and pedigree.

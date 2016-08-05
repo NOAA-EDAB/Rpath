@@ -35,8 +35,8 @@ types  <- c(rep(0, 19), 1, rep(2, 2), rep(3, 3))
 
 #-------------------------------------------------------------------------------
 #Create Model File
-REco.params <- create.rpath.param(group = groups, type = types, stgroup = stgroups,
-                                  nstanzas = rep(2,4))
+REco.params <- create.rpath.params(group = groups, type = types, stgroup = stgroups)
+
 
 #Fill appropriate columns
 #Model
@@ -111,54 +111,68 @@ stanzaplot(REco.params, StanzaNum = 4)
 #-------------------------------------------------------------------------------
 #Modify Diet File
 REco.params$diet[, Seabirds        := c(rep(NA, 11), 0.1, 0.25, 0.2, 0.15, 
-                                         rep(NA, 6), 0.3)]
+                                         rep(NA, 6), 0.3, NA)]
 REco.params$diet[, Whales          := c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, 
                                          NA, 0.01, rep(NA, 4), 0.1, rep(NA, 3), 
-                                         0.86, rep(NA, 3))]
+                                         0.86, rep(NA, 4))]
 REco.params$diet[, Seals           := c(rep(NA, 3), 0.05, 0.1, 0.05, 0.2, 0.005, 
                                          0.05, 0.005, 0.01, 0.24, rep(0.05, 4), 
-                                         0.09, rep(NA, 5))]
+                                         0.09, rep(NA, 6))]
 REco.params$diet[, JuvRoundfish1   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, 
                                          rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
-                                         0.1, 0.05, NA)]
+                                         0.1, 0.05, NA, NA)]
 REco.params$diet[, AduRoundfish1   := c(rep(NA, 5), 1e-3, 0.01, 1e-3, 0.05, 1e-3, 
                                          0.01, 0.29, 0.1, 0.1, 0.347, 0.03, NA, 
-                                         0.05, 0.01, rep(NA, 3))]
+                                         0.05, 0.01, rep(NA, 4))]
 REco.params$diet[, JuvRoundfish2   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, 
                                          rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
-                                         0.1, .05, NA)]
+                                         0.1, .05, NA, NA)]
 REco.params$diet[, AduRoundfish2   := c(rep(NA, 3), 1e-4, NA, 1e-4, NA, rep(1e-4, 4), 
                                          0.1, rep(0.05, 3), 0.2684, 0.01, 0.37, 0.001, 
-                                         NA, 0.1, NA)]
+                                         NA, 0.1, NA, NA)]
 REco.params$diet[, JuvFlatfish1    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
                                          rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
-                                         NA)]
+                                         NA, NA)]
 REco.params$diet[, AduFlatfish1    := c(rep(NA, 7), rep(1e-4, 5), rep(NA, 2), 0.001, 
-                                         0.05, 0.001, 0.6, 0.2475, NA, 0.1, NA)]
+                                         0.05, 0.001, 0.6, 0.2475, NA, 0.1, NA, NA)]
 REco.params$diet[, JuvFlatfish2    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3),
                                          rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
-                                         NA)]
+                                         NA, NA)]
 REco.params$diet[, AduFlatfish2    := c(rep(NA, 7), 1e-4, NA, 1e-4, rep(NA, 4), 
-                                         rep(1e-4, 3), 0.44, 0.3895, NA, 0.17, NA)]
+                                        rep(1e-4, 3), 0.44, 0.3895, NA, 0.17, 
+                                        NA, NA)]
 REco.params$diet[, OtherGroundfish := c(rep(NA, 3), rep(1e-4, 8), 0.05, 0.08, 0.0992, 
-                                         0.3, 0.15, 0.01, 0.3, 0.01, rep(NA, 3))]
+                                         0.3, 0.15, 0.01, 0.3, 0.01, rep(NA, 4))]
 REco.params$diet[, Foragefish1     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
-                                         0.8196, 0.06, 0.12, NA)]
+                                         0.8196, 0.06, 0.12, NA, NA)]
 REco.params$diet[, Foragefish2     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
-                                         0.8196, 0.06, 0.12, NA)]
+                                         0.8196, 0.06, 0.12, NA, NA)]
 REco.params$diet[, OtherForagefish := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
-                                         0.8196, 0.06, 0.12, NA)]
+                                         0.8196, 0.06, 0.12, NA, NA)]
 REco.params$diet[, Megabenthos     := c(rep(NA, 15), 0.1, 0.03, 0.55, rep(NA, 2), 0.32,
-                                         NA)]
-REco.params$diet[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA)]
-REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA)]
-REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA)]
+                                         NA, NA)]
+REco.params$diet[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA, NA)]
+REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, 
+                                        NA, NA)]
+REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA, NA)]
+
+#Check params object
+check.rpath.params(REco.params)
 
 #Save rpath.params
 save(REco.params, file = paste(out.dir, 'REco_params.RData', sep = ''))
 #-------------------------------------------------------------------------------
 #Ecopath
-REco <- rpath(REco.params, 'R Ecosystem')
+REco <- rpath(REco.params, 'R Ecosystem', eco.area = 15)
+
+#Test diet import
+#20% seabird diet import
+seabirds <- REco.params$diet[, Seabirds]
+seabirds.import <- seabirds - (seabirds * 0.2)
+seabirds.import[23] <- 0.2
+REco.params$diet[, Seabirds := seabirds.import]
+
+REco.import <- rpath(REco.params, 'REco w import', eco.area = 15)
 
 #Show unbalanced model
 REco.params$model[Group == 'Foragefish1', Biomass := 2]

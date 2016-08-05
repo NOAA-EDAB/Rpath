@@ -16,11 +16,13 @@
 #'  either by the create.rpath.params or read.rpath.params functions.
 #'@param eco.name Optional name of the ecosystem which becomes an attribute of
 #'    rpath object.
+#'@param eco.area Optional area of the ecosystem which becomes an attribute of the
+#'    rpath object.
 #'
 #'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
 #'@import data.table
 #'@export
-rpath <- function(Rpath.params, eco.name = NA){
+rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
   model <- Rpath.params$model
@@ -154,6 +156,20 @@ rpath <- function(Rpath.params, eco.name = NA){
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
+
+  #Adjust for mixotrophs (partial primary producers)
+  mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  mix.Q <- 1 - model[mixotrophs, Type]
+  for(i in seq_along(mixotrophs)){
+    dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
+  }
+  #Adjust for diet import (Consumption outside model)
+  import <- which(dietplus[nrow(diet), ] > 0)
+  for(i in seq_along(import)){
+    import.denom <- 1 - dietplus[nrow(diet), import[i]]
+    dietplus[, import[i]] <- dietplus[, import[i]] / import.denom
+  }
+  dietplus <- dietplus[1:(nliving + ndead), ]
   dietplus <- rbind(dietplus, matrix(0, ngear, nliving))
   dietplus <- cbind(dietplus, matrix(0, ngroups, ndead), gearcons)
   TLcoeffA <- TLcoeff - dietplus
@@ -242,6 +258,7 @@ rpath <- function(Rpath.params, eco.name = NA){
 #Define class of output
 class(path.model) <- 'Rpath'
 attr(path.model, 'eco.name') <- eco.name
+attr(path.model, 'eco.area') <- eco.area
 
 return(path.model)
 }

@@ -3,32 +3,41 @@
 \alias{Rpath}
 \docType{package}
 \title{
-What the package does (short line)
+R implementation of the Ecopath with Ecosim model
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+This package implements the core functionality of the popular Ecopath with Ecosim
+mass balance model.  Ecopath is a static snap shot of the energy flow within an
+ecosystem.  Ecosim is a dynamic simulation using the Ecopath values as a starting
+point.
 }
 \details{
 \tabular{ll}{
 Package: \tab Rpath\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2015-02-09\cr
+Version: \tab 0.0.0.9001\cr
+Date: \tab 2016-07-15\cr
 License: \tab GPL (>= 2)\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
+There are two main components to the package: rpath and rsim.  The function rpath
+uses a parameter object create by create.rpath.params to conduct the mass balance
+of the system.  The rsim component is carried out using a series of functions.
+The first function is rsim.scenario which converts the rpath output to rates 
+appropriate for running the simulation.  You can adjust the base scenario through
+a series of adjust functions (adjust.scenario, adjust.fishing, adjust.forcing).
+Finally you run the simulation with the function rsim.run.  Visualizations of the
+foodweb and rsim results can be made using the functions webplot and rsim.plot 
+respectively.
 }
 \author{
-Your Name
+Sean M. Lucey, Sarah K. Gaichas, and Kerim Y. Aydin
 
-Maintainer: Your Name <your@email.com>
+Maintainer: Sean M. Lucey <Sean.Lucey@NOAA.gov>
 }
 \references{
 ~~ Literature or other references for background information ~~
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation ~~
-~~ directory ~~
+
 \keyword{ package }
 \seealso{
 ~~ Optional links to other man pages, e.g. ~~

@@ -15,12 +15,12 @@
 #'
 #'@return Outputs a list object of Rpath parameters which are populated with values 
 #'  of NA or logical default values.  Values can then be filled in using
-#'  R.  Use check.rpath.param() to ensure parameter files are filled out
+#'  R.  Use check.rpath.params() to ensure parameter files are filled out
 #'  correctly (NOTE: This does not ensure data is correct just that it is 
 #'  in the right places).
 #'@import data.table
 #'@export
-create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
+create.rpath.params <- function(group, type, stgroup = NA){
   Rpath.params <- list()
   
   pred.group  <- group[which(type < 2)]
@@ -61,7 +61,7 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
   Rpath.params$model <- model
   
   #Diet matrix
-  diet <- data.table(Group = prey.group)
+  diet <- data.table(Group = c(prey.group, 'Import'))
   for(i in 1:length(pred.group)){
     diet[, V1 := as.numeric(NA)]
     setnames(diet, "V1", pred.group[i])
@@ -128,7 +128,7 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
   }
   
   Rpath.params$stanzas$stgroups <- stgroups
-  Rpath.params$stanzas$stanzas <- stanzas
+  Rpath.params$stanzas$stindiv  <- stindiv
     
   #Pedigree
   pedigree <- data.table(Group = group,
@@ -164,101 +164,102 @@ create.rpath.param <- function(group, type, stgroup = NA, nstanzas = NA){
 #'  (NOTE: This does not ensure data is correct just that it is in the right places).
 #'@import data.table
 #'@export
-check.rpath.param <- function(Rpath.params){
+check.rpath.params <- function(Rpath.params){
 
   #Check to make sure all types are represented
-  if(length(Rpath.params$model[Type == 0, ]) == 0) stop('Model must contain at least 1 consumer')
-  if(length(Rpath.params$model[Type == 1, ]) == 0) stop('Model must contain a producer group')
-  if(length(Rpath.params$model[Type == 2, ]) == 0) stop('Model must contain at least 1 detrital group')
-  if(length(Rpath.params$model[Type == 3, ]) == 0) stop('Model must contain at least 1 fleet')
+  if(nrow(Rpath.params$model[Type == 0, ]) == 0) warning('Model must contain at least 1 consumer')
+  if(nrow(Rpath.params$model[Type == 1, ]) == 0) warning('Model must contain a producer group')
+  if(nrow(Rpath.params$model[Type == 2, ]) == 0) warning('Model must contain at least 1 detrital group')
+  if(nrow(Rpath.params$model[Type == 3, ]) == 0) warning('Model must contain at least 1 fleet')
   
   #Check that there is the proper number of columns
   n.groups <- nrow(Rpath.params$model)
+  n.living <- length(Rpath.params$model[Type <= 1, Group])
   n.dead   <- length(Rpath.params$model[Type == 2, Group])
   n.fleet  <- length(Rpath.params$model[Type == 3, Group])
   if(ncol(Rpath.params$model) != 10 + n.dead + 2 * n.fleet){
-    stop('Model does not have the correct number of column.  There should be 10 
+    warning('Model does not have the correct number of column.  There should be 10 
          columns plus one for each detrital group plus two for each fleet group 
          (landings and discards).  Please double check your columns')
   }
     
   #Check that either biomass or EE is entered and not both
   if(length(Rpath.params$model[is.na(Biomass) & is.na(EE) & Type < 2, Group]) > 0){
-    stop(paste(Rpath.params$model[is.na(Biomass) & is.na(EE) & Type < 2, Group], 
+    warning(paste(Rpath.params$model[is.na(Biomass) & is.na(EE) & Type < 2, Group], 
                'are missing both Biomass and EE...must enter one \n', sep = ' '))
   }
   if(length(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group]) > 0){
-    stop(paste(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
+    warning(paste(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
                'have both Biomass and EE...only one should be entered \n', sep = ' '))
     #consider making this a warning() since you can have both in EwE
   }
 
-  #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 2 and 3
-  if(length(Rpath.params$model[Type > 1 & !is.na(Biomass), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(Biomass), Group], 
-               'are not living and should not have a biomass...set to NA \n', 
+  #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 3
+  if(length(Rpath.params$model[Type == 3 & !is.na(Biomass), Group]) > 0){
+    warning(paste(Rpath.params$model[Type == 3 & !is.na(Biomass), Group], 
+               'is a fleet and should not have a biomass...set to NA \n', 
                sep = ' '))
   }
-  if(length(Rpath.params$model[Type > 1 & !is.na(PB), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(PB), Group], 
-               'are not living and should not have a PB...set to NA \n', sep = ' '))
+  if(length(Rpath.params$model[Type == 3 & !is.na(PB), Group]) > 0){
+    warning(paste(Rpath.params$model[Type == 3 & !is.na(PB), Group], 
+               'is a fleet and should not have a PB...set to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type > 1 & !is.na(QB), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(QB), Group], 
+    warning(paste(Rpath.params$model[Type > 1 & !is.na(QB), Group], 
                'are not living and should not have a QB...set to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type > 1 & !is.na(EE), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(EE), Group], 
+    warning(paste(Rpath.params$model[Type > 1 & !is.na(EE), Group], 
                'are not living and should not have a EE...set to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type > 1 & !is.na(ProdCons), Group]) > 0){
-    stop(paste(Rpath.params$model[Type > 1 & !is.na(ProdCons), Group], 
+    warning(paste(Rpath.params$model[Type > 1 & !is.na(ProdCons), Group], 
                'are not living and should not have a ProdCons...set to NA \n', 
                sep = ' '))
   }
   
   #Check that types 0 and 1 have a PB
   if(length(Rpath.params$model[Type < 2 & is.na(PB), Group]) > 0){
-    stop(paste(Rpath.params$model[Type < 2 & is.na(PB), Group],
+    warning(paste(Rpath.params$model[Type < 2 & is.na(PB), Group],
                'are missing a PB...set to >= 0 \n', sep = ' '))
   }
   
   #Check that consumers have a QB or ProdCons but not both
-  if(length(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type == 0, Group]) > 0){
-    stop(paste(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type == 0, Group], 
+  if(length(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type < 1, Group]) > 0){
+    warning(paste(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type < 1, Group], 
                'are missing both QB and ProdCons...must enter one \n', sep = ' '))
   }
-  if(length(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group]) > 0){
-    stop(paste(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type == 0, Group],
+  if(length(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group]) > 0){
+    warning(paste(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group],
                'have both QB and ProdCons...only one should be entered \n', 
                sep = ' '))
   }
   
   #Check that BioAcc / Unassim is NA for fleets and numeric for types < 3
   if(length(Rpath.params$model[Type == 3 & !is.na(BioAcc), Group]) > 0){
-    stop(paste(Rpath.params$model[Type == 3 & !is.na(BioAcc), Group],
+    warning(paste(Rpath.params$model[Type == 3 & !is.na(BioAcc), Group],
                'are fleets and should not have a BioAcc...set to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type == 3 & !is.na(Unassim), Group]) > 0){
-    stop(paste(Rpath.params$model[Type == 3 & !is.na(Unassim), Group],
+    warning(paste(Rpath.params$model[Type == 3 & !is.na(Unassim), Group],
                'are fleets and should not have an Unassim...set to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type != 3 & is.na(BioAcc), Group]) > 0){
-    stop(paste(Rpath.params$model[Type != 3 & is.na(BioAcc), Group],
+    warning(paste(Rpath.params$model[Type != 3 & is.na(BioAcc), Group],
                'must have a number for BioAcc...set to >= 0 \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type != 3 & is.na(Unassim), Group]) > 0){
-    stop(paste(Rpath.params$model[Type != 3 & is.na(Unassim), Group],
+    warning(paste(Rpath.params$model[Type != 3 & is.na(Unassim), Group],
                'must have a number for Unassim...set to >= 0 \n', sep = ' '))
   }
   
   #Check that only Type 2 has DetInput set
   if(length(Rpath.params$model[Type != 2 & !is.na(DetInput), Group]) > 0){
-    stop(paste(Rpath.params$model[Type != 2 & !is.na(DetInput), Group],
+    warning(paste(Rpath.params$model[Type != 2 & !is.na(DetInput), Group],
                'are not detritus...set DetInput to NA \n', sep = ' '))
   }
   if(length(Rpath.params$model[Type == 2 & is.na(DetInput), Group]) >0){
-    stop(paste(Rpath.params$model[Type == 2 & is.na(DetInput), Group],
+    warning(paste(Rpath.params$model[Type == 2 & is.na(DetInput), Group],
                'are detritus...set DetInput to 0 \n', sep = ' '))
   }
   
@@ -266,7 +267,7 @@ check.rpath.param <- function(Rpath.params){
   det.matrix <- Rpath.params$model[, 11:(10 + n.dead), with = F]
   test.rows  <- rowSums(det.matrix)
   if(length(setdiff(which(Rpath.params$model[, Type] == 2), which(test.rows != 1))) > 0){
-    stop(paste(Rpath.params$model[, Group][setdiff(which(Rpath.params$model[, Type] == 2), 
+    warning(paste(Rpath.params$model[, Group][setdiff(which(Rpath.params$model[, Type] == 2), 
                                           which(test.rows != 1))],
                'detrital fate does not sum to 1 \n', sep = ' '))
   }
@@ -275,7 +276,7 @@ check.rpath.param <- function(Rpath.params){
     for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- 
       na.group[i] - n.groups
     na.group <- unique(na.group)
-    stop(paste(Rpath.params$model[na.group, Group], 
+    warning(paste(Rpath.params$model[na.group, Group], 
                'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
   }
   
@@ -287,8 +288,8 @@ check.rpath.param <- function(Rpath.params){
     for(i in 1:length(na.group)) while(na.group[i] > n.groups) na.group[i] <- 
       na.group[i] - n.groups
     na.group <- unique(na.group)
-    stop(paste(Rpath.params$model[na.group, Group], 
-               'one or more detrital fates are NA...set to >= 0 \n', sep = ' '))
+    warning(paste(Rpath.params$model[na.group, Group], 
+               'one or more catches are NA...set to >= 0 \n', sep = ' '))
   }
   
   #Check that fleets aren't catching other fleets
@@ -302,21 +303,35 @@ check.rpath.param <- function(Rpath.params){
         not.na.group <- unique(not.na.group)
       }
     }
-    stop(paste(Rpath.params$model[not.na.group + (n.groups - n.fleet), Group], 
+    warning(paste(Rpath.params$model[not.na.group + (n.groups - n.fleet), Group], 
                'are catching another fleet...set to NA \n', sep = ' '))
   }
 
   #Diet
   #Check that columns sum to 1
-  col.names <- names(Rpath.params$diet)[2:ncol(Rpath.params$model)]
+  col.names <- names(Rpath.params$diet)[2:ncol(Rpath.params$diet)]
   col.sums <- Rpath.params$diet[, lapply(.SD, sum, na.rm = T), .SDcols = col.names]
-  for(i in 1:length(which(col.sums != 1))){
-    warning(paste(col.names[which(col.sums != 1)][i], 'sum,', 
-                  col.sums[, which(col.sums !=1)[i], with = F], 
-                  'is not 1...if this is a producer group it should equal 0, otherwise it should sum to 1'))
+  
+  #Check types (>0 & <=1 are primary producers)
+  types <- Rpath.params$model[Type < 2, Type]
+  dctype <- round(col.sums + types, 4)
+  if(length(which(dctype != 1)) > 0){
+    for(i in 1:length(which(dctype != 1))){
+    warning(paste(col.names[which(dctype != 1)][i], 'sum,', 
+                  col.sums[, which(dctype !=1)[i], with = F], 
+                  'is not 1...check DC or proportion of primary production'))
+    }
   }
 
-cat(paste(parameter, 'parameter file is functional'))
+  #Check number of columns
+  dietcol <- ncol(Rpath.params$diet)
+  if(length(dietcol) != n.living + 1){
+    warning(paste(dietcol, ' is the incorrect number of columns in diet matrix.',
+                  'There should be', n.living + 1))
+  }
+  
+cat('Rpath parameter file is functional')
+
 }
 
 #'Read Rpath parameters from .csv files
@@ -348,7 +363,7 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
     stanzagroup <- as.data.table(read.csv(stanzagroupfile, header = T))
     Rpath.params$stanzas$NStanzaGroups <- nrow(stanzagroup)
     Rpath.params$stanzas$stgroups      <- stanzagroup
-    Rpath.params$stanzas$stanzas       <- as.data.table(read.csv(stanzafile, 
+    Rpath.params$stanzas$stindiv       <- as.data.table(read.csv(stanzafile, 
                                                                  header = T))
   } else {
     Rpath.params$stanzas$NStanzaGroups <- 0
@@ -359,8 +374,8 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
                                                      VBGF_d      = NA,
                                                      Wmat        = NA,
                                                      RecPower    = NA)
-    Rpath.params$stanzas$stanzas       <- data.table(StGroupNum  = NA,
-                                                     Stanza      = NA,
+    Rpath.params$stanzas$stindiv       <- data.table(StGroupNum   = NA,
+                                                     StanzaNum   = NA,
                                                      GroupNum    = NA,
                                                      Group       = NA,
                                                      First       = NA,
@@ -376,8 +391,7 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
                                         PB    = 1,
                                         QB    = 1,
                                         Diet  = 1)
-
-    fleets <- as.character(Rpath.param$model[Type == 3, Group])
+    fleets <- as.character(Rpath.params$model[Type == 3, Group])
     for(i in 1:length(fleets)){
       Rpath.params$pedigree[, V1 := 1]
       setnames(Rpath.params$pedigree, 'V1', fleets[i])
@@ -388,7 +402,7 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
 
 #'Write Rpath parameters to .csv files
 #'
-#'Creates a series of .csv files from an Rpath.param object.
+#'Creates a series of .csv files from an Rpath.params object.
 #'
 #'@family Rpath functions
 #'
@@ -401,37 +415,34 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
 #'  "eco.name_model.csv".
 #'@export
 write.rpath.params <- function(Rpath.params, eco.name, path = ''){
-  if(Sys.info()['sysname']=="Windows"){
-    if(substr(path, nchar(path) - 1, nchar(path)) != '\\'){
-      path <- paste(path, '\\', sep = '')
-    }
-  }
-  if(Sys.info()['sysname']=="Linux"){
-    if(substr(path, nchar(path), nchar(path)) != '/'){
-      path <- paste(path, '/', sep = '')
-    }
-  }
-      #Need to figure out mac...
     
-  write.csv(Rpath.params$model,    file = paste(path, eco.name, '_model.csv',
-                                                sep = ''), row.names = F)
-  write.csv(Rpath.params$diet,     file = paste(path, eco.name, '_diet.csv',     
-                                                sep = ''), row.names = F)
-  write.csv(Rpath.params$pedigree, file = paste(path, eco.name, '_pedigree.csv', 
-                                                sep = ''), row.names = F)
+  write.csv(Rpath.params$model,
+            file = file.path(path, paste(eco.name, '_model.csv', sep = '')), 
+            row.names = F)
+  
+  write.csv(Rpath.params$diet,
+            file = file.path(path, paste(eco.name, '_diet.csv', sep = '')), 
+            row.names = F)
+  
+  write.csv(Rpath.params$pedigree, 
+            file = file.path(path, paste(eco.name, '_pedigree.csv', sep = '')), 
+            row.names = F)
+  
   #Multistanza parameters are in several different files
-  write.csv(Rpath.params$stanzas$stgroups, file = paste(path, eco.name, 
-                                                        '_stanza_groups.csv', sep = ''),
+  write.csv(Rpath.params$stanzas$stgroups, 
+            file = file.path(path, paste(eco.name, '_stanza_groups.csv', sep = '')),
             row.names = F)
-  write.csv(Rpath.params$stanzas$stanzas,  file = paste(path, eco.name, 
-                                                        '_stanzas.csv', sep = ''),
+  
+  write.csv(Rpath.params$stanzas$stindiv,  
+            file = file.path(path, paste(eco.name, '_stanzas.csv', sep = '')),
             row.names = F)
+  
   if(Rpath.params$stanzas$NStanzaGroups > 0){
     for(isp in 1:Rpath.params$stanzas$NStanzaGroups){
       write.csv(Rpath.params$stanzas$StGroup[[isp]], 
-                file = paste(path, eco.name, '_', 
-                             Rpath.params$stanzas$stgroups$StanzaGroup[isp], '.csv', 
-                             sep = ''), row.names = F)
+                file = file.path(path, paste(eco.name, '_', 
+                             Rpath.params$stanzas$stgroups$StanzaGroup[isp], 
+                             '.csv', sep = '')), row.names = F)
     }
   }
 }

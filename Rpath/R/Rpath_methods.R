@@ -2,7 +2,8 @@
 #Print Rpath
 #'@export
 print.Rpath <- function(x, rows = NA, morts = F, ...){
-  cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
+  cat(paste("Rpath model:", attr(x, 'eco.name'), "\n"))
+  cat(paste("Model Area:",  attr(x, 'eco.area'), "\n"))
   if(max(x$EE, na.rm = T) > 1){
     unbalanced.groups <- x$Group[which(x$EE > 1)]
     cat("     Status: Unbalanced! \nThe following groups have EE > 1:\n")
