@@ -166,6 +166,7 @@ check.rpath.params <- function(Rpath.params){
   
   #Check that there is the proper number of columns
   n.groups <- nrow(Rpath.params$model)
+  n.living <- length(Rpath.params$model[Type <= 1, Group])
   n.dead   <- length(Rpath.params$model[Type == 2, Group])
   n.fleet  <- length(Rpath.params$model[Type == 3, Group])
   if(ncol(Rpath.params$model) != 10 + n.dead + 2 * n.fleet){
@@ -302,9 +303,10 @@ check.rpath.params <- function(Rpath.params){
   #Check that columns sum to 1
   col.names <- names(Rpath.params$diet)[2:ncol(Rpath.params$diet)]
   col.sums <- Rpath.params$diet[, lapply(.SD, sum, na.rm = T), .SDcols = col.names]
+  
   #Check types (>0 & <=1 are primary producers)
   types <- Rpath.params$model[Type < 2, Type]
-  dctype <- col.sums + types
+  dctype <- round(col.sums + types, 4)
   if(length(which(dctype != 1)) > 0){
     for(i in 1:length(which(dctype != 1))){
     warning(paste(col.names[which(dctype != 1)][i], 'sum,', 
@@ -313,6 +315,13 @@ check.rpath.params <- function(Rpath.params){
     }
   }
 
+  #Check number of columns
+  dietcol <- ncol(Rpath.params$diet)
+  if(length(dietcol) != n.living + 1){
+    warning(paste(dietcol, ' is the incorrect number of columns in diet matrix.',
+                  'There should be', n.living + 1))
+  }
+  
 cat('Rpath parameter file is functional')
 }
 
