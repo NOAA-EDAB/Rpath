@@ -131,11 +131,15 @@ rsim.state <- function(params){
 rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1, 
                         scrambleselfwt = 1, handleselfwt = 1, 
                         steps_yr = 12, steps_m = 1){
+  
+  nliving <- Rpath$NUM_LIVING
+  ndead   <- Rpath$NUM_DEAD
+  
   simpar <- c()
   
   simpar$NUM_GROUPS <- Rpath$NUM_GROUPS
-  simpar$NUM_LIVING <- Rpath$NUM_LIVING
-  simpar$NUM_DEAD   <- Rpath$NUM_DEAD
+  simpar$NUM_LIVING <- nliving
+  simpar$NUM_DEAD   <- ndead
   simpar$NUM_GEARS  <- Rpath$NUM_GEARS
   simpar$spname     <- c("Outside", Rpath$Group)
   simpar$spnum      <- 0:length(Rpath$BB) 
@@ -159,7 +163,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
   #KYA EFFORT REMOVED FROM PARAMS July 2015
-  simpar$fish_Effort <- ifelse(simpar$spnum <= simpar$NUM_LIVING + simpar$NUM_DEAD,
+  simpar$fish_Effort <- ifelse(simpar$spnum <= nliving + ndead,
                                0.0,
                                1.0) 
   
@@ -196,8 +200,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   preyfrom  <- row(Rpath$DC)
   preyto    <- col(Rpath$DC)	
   predpreyQ <- Rpath$DC[1:(nliving + ndead), ] * 
-    t(matrix(Rpath$QB[1:Rpath$NUM_LIVING] * Rpath$BB[1:Rpath$NUM_LIVING],
-             Rpath$NUM_LIVING, Rpath$NUM_LIVING + Rpath$NUM_DEAD))
+    t(matrix(Rpath$QB[1:nliving] * Rpath$BB[1:nliving],
+             nliving, nliving + ndead))
   
   #combined
   simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0], 
@@ -250,7 +254,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #catchlinks
   fishfrom    <- row(as.matrix(Rpath$Catch))
-  fishthrough <- col(as.matrix(Rpath$Catch)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+  fishthrough <- col(as.matrix(Rpath$Catch)) + (nliving + ndead)
   fishcatch   <- Rpath$Catch
   fishto      <- fishfrom * 0
   
@@ -263,12 +267,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   #discard links
   
   for(d in 1:Rpath$NUM_DEAD){
-    detfate <- Rpath$DetFate[(Rpath$NUM_LIVING + Rpath$NUM_DEAD + 1):Rpath$NUM_GROUPS, d]
+    detfate <- Rpath$DetFate[(nliving + ndead + 1):Rpath$NUM_GROUPS, d]
     detmat  <- t(matrix(detfate, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
     
     fishfrom    <-  row(as.matrix(Rpath$Discards))                      
-    fishthrough <-  col(as.matrix(Rpath$Discards)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
-    fishto      <-  t(matrix(Rpath$NUM_LIVING + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
+    fishthrough <-  col(as.matrix(Rpath$Discards)) + (nliving + ndead)
+    fishto      <-  t(matrix(nliving + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
     fishcatch   <-  Rpath$Discards * detmat
     if(sum(fishcatch) > 0){
       simpar$FishFrom    <- c(simpar$FishFrom,    fishfrom   [fishcatch > 0])
@@ -286,11 +290,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$FishTo          <- c(0, simpar$FishTo)   
   
 # SET DETRITAL FLOW
-  detfrac <- Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]
+  detfrac <- Rpath$DetFate[1:(nliving + ndead), ]
   detfrom <- row(as.matrix(detfrac))
-  detto   <- col(as.matrix(detfrac)) + Rpath$NUM_LIVING
+  detto   <- col(as.matrix(detfrac)) + nliving
   
-  detout <- 1 - rowSums(as.matrix(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]))
+  detout <- 1 - rowSums(as.matrix(Rpath$DetFate[1:(nliving + ndead), ]))
   dofrom <- 1:length(detout)
   doto   <- rep(0, length(detout))
   
