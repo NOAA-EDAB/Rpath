@@ -85,19 +85,11 @@ create.rpath.params <- function(group, type, stgroup = NA){
                            RecPower    = 1)
     
     #Individual Stanza Parameters
-    #Need vector of stanza number
-    stanza.num <- c()
-    total <- 0
-    for(i in 1:NStanzaGroups){
-      stanza.reps <- 1:stgroups[i, nstanzas]
-      stanza.num[(total + 1):(length(stanza.reps) + total)] <- stanza.reps
-      total <- total + length(stanza.reps)
-    }
     ind.stanza.group <- model[!is.na(stgroup), Group]
     ieco <- which(!is.na(stgroup))
-    stanzas <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
+    stindiv <- data.table(StGroupNum = rep(stgroups[, StGroupNum], 
                                            stgroups[, nstanzas]),
-                          Stanza     = stanza.num,
+                          StanzaNum  = as.integer(0),
                           GroupNum   = ieco,
                           Group      = ind.stanza.group,
                           First      = NA,
@@ -117,8 +109,8 @@ create.rpath.params <- function(group, type, stgroup = NA){
                            Wmat        = NA,
                            RecPower    = NA)
     
-    stanzas <- data.table(StGroupNum = NA,
-                          Stanza     = NA,
+    stindiv <- data.table(StGroupNum = NA,
+                          StanzaNum  = NA,
                           GroupNum   = NA,
                           Group      = NA,
                           First      = NA,
@@ -331,7 +323,6 @@ check.rpath.params <- function(Rpath.params){
   }
   
 cat('Rpath parameter file is functional')
-
 }
 
 #'Read Rpath parameters from .csv files
@@ -350,7 +341,7 @@ cat('Rpath parameter file is functional')
 #'@param pedfile file location of the flat file containg the pedgigree parameters.
 #'@return Outputs an Rpath.param object that can be used for Rpath and subsequently
 #'  Rsim.  (NOTE: This does function does not ensure data is correct or in the 
-#'  correct locations...run check.rpath.params to ensure the appropriate columns are
+#'  correct locations...run check.rpath.param to ensure the appropriate columns are
 #'  present).
 #'@export
 read.rpath.params <- function(modfile, dietfile, pedfile = NA,

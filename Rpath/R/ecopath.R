@@ -1,11 +1,4 @@
-## R version of Ecopath balance by Sarah Gaichas and Kerim Aydin
-## Modified by Sean Lucey
-## Version controled by git
-## Function ecopathR takes as input 3 csv files and optional
-## ecosystem name  
-
-
-#'Ecopath modual of Rpath
+#'Ecopath module of Rpath
 #'
 #'Performs initial mass balance using a model parameter file and diet
 #'matrix file.
@@ -25,11 +18,11 @@
 rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
-  model <- Rpath.params$model
+  model <- copy(Rpath.params$model)
   
   #Diet Parameters - diet matrix, predators as columns, prey as rows - include
   #producers as predators even though they do not consume any groups
-  diet <- Rpath.params$diet
+  diet <- copy(Rpath.params$diet)
   
   #Check that all columns of model are numeric and not logical
   if(length(which(sapply(model, class) == 'logical')) > 0){
@@ -40,8 +33,16 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   }
     
   #Remove first column if names (factor or character)
-  if(sapply(diet, class)[1] == 'factor')    diet <- diet[, 1 := NULL, with = F]
-  if(sapply(diet, class)[1] == 'character') diet <- diet[, 1 := NULL, with = F]
+  if(sapply(diet, class)[1] == 'factor')    diet[, 1 := NULL, with = F]
+  if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL, with = F]
+
+  #Adjust diet comp of mixotrophs
+  #mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  #mix.Q <- 1 - model[mixotrophs, Type]
+  # for(i in seq_along(mixotrophs)){
+  #   new.dc <- diet[, mixotrophs[i], with = F] * mix.Q[i]
+  #   diet[, mixotrophs[i] := new.dc, with = F]
+  # }
   
   #Convert NAs to zero in diet matrix
   diet[is.na(diet)] <- 0
@@ -56,8 +57,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   model[is.na(DetInput), DetInput := 0]
 
   # fill in GE and QB from inputs
-  GE <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
-  QB <- ifelse(is.na(model[, QB]),       model[, QB := PB / GE], model[, QB])
+  GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
+  QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE], model[, QB])
+  model[, QB := QB.1]
 
   # define catch, discards, necessary sums
   catchmat    <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
@@ -148,7 +150,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   DetPB   <- detinputs / DetB
 
   # Trophic Level calcs
-  TL            <- rep(1, ngroups)
+  b             <- rep(1, ngroups)
   TLcoeff       <- matrix(0, ngroups, ngroups)
   diag(TLcoeff) <- rep(1, ngroups)
   gearcons      <- as.matrix(totcatchmat) / geartot[col(as.matrix(totcatchmat))]
@@ -156,7 +158,6 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
-
   #Adjust for mixotrophs (partial primary producers)
   mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
   mix.Q <- 1 - model[mixotrophs, Type]
@@ -173,7 +174,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   dietplus <- rbind(dietplus, matrix(0, ngear, nliving))
   dietplus <- cbind(dietplus, matrix(0, ngroups, ndead), gearcons)
   TLcoeffA <- TLcoeff - dietplus
-  TL       <- solve(t(TLcoeffA), TL)     
+  TL       <- solve(t(TLcoeffA), b)     
 
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
@@ -284,7 +285,13 @@ rpath.stanzas <- function(Rpath.params){
   #Determine the total number of groups with multistanzas
   Nsplit     <- Rpath.params$stanza$NStanzaGroups
   groupfile  <- Rpath.params$stanza$stgroups
-  stanzafile <- Rpath.params$stanza$stanzas
+  stanzafile <- Rpath.params$stanza$stindiv
+  
+  #Need to add vector of stanza number
+  for(isp in 1:Nsplit){
+    stnum <- order(stanzafile[StGroupNum == isp, First])
+    stanzafile[StGroupNum == isp, StanzaNum := stnum]
+  }
   
   #Calculate the last month for the final stanza
   #Months to get to 99% Winf (We don't use an accumulator function like EwE)
@@ -293,8 +300,8 @@ rpath.stanzas <- function(Rpath.params){
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
-    t90 <- groupfile[StGroupNum == isp, last]
-    stanzafile[StGroupNum == isp & Stanza == nstanzas, Last := t90]
+    t99 <- groupfile[StGroupNum == isp, last]
+    stanzafile[StGroupNum == isp & StanzaNum == nstanzas, Last := t99]
     
     #Grab ecopath group codes
     group.codes <- stanzafile[StGroupNum == isp, GroupNum]
@@ -304,8 +311,8 @@ rpath.stanzas <- function(Rpath.params){
     second  <- stanzafile[StGroupNum == isp, Last]
         
     #Calculate weight and consumption at age    
-    StGroup <- data.table(age = stanzafile[StGroupNum == isp & Stanza == 1, First]:
-                            t90)
+    StGroup <- data.table(age = stanzafile[StGroupNum == isp & StanzaNum == 1, First]:
+                            t99)
     #Calculate monthly generalized k: (Ksp * 3) / 12
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
@@ -318,7 +325,7 @@ rpath.stanzas <- function(Rpath.params){
     prev.surv <- 1
     for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
-      month.z <- stanzafile[StGroupNum == isp & Stanza == ist, Z] / 12
+      month.z <- stanzafile[StGroupNum == isp & StanzaNum == ist, Z] / 12
       StGroup[age %in% first[ist]:second[ist], surv := exp(-1*month.z)]
       
       if(first[ist] > 0){
@@ -337,8 +344,8 @@ rpath.stanzas <- function(Rpath.params){
       b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]
       q.num <- StGroup[age %in% first[ist]:second[ist], sum(Q)]
       
-      stanzafile[StGroupNum == isp & Stanza == ist, bs.num := b.num]
-      stanzafile[StGroupNum == isp & Stanza == ist, qs.num := q.num]
+      stanzafile[StGroupNum == isp & StanzaNum == ist, bs.num := b.num]
+      stanzafile[StGroupNum == isp & StanzaNum == ist, qs.num := q.num]
       
       prev.surv <- exp(-1 * month.z)
     }

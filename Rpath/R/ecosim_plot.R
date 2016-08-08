@@ -9,7 +9,6 @@
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@export
-
 rsim.plot <- function(Rsim.output, spname, indplot = F){
   opar <- par(no.readonly = T)
   if(indplot == F){
@@ -26,10 +25,10 @@ rsim.plot <- function(Rsim.output, spname, indplot = F){
     n <- 1
     rel.bio <- biomass / biomass[1]
   }
-
+  
   ymax <- max(rel.bio) + 0.1 * max(rel.bio)
   ymin <- min(rel.bio) - 0.1 * min(rel.bio)
-  xmax <- nrow(biomass)
+  ifelse(indplot, xmax <- length(biomass), xmax <- nrow(biomass))
   
   #Plot relative biomass
   layout(matrix(c(1, 2), 1, 2), widths = c(4, 1))
@@ -43,9 +42,14 @@ rsim.plot <- function(Rsim.output, spname, indplot = F){
   mtext(2, text = 'Relative Biomass', line = 3, cex = 1.8)
   
   line.col <- rainbow(n)
-  for(i in 1:n) lines(rel.bio[, i], col = line.col[i], lwd = 3)
+  for(i in 1:n){
+    if(indplot == T) lines(rel.bio,      col = line.col[i], lwd = 3)
+    if(indplot == F) lines(rel.bio[, i], col = line.col[i], lwd = 3)
+  }
   
   opar <- par(mar = c(0, 0, 0, 0))
   plot(0, 0, xlab = '', ylab = '', axes = F)
   legend('center', legend = spname, fill = line.col, cex = .6)
+  
+  par(opar)
 }

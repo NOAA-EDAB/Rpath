@@ -29,7 +29,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
   fishing     <- rsim.fishing(params, years)
-  stanzas     <- rsim.stanzas(Rpath.params$stanzas, start_state, params)
+  stanzas     <- rsim.stanzas(Rpath.params, start_state, params)
   
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
@@ -131,11 +131,15 @@ rsim.state <- function(params){
 rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1, 
                         scrambleselfwt = 1, handleselfwt = 1, 
                         steps_yr = 12, steps_m = 1){
+  
+  nliving <- Rpath$NUM_LIVING
+  ndead   <- Rpath$NUM_DEAD
+  
   simpar <- c()
   
   simpar$NUM_GROUPS <- Rpath$NUM_GROUPS
-  simpar$NUM_LIVING <- Rpath$NUM_LIVING
-  simpar$NUM_DEAD   <- Rpath$NUM_DEAD
+  simpar$NUM_LIVING <- nliving
+  simpar$NUM_DEAD   <- ndead
   simpar$NUM_GEARS  <- Rpath$NUM_GEARS
   simpar$spname     <- c("Outside", Rpath$Group)
   simpar$spnum      <- 0:length(Rpath$BB) 
@@ -159,13 +163,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
   #KYA EFFORT REMOVED FROM PARAMS July 2015
-  simpar$fish_Effort <- ifelse(simpar$spnum <= simpar$NUM_LIVING + simpar$NUM_DEAD,
+  simpar$fish_Effort <- ifelse(simpar$spnum <= nliving + ndead,
                                0.0,
                                1.0) 
   
   #NoIntegrate
-  simpar$NoIntegrate <- ifelse(c(0, Rpath$PB) / 
-                               (1.0 - simpar$ActiveRespFrac - simpar$UnassimRespFrac) > 
+  simpar$NoIntegrate <- ifelse(simpar$MzeroMort * simpar$B_BaseRef > 
                                2 * steps_yr * steps_m, 
                              0, 
                              simpar$spnum)  
@@ -176,11 +179,15 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #primary production links
   #primTo   <- ifelse(Rpath$PB>0 & Rpath$QB<=0, 1:length(Rpath$PB),0 )
-  primTo   <- ifelse(Rpath$type == 1, 
+  primTo   <- ifelse(Rpath$type > 0 & Rpath$type <= 1, 
                      1:length(Rpath$PB),
                      0)
   primFrom <- rep(0, length(Rpath$PB))
-  primQ    <- Rpath$PB * Rpath$BB 
+  primQ    <- Rpath$PB * Rpath$BB
+  #Change production to consumption for mixotrophs
+  mixotrophs <- which(Rpath$type > 0 & Rpath$type < 1)
+  primQ[mixotrophs] <- primQ[mixotrophs] / Rpath$GE[mixotrophs] * 
+    Rpath$type[mixotrophs] 
   
   #Import links
   importTo <- ifelse(Rpath$DC[nrow(Rpath$DC), ] > 0,
@@ -193,8 +200,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   preyfrom  <- row(Rpath$DC)
   preyto    <- col(Rpath$DC)	
   predpreyQ <- Rpath$DC[1:(nliving + ndead), ] * 
-    t(matrix(Rpath$QB[1:Rpath$NUM_LIVING] * Rpath$BB[1:Rpath$NUM_LIVING],
-             Rpath$NUM_LIVING, Rpath$NUM_LIVING + Rpath$NUM_DEAD))
+    t(matrix(Rpath$QB[1:nliving] * Rpath$BB[1:nliving],
+             nliving, nliving + ndead))
   
   #combined
   simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0], 
@@ -247,7 +254,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   
   #catchlinks
   fishfrom    <- row(as.matrix(Rpath$Catch))
-  fishthrough <- col(as.matrix(Rpath$Catch)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
+  fishthrough <- col(as.matrix(Rpath$Catch)) + (nliving + ndead)
   fishcatch   <- Rpath$Catch
   fishto      <- fishfrom * 0
   
@@ -260,12 +267,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   #discard links
   
   for(d in 1:Rpath$NUM_DEAD){
-    detfate <- Rpath$DetFate[(Rpath$NUM_LIVING + Rpath$NUM_DEAD + 1):Rpath$NUM_GROUPS, d]
+    detfate <- Rpath$DetFate[(nliving + ndead + 1):Rpath$NUM_GROUPS, d]
     detmat  <- t(matrix(detfate, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
     
     fishfrom    <-  row(as.matrix(Rpath$Discards))                      
-    fishthrough <-  col(as.matrix(Rpath$Discards)) + (Rpath$NUM_LIVING + Rpath$NUM_DEAD)
-    fishto      <-  t(matrix(Rpath$NUM_LIVING + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
+    fishthrough <-  col(as.matrix(Rpath$Discards)) + (nliving + ndead)
+    fishto      <-  t(matrix(nliving + d, Rpath$NUM_GEAR, Rpath$NUM_GROUPS))
     fishcatch   <-  Rpath$Discards * detmat
     if(sum(fishcatch) > 0){
       simpar$FishFrom    <- c(simpar$FishFrom,    fishfrom   [fishcatch > 0])
@@ -283,11 +290,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$FishTo          <- c(0, simpar$FishTo)   
   
 # SET DETRITAL FLOW
-  detfrac <- Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]
+  detfrac <- Rpath$DetFate[1:(nliving + ndead), ]
   detfrom <- row(as.matrix(detfrac))
-  detto   <- col(as.matrix(detfrac)) + Rpath$NUM_LIVING
+  detto   <- col(as.matrix(detfrac)) + nliving
   
-  detout <- 1 - rowSums(as.matrix(Rpath$DetFate[1:(Rpath$NUM_LIVING + Rpath$NUM_DEAD), ]))
+  detout <- 1 - rowSums(as.matrix(Rpath$DetFate[1:(nliving + ndead), ]))
   dofrom <- 1:length(detout)
   doto   <- rep(0, length(detout))
   
@@ -309,8 +316,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  
  #####################################################################################
  #'@export
- rsim.stanzas <- function(juvfile, state, params){
-   if(juvfile$NStanzaGroups > 0){
+ rsim.stanzas <- function(Rpath.params, state, params){
+   juvfile <- Rpath.params$stanzas
+   if(Rpath.params$stanzas$NStanzaGroups > 0){
      #Set up multistanza parameters to pass to C
      rstan <- list()
      rstan$Nsplit      <- juvfile$NStanzaGroups
@@ -319,19 +327,19 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$EcopathCode <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$Age1        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
-     rstan$WageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-     rstan$NageS       <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
-     rstan$WWa         <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$WageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$NageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$WWa         <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
      
      for(isp in 1:rstan$Nsplit){
        for(ist in 1:rstan$Nstanzas[isp + 1]){
-         rstan$EcopathCode[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp &
-                                                          Stanza == ist, GroupNum]
-         rstan$Age1[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
-                                                   Stanza == ist, First]
-         rstan$Age2[isp + 1, ist + 1] <- juvfile$stanzas[StGroupNum == isp & 
-                                                   Stanza == ist, Last]
+         rstan$EcopathCode[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp &
+                                                          StanzaNum == ist, GroupNum]
+         rstan$Age1[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp & 
+                                                   StanzaNum == ist, First]
+         rstan$Age2[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp & 
+                                                   StanzaNum == ist, Last]
        }
        rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
@@ -357,14 +365,14 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$EggsStanza <- rstan$baseEggsStanza
      
      #initialize splitalpha growth coefficients using pred information and
-     rstan$SplitAlpha <- matrix(NA, max(juvfile$stanzas$Last) + 1, rstan$Nsplit + 1)
+     rstan$SplitAlpha <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      for(isp in 1:rstan$Nsplit){
        for(ist in 1:rstan$Nstanzas[isp + 1]){
          ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
          first <- rstan$Age1[isp + 1, ist + 1]
          last  <- rstan$Age2[isp + 1, ist + 1]
          pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
-         StartEatenBy <- juvfile$stanzas[StGroupNum == isp & Stanza == ist, Cons]
+         StartEatenBy <- juvfile$stindiv[StGroupNum == isp & StanzaNum == ist, Cons]
   
          SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
            rstan$vBM[isp + 1] * juvfile$StGroup[[isp]][, WageS]) * pred / StartEatenBy

@@ -1,0 +1,25 @@
+Group,B,PB,QB,Diet,Fishery
+Pollock,0.1,0.1,0.1,0.1,0.1
+Cod,0.1,0.1,0.1,0.1,0.1
+Herring,0.1,0.1,0.1,0.1,0.1
+Arrowtooth,0.1,0.1,0.1,0.1,0.1
+Squids,0.1,0.1,0.1,0.1,0.1
+Salmon returning,0.1,0.1,0.1,0.1,0.1
+Salmon outgoing,0.1,0.1,0.1,0.1,0.1
+Myctophidae,0.1,0.1,0.1,0.1,0.1
+Capelin,0.1,0.1,0.1,0.1,0.1
+Sandlance,0.1,0.1,0.1,0.1,0.1
+Eulachon,0.1,0.1,0.1,0.1,0.1
+Crab,0.1,0.1,0.1,0.1,0.1
+Shrimp,0.1,0.1,0.1,0.1,0.1
+OtherZoop,0.1,0.1,0.1,0.1,0.1
+Epifauna,0.1,0.1,0.1,0.1,0.1
+Infauna,0.1,0.1,0.1,0.1,0.1
+Jellies,0.1,0.1,0.1,0.1,0.1
+Euphausiids,0.1,0.1,0.1,0.1,0.1
+Copepods,0.1,0.1,0.1,0.1,0.1
+Microzooplankton,0.1,0.1,0.1,0.1,0.1
+Lg Phytoplankton,0,0.1,0,0,0.1
+Sm Phytoplankton,0,0.1,0,0,0.1
+Pelagic Detritus,0,0,0,0,0.1
+Benthic Detritus,0,0,0,0,0.1
