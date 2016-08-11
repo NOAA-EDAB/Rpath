@@ -190,11 +190,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
     Rpath$type[mixotrophs] 
   
   #Import links
-  importTo <- ifelse(Rpath$DC[nrow(Rpath$DC), ] > 0,
-                     1:ncol(Rpath$DC),
-                     0)
-  importFrom <- rep(0, ncol(Rpath$DC))
-  importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$BB[1:nliving]
+  # importTo <- ifelse(Rpath$DC[nrow(Rpath$DC), ] > 0,
+  #                    1:ncol(Rpath$DC),
+  #                    0)
+  # importFrom <- rep(0, ncol(Rpath$DC))
+  # importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$BB[1:nliving]
   
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
