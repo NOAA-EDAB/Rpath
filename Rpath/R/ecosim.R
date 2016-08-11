@@ -199,9 +199,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
   preyto    <- col(Rpath$DC)	
-  predpreyQ <- Rpath$DC[1:(nliving + ndead), ] * 
+  predpreyQ <- Rpath$DC[1:(nliving + ndead + 1), ] * 
     t(matrix(Rpath$QB[1:nliving] * Rpath$BB[1:nliving],
-             nliving, nliving + ndead))
+             nliving, nliving + ndead + 1))
   
   #combined
   simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0], 
