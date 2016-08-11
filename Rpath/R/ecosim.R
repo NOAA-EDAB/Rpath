@@ -204,14 +204,14 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
              nliving, nliving + ndead + 1))
   
   #combined
-  simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0], 
-                       importFrom[importTo > 0])
+  simpar$PreyFrom <- c(primFrom[primTo > 0], preyfrom [predpreyQ > 0]) 
+                       #importFrom[importTo > 0])
   #Changed import prey number to 0
   simpar$PreyFrom[which(simpar$PreyFrom == nrow(Rpath$DC))] <- 0
-  simpar$PreyTo   <- c(primTo  [primTo > 0], preyto   [predpreyQ > 0], 
-                       importTo  [importTo > 0])
-  simpar$QQ       <- c(primQ   [primTo > 0], predpreyQ[predpreyQ > 0],
-                       importQ   [importTo > 0])             	
+  simpar$PreyTo   <- c(primTo  [primTo > 0], preyto   [predpreyQ > 0]) 
+                       #importTo  [importTo > 0])
+  simpar$QQ       <- c(primQ   [primTo > 0], predpreyQ[predpreyQ > 0])
+                       #importQ   [importTo > 0])             	
   
   numpredprey <- length(simpar$QQ)
 
