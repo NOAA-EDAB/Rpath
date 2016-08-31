@@ -317,7 +317,7 @@ check.rpath.params <- function(Rpath.params){
 
   #Check number of columns
   dietcol <- ncol(Rpath.params$diet)
-  if(length(dietcol) != n.living + 1){
+  if(dietcol != (n.living + 1)){
     warning(paste(dietcol, ' is the incorrect number of columns in diet matrix.',
                   'There should be', n.living + 1))
   }
