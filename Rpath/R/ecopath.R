@@ -91,31 +91,46 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   model[, noB   := 0]
   model[, noEE  := 0]
   model[, alive := 0]
+  model[, BEE   := 0]
   model[is.na(Biomass), noB   := 1]
   model[is.na(EE),      noEE  := 1]
   model[Type < 2,       alive := 1]
+  model[noB == 0 & noEE == 0, BEE := 1]
   
   # define detritus fate matrix
   detfate <- model[, (10 + 1):(10 + ndead), with = F]
 
   # set up and solve the system of equations for living group B or EE
   living  <- model[alive == 1, ]
+  
+  #Set up right hand side Q
   living[, Q := totcatch + BioAcc]
+  living[, BioQB := Biomass * QB]
+  cons  <- as.matrix(nodetrdiet) * living$BioQB[col(as.matrix(nodetrdiet))]
+  living[, Q := Q + rowSums(cons, na.rm = T)] 
+  living[BEE == 1, Q := Q - (Biomass * PB * EE)]
+  
+  #Set up A matrix
   living[noEE == 1, diag.a := Biomass * PB]
   living[noEE == 0, diag.a := PB * EE]
+  living[noEE == 0 & noB == 0, diag.a := 0]
   A       <- matrix(0, nliving, nliving)
   diag(A) <- living[, diag.a]
   QBDC    <- as.matrix(nodetrdiet) * living$QB[col(as.matrix(nodetrdiet))]
   dimnames(QBDC) <- list(NULL, NULL)
   QBDC[is.na(QBDC)] <- 0
+  #Flip noB flag for known B and EE
+  #living[BEE == 1, noB := 1]
   QBDCa <- as.matrix(QBDC) * living$noB[col(as.matrix(QBDC))]
   A     <- A - QBDCa 
-  living[, BioQB := Biomass * QB]
-  cons  <- as.matrix(nodetrdiet) * living$BioQB[col(as.matrix(nodetrdiet))]
-  living[, Q := Q + rowSums(cons, na.rm = T)]  
-
+  #Switch flag back
+  #living[BEE == 1, noB := 0]
+   
+  
+  
   # Generalized inverse does the actual solving
   pars <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, Q]
+  
   living[, EEa := pars * noEE]
   living[is.na(EE), EE := EEa]
   living[, EEa := NULL]
