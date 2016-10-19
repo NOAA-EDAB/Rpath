@@ -88,8 +88,12 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, gear = NA,
 #'@export 
 adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value){
   #Lookup group numbers
-  groupnum <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname 
-                                               == group)]
+  if(group == 'all'){
+    groupnum <- 1:Rsim.scenario$params$NUM_GROUPS
+  } else {
+    groupnum <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname 
+                                                 == group)]
+  }
   if(!is.na(groupto)){
     groupnumto <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname 
                                                  == groupto)]
@@ -104,10 +108,11 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
                       'NoIntegrate', 'HandleSelf', 'ScrambleSelf')){
     Rsim.scenario$params[[param.num]][groupnum + 1] <- value
   }
+  
   if(parameter %in% c('QQ', 'DD', 'VV', 'HandleSwitch', 'PredPredWeight', 
                       'PreyPreyWeight', 'PredTotWeight', 'PreyTotWeight')){
-    linknum <- which(Rsim.scenario$params$PreyFrom == groupnum &
-                       Rsim.scenario$params$PreyTo == groupnumto)
+      linknum <- which(Rsim.scenario$params$PreyFrom %in% groupnum &
+                         Rsim.scenario$params$PreyTo == groupnumto)  
     Rsim.scenario$params[[param.num]][linknum] <- value
   }
   return(Rsim.scenario)
