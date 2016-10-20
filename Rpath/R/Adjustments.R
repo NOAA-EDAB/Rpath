@@ -29,7 +29,8 @@ frate.table <- function(Rsim.scenario){
     }
     fish.out <- rbindlist(list(fish.out, fish.all.gear))
   }
-  fish.out[, Total := rowSums(.SD), .SDcols = gear.name]
+  Total <- fish.out[, rowSums(.SD), .SDcols = gear.name]
+  fish.out <- cbind(fish.out, Total)
   return(fish.out)
 }
 

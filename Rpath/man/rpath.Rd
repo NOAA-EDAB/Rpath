@@ -4,13 +4,16 @@
 \alias{rpath}
 \title{Ecopath module of Rpath}
 \usage{
-rpath(Rpath.params, eco.name = NA)
+rpath(Rpath.params, eco.name = NA, eco.area = 1)
 }
 \arguments{
 \item{Rpath.params}{R object containing the Rpath parameters.  This is generated
 either by the create.rpath.params or read.rpath.params functions.}
 
 \item{eco.name}{Optional name of the ecosystem which becomes an attribute of
+rpath object.}
+
+\item{eco.area}{Optional area of the ecosystem which becomes an attribute of the
 rpath object.}
 }
 \value{
