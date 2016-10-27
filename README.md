@@ -6,7 +6,8 @@ The initial files are the code sent by Kerim to Sean on March 31, 2014 (ecopath_
 Files have been renamed to drop the version number and take advantage of this VCS
 
 Beta version notes:
-Did not keep good track of notes prior to version 0.0.0.9003 - My Bad
 
 v0.0.0.903 - Fixed issue with consumption calculations due to the addition of
 diet import in the diet matrix.
+
+Did not keep good track of notes prior to version 0.0.0.9003 - My Bad
