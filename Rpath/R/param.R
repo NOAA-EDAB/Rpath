@@ -182,8 +182,8 @@ check.rpath.params <- function(Rpath.params){
   }
   if(length(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group]) > 0){
     warning(paste(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
-               'have both Biomass and EE...only one should be entered \n', sep = ' '))
-    #consider making this a warning() since you can have both in EwE
+               'have both Biomass and EE...Note that Rpath does not calculate BA 
+               please enter a value for BA if appropriate \n', sep = ' '))
   }
 
   #Check that Biomass / PB / QB / EE / ProdCons is not entered for types 3
@@ -306,7 +306,7 @@ check.rpath.params <- function(Rpath.params){
   
   #Check types (>0 & <=1 are primary producers)
   types <- Rpath.params$model[Type < 2, Type]
-  dctype <- round(col.sums + types, 4)
+  dctype <- round(col.sums + types, 3)
   if(length(which(dctype != 1)) > 0){
     for(i in 1:length(which(dctype != 1))){
     warning(paste(col.names[which(dctype != 1)][i], 'sum,', 
