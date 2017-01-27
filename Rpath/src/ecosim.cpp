@@ -44,7 +44,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    NumericMatrix out_rec(EndYear*12+1, NUM_BIO+1);       
 
 // Accumulator for monthly catch values
-   NumericMatrix cum_CC(NUM_BIO+1);
+   NumericVector cum_CC(NUM_BIO+1);
 
 //SML
 // Update sums of split groups to total biomass for derivative calcs
@@ -61,7 +61,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    for (y = StartYear; y < EndYear; y++){
    // Monthly loop                                     
       for (m = 0; m < STEPS_PER_YEAR; m++){
-         cum_CC = 0.0;  // monthly catch to accumulate   
+         cum_CC = NumericVector(NUM_BIO+1);  // monthly catch to accumulate   
          dd = y * STEPS_PER_YEAR + m;  
          // Sub-monthly integration loop
             for (t=0; t< STEPS_PER_MONTH; t++){
