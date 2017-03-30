@@ -7,6 +7,8 @@ Files have been renamed to drop the version number and take advantage of this VC
 
 Beta version notes:
 
+v0.0.0.904 - Data.table package updated and created a few bugs that have been solved.
+
 v0.0.0.903 - Fixed issue with consumption calculations due to the addition of
 diet import in the diet matrix.
 
