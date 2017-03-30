@@ -33,8 +33,8 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   }
     
   #Remove first column if names (factor or character)
-  if(sapply(diet, class)[1] == 'factor')    diet[, 1 := NULL, with = F]
-  if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL, with = F]
+  if(sapply(diet, class)[1] == 'factor')    diet[, 1 := NULL]
+  if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL]
 
   #Adjust diet comp of mixotrophs
   #mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
@@ -220,7 +220,8 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
 
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
   gearF   <- as.matrix(totcatchmat) / living[, B][row(as.matrix(totcatchmat))]
-  newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
+  #newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
+  newcons <- as.matrix(nodetrdiet)  * BQB[col(as.matrix(nodetrdiet))]
   predM   <- as.matrix(newcons) / living[, B][row(as.matrix(newcons))]
   predM   <- rbind(predM, detcons)
   morts   <- list(Group = model[Type < 3, Group], 
