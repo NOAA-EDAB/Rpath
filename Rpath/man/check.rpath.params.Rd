@@ -22,7 +22,7 @@ Logical check that the parameter files are filled out correctly, i.e. data is en
 expected.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{create.rpath.params}},
   \code{\link{frate.table}},
@@ -34,4 +34,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-

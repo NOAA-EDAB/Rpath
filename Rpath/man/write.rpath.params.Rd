@@ -23,7 +23,7 @@ Outputs a series of .csv files named by the provided eco.name and the
 Creates a series of .csv files from an Rpath.params object.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
@@ -35,4 +35,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{webplot}}, \code{\link{write.Rpath}},
   \code{\link{write.Rsim}}
 }
-

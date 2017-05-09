@@ -4,3 +4,11 @@
 *.png
 *.jpg
 *.tif
+data
+outputs
+code
+*.csv
+*.xlsx
+*.docx
+Ecopath_dev
+

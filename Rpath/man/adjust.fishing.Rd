@@ -26,7 +26,7 @@ Returns an Rpath.sim object with the new fishing parameter.
 Modifies the fishing mortality value for a species by a particular gear.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.scenario}},
+Other Rpath functions: \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
   \code{\link{frate.table}},
@@ -38,4 +38,3 @@ Other Rpath.functions: \code{\link{adjust.scenario}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-

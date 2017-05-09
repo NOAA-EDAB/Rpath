@@ -31,7 +31,7 @@ Outputs an Rpath.param object that can be used for Rpath and subsequently
 Creates an Rpath.param object from a series of .csv files.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
@@ -42,4 +42,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-

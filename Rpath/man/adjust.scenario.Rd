@@ -27,7 +27,7 @@ Returns an Rsim.scenario object with the new parameter.
 Modifies the various parameters of the rsim scenario object.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
   \code{\link{frate.table}},
@@ -39,4 +39,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-
