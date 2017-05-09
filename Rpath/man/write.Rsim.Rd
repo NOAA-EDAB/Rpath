@@ -19,7 +19,7 @@ from an Rpath.sim object.
 Outputs start/end biomass and catch to a .csv file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
@@ -31,4 +31,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{webplot}}, \code{\link{write.Rpath}},
   \code{\link{write.rpath.params}}
 }
-
