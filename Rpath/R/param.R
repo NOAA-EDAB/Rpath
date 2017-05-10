@@ -322,7 +322,17 @@ check.rpath.params <- function(Rpath.params){
                   'There should be', n.living + 1))
   }
   
-cat('Rpath parameter file is functional')
+  #Check that final row of diet is "Import"
+  if(!Rpath.params$diet[nrow(Rpath.params$diet), 1] %in% c('Import', 'import')){
+    warning('Diet matrix is missing the import row.  Please add "Import" as the 
+            final row.  All entries can be 0 or NA.')
+  }
+
+if(length(warnings()) == 0){
+  cat('Rpath parameter file is functional')
+} else {
+    cat('Rpath parameter file needs attention')
+  }  
 }
 
 #'Read Rpath parameters from .csv files
