@@ -357,7 +357,9 @@ check.rpath.params <- function(Rpath.params){
   }
   
   #Check that final row of diet is "Import"
-  if(!Rpath.params$diet[nrow(Rpath.params$diet), 1] %in% c('Import', 'import')){
+  if(!Rpath.params$diet[nrow(Rpath.params$diet), 1] == 'Import' &
+     !Rpath.params$diet[nrow(Rpath.params$diet), 1] == 'import'){
+    
     warning('Diet matrix is missing the import row.  Please add "Import" as the 
             final row.  All entries can be 0 or NA.')
     w <- w + 1
