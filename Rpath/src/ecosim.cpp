@@ -19,11 +19,13 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
 // Get some basic needed numbers from the params List
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
-
+   const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
+   
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
    int CRASH_YEAR = -1;
-
+   int MEASURE_MONTH = 5;   
+   
 // Flag for group-sepcific Integration method (NoIntegrate=0 means Fast Eq)   
    const NumericVector NoIntegrate = as<NumericVector>(params["NoIntegrate"]);
    
@@ -42,7 +44,10 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    NumericMatrix out_CC(EndYear*12+1, NUM_BIO+1);          
    NumericMatrix out_SSB(EndYear*12+1, NUM_BIO+1);        
    NumericMatrix out_rec(EndYear*12+1, NUM_BIO+1);       
-
+   NumericMatrix annual_CC(EndYear+1, NUM_BIO+1);
+   NumericMatrix annual_BB(EndYear+1, NUM_BIO+1);
+   NumericMatrix annual_QB(EndYear+1, NUM_BIO+1);
+   NumericMatrix annual_Qlink(EndYear+1, NumPredPreyLinks+1);   
 // Accumulator for monthly catch values
    NumericVector cum_CC(NUM_BIO+1);
 
@@ -56,8 +61,13 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 // Load state, set some initial values.  Make sure state is COPY, not pointer   
    List state = clone(instate);
    dd =  StartYear * STEPS_PER_YEAR;  // dd is monthly index for data storage
-  
-// MAIN LOOP STARTS HERE with years loop
+
+// KYA 6/12/17 an initial derivative call just to declare deriv in right scope
+   List dyt = deriv_vector(params,state,forcing,fishing,stanzas,0,0,0);
+      NumericVector FoodGain = as<NumericVector>(dyt["FoodGain"]);
+      NumericVector Qlink       = as<NumericVector>(dyt["Qlink"]);   
+
+      // MAIN LOOP STARTS HERE with years loop
    for (y = StartYear; y < EndYear; y++){
    // Monthly loop                                     
       for (m = 0; m < STEPS_PER_YEAR; m++){
@@ -94,7 +104,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
            // pd term is used to indicate differrent values used for 
            // age-structured species, defaults to BB for non-aged structure
               NumericVector pd = old_BB;
-              NumericVector FoodGain = as<NumericVector>(k1["FoodGain"]);
+              FoodGain = as<NumericVector>(k1["FoodGain"]);
+              Qlink       = as<NumericVector>(k1["Qlink"]);
               NumericVector new_Ftime =  ifelse((FoodGain>0)&(pd>0),
                  0.1 + 0.9*old_Ftime* 
                  ((1.0-FtimeStep) + FtimeStep*FtimeQBOpt/(FoodGain/pd)),
@@ -138,7 +149,12 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
          out_SSB(dd, _) = cur_BB;
          out_rec(dd, _) = cur_BB;
          out_CC( dd, _) = cum_CC;                           
-      
+         annual_CC(y, _) = annual_CC(y, _) + cum_CC;
+         if (m==MEASURE_MONTH){
+           annual_BB(y, _)    = cur_BB;
+           annual_QB(y, _)    = FoodGain/cur_BB;
+           annual_Qlink(y, _) = Qlink;
+         }      
     }  // End of main months loop
     
   }// End of years loop
@@ -150,11 +166,15 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    out_CC( dd+1, _) = out_CC( dd, _); 
   
 // Create Rcpp list to output  
-   List outdat = List::create(
-     _["out_BB"]=out_BB,
-     _["out_CC"]=out_CC,
-     _["end_state"]=state,
-     _["crash_year"]=CRASH_YEAR);
+List outdat = List::create(
+  _["out_BB"]=out_BB,
+  _["out_CC"]=out_CC,
+  _["annual_CC"]=annual_CC,
+  _["annual_BB"]=annual_BB,
+  _["annual_QB"]=annual_QB,
+  _["annual_Qlink"]=annual_Qlink,
+  _["end_state"]=state,
+  _["crash_year"]=CRASH_YEAR);
   
 // Return is an Rcpp List
    return(outdat);
@@ -173,11 +193,13 @@ int y, m, dd;
 
 // Get some basic needed numbers from the params List
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
-
+   const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
+   
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
    int CRASH_YEAR = -1;
-
+   int MEASURE_MONTH = 5;
+   
 // Flag for group-sepcific Integration method (NoIntegrate=0 means Fast Eq)   
    const NumericVector NoIntegrate = as<NumericVector>(params["NoIntegrate"]);
 
@@ -195,7 +217,10 @@ int y, m, dd;
    NumericMatrix out_CC( EndYear * 12 + 1, NUM_BIO + 1);          
    NumericMatrix out_SSB(EndYear * 12 + 1, NUM_BIO + 1);        
    NumericMatrix out_rec(EndYear * 12 + 1, NUM_BIO + 1);       
-
+   NumericMatrix annual_CC(EndYear+1, NUM_BIO+1);
+   NumericMatrix annual_BB(EndYear+1, NUM_BIO+1);
+   NumericMatrix annual_QB(EndYear+1, NUM_BIO+1);
+   NumericMatrix annual_Qlink(EndYear+1, NumPredPreyLinks+1); 
 
 // Load state and call initial derivative (todo: allow other start times)
 // Use Clone to make sure state/stanzas are copies of instate/instanzas, not pointers   
@@ -229,7 +254,8 @@ int y, m, dd;
  				 NumericVector FoodGain    = as<NumericVector>(dyt["FoodGain"]);					
          NumericVector biomeq      = as<NumericVector>(dyt["biomeq"]);
          NumericVector FishingLoss = as<NumericVector>(dyt["FishingLoss"]);  
-      
+         NumericVector Qlink       = as<NumericVector>(dyt["Qlink"]);
+               
       // Now Update the new State Biomass using Adams-Basforth
          NumericVector new_BB = 
                        ifelse( NoIntegrate == 0,
@@ -288,7 +314,14 @@ int y, m, dd;
         out_BB( dd, _) = old_BB;
         out_SSB(dd, _) = old_BB;
         out_rec(dd, _) = old_BB;
-        out_CC( dd, _) = new_CC;                           
+        out_CC( dd, _) = new_CC;
+        annual_CC(y, _) = annual_CC(y, _) + new_CC;
+        if (m==MEASURE_MONTH){
+          annual_BB(y, _)    = old_BB;
+          annual_QB(y, _)    = FoodGain/old_BB;
+          annual_Qlink(y, _) = Qlink;
+        }
+        
      //NOJUV    for (i = 1; i <= juv_N; i++){
      //NOJUV    out_SSB(dd, JuvNum[i]) = 0.0;
      //NOJUV 		out_SSB(dd, AduNum[i]) = SpawnBio[i];
@@ -314,6 +347,10 @@ int y, m, dd;
    List outdat = List::create(
      _["out_BB"]=out_BB,
      _["out_CC"]=out_CC,
+     _["annual_CC"]=annual_CC,
+     _["annual_BB"]=annual_BB,
+     _["annual_QB"]=annual_QB,
+     _["annual_Qlink"]=annual_Qlink,     
      _["end_state"]=state,
      _["crash_year"]=CRASH_YEAR);
   
@@ -473,7 +510,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
              QQ * PDY * vpow(PYY, HandleSwitch * COUPLED) *
            ( DD / ( DD-1.0 + vpow(Hself*PYY + (1.-Hself)*PySuite, COUPLED*HandleSwitch)) ) *
            ( VV / ( VV-1.0 +      Sself*PDY + (1.-Sself)*PdSuite) );
-  
+   Q1[0] = 1.0; // get rid of NaN - moved from KYA's code 6/12/17
 //     // Include any Forcing by prey   
 //     Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
 
@@ -607,10 +644,10 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    }
     
 // Add mortality forcing
-   //   for (i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-   //     FoodLoss[i]  *= force_bymort(y * STEPS_PER_YEAR + m, i);
-   //     MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
-   //   }
+   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+     FoodLoss[i]  *= force_bymort(y * STEPS_PER_YEAR + m, i);
+     MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
+   }
    
 // Sum up derivitive parts (vector sums)
 // Override for group 0 (considered "the sun", never changing)        
@@ -625,7 +662,9 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    biomeq[0] = 1.0;
    DerivT  = TotGain - TotLoss; 
 
-// Rcpp List structure to return       
+// Rcpp List structure to return
+// KYA 6/20/17 Rcpp bug (known) is max 18 items on List::create
+// had to add Q1 (qlink), so removed LossPropToQ (used nowhere?)
    List deriv = List::create(
      _["preyYY"]=preyYY,
      _["predYY"]=predYY,
@@ -634,7 +673,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      _["DerivT"]=DerivT,
      _["biomeq"]=biomeq,
      _["LossPropToB"]=LossPropToB, 
-     _["LossPropToQ"]=LossPropToQ,                           
+     //_["LossPropToQ"]=LossPropToQ,                           
      _["FoodLoss"]=FoodLoss,
      _["FoodGain"]=FoodGain,
      _["UnAssimLoss"]=UnAssimLoss,
@@ -646,7 +685,11 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      _["DetritalLoss"]=DetritalLoss,
      _["FishingThru"]=FishingThru,
      _["PredSuite"]=PredSuite,
-     _["HandleSuite"]=HandleSuite);
+     _["HandleSuite"]=HandleSuite,
+     _["Qlink"]=Q1
+     //
+     //
+     );
 
 // Return is an Rcpp List     
    return(deriv);
@@ -698,7 +741,7 @@ int SplitSetPred(List stanzas, List state){
 // Update numbers, weight, and biomass for multistanza groups
 // [[Rcpp::export]]
 int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int mon){
-  int isp, ist, ia, ieco, last, first;
+  int isp, ist, ia, ieco=0, last, first;  //KYA 6/12/17 ieco=0 to stop annoying warning
   double Su, Gf, Nt;
 
   //stanza parameters
