@@ -68,7 +68,9 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
     colnames(rout$annual_BB) <- sps
     colnames(rout$annual_QB) <- sps
     colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
-    
+    rout$pred <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyTo+1] 
+    rout$prey <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyFrom+1] 
+        
   rout$start_state       <- Rpath.scenario$start_state
   rout$params$NUM_LIVING <- Rpath.scenario$params$NUM_LIVING
   rout$params$NUM_DEAD   <- Rpath.scenario$params$NUM_DEAD
@@ -118,6 +120,21 @@ rsim.state <- function(params){
   return(state)
 }
 
+#####################################################################################
+#'@export
+rsim.diet <- function(rout,predator){
+   pmat <-  rout$annual_Qlink[,rout$pred==predator]
+   colnames(pmat) <- rout$prey[rout$pred==predator]
+   return(pmat)
+}  
+
+#####################################################################################
+#'@export
+rsim.mort <- function(rout,prey){
+  pmat <-  rout$annual_Qlink[,rout$prey==prey]
+  colnames(pmat) <- rout$pred[rout$prey==prey]
+  return(pmat)
+}  
 #####################################################################################
 #'Initial set up for Ecosim modual of Rpath
 #'
