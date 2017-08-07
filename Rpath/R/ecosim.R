@@ -77,6 +77,23 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
   rout$params$NUM_GEARS  <- Rpath.scenario$params$NUM_GEARS
   rout$params$spname     <- Rpath.scenario$params$spname
   
+  #Add gear specific catch
+  gear_CC <- data.table(rep(0, years + 1))
+  for(links in 1:Rpath.scenario$params$NumFishingLinks){
+    prey <- Rpath.scenario$params$FishFrom[links + 1]
+    gr   <- Rpath.scenario$params$FishThrough[links + 1]
+    egr  <- Rpath.scenario$params$FishThrough[links + 1] - 
+      (Rpath.scenario$params$NUM_LIVING + Rpath.scenario$params$NUM_DEAD)
+    caught <-  Rpath.scenario$params$FishQ[links + 1] * 
+      Rpath.scenario$fishing$EFFORT[, egr] * rout$annual_BB[, prey + 1] 
+    gear_CC <- cbind(gear_CC, caught)
+    setnames(gear_CC, 'caught', paste(Rpath.scenario$params$spname[gr + 1],
+                                      Rpath.scenario$params$spname[prey + 1],
+                                      sep= '_'))
+  }
+  gear_CC[, V1 := NULL]
+  rout$gear_CC <- gear_CC
+  
   class(rout) <- 'Rsim.output'
   attr(rout, 'eco.name') <- attr(Rpath.scenario, 'eco.name')
   
