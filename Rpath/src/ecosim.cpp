@@ -19,7 +19,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
 // Get some basic needed numbers from the params List
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
-   const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
+   const int NumPredPreyLinks = as<int>(params["NumPredPreyLinks"]);
+   const int NumFishingLinks  = as<int>(params["NumFishingLinks"]);
    
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
@@ -43,7 +44,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    NumericMatrix out_BB(EndYear*12+1, NUM_BIO+1);           
    NumericMatrix out_CC(EndYear*12+1, NUM_BIO+1);          
    NumericMatrix out_SSB(EndYear*12+1, NUM_BIO+1);        
-   NumericMatrix out_rec(EndYear*12+1, NUM_BIO+1);       
+   NumericMatrix out_rec(EndYear*12+1, NUM_BIO+1);
+   NumericMatrix out_Gear_CC(EndYear*12+1, NumFishingLinks+1);
+// Annual output matrices
    NumericMatrix annual_CC(EndYear+1, NUM_BIO+1);
    NumericMatrix annual_BB(EndYear+1, NUM_BIO+1);
    NumericMatrix annual_QB(EndYear+1, NUM_BIO+1);
@@ -65,7 +68,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 // KYA 6/12/17 an initial derivative call just to declare deriv in right scope
    List dyt = deriv_vector(params,state,forcing,fishing,stanzas,0,0,0);
       NumericVector FoodGain = as<NumericVector>(dyt["FoodGain"]);
-      NumericVector Qlink       = as<NumericVector>(dyt["Qlink"]);   
+      NumericVector Qlink    = as<NumericVector>(dyt["Qlink"]);   
 
       // MAIN LOOP STARTS HERE with years loop
    for (y = StartYear; y < EndYear; y++){
@@ -104,8 +107,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
            // pd term is used to indicate differrent values used for 
            // age-structured species, defaults to BB for non-aged structure
               NumericVector pd = old_BB;
-              FoodGain = as<NumericVector>(k1["FoodGain"]);
-              Qlink       = as<NumericVector>(k1["Qlink"]);
+              FoodGain         = as<NumericVector>(k1["FoodGain"]);
+              Qlink            = as<NumericVector>(k1["Qlink"]);
               NumericVector new_Ftime =  ifelse((FoodGain>0)&(pd>0),
                  0.1 + 0.9*old_Ftime* 
                  ((1.0-FtimeStep) + FtimeStep*FtimeQBOpt/(FoodGain/pd)),
@@ -114,6 +117,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
           // Accumulate Catch (small timestep, so linear average)
              NumericVector FishingLoss = as<NumericVector>(k1["FishingLoss"]);
              cum_CC += (hh * FishingLoss/old_BB) * (new_BB+old_BB)/2.0;
+             
+          // Track catch by gear
+             
 
           // Set state to new values, including min/max traps
              state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
@@ -148,7 +154,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
          out_BB( dd, _) = cur_BB;
          out_SSB(dd, _) = cur_BB;
          out_rec(dd, _) = cur_BB;
-         out_CC( dd, _) = cum_CC;                           
+         out_CC( dd, _) = cum_CC;
+         out_Gear_CC(dd, _) = 
          annual_CC(y, _) = annual_CC(y, _) + cum_CC;
          if (m==MEASURE_MONTH){
            annual_BB(y, _)    = cur_BB;
