@@ -61,16 +61,19 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
                       Rpath.scenario$stanzas, 0, years)
   }
   # Nicely Name output vectors
-    sps <- Rpath.scenario$params$spname[1:(1+Rpath.scenario$params$NUM_BIO)]
-    colnames(rout$out_BB)    <- sps
-    colnames(rout$out_CC)    <- sps
-    colnames(rout$annual_CC) <- sps
-    colnames(rout$annual_BB) <- sps
-    colnames(rout$annual_QB) <- sps
-    colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
-    rout$pred <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyTo+1] 
-    rout$prey <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyFrom+1] 
-        
+  sps <- Rpath.scenario$params$spname[1:(1+Rpath.scenario$params$NUM_BIO)]
+  colnames(rout$out_BB)    <- sps
+  colnames(rout$out_CC)    <- sps
+  colnames(rout$annual_CC) <- sps
+  colnames(rout$annual_BB) <- sps
+  colnames(rout$annual_QB) <- sps
+  colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
+  rout$pred <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyTo+1] 
+  rout$prey <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyFrom+1] 
+  rout$Gear_CC_sp   <- Rpath.scenario$params$spname[Rpath.scenario$params$FishFrom+1] 
+  rout$Gear_CC_gear <- Rpath.scenario$params$spname[Rpath.scenario$params$FishThrough+1] 
+  rout$Gear_CC_disp <- ifelse(Rpath.scenario$params$FishTo == 0, 'Landing', 'Discard')
+  
   rout$start_state       <- Rpath.scenario$start_state
   rout$params$NUM_LIVING <- Rpath.scenario$params$NUM_LIVING
   rout$params$NUM_DEAD   <- Rpath.scenario$params$NUM_DEAD
@@ -91,8 +94,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
                                       Rpath.scenario$params$spname[prey + 1],
                                       sep= '_'))
   }
-  gear_CC[, V1 := NULL]
-  rout$gear_CC <- gear_CC
+
   
   class(rout) <- 'Rsim.output'
   attr(rout, 'eco.name') <- attr(Rpath.scenario, 'eco.name')
