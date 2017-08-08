@@ -455,7 +455,8 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericVector FishingThru(NUM_GROUPS+1);
    NumericVector PredSuite(NUM_GROUPS+1);
    NumericVector HandleSuite(NUM_GROUPS+1); 
-  
+   NumericVector GearCatch(NumFishingLinks+1);
+   
 // Set effective biomass for pred/prey response
 // default is B/Bref
    NumericVector preyYY = state_Ftime * state_BB/B_BaseRef;
@@ -597,6 +598,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
           FishingLoss[prey] += caught;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
+          GearCatch[links] = caught;
  		}		
     NumericVector FORCE_F = (NumericVector)FORCED_FRATE(y,_);
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
@@ -665,28 +667,31 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 // Rcpp List structure to return
 // KYA 6/20/17 Rcpp bug (known) is max 18 items on List::create
 // had to add Q1 (qlink), so removed LossPropToQ (used nowhere?)
+// SML 8/8/17 - actually don't need most of these...commenting
+// out to track catch by gear
    List deriv = List::create(
-     _["preyYY"]=preyYY,
-     _["predYY"]=predYY,
-     _["TotGain"]=TotGain,
-     _["TotLoss"]=TotLoss,
+     //_["preyYY"]=preyYY,
+     //_["predYY"]=predYY,
+     //_["TotGain"]=TotGain,
+     //_["TotLoss"]=TotLoss,
      _["DerivT"]=DerivT,
      _["biomeq"]=biomeq,
-     _["LossPropToB"]=LossPropToB, 
+     //_["LossPropToB"]=LossPropToB, 
      //_["LossPropToQ"]=LossPropToQ,                           
-     _["FoodLoss"]=FoodLoss,
+     //_["FoodLoss"]=FoodLoss,
      _["FoodGain"]=FoodGain,
-     _["UnAssimLoss"]=UnAssimLoss,
-     _["ActiveRespLoss"]=ActiveRespLoss,
-     _["DetritalGain"]=DetritalGain,
-     _["FishingGain"]=FishingGain,
-     _["MzeroLoss"]=MzeroLoss,
+     //_["UnAssimLoss"]=UnAssimLoss,
+     //_["ActiveRespLoss"]=ActiveRespLoss,
+     //_["DetritalGain"]=DetritalGain,
+     //_["FishingGain"]=FishingGain,
+     //_["MzeroLoss"]=MzeroLoss,
      _["FishingLoss"]=FishingLoss,
-     _["DetritalLoss"]=DetritalLoss,
-     _["FishingThru"]=FishingThru,
-     _["PredSuite"]=PredSuite,
-     _["HandleSuite"]=HandleSuite,
-     _["Qlink"]=Q1
+     //_["DetritalLoss"]=DetritalLoss,
+     //_["FishingThru"]=FishingThru,
+     //_["PredSuite"]=PredSuite,
+     //_["HandleSuite"]=HandleSuite,
+     _["Qlink"]=Q1,
+     _["GearCatch"]=GearCatch
      //
      //
      );
