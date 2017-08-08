@@ -39,6 +39,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
 // Number of split groups
    const int Nsplit = as<int>(stanzas["Nsplit"]);
+
+// Parameter need to track catch by Gear
+   const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
    NumericMatrix out_BB(EndYear*12+1, NUM_BIO+1);           
@@ -53,6 +56,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    NumericMatrix annual_Qlink(EndYear+1, NumPredPreyLinks+1);   
 // Accumulator for monthly catch values
    NumericVector cum_CC(NUM_BIO+1);
+   NumericVector cum_Gear_CC(NumFishingLinks +1);
 
 //SML
 // Update sums of split groups to total biomass for derivative calcs
@@ -75,6 +79,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    // Monthly loop                                     
       for (m = 0; m < STEPS_PER_YEAR; m++){
          cum_CC = NumericVector(NUM_BIO+1);  // monthly catch to accumulate   
+         cum_Gear_CC = NumericVector(NumFishingLinks+1);
          dd = y * STEPS_PER_YEAR + m;  
          // Sub-monthly integration loop
             for (t=0; t< STEPS_PER_MONTH; t++){
@@ -119,6 +124,10 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
              cum_CC += (hh * FishingLoss/old_BB) * (new_BB+old_BB)/2.0;
              
           // Track catch by gear
+             NumericVector old_BB_flink = as<NumericVector>(old_BB[FishFrom]);
+             NumericVector new_BB_flink = as<NumericVector>(new_BB[FishFrom]);
+             NumericVector GearCatch = as<NumericVector>(k1["GearCatch"]);
+             cum_Gear_CC += (hh * GearCatch / old_BB_flink) * (new_BB_flink + old_BB_flink)/2.0;
              
 
           // Set state to new values, including min/max traps
@@ -155,7 +164,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
          out_SSB(dd, _) = cur_BB;
          out_rec(dd, _) = cur_BB;
          out_CC( dd, _) = cum_CC;
-         out_Gear_CC(dd, _) = 
+         out_Gear_CC(dd, _) = cum_Gear_CC;
          annual_CC(y, _) = annual_CC(y, _) + cum_CC;
          if (m==MEASURE_MONTH){
            annual_BB(y, _)    = cur_BB;
@@ -176,6 +185,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 List outdat = List::create(
   _["out_BB"]=out_BB,
   _["out_CC"]=out_CC,
+  _["out_Gear_CC"]=out_Gear_CC,
   _["annual_CC"]=annual_CC,
   _["annual_BB"]=annual_BB,
   _["annual_QB"]=annual_QB,
