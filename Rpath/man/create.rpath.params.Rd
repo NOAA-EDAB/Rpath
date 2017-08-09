@@ -31,7 +31,7 @@ multistanza, and pedigree parameters.
 Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
-  \code{\link{frate.table}},
+  \code{\link{extract.node}}, \code{\link{frate.table}},
   \code{\link{read.rpath.params}},
   \code{\link{rpath.stanzas}}, \code{\link{rpath}},
   \code{\link{rsim.params}}, \code{\link{rsim.plot}},

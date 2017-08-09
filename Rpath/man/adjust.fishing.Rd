@@ -29,7 +29,7 @@ Modifies the fishing mortality value for a species by a particular gear.
 Other Rpath functions: \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
-  \code{\link{frate.table}},
+  \code{\link{extract.node}}, \code{\link{frate.table}},
   \code{\link{read.rpath.params}},
   \code{\link{rpath.stanzas}}, \code{\link{rpath}},
   \code{\link{rsim.params}}, \code{\link{rsim.plot}},
