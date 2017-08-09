@@ -6,6 +6,9 @@ The initial files are the code sent by Kerim to Sean on March 31, 2014 (ecopath_
 Files have been renamed to drop the version number and take advantage of this VCS
 
 Beta version notes:
+v0.0.0.906 - Added gear specific catch tracking and new extract.node function.
+
+v0.0.0.905 - Caught up with Kerim's edits.
 
 v0.0.0.904 - Data.table package updated and created a few bugs that have been solved.
 
