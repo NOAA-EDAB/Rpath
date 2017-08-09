@@ -129,7 +129,6 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
              NumericVector GearCatch = as<NumericVector>(k1["GearCatch"]);
              cum_Gear_CC += (hh * GearCatch / old_BB_flink) * (new_BB_flink + old_BB_flink)/2.0;
              
-
           // Set state to new values, including min/max traps
              state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
              state["Ftime"] = pmin(new_Ftime, 2.0);      
@@ -211,6 +210,7 @@ int y, m, dd;
 // Get some basic needed numbers from the params List
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
    const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
+   const int NumFishingLinks  = as<int>(params["NumFishingLinks"]);
    
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
@@ -229,11 +229,16 @@ int y, m, dd;
    const int Nsplit         = as<int>(stanzas["Nsplit"]);
    NumericVector stanzaPred = as<NumericVector>(stanzas["stanzaPred"]);
    
+// Parameter need to track catch by Gear
+   const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
+   
 // Monthly output matrices                     
    NumericMatrix out_BB( EndYear * 12 + 1, NUM_BIO + 1);           
    NumericMatrix out_CC( EndYear * 12 + 1, NUM_BIO + 1);          
    NumericMatrix out_SSB(EndYear * 12 + 1, NUM_BIO + 1);        
-   NumericMatrix out_rec(EndYear * 12 + 1, NUM_BIO + 1);       
+   NumericMatrix out_rec(EndYear * 12 + 1, NUM_BIO + 1);
+   NumericMatrix out_Gear_CC(EndYear*12+1, NumFishingLinks+1);
+// Annual output matrices
    NumericMatrix annual_CC(EndYear+1, NUM_BIO+1);
    NumericMatrix annual_BB(EndYear+1, NUM_BIO+1);
    NumericMatrix annual_QB(EndYear+1, NUM_BIO+1);
@@ -299,6 +304,14 @@ int y, m, dd;
      // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
         NumericVector new_CC = (DELTA_T * FishingLoss / old_BB) * 
                                (new_BB + old_BB) / 2.0;
+        
+        // Track catch by gear
+        NumericVector old_BB_flink = as<NumericVector>(old_BB[FishFrom]);
+        NumericVector new_BB_flink = as<NumericVector>(new_BB[FishFrom]);
+        NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
+        NumericVector new_Gear_CC = (DELTA_T * GearCatch / old_BB_flink) * 
+                                    (new_BB_flink + old_BB_flink)/2.0;
+        
         // NumericVector new_CC = 
         //               ifelse( new_BB==old_BB,
         //                 FishingLoss*DELTA_T,
@@ -332,6 +345,7 @@ int y, m, dd;
         out_SSB(dd, _) = old_BB;
         out_rec(dd, _) = old_BB;
         out_CC( dd, _) = new_CC;
+        out_Gear_CC(dd, _) = new_Gear_CC;
         annual_CC(y, _) = annual_CC(y, _) + new_CC;
         if (m==MEASURE_MONTH){
           annual_BB(y, _)    = old_BB;
@@ -353,7 +367,7 @@ int y, m, dd;
    out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
    out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
    out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
-           
+   out_Gear_CC(dd+1, _) = out_Gear_CC(dd, _);        
 //NOJUV         for (i = 1; i <= juv_N; i++){
 //NOJUV              out_SSB(dd, JuvNum[i]) = 0.0;
 //NOJUV						  out_SSB(dd, AduNum[i]) = SpawnBio[i];
@@ -364,6 +378,7 @@ int y, m, dd;
    List outdat = List::create(
      _["out_BB"]=out_BB,
      _["out_CC"]=out_CC,
+     _["out_Gear_CC"]=out_Gear_CC,
      _["annual_CC"]=annual_CC,
      _["annual_BB"]=annual_BB,
      _["annual_QB"]=annual_QB,
