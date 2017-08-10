@@ -203,7 +203,7 @@ List outdat = List::create(
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
 List Adams_run (List params, List instate, List forcing, List fishing, List stanzas,
-                 int StartYear, int EndYear){
+                 int StartYear, int EndYear, List InitDeriv){
      
 int y, m, dd; 
 
@@ -254,7 +254,9 @@ int y, m, dd;
      SplitSetPred(stanzas, state); 
    } 
    
-   List dyt   = deriv_vector(params, state, forcing, fishing, stanzas, 0, 0, 0);
+   // Use the initial derivative calculated outside of function
+   List dyt = InitDeriv;
+   
    dd = StartYear * STEPS_PER_YEAR;
 
 // MAIN LOOP STARTS HERE
@@ -384,7 +386,8 @@ int y, m, dd;
      _["annual_QB"]=annual_QB,
      _["annual_Qlink"]=annual_Qlink,     
      _["end_state"]=state,
-     _["crash_year"]=CRASH_YEAR);
+     _["crash_year"]=CRASH_YEAR,
+     _["dyt"]=dyt);
   
 // Return is an Rcpp List
    return(outdat);
