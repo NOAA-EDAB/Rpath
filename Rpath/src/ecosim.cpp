@@ -129,21 +129,28 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
           SplitSetPred(stanzas, state);
         }
       
-      // If the run is during the "burn-in" years, and biomass goes
-      // into the discard range, set flag to exit the loop.  Should set "bad"
-      // biomass values to NA  
+      // Make a copy of the current state for bounds testing
          NumericVector cur_BB = as<NumericVector>(state["BB"]);
-         if (y < BURN_YEARS){ cur_BB = ifelse((cur_BB<B_BaseRef*LO_DISCARD)|
-                                              (cur_BB>B_BaseRef*HI_DISCARD),
-                                       NA_REAL,cur_BB);
-         }
-      
-      // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
-      // should still write the NA or INF values back to the output.
-         if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) ) {
-            CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
-         }
-            
+        
+        // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
+        // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
+        cur_BB = ifelse((cur_BB<0),NA_REAL,cur_BB);
+        
+        // If the run is during the "burn-in" years, and biomass goes
+        // into the discard range, set flag to exit the loop.  Should set "bad"
+        // biomass values to NA                 
+        if (y < BURN_YEARS){ cur_BB = ifelse((cur_BB<B_BaseRef*LO_DISCARD)|
+            (cur_BB>B_BaseRef*HI_DISCARD),
+            NA_REAL,cur_BB);
+        }
+        
+        // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
+        // should still write the NA or INF values back to the output.
+        if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
+          CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+        }
+        
+        
       // Write to monthly output matricies (vector write)     				          									                    
          out_BB( dd, _) = cur_BB;
          out_SSB(dd, _) = cur_BB;
@@ -293,10 +300,16 @@ int y, m, dd;
         state["BB"]    = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON);
         state["Ftime"] = pmin(new_Ftime, 2.0);    
                                                                  										                         
+     // Make a copy of the current state for bounds testing
+        NumericVector cur_BB = as<NumericVector>(state["BB"]);
+
+     // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
+     // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
+        cur_BB = ifelse((cur_BB<0),NA_REAL,cur_BB);
+
      // If the run is during the "burn-in" years, and biomass goes
      // into the discard range, set flag to exit the loop.  Should set "bad"
-     // biomass values to NA  
-        NumericVector cur_BB = as<NumericVector>(state["BB"]);
+     // biomass values to NA                 
         if (y < BURN_YEARS){ cur_BB = ifelse((cur_BB<B_BaseRef*LO_DISCARD)|
                                              (cur_BB>B_BaseRef*HI_DISCARD),
                                       NA_REAL,cur_BB);
@@ -304,7 +317,7 @@ int y, m, dd;
       
     // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
     // should still write the NA or INF values back to the output.
-       if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) ) {
+       if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
             

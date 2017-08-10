@@ -136,6 +136,16 @@ rsim.mort <- function(rout,prey){
   return(pmat)
 }  
 #####################################################################################
+#'@export
+rsim.deriv <- function(Rpath.scenario, year=0, month=0, tstep=0){
+  
+  rout <- deriv_vector(Rpath.scenario$params,  Rpath.scenario$start_state, 
+                       Rpath.scenario$forcing, Rpath.scenario$fishing,
+                       Rpath.scenario$stanzas, year, month, tstep)
+  return(rout)
+}
+
+#####################################################################################
 #'Initial set up for Ecosim modual of Rpath
 #'
 #'Converts the outputs from ecopath into rates for use in ecosim.
