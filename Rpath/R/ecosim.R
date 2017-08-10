@@ -56,9 +56,14 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
                     Rpath.scenario$stanzas, 0, years)
   }
   if(method == 'AB'){
+    #Run initial derivative
+    derv <- deriv_vector(Rpath.scenario$params, Rpath.scenario$start_state, 
+                         Rpath.scenario$forcing, Rpath.scenario$fishing, 
+                         Rpath.scenario$stanzas, 0, 0, 0)
+    #Run Adams Bashforth Alogrithm
     rout <- Adams_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
                       Rpath.scenario$forcing, Rpath.scenario$fishing,
-                      Rpath.scenario$stanzas, 0, years)
+                      Rpath.scenario$stanzas, 0, years, derv)
   }
   # Nicely Name output vectors
   sps <- Rpath.scenario$params$spname[1:(1+Rpath.scenario$params$NUM_BIO)]
@@ -462,3 +467,54 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    
    return(rstan)
  }
+
+ #####################################################################################
+ #'Initial function to step through ecosim
+ #'
+ #'Runs rsim.run at intervals and combines the run to one output
+ #'
+ #'@family Rpath functions
+ #'
+ #'@param Rsim.scenario Rpath object created using rsim.scenario.
+ #'@param method Which integration algorithim rsim.run will use (Currently only
+ #'              supports 'AB')
+ #'@param max.year maximum length of the simulation
+ #'@param interval number of years inbetween simulations
+ #'
+ #'@return Returns an Rsim.output object.
+ #'@export
+ rsim.step <- function(Rsim.scenario, method = 'AB', max.year, interval){
+   #Set number of steps
+   steps <- seq(0, max.year, by = interval)
+   if(steps[length(steps)] != max.year) steps <- c(steps, max.year)
+   #Run initial simulation
+   init.run <- rsim.run(Rsim.scenario, method, steps[2])
+   #Generate subsequent runs
+   for(i in 3:length(steps)){
+     if(i == 3) full.run <- init.run
+     if(method == 'AB'){
+       next.run <- Adams_run(Rsim.scenario$params, full.run$end_state,
+                             Rsim.scenario$forcing, Rsim.scenario$fishing,
+                             Rsim.scenario$stanzas, steps[i-1], steps[i],
+                             full.run$dyt)
+     }
+     #Merge runs
+     first <- steps[i-1] * 12 + 1
+     last  <- steps[i] * 12 + 1
+     full.run$out_BB <- rbind(full.run$out_BB, next.run$out_BB[(first + 1):last, ])
+     full.run$out_CC <- rbind(full.run$out_CC, next.run$out_CC[(first + 1):last, ])
+     full.run$out_Gear_CC <- rbind(full.run$out_Gear_CC, 
+                                   next.run$out_Gear_CC[(first + 1):last, ])
+     full.run$annual_BB <- rbind(full.run$annual_BB[1:steps[i-1], ],
+                                 next.run$annual_BB[(steps[i-1] + 1):steps[i], ])
+     full.run$annual_CC <- rbind(full.run$annual_CC[1:steps[i-1], ],
+                                 next.run$annual_CC[(steps[i-1] + 1):steps[i], ])
+     full.run$annual_QB <- rbind(full.run$annual_QB[1:steps[i-1], ],
+                                 next.run$annual_QB[(steps[i-1] + 1):steps[i], ])
+     full.run$annual_Qlink <- rbind(full.run$annual_Qlink[1:steps[i-1], ],
+                                    next.run$annual_Qlink[(steps[i-1] + 1):steps[i], ])
+     full.run$end_state <- next.run$end_state
+   }
+   return(full.run)
+ }
+ 
