@@ -145,7 +145,14 @@ rsim.deriv <- function(Rpath.scenario, year=0, month=0, tstep=0){
   rout <- deriv_vector(Rpath.scenario$params,  Rpath.scenario$start_state, 
                        Rpath.scenario$forcing, Rpath.scenario$fishing,
                        Rpath.scenario$stanzas, year, month, tstep)
-  return(rout)
+  
+  rtab <- data.frame(Rpath.scenario$params$spname,rout$DerivT,rout$TotGain,rout$TotLoss, 
+                    rout$FoodGain, rout$DetritalGain, rout$FishingGain,      
+                    rout$UnAssimLoss,rout$ActiveRespLoss,
+                    rout$FoodLoss,rout$MzeroLoss,rout$FishingLoss,rout$DetritalLoss)
+  colnames(rtab)<-c("Species","DerivT","TotGain","TotLoss","FoodGain","DetritalGain","FishingGain",
+                    "UnAssimLoss","ActiveRespLoss","FoodLoss","MzeroLoss","FishingLoss","DetritalLoss")
+  return(rtab)
 }
 
 #####################################################################################

@@ -23,7 +23,7 @@ Creates a figure showing the break down of biomass and number per stanza.
 Plots the biomass composition of multistanza groups from an Rpath.stanzas object.
 }
 \seealso{
-Other Rpath functions: \code{\link{adjust.fishing}},
+Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
@@ -31,7 +31,9 @@ Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{read.rpath.params}},
   \code{\link{rpath.stanzas}}, \code{\link{rpath}},
   \code{\link{rsim.params}}, \code{\link{rsim.plot}},
-  \code{\link{rsim.scenario}}, \code{\link{webplot}},
+  \code{\link{rsim.scenario}},
+  \code{\link{rsim.sense.params}}, \code{\link{webplot}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+

@@ -34,7 +34,7 @@
 # which may include one (or more) parameter(s) that incorporates uncertainty
 # from one of the base parameters).
 
-rsim.sense <- function(Rpath.scenario, Rpath, Rpath.params, mscramble = 2,
+rsim.sense.params <- function(Rpath.scenario, Rpath, Rpath.params, mscramble = 2,
                        mhandle = 1000, preyswitch = 1, scrambleselfwt = 1,
                        handleselfwt = 1, steps_yr = 12, steps_m = 1)   {
 
@@ -208,8 +208,7 @@ rsim.sense <- function(Rpath.scenario, Rpath, Rpath.params, mscramble = 2,
   sense.params$FishThrough     <- c(0, sense.params$FishThrough)
   sense.params$FishQ           <- c(0, sense.params$FishQ)  
   sense.params$FishTo          <- c(0, sense.params$FishTo)   
-  
-  
+      
   class(sense.params) <- 'Rsim.params'
   return(sense.params)   
   
