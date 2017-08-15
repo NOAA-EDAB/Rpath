@@ -31,7 +31,8 @@ Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{read.rpath.params}},
   \code{\link{rpath.stanzas}}, \code{\link{rpath}},
   \code{\link{rsim.params}}, \code{\link{rsim.plot}},
-  \code{\link{rsim.scenario}}, \code{\link{webplot}},
-  \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
+  \code{\link{rsim.scenario}}, \code{\link{rsim.step}},
+  \code{\link{webplot}}, \code{\link{write.Rpath}},
+  \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }

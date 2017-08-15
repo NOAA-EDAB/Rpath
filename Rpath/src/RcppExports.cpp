@@ -23,8 +23,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Adams_run
-List Adams_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear);
-RcppExport SEXP Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+List Adams_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear, List InitDeriv);
+RcppExport SEXP Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP, SEXP InitDerivSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,7 +35,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type stanzas(stanzasSEXP);
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
-    rcpp_result_gen = Rcpp::wrap(Adams_run(params, instate, forcing, fishing, stanzas, StartYear, EndYear));
+    Rcpp::traits::input_parameter< List >::type InitDeriv(InitDerivSEXP);
+    rcpp_result_gen = Rcpp::wrap(Adams_run(params, instate, forcing, fishing, stanzas, StartYear, EndYear, InitDeriv));
     return rcpp_result_gen;
 END_RCPP
 }

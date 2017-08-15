@@ -56,9 +56,14 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
                     Rpath.scenario$stanzas, 0, years)
   }
   if(method == 'AB'){
+    #Run initial derivative
+    derv <- deriv_vector(Rpath.scenario$params, Rpath.scenario$start_state, 
+                         Rpath.scenario$forcing, Rpath.scenario$fishing, 
+                         Rpath.scenario$stanzas, 0, 0, 0)
+    #Run Adams Bashforth Alogrithm
     rout <- Adams_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
                       Rpath.scenario$forcing, Rpath.scenario$fishing,
-                      Rpath.scenario$stanzas, 0, years)
+                      Rpath.scenario$stanzas, 0, years, derv)
   }
   # Nicely Name output vectors
   sps <- Rpath.scenario$params$spname[1:(1+Rpath.scenario$params$NUM_BIO)]
@@ -462,3 +467,5 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
    
    return(rstan)
  }
+
+ 
