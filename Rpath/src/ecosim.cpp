@@ -464,7 +464,8 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericMatrix force_byprey     = as<NumericMatrix>(forcing["byprey"]);
    NumericMatrix force_bymort     = as<NumericMatrix>(forcing["bymort"]);
    NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["bysearch"]);
-
+   NumericMatrix force_bymigrate  = as<NumericMatrix>(forcing["bymigrate"]);
+   
 // Fishing forcing matrices (indexed year x species)  
 // SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
    NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
@@ -491,6 +492,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericVector PredSuite(NUM_GROUPS+1);
    NumericVector HandleSuite(NUM_GROUPS+1); 
    NumericVector GearCatch(NumFishingLinks+1);
+   NumericVector MigrateLoss(NUM_GROUPS+1);
    
 // Set effective biomass for pred/prey response
 // default is B/Bref
@@ -686,11 +688,17 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
    }
    
+// Add migration forcing
+   MigrateLoss = clone(state_BB);
+   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+     MigrateLoss[i]  *= force_bymigrate(y * STEPS_PER_YEAR + m, i);
+   }
+   
 // Sum up derivitive parts (vector sums)
 // Override for group 0 (considered "the sun", never changing)        
    TotGain = FoodGain + DetritalGain + FishingGain;      
    LossPropToQ = UnAssimLoss + ActiveRespLoss;
-   LossPropToB = FoodLoss    + MzeroLoss + FishingLoss  + DetritalLoss; 
+   LossPropToB = FoodLoss + MzeroLoss + FishingLoss + MigrateLoss + DetritalLoss; 
    TotGain[0]     = 0;
    LossPropToB[0] = 0;  
    LossPropToQ[0] = 0;
