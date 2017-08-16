@@ -28,6 +28,7 @@ Modifies the various parameters of the rsim scenario object.
 }
 \seealso{
 Other Rpath functions: \code{\link{adjust.fishing}},
+  \code{\link{adjust.forcing}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
   \code{\link{extract.node}}, \code{\link{frate.table}},

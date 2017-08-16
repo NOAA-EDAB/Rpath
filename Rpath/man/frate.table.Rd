@@ -17,6 +17,7 @@ Creates a table of fishing mortalities by species group and gear for an Rpath.si
 }
 \seealso{
 Other Rpath functions: \code{\link{adjust.fishing}},
+  \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},

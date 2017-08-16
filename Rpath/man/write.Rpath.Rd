@@ -21,6 +21,7 @@ Outputs basic parameters or mortalities to a .csv file.
 }
 \seealso{
 Other Rpath functions: \code{\link{adjust.fishing}},
+  \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
