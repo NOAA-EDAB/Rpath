@@ -719,7 +719,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      //_["TotLoss"]=TotLoss,
      _["DerivT"]=DerivT,
      _["biomeq"]=biomeq,
-     //_["LossPropToB"]=LossPropToB, 
+     _["LossPropToB"]=LossPropToB, 
      //_["LossPropToQ"]=LossPropToQ,                           
      //_["FoodLoss"]=FoodLoss,
      _["FoodGain"]=FoodGain,
