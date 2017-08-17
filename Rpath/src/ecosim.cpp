@@ -715,13 +715,13 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 // SML 8/8/17 - actually don't need most of these...commenting
 // out to track catch by gear
    List deriv = List::create(
-     _["preyYY"]=preyYY,
-     _["predYY"]=predYY,
+     //_["preyYY"]=preyYY,
+     //_["predYY"]=predYY,
      _["TotGain"]=TotGain,
      _["TotLoss"]=TotLoss,
      _["DerivT"]=DerivT,
      _["biomeq"]=biomeq,
-     //_["LossPropToB"]=LossPropToB, 
+     _["LossPropToB"]=LossPropToB, 
      //_["LossPropToQ"]=LossPropToQ,                           
      _["FoodLoss"]=FoodLoss,
      _["FoodGain"]=FoodGain,
