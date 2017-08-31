@@ -210,7 +210,7 @@ List outdat = List::create(
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
 List Adams_run (List params, List instate, List forcing, List fishing, List stanzas,
-                 int StartYear, int EndYear){
+                 int StartYear, int EndYear, List InitDeriv){
      
 int y, m, dd; 
 
@@ -261,7 +261,9 @@ int y, m, dd;
      SplitSetPred(stanzas, state); 
    } 
    
-   List dyt   = deriv_vector(params, state, forcing, fishing, stanzas, 0, 0, 0);
+   // Use the initial derivative calculated outside of function
+   List dyt = InitDeriv;
+   
    dd = StartYear * STEPS_PER_YEAR;
 
 // MAIN LOOP STARTS HERE
@@ -397,7 +399,8 @@ int y, m, dd;
      _["annual_QB"]=annual_QB,
      _["annual_Qlink"]=annual_Qlink,     
      _["end_state"]=state,
-     _["crash_year"]=CRASH_YEAR);
+     _["crash_year"]=CRASH_YEAR,
+     _["dyt"]=dyt);
   
 // Return is an Rcpp List
    return(outdat);
@@ -474,7 +477,8 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericMatrix force_byprey     = as<NumericMatrix>(forcing["byprey"]);
    NumericMatrix force_bymort     = as<NumericMatrix>(forcing["bymort"]);
    NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["bysearch"]);
-
+   NumericMatrix force_bymigrate  = as<NumericMatrix>(forcing["bymigrate"]);
+   
 // Fishing forcing matrices (indexed year x species)  
 // SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
    NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
@@ -501,6 +505,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericVector PredSuite(NUM_GROUPS+1);
    NumericVector HandleSuite(NUM_GROUPS+1); 
    NumericVector GearCatch(NumFishingLinks+1);
+   NumericVector MigrateLoss(NUM_GROUPS+1);
    
 // Set effective biomass for pred/prey response
 // default is B/Bref
@@ -696,11 +701,17 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
    }
    
+// Add migration forcing
+   MigrateLoss = clone(state_BB);
+   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+     MigrateLoss[i]  *= force_bymigrate(y * STEPS_PER_YEAR + m, i);
+   }
+   
 // Sum up derivitive parts (vector sums)
 // Override for group 0 (considered "the sun", never changing)        
    TotGain = FoodGain + DetritalGain + FishingGain;      
    LossPropToQ = UnAssimLoss + ActiveRespLoss;
-   LossPropToB = FoodLoss    + MzeroLoss + FishingLoss  + DetritalLoss; 
+   LossPropToB = FoodLoss + MzeroLoss + FishingLoss + MigrateLoss + DetritalLoss; 
    TotGain[0]     = 0;
    LossPropToB[0] = 0;  
    LossPropToQ[0] = 0;
@@ -737,8 +748,6 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      //_["HandleSuite"]=HandleSuite,
      _["Qlink"]=Q1,
      _["GearCatch"]=GearCatch
-     //
-     //
      );
 
 // Return is an Rcpp List     

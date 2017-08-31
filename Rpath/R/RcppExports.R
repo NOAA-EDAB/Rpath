@@ -5,8 +5,8 @@ rk4_run <- function(params, instate, forcing, fishing, stanzas, StartYear, EndYe
     .Call('Rpath_rk4_run', PACKAGE = 'Rpath', params, instate, forcing, fishing, stanzas, StartYear, EndYear)
 }
 
-Adams_run <- function(params, instate, forcing, fishing, stanzas, StartYear, EndYear) {
-    .Call('Rpath_Adams_run', PACKAGE = 'Rpath', params, instate, forcing, fishing, stanzas, StartYear, EndYear)
+Adams_run <- function(params, instate, forcing, fishing, stanzas, StartYear, EndYear, InitDeriv) {
+    .Call('Rpath_Adams_run', PACKAGE = 'Rpath', params, instate, forcing, fishing, stanzas, StartYear, EndYear, InitDeriv)
 }
 
 deriv_vector <- function(params, state, forcing, fishing, stanzas, y, m, tt) {
