@@ -715,28 +715,26 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    List deriv = List::create(
      //_["preyYY"]=preyYY,
      //_["predYY"]=predYY,
-     //_["TotGain"]=TotGain,
-     //_["TotLoss"]=TotLoss,
+     _["TotGain"]=TotGain,
+     _["TotLoss"]=TotLoss,
      _["DerivT"]=DerivT,
      _["biomeq"]=biomeq,
      _["LossPropToB"]=LossPropToB, 
      //_["LossPropToQ"]=LossPropToQ,                           
-     //_["FoodLoss"]=FoodLoss,
+     _["FoodLoss"]=FoodLoss,
      _["FoodGain"]=FoodGain,
-     //_["UnAssimLoss"]=UnAssimLoss,
-     //_["ActiveRespLoss"]=ActiveRespLoss,
-     //_["DetritalGain"]=DetritalGain,
-     //_["FishingGain"]=FishingGain,
-     //_["MzeroLoss"]=MzeroLoss,
+     _["UnAssimLoss"]=UnAssimLoss,
+     _["ActiveRespLoss"]=ActiveRespLoss,
+     _["DetritalGain"]=DetritalGain,
+     _["FishingGain"]=FishingGain,
+     _["MzeroLoss"]=MzeroLoss,
      _["FishingLoss"]=FishingLoss,
-     //_["DetritalLoss"]=DetritalLoss,
-     //_["FishingThru"]=FishingThru,
+     _["DetritalLoss"]=DetritalLoss,
+     _["FishingThru"]=FishingThru,
      //_["PredSuite"]=PredSuite,
      //_["HandleSuite"]=HandleSuite,
      _["Qlink"]=Q1,
      _["GearCatch"]=GearCatch
-     //
-     //
      );
 
 // Return is an Rcpp List     
