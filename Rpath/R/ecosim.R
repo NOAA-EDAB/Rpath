@@ -45,8 +45,6 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
   attr(rsim, 'eco.name') <- attr(Rpath, 'eco.name')
   return(rsim)   
 }
-
-################################################################################ 
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
@@ -94,12 +92,12 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
 ################################################################################
 #'@export
 rsim.fishing <- function(params, years = 100){
-# Yearly index defaulting to to 0.0, for fishing forcing list
+  # Yearly index defaulting to to 0.0, for fishing forcing list
   YF <- (matrix(0.0, years + 1, params$NUM_GROUPS + 1))  
   fishing <- list(EFFORT = (matrix(1.0, years + 1, params$NUM_GEARS + 1)),
                   FRATE  = YF,
                   CATCH  = YF)   
-
+  
   class(fishing) <- "Rsim.fishing"
   return (fishing)
 }
@@ -108,12 +106,14 @@ rsim.fishing <- function(params, years = 100){
 #'@export
 rsim.forcing <- function(params, years = 100){
 # Monthly index defaulting to to 1.0, for environmental forcing list
-  MF <- (matrix(1.0, years * 12 + 1, params$NUM_GROUPS + 1))      
+  MF <- (matrix(1.0, years * 12 + 1, params$NUM_GROUPS + 1))
+  colnames(MF) <- params$spname
   forcing <- list(byprey    = MF, 
                   bymort    = MF, 
                   byrecs    = MF, 
                   bysearch  = MF,
-                  bymigrate = MF * 0)
+                  bymigrate = MF * 0,
+                  bybio     = MF * -1)
   
   class(forcing) <- "Rsim.forcing"
   return (forcing)

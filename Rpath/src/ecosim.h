@@ -17,8 +17,8 @@ using namespace Rcpp;
 // Functions in ecosim.cpp 
    List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, 
                      int y, int m, double tt);
-   List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, 
-                  int EndYear);
+   //List Adams_run(List params, List instate, List forcing, List fishing, int StartYear, 
+  //                int EndYear);
    List rk4_run(List params, List instate, List forcing, List fishing, int StartYear, 
                 int EndYear);
 

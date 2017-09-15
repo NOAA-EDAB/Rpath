@@ -218,7 +218,12 @@ int y, m, dd;
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
    const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
    const int NumFishingLinks  = as<int>(params["NumFishingLinks"]);
-   
+
+// Forcing Biomass
+   //const int NumForcedBio        = as<int>(fitting["NumForcedBio"]);
+   //const IntegerVector BforceNum = as<IntegerVector>(fitting["BforceNum"]);
+   NumericMatrix force_bybio       = as<NumericMatrix>(forcing["bybio"]);
+
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
    int CRASH_YEAR = -1;
@@ -328,13 +333,23 @@ int y, m, dd;
         //                   (new_BB-old_BB)/log(new_BB/old_BB) 
         //               );       
 
+     // KYA 9/13/17 - noticed that cur_BB is never copied back into state["BB"] after
+     // bounds testing.  Error?  Moved state["BB"] setting, hopefully nothing breaks...
      // Set state to new values, including min/max traps
-        state["BB"]    = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON);
-        state["Ftime"] = pmin(new_Ftime, 2.0);    
+        //state["BB"]    = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON);
+        //state["Ftime"] = pmin(new_Ftime, 2.0);    
                                                                  										                         
      // Make a copy of the current state for bounds testing
-        NumericVector cur_BB = as<NumericVector>(state["BB"]);
+        NumericVector cur_BB = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON); // as<NumericVector>(state["BB"]);
 
+        NumericVector bforce = force_bybio(y * STEPS_PER_YEAR + m, _);
+        cur_BB = ifelse(bforce>B_BaseRef * EPSILON, bforce, cur_BB);
+        
+     // insert forced biomass levels    
+        //for (i=0; i<NumForcedBio; i++){
+         // sp = BforceNum[i]; /* if (NoIntegrate[sp]>=0){cur_BB[sp]=BforceVal(sp,m);} */
+        //}            
+        
      // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
      // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
         cur_BB = ifelse((cur_BB<0),NA_REAL,cur_BB);
@@ -349,12 +364,16 @@ int y, m, dd;
       
     // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
     // should still write the NA or INF values back to the output.
-       if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
+    //NOJUV make sure crash tests work for juveniles.
+    
+           if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
-            
-     //NOJUV make sure crash tests work for juveniles.
- 		 
+  
+    // KYA 9/13/17 - Now copy cur_BB into state    
+       state["BB"]    = cur_BB;
+       state["Ftime"] = pmin(new_Ftime, 2.0);
+  
      // Write to output matricies     				          									                    
         out_BB( dd, _) = old_BB;
         out_SSB(dd, _) = old_BB;
