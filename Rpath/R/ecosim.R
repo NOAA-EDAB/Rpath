@@ -93,7 +93,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
 #'@export
 rsim.fishing <- function(params, years = 100){
   # Yearly index defaulting to to 0.0, for fishing forcing list
-  YF <- (matrix(0.0, years + 1, params$NUM_GROUPS + 1))  
+  YF <- (matrix(0.0, years + 1, params$NUM_BIO + 1))  
   fishing <- list(EFFORT = (matrix(1.0, years + 1, params$NUM_GEARS + 1)),
                   FRATE  = YF,
                   CATCH  = YF)   
