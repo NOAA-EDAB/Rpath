@@ -58,6 +58,8 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
     derv <- deriv_vector(Rpath.scenario$params, Rpath.scenario$start_state, 
                          Rpath.scenario$forcing, Rpath.scenario$fishing, 
                          Rpath.scenario$stanzas, 0, 0, 0)
+    #KYA added for first step bump correction 9/20/17
+     
     #Run Adams Bashforth Alogrithm
     rout <- Adams_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
                       Rpath.scenario$forcing, Rpath.scenario$fishing,

@@ -267,8 +267,8 @@ int y, m, dd;
    } 
    
    // Use the initial derivative calculated outside of function
-   List dyt = InitDeriv;
-   
+      List dyt = InitDeriv;
+
    dd = StartYear * STEPS_PER_YEAR;
 
 // MAIN LOOP STARTS HERE
