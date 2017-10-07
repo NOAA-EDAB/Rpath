@@ -598,7 +598,9 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    UnAssimLoss    = FoodGain  * UnassimRespFrac; 
    ActiveRespLoss = FoodGain  * ActiveRespFrac;  												 
    MzeroLoss      = MzeroMort * state_BB;
-
+   
+   NumericVector NetProd = FoodGain - UnAssimLoss - ActiveRespLoss - MzeroLoss - FoodLoss;
+   
 // FISHING FUNCTIONS (multiple options depending on fishing method)
    
 //   // MOST OF THE FOLLOWING FISHING SPECIFICATION METHODS ARE NOT SUPPORTED
@@ -675,7 +677,8 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
              caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_BB[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
-             if (caught >= state_BB[sp]){caught = (1.0 - EPSILON) * (state_BB[sp]);}
+             // KYA 10/6/17 Added productivity to BB limit for F>1 species (salmon inspired)
+                if (caught >= state_BB[sp] + NetProd[sp]){caught = (1.0 - EPSILON) * (state_BB[sp] + NetProd[sp]);}
              FishingLoss[sp] += caught;
              FishingThru[0]  += caught;
              FishingGain[0]  += caught;
