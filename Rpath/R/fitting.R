@@ -1,10 +1,36 @@
-
+###########################################################
 #'@export
+rsim.fit.obj <- function(scene,result){
 
+  ONEHALFLOGTWOPI <- 0.5*log(2*pi) #0.918938533204672
+  epsilon <- 1e-36
+  
+  OBJ <- list() 
+  
+# Catch compared (assumes all catch is clean, absolute values)
+  est <- result$annual_CC[matrix(c(as.character(scene$fitting$catch$year),as.character(scene$fitting$catch$species)),
+                              ncol=2)] + epsilon
+  obs <- scene$fitting$catch$obs + epsilon
+  sd  <- scene$fitting$catch$sd  + epsilon
+  sdlog  <- sqrt(log(1.0+sd*sd/(obs*obs)))
+  sdiff  <- (log(obs)-log(est))/sdlog
+  fit    <- scene$fitting$catch$wt * (log(sdlog) + ONEHALFLOGTWOPI + 0.5*sdiff*sdiff)
+  OBJ$catch <- cbind(scene$fitting$catch,est,sdiff,fit)  
+
+# Final summation and return
+  OBJ$tot <- sum(OBJ$catch$fit) #OBJ$survey$fit, OBJ$diet$fit
+
+  return(OBJ)    
+}
+
+#########################################################
+#'@export
 read.rsim.fitting.catch <- function(insim,years,flist){
   rsim <- insim
   
-  if (is.null(rsim$fitting)){rsim$fitting <- list()}  
+  #if (is.null(rsim$fitting)){
+     rsim$fitting <- list(years=years, NY=length(years) )
+  #}  
   
   CATCH <- NULL
   for (f in flist){

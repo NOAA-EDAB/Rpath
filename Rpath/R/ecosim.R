@@ -48,6 +48,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
+  
   if(method == 'RK4'){
     rout <- rk4_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
                     Rpath.scenario$forcing, Rpath.scenario$fishing,
@@ -73,6 +74,21 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
   colnames(rout$annual_BB) <- sps
   colnames(rout$annual_QB) <- sps
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
+
+  if(!is.null(Rpath.scenario$fitting$years)){
+    # drop the last row (should be always 0; negative index is entry to drop)
+      lastone <- length(rout$annual_CC[,1])
+      rout$annual_CC <-    rout$annual_CC[-lastone,]
+      rout$annual_BB <-    rout$annual_BB[-lastone,]
+      rout$annual_QB <-    rout$annual_QB[-lastone,]
+      rout$annual_Qlink <- rout$annual_Qlink[-lastone,]
+    # put years in row names
+      rownames(rout$annual_CC) <-    Rpath.scenario$fitting$years
+      rownames(rout$annual_BB) <-    Rpath.scenario$fitting$years
+      rownames(rout$annual_QB) <-    Rpath.scenario$fitting$years
+      rownames(rout$annual_Qlink) <- Rpath.scenario$fitting$years   
+  }
+  
   rout$pred <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyTo+1] 
   rout$prey <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyFrom+1] 
   rout$Gear_CC_sp   <- Rpath.scenario$params$spname[Rpath.scenario$params$FishFrom+1] 
