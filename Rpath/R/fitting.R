@@ -1,5 +1,19 @@
 ###########################################################
 #'@export
+rsim.fit.plot.catch <- function(scene,result,pred){
+  OBJ <- rsim.fit.obj(scene,result)
+  qdat <- OBJ$catch[OBJ$catch$species==pred,]
+  mn   <- qdat$obs
+  up   <- mn + 1.96*qdat$sd
+  dn   <- mn - 1.96*qdat$sd 
+  plot(rownames(result$annual_CC),result$annual_CC[,pred],type="l",
+       ylim=c(0,max(up,result$annual_CC[,pred])),xlab="",ylab=paste(pred,"catch"))
+  points(qdat$year,mn)
+  segments(qdat$year,y0=up,y1=dn)  
+}
+
+###########################################################
+#'@export
 rsim.fit.obj <- function(scene,result){
 
   ONEHALFLOGTWOPI <- 0.5*log(2*pi) #0.918938533204672

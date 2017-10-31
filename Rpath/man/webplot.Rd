@@ -49,7 +49,7 @@ Creates a figure of the food web.
 Plots the food web associated with an Rpath object.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -63,4 +63,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-
