@@ -1,16 +1,32 @@
 ###########################################################
 #'@export
-rsim.fit.plot.catch <- function(scene,result,pred){
+rsim.fit.plot <- function(scene,result,pred){
   OBJ <- rsim.fit.obj(scene,result)
-  qdat <- OBJ$catch[OBJ$catch$species==pred,]
-  mn   <- qdat$obs
-  up   <- mn + 1.96*qdat$sd
-  dn   <- mn - 1.96*qdat$sd 
-  plot(rownames(result$annual_CC),result$annual_CC[,pred],type="l",
+  
+  par(mfrow=c(1,2))
+  # Plot Catch
+    qdat <- OBJ$catch[OBJ$catch$species==pred,]
+    mn   <- qdat$obs
+    up   <- mn + 1.96*qdat$sd
+    dn   <- mn - 1.96*qdat$sd 
+    plot(rownames(result$annual_CC),result$annual_CC[,pred],type="l",
        ylim=c(0,max(up,result$annual_CC[,pred])),xlab="",ylab=paste(pred,"catch"))
-  points(qdat$year,mn)
-  segments(qdat$year,y0=up,y1=dn)  
+    points(qdat$year,mn)
+    segments(qdat$year,y0=up,y1=dn)
+    
+  # Plot Biomass
+    #qdat <- OBJ$survey[OBJ$survey$species==pred,]
+    #mn   <- qdat$obs/qdat$survey_q
+    #up   <- mn + 1.96*qdat$sd/qdat$survey_q
+    #dn   <- mn - 1.96*qdat$sd/qdat$survey_q 
+    plot(rownames(result$annual_BB),result$annual_BB[,pred],type="l",
+         ylim=c(0,max(up,result$annual_BB[,pred])),xlab="",ylab=paste(pred,"biomass"))
+    #points(qdat$year,mn)
+    #segments(qdat$year,y0=up,y1=dn)    
+    
 }
+
+
 
 ###########################################################
 #'@export
@@ -39,12 +55,15 @@ rsim.fit.obj <- function(scene,result){
 
 #########################################################
 #'@export
-read.rsim.fitting.catch <- function(insim,years,flist){
+read.rsim.fitting.catch <- function(insim,flist){
   rsim <- insim
   
-  #if (is.null(rsim$fitting)){
-     rsim$fitting <- list(years=years, NY=length(years) )
-  #}  
+  if (is.null(rsim$fitting)){
+     rsim$fitting <- list()
+     #rsim$fitting <- list(years=years, NY=length(years) )
+  }  
+  
+  years <- as.numeric(rownames(scene$fishing$CATCH))
   
   CATCH <- NULL
   for (f in flist){
@@ -59,8 +78,8 @@ read.rsim.fitting.catch <- function(insim,years,flist){
   colnames(rsim$fitting$catch) <- c("year","species","obs","sd","wt")
   
   # APPLY FISHING TO FITTING
-  colnames(rsim$fishing$CATCH)<-rsim$params$spname[1:(rsim$params$NUM_BIO+1)]
-  rownames(rsim$fishing$CATCH)<-seq(min(years), length.out=dim(rsim$fishing$CATCH)[1])
+  #colnames(rsim$fishing$CATCH)<-rsim$params$spname[1:(rsim$params$NUM_BIO+1)]
+  #rownames(rsim$fishing$CATCH)<-seq(min(years), length.out=dim(rsim$fishing$CATCH)[1])
   rsim$fishing$CATCH[matrix(c(as.character(rsim$fitting$catch$year),as.character(rsim$fitting$catch$species)),
                            length(rsim$fitting$catch$year),2)] <- rsim$fitting$catch$obs 
   return(rsim)

@@ -24,7 +24,8 @@
 #'@importFrom Rcpp sourceCpp
 #'@export
 rsim.scenario <- function(Rpath, Rpath.params, years = 100){
-  
+  # KYA 11/1/17 modifying so years can take a vector of actual years
+  # for row labels (for fitting and general printing out)
   params      <- rsim.params(Rpath)
   start_state <- rsim.state(params)
   forcing     <- rsim.forcing(params, years)
@@ -45,6 +46,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 100){
   attr(rsim, 'eco.name') <- attr(Rpath, 'eco.name')
   return(rsim)   
 }
+#####################################################################################
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
@@ -52,19 +54,19 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
   if(method == 'RK4'){
     rout <- rk4_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
                     Rpath.scenario$forcing, Rpath.scenario$fishing,
-                    Rpath.scenario$stanzas, 0, years)
+                    Rpath.scenario$stanzas, 1, years)
   }
   if(method == 'AB'){
     #Run initial derivative
     derv <- deriv_vector(Rpath.scenario$params, Rpath.scenario$start_state, 
                          Rpath.scenario$forcing, Rpath.scenario$fishing, 
-                         Rpath.scenario$stanzas, 0, 0, 0)
+                         Rpath.scenario$stanzas, 1, 0, 0)
     #KYA added for first step bump correction 9/20/17
      
     #Run Adams Bashforth Alogrithm
     rout <- Adams_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
                       Rpath.scenario$forcing, Rpath.scenario$fishing,
-                      Rpath.scenario$stanzas, 0, years, derv)
+                      Rpath.scenario$stanzas, 1, years, derv)
   }
   # Nicely Name output vectors
   sps <- Rpath.scenario$params$spname[1:(1+Rpath.scenario$params$NUM_BIO)]
@@ -76,20 +78,22 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
 
   # drop the last row (should be always 0; negative index is entry to drop)
-    lastone <- length(rout$annual_CC[,1])
-    rout$annual_CC <-    rout$annual_CC[-lastone,]
-    rout$annual_BB <-    rout$annual_BB[-lastone,]
-    rout$annual_QB <-    rout$annual_QB[-lastone,]
-    rout$annual_Qlink <- rout$annual_Qlink[-lastone,]  
+    #lastone <- length(rout$annual_CC[,1])
+    #rout$annual_CC <-    rout$annual_CC[-lastone,]
+    #rout$annual_BB <-    rout$annual_BB[-lastone,]
+    #rout$annual_QB <-    rout$annual_QB[-lastone,]
+    #rout$annual_Qlink <- rout$annual_Qlink[-lastone,]  
   
-  if(!is.null(Rpath.scenario$fitting$years)){
-    ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_CC[,1]))
+  #if(!is.null(Rpath.scenario$fitting$years)){
+  #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_CC[,1]))
     # put years in row names
+     ys <- min(rownames(Rpath.scenario$fishing$CATCH))
+     ylist <- seq(ys,length.out=length(rout$annual_CC[,1]))
       rownames(rout$annual_CC) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_BB) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_QB) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_Qlink) <- ylist #Rpath.scenario$fitting$years   
-  }
+  #}
   
   rout$pred <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyTo+1] 
   rout$prey <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyFrom+1] 
@@ -113,8 +117,15 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 100){
 #'@export
 rsim.fishing <- function(params, years = 100){
   # Yearly index defaulting to to 0.0, for fishing forcing list
-  YF <- (matrix(0.0, years + 1, params$NUM_BIO   + 1))
-  GF <- (matrix(1.0, years + 1, params$NUM_GEARS + 1))
+  
+  if (length(years)>1){nyrs <- length(years)} else {nyrs <- years}
+  
+  YF <- (matrix(0.0, nyrs, params$NUM_BIO   + 1))
+  GF <- (matrix(1.0, nyrs, params$NUM_GEARS + 1))
+  if (length(years)>1){
+   rownames(YF) <- years
+   rownames(GF) <- years
+  }
   colnames(YF) <- params$spname[1:(params$NUM_BIO+1)]
   colnames(GF) <- c("Outside",params$spname[(params$NUM_BIO+2):(params$NUM_GROUPS+1)])
   fishing <- list(EFFORT = GF,
@@ -129,7 +140,7 @@ rsim.fishing <- function(params, years = 100){
 #'@export
 rsim.forcing <- function(params, years = 100){
 # Monthly index defaulting to to 1.0, for environmental forcing list
-  MF <- (matrix(1.0, years * 12 + 1, params$NUM_GROUPS + 1))
+  MF <- (matrix(1.0, years * 12, params$NUM_GROUPS + 1))
   colnames(MF) <- params$spname
   forcing <- list(byprey    = MF, 
                   bymort    = MF, 

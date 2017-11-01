@@ -44,16 +44,16 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
-   NumericMatrix out_BB(EndYear*12+1, NUM_BIO+1);           
-   NumericMatrix out_CC(EndYear*12+1, NUM_BIO+1);          
-   NumericMatrix out_SSB(EndYear*12+1, NUM_BIO+1);        
-   NumericMatrix out_rec(EndYear*12+1, NUM_BIO+1);
-   NumericMatrix out_Gear_CC(EndYear*12+1, NumFishingLinks+1);
+   NumericMatrix out_BB(EndYear*12, NUM_BIO+1);           
+   NumericMatrix out_CC(EndYear*12, NUM_BIO+1);          
+   NumericMatrix out_SSB(EndYear*12, NUM_BIO+1);        
+   NumericMatrix out_rec(EndYear*12, NUM_BIO+1);
+   NumericMatrix out_Gear_CC(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
-   NumericMatrix annual_CC(EndYear+1, NUM_BIO+1);
-   NumericMatrix annual_BB(EndYear+1, NUM_BIO+1);
-   NumericMatrix annual_QB(EndYear+1, NUM_BIO+1);
-   NumericMatrix annual_Qlink(EndYear+1, NumPredPreyLinks+1);   
+   NumericMatrix annual_CC(EndYear, NUM_BIO+1);
+   NumericMatrix annual_BB(EndYear, NUM_BIO+1);
+   NumericMatrix annual_QB(EndYear, NUM_BIO+1);
+   NumericMatrix annual_Qlink(EndYear, NumPredPreyLinks+1);   
 // Accumulator for monthly catch values
    NumericVector cum_CC(NUM_BIO+1);
    NumericVector cum_Gear_CC(NumFishingLinks +1);
@@ -70,17 +70,18 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    dd =  StartYear * STEPS_PER_YEAR;  // dd is monthly index for data storage
 
 // KYA 6/12/17 an initial derivative call just to declare deriv in right scope
-   List dyt = deriv_vector(params,state,forcing,fishing,stanzas,0,0,0);
+   List dyt = deriv_vector(params,state,forcing,fishing,stanzas,1,0,0);
       NumericVector FoodGain = as<NumericVector>(dyt["FoodGain"]);
       NumericVector Qlink    = as<NumericVector>(dyt["Qlink"]);   
 
       // MAIN LOOP STARTS HERE with years loop
-   for (y = StartYear; y < EndYear; y++){
+   for (y = StartYear; y <= EndYear; y++){
+   if (y<1){stop("RK Year can't be less than 1");}
    // Monthly loop                                     
       for (m = 0; m < STEPS_PER_YEAR; m++){
          cum_CC = NumericVector(NUM_BIO+1);  // monthly catch to accumulate   
          cum_Gear_CC = NumericVector(NumFishingLinks+1);
-         dd = y * STEPS_PER_YEAR + m;  
+         dd = (y-1) * STEPS_PER_YEAR + m;  
          // Sub-monthly integration loop
             for (t=0; t< STEPS_PER_MONTH; t++){
                double tt = (double)t*hh;  // sub monthly timestep in years     
@@ -171,21 +172,21 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
          out_rec(dd, _) = cur_BB;
          out_CC( dd, _) = cum_CC;
          out_Gear_CC(dd, _) = cum_Gear_CC;
-         annual_CC(y, _) = annual_CC(y, _) + cum_CC;
+         annual_CC(y-1, _) = annual_CC(y-1, _) + cum_CC;
          if (m==MEASURE_MONTH){
-           annual_BB(y, _)    = cur_BB;
-           annual_QB(y, _)    = FoodGain/cur_BB;
-           annual_Qlink(y, _) = Qlink;
+           annual_BB(y-1, _)    = cur_BB;
+           annual_QB(y-1, _)    = FoodGain/cur_BB;
+           annual_Qlink(y-1, _) = Qlink;
          }      
     }  // End of main months loop
     
   }// End of years loop
   
 // Write Last timestep (note:  SSB and rec only used for age-structure species) 
-   out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
-   out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
-   out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
-   out_CC( dd+1, _) = out_CC( dd, _); 
+   //out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_CC( dd+1, _) = out_CC( dd, _); 
   
 // Create Rcpp list to output  
 List outdat = List::create(
@@ -222,6 +223,7 @@ int y, m, dd;
 // Forcing Biomass
    //const int NumForcedBio        = as<int>(fitting["NumForcedBio"]);
    //const IntegerVector BforceNum = as<IntegerVector>(fitting["BforceNum"]);
+   // KYA TODO 11/1/2017 put force_bybio in RK!
    NumericMatrix force_bybio       = as<NumericMatrix>(forcing["bybio"]);
 
 // Switches for run modes
@@ -245,16 +247,16 @@ int y, m, dd;
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
-   NumericMatrix out_BB( EndYear * 12 + 1, NUM_BIO + 1);           
-   NumericMatrix out_CC( EndYear * 12 + 1, NUM_BIO + 1);          
-   NumericMatrix out_SSB(EndYear * 12 + 1, NUM_BIO + 1);        
-   NumericMatrix out_rec(EndYear * 12 + 1, NUM_BIO + 1);
-   NumericMatrix out_Gear_CC(EndYear*12+1, NumFishingLinks+1);
+   NumericMatrix out_BB( EndYear * 12, NUM_BIO + 1);           
+   NumericMatrix out_CC( EndYear * 12, NUM_BIO + 1);          
+   NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
+   NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
+   NumericMatrix out_Gear_CC(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
-   NumericMatrix annual_CC(EndYear+1, NUM_BIO+1);
-   NumericMatrix annual_BB(EndYear+1, NUM_BIO+1);
-   NumericMatrix annual_QB(EndYear+1, NUM_BIO+1);
-   NumericMatrix annual_Qlink(EndYear+1, NumPredPreyLinks+1); 
+   NumericMatrix annual_CC(EndYear, NUM_BIO+1);
+   NumericMatrix annual_BB(EndYear, NUM_BIO+1);
+   NumericMatrix annual_QB(EndYear, NUM_BIO+1);
+   NumericMatrix annual_Qlink(EndYear, NumPredPreyLinks+1); 
 
 // Load state and call initial derivative (todo: allow other start times)
 // Use Clone to make sure state/stanzas are copies of instate/instanzas, not pointers   
@@ -273,10 +275,11 @@ int y, m, dd;
 
 // MAIN LOOP STARTS HERE
 // ASSUMES STEPS_PER_MONTH will always be 1.0, took out divisions     
-   for (y = StartYear; y < EndYear; y++){                                  
+   for (y = StartYear; y <= EndYear; y++){
+      if (y<1){stop("Adams Year can't be less than 1");}
    // Monthly loop                                     
       for (m = 0; m < STEPS_PER_YEAR; m++){   
-				 dd = y * STEPS_PER_YEAR + m; // dd is index for monthly output                
+				 dd = (y-1) * STEPS_PER_YEAR + m; // dd is index for monthly output                
       // Load old state and old derivative
          NumericVector old_BB    = as<NumericVector>(state["BB"]);
          NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
@@ -342,7 +345,7 @@ int y, m, dd;
      // Make a copy of the current state for bounds testing
         NumericVector cur_BB = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON); // as<NumericVector>(state["BB"]);
 
-        NumericVector bforce = force_bybio(y * STEPS_PER_YEAR + m, _);
+        NumericVector bforce = force_bybio((y-1) * STEPS_PER_YEAR + m, _);
         cur_BB = ifelse(bforce>B_BaseRef * EPSILON, bforce, cur_BB);
         
      // insert forced biomass levels    
@@ -380,11 +383,11 @@ int y, m, dd;
         out_rec(dd, _) = old_BB;
         out_CC( dd, _) = new_CC;
         out_Gear_CC(dd, _) = new_Gear_CC;
-        annual_CC(y, _) = annual_CC(y, _) + new_CC;
+        annual_CC(y-1, _) = annual_CC(y-1, _) + new_CC;
         if (m==MEASURE_MONTH){
-          annual_BB(y, _)    = old_BB;
-          annual_QB(y, _)    = FoodGain/old_BB;
-          annual_Qlink(y, _) = Qlink;
+          annual_BB(y-1, _)    = old_BB;
+          annual_QB(y-1, _)    = FoodGain/old_BB;
+          annual_Qlink(y-1, _) = Qlink;
         }
         
      //NOJUV    for (i = 1; i <= juv_N; i++){
@@ -397,11 +400,11 @@ int y, m, dd;
    }// End of years loop
 
 // Write Last timestep 
-   out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
-   out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
-   out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
-   out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
-   out_Gear_CC(dd+1, _) = out_Gear_CC(dd, _);        
+   //out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
+   //out_Gear_CC(dd+1, _) = out_Gear_CC(dd, _);        
 //NOJUV         for (i = 1; i <= juv_N; i++){
 //NOJUV              out_SSB(dd, JuvNum[i]) = 0.0;
 //NOJUV						  out_SSB(dd, AduNum[i]) = SpawnBio[i];
@@ -431,11 +434,17 @@ int y, m, dd;
 // package.
 // [[Rcpp::export]] 
 List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, 
-                  int y, int m, double tt){
+                  int inyear, int m, double tt){
 
 int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
-
+   
+   //Rcout << inyear <<" "<< m << std::endl;
+   if (inyear<1){stop("Derivative Year can't be less than 1");}
+   
 // forcing time index (in months)
+   // KYA 11/1/17 - added offset to deal with 0 vs 1 indexing in forcing files
+   // (matters when trying to line up with "acutal" years)
+   const int y  = inyear - 1;
    const int dd = y*STEPS_PER_YEAR+m;
 
 // Base model size - number of groups and number of links (flows) by type
