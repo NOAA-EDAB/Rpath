@@ -4,7 +4,7 @@
 \alias{rsim.scenario}
 \title{Rsim modual of Rpath}
 \usage{
-rsim.scenario(Rpath, Rpath.params, years = 100)
+rsim.scenario(Rpath, Rpath.params, years = 1:100)
 }
 \arguments{
 \item{Rpath}{R object containing a balanced Rpath model.}
