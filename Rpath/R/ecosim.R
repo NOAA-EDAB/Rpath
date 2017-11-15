@@ -98,7 +98,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   #if(!is.null(Rpath.scenario$fitting$years)){
   #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_CC[,1]))
     # put years in row names
-     ys <- min(rownames(Rpath.scenario$fishing$CATCH))
+     ys <- min(as.numeric(rownames(Rpath.scenario$fishing$CATCH)))
      ylist <- seq(ys,length.out=length(rout$annual_CC[,1]))
       rownames(rout$annual_CC) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_BB) <-    ylist #Rpath.scenario$fitting$years
