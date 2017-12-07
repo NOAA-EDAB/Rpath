@@ -592,6 +592,9 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    Q1[0] = 1.0; // get rid of NaN - moved from KYA's code 6/12/17
 //     // Include any Forcing by prey   
 //     Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
+  //int TST = 82;
+  //Rprintf("%f %f %f %f %f %f %f %f\n", VV[TST],Q1[TST],PDY[TST],PYY[TST],HandleSwitch[TST],Sself[TST],PdSuite[TST]);
+  //Rprintf("%f %f %f %f %f %f %f %f\n", VV[81],VV[82],VV[83],VV[84], Q1[81],Q1[82],Q1[83],Q1[84]);
 
 // No vector solution here as we need to sum by both links and species 
    for (links=1; links<=NumPredPreyLinks; links++){
