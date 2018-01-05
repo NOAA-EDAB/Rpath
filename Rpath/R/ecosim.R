@@ -109,10 +109,11 @@ rsim.fishing <- function(params, years = 100){
 rsim.forcing <- function(params, years = 100){
 # Monthly index defaulting to to 1.0, for environmental forcing list
   MF <- (matrix(1.0, years * 12 + 1, params$NUM_GROUPS + 1))      
-  forcing <- list(byprey   = MF, 
-                  bymort   = MF, 
-                  byrecs   = MF, 
-                  bysearch = MF)
+  forcing <- list(byprey    = MF, 
+                  bymort    = MF, 
+                  byrecs    = MF, 
+                  bysearch  = MF,
+                  bymigrate = MF * 0)
   
   class(forcing) <- "Rsim.forcing"
   return (forcing)

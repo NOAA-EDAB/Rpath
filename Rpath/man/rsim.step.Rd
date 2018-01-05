@@ -24,6 +24,7 @@ Runs rsim.run at intervals and combines the run to one output
 }
 \seealso{
 Other Rpath functions: \code{\link{adjust.fishing}},
+  \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},

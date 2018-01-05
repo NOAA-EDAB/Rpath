@@ -23,6 +23,7 @@ expected.
 }
 \seealso{
 Other Rpath functions: \code{\link{adjust.fishing}},
+  \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{create.rpath.params}},
   \code{\link{extract.node}}, \code{\link{frate.table}},
