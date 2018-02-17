@@ -55,10 +55,12 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   x.count.all <- c()
   for(i in 1:max(pointmap[, TLlevel])){
     x.count <- pointmap[TLlevel == i, list(Group)]
-    for(j in 1:nrow(x.count)){
-      x.count[j, x.count := j]  
+    if(length(x.count[, Group] > 0)){
+      for(j in 1:nrow(x.count)){
+        x.count[j, x.count := j] 
+      }
+      x.count.all <- rbind(x.count.all, x.count)
     }
-    x.count.all <- rbind(x.count.all, x.count)
   }
   pointmap <- merge(pointmap, x.count.all, by = 'Group', all.x = T)
   pointmap[x.count == 1, x.pos := x.offset + rnorm(1, 0, 0.01)]
