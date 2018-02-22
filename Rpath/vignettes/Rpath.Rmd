@@ -128,7 +128,7 @@ REco.params$model[Group %in% c('Seals', 'Megabenthos'), EE := 0.8]
 REco.params$model[Group %in% c('Shellfish', 'Zooplankton'), ProdCons:= 0.25]
 REco.params$model[Group == 'Macrobenthos', ProdCons := 0.35]
 
-#Biomass accumulation and unassimilated production
+#Biomass accumulation and unassimilated consumption
 REco.params$model[, BioAcc  := c(rep(0, 22), rep(NA, 3))]
 REco.params$model[, Unassim := c(rep(0.2, 18), 0.4, rep(0, 3), rep(NA, 3))]
 
