@@ -41,8 +41,9 @@ BEGIN_RCPP
 END_RCPP
 }
 // deriv_vector
-List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, int y, int m, double tt);
-RcppExport SEXP _Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP ySEXP, SEXP mSEXP, SEXP ttSEXP) {
+List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, int inyear, int m, double tt);
+RcppExport SEXP Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP inyearSEXP, SEXP mSEXP, SEXP ttSEXP) {
+
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,10 +52,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type forcing(forcingSEXP);
     Rcpp::traits::input_parameter< List >::type fishing(fishingSEXP);
     Rcpp::traits::input_parameter< List >::type stanzas(stanzasSEXP);
-    Rcpp::traits::input_parameter< int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type inyear(inyearSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< double >::type tt(ttSEXP);
-    rcpp_result_gen = Rcpp::wrap(deriv_vector(params, state, forcing, fishing, stanzas, y, m, tt));
+    rcpp_result_gen = Rcpp::wrap(deriv_vector(params, state, forcing, fishing, stanzas, inyear, m, tt));
     return rcpp_result_gen;
 END_RCPP
 }
