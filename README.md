@@ -6,6 +6,11 @@ The initial files are the code sent by Kerim to Sean on March 31, 2014 (ecopath_
 Files have been renamed to drop the version number and take advantage of this VCS
 
 Beta version notes:
+v0.0.0.911 - ecosim scenario objects now parameterized with a vector of years for labeling, e.g. years=c(1970,2017), not a single number of years.
+- rsim.run will run for the years specified (e.g. years=c(2013,2014) will save outputs in those two year slots).  Haven't carried this change over to the multistep function.
+- labeling in the fishing/forcing matrices (columns labelled by species, rows labeled by years (for annual matrices, no labeling for monthly rows)
+- the addition of force_bybio (biomass forced to stay at input value)
+
 v0.0.0.906 - Added gear specific catch tracking and new extract.node function.
 
 v0.0.0.905 - Caught up with Kerim's edits.
