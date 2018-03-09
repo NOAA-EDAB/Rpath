@@ -10,7 +10,7 @@ Adams_run <- function(params, instate, forcing, fishing, stanzas, StartYear, End
 }
 
 deriv_vector <- function(params, state, forcing, fishing, stanzas, inyear, m, tt) {
-    .Call('Rpath_deriv_vector', PACKAGE = 'Rpath', params, state, forcing, fishing, stanzas, inyear, m, tt)
+    .Call('_Rpath_deriv_vector', PACKAGE = 'Rpath', params, state, forcing, fishing, stanzas, inyear, m, tt)
 }
 
 SplitSetPred <- function(stanzas, state) {

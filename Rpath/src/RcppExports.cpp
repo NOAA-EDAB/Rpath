@@ -42,8 +42,7 @@ END_RCPP
 }
 // deriv_vector
 List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, int inyear, int m, double tt);
-RcppExport SEXP Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP inyearSEXP, SEXP mSEXP, SEXP ttSEXP) {
-
+RcppExport SEXP _Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP inyearSEXP, SEXP mSEXP, SEXP ttSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
