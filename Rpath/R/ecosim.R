@@ -16,7 +16,7 @@
 #'@param Rpath R object containing a balanced Rpath model.
 #'@param Rpath.params R object containing the Rpath parameters.  This is generated
 #'  either by the create.rpath.params or read.rpath.params functions.
-#'@param years The length of the simulation.
+#'@param years A vector of each year of the simulation.
 #'
 #'@return Returns an Rsim.scenario object that can be supplied to the rsim.run function.
 #'@import data.table
