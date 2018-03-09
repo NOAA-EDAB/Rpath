@@ -5,7 +5,7 @@
 \title{Plot routine for Ecopath multistanzas}
 \usage{
 stanzaplot(Rpath.params, StanzaGroup, line.cols = c("black", "green", "blue",
-  "red"))
+  "red"), ...)
 }
 \arguments{
 \item{Rpath.params}{R object containing the Rpath parameters modified by the 

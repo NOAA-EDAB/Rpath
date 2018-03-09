@@ -9,7 +9,7 @@
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@export
-rsim.plot <- function(Rsim.output, spname, indplot = F){
+rsim.plot <- function(Rsim.output, spname, indplot = F, ...){
   opar <- par(no.readonly = T)
   if(indplot == F){
     biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
@@ -42,7 +42,7 @@ rsim.plot <- function(Rsim.output, spname, indplot = F){
   
   par(omd=c(0, 1-w, 0, 1))
   plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, xmax), 
-       axes = F, xlab = '', ylab = '', type = 'n')
+       axes = F, xlab = '', ylab = '', type = 'n', ...)
   axis(1)
   axis(2, las = T)
   box(lwd = 2)
