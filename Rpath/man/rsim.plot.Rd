@@ -4,7 +4,7 @@
 \alias{rsim.plot}
 \title{Plot routine for Ecosim runs}
 \usage{
-rsim.plot(Rsim.output, spname, indplot = F)
+rsim.plot(Rsim.output, spname, indplot = F, ...)
 }
 \arguments{
 \item{Rsim.output}{Rpath ecosim run created by the rsim.run() function.}
@@ -16,7 +16,7 @@ Creates a figure of relative biomass.
 Plots the relative biomass of each group from a run of ecosim.
 }
 \seealso{
-Other Rpath functions: \code{\link{adjust.fishing}},
+Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -30,3 +30,4 @@ Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+

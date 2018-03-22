@@ -537,7 +537,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    
 // Set effective biomass for pred/prey response
 // default is B/Bref
-   NumericVector preyYY = state_Ftime * state_BB/B_BaseRef;
+   NumericVector preyYY = state_Ftime * state_BB/B_BaseRef * force_byprey(dd,_);;
    NumericVector predYY = state_Ftime * state_BB/B_BaseRef * force_bysearch(dd,_);
 
 // Set functional response biomass for juvenile and adult groups (including foraging time) 
@@ -590,11 +590,6 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
            ( DD / ( DD-1.0 + vpow(Hself*PYY + (1.-Hself)*PySuite, COUPLED*HandleSwitch)) ) *
            ( VV / ( VV-1.0 +      Sself*PDY + (1.-Sself)*PdSuite) );
    Q1[0] = 1.0; // get rid of NaN - moved from KYA's code 6/12/17
-//     // Include any Forcing by prey   
-//     Q *= force_byprey(y * STEPS_PER_YEAR + m, prey); 
-  //int TST = 82;
-  //Rprintf("%f %f %f %f %f %f %f %f\n", VV[TST],Q1[TST],PDY[TST],PYY[TST],HandleSwitch[TST],Sself[TST],PdSuite[TST]);
-  //Rprintf("%f %f %f %f %f %f %f %f\n", VV[81],VV[82],VV[83],VV[84], Q1[81],Q1[82],Q1[83],Q1[84]);
 
 // No vector solution here as we need to sum by both links and species 
    for (links=1; links<=NumPredPreyLinks; links++){
