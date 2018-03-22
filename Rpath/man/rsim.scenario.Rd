@@ -12,7 +12,7 @@ rsim.scenario(Rpath, Rpath.params, years = 1:100)
 \item{Rpath.params}{R object containing the Rpath parameters.  This is generated
 either by the create.rpath.params or read.rpath.params functions.}
 
-\item{years}{The length of the simulation.}
+\item{years}{A vector of each year of the simulation.}
 }
 \value{
 Returns an Rsim.scenario object that can be supplied to the rsim.run function.

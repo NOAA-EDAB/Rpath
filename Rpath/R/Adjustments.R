@@ -68,10 +68,10 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, gear = NA,
   
   #Modify parameter
   if(parameter == 'EFFORT'){
-    Rsim.scenario$fishing$EFFORT[year + 1, gearnum + 1] <- value
+    Rsim.scenario$fishing$EFFORT[year, gearnum + 1] <- value
   }
   if(parameter %in% c('FRATE', 'CATCH')){
-    Rsim.scenario$fishing[[param.num]][year + 1, groupnum + 1] <- value
+    Rsim.scenario$fishing[[param.num]][year, groupnum + 1] <- value
   }
   return(Rsim.scenario)
 }
