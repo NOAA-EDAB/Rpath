@@ -20,7 +20,7 @@ Writes a .csv file with the basic parameters or mortalities from an Rpath object
 Outputs basic parameters or mortalities to a .csv file.
 }
 \seealso{
-Other Rpath functions: \code{\link{adjust.fishing}},
+Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -34,3 +34,4 @@ Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+
