@@ -5,7 +5,7 @@
 \title{Plot routine for Ecopath multistanzas}
 \usage{
 stanzaplot(Rpath.params, StanzaGroup, line.cols = c("black", "green", "blue",
-  "red"))
+  "red"), ...)
 }
 \arguments{
 \item{Rpath.params}{R object containing the Rpath parameters modified by the 
@@ -23,7 +23,7 @@ Creates a figure showing the break down of biomass and number per stanza.
 Plots the biomass composition of multistanza groups from an Rpath.stanzas object.
 }
 \seealso{
-Other Rpath functions: \code{\link{adjust.fishing}},
+Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -37,3 +37,4 @@ Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+

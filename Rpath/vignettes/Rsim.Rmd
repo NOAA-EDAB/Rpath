@@ -165,11 +165,11 @@ Running rsim, is a three part process.  First, the function `rsim.scenario` is r
 to convert rpath parameters to rates.  Within `rsim.scenario` are 5 functions that 
 initialize the basic and stanza parameters, creates perturbation matrices for fishing 
 and other forcing functions, and a list of initial states.  Arguments passed to the 
-`rsim.scenario` function are the Rpath object, the rpath parameter object, and the 
-length of the simulation.
+`rsim.scenario` function are the Rpath object, the rpath parameter object, and a vector 
+of years corresponding to the length of the simulation.
 
 ```{r rsim.scenario}
-REco.sim <- rsim.scenario(REco, REco.params, years = 100)
+REco.sim <- rsim.scenario(REco, REco.params, years = 1:100)
 ```
 
 The second part of rsim is to add forcing functions or change the fishing behavior.
@@ -191,7 +191,7 @@ Older versions of EwE use the Adams-Bashforth method while the latest version (6
 uses Runge-Kutta (The default method for Rpath).
 
 ```{r rsim.run}
-REco.run1 <- rsim.run(REco.sim, method = 'RK4', years = 100)
+REco.run1 <- rsim.run(REco.sim, method = 'RK4', years = 1:100)
 ```
 
 The output from `rsim.run` is another S3 object class called 'Rsim.output'.  Similar

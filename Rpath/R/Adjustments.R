@@ -68,10 +68,10 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, gear = NA,
   
   #Modify parameter
   if(parameter == 'EFFORT'){
-    Rsim.scenario$fishing$EFFORT[year + 1, gearnum + 1] <- value
+    Rsim.scenario$fishing$EFFORT[year, gearnum + 1] <- value
   }
   if(parameter %in% c('FRATE', 'CATCH')){
-    Rsim.scenario$fishing[[param.num]][year + 1, groupnum + 1] <- value
+    Rsim.scenario$fishing[[param.num]][year, groupnum + 1] <- value
   }
   return(Rsim.scenario)
 }
@@ -125,7 +125,50 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
   }
   return(Rsim.scenario)
 }
- 
+
+# KYA - Some "adjustment" functions for Rsim.  Used "set" instead of "adjust" as
+# that's more of a standard naming convention.  (In future make this a method
+# of objects?)
+###############################################################################
+#'@export  
+set.rsim.scene<-function(Rsim.scenario,params=NULL,start_state=NULL,forcing=NULL,fishing=NULL,stanzas=NULL){
+  rsim <- list()
+  class(rsim) <- 'Rsim.scenario'
+  attr(rsim, 'eco.name') <- attr(Rsim.scenario, 'eco.name')
+  # can add type checks later
+    if (!is.null(params))     {rsim$params      <- params      } else {rsim$params      <- Rsim.scenario$params      }
+    if (!is.null(start_state)){rsim$start_state <- start_state } else {rsim$start_state <- Rsim.scenario$start_state }
+    if (!is.null(forcing))    {rsim$forcing     <- forcing     } else {rsim$forcing     <- Rsim.scenario$forcing     }
+    if (!is.null(fishing))    {rsim$fishing     <- fishing     } else {rsim$fishing     <- Rsim.scenario$fishing     }
+    if (!is.null(stanzas))    {rsim$stanzas     <- stanzas     } else {rsim$stanzas     <- Rsim.scenario$stanzas     }
+  return(rsim)
+}
+
+#'@export  
+get.rsim.params<-function(Rsim.scenario){
+  return(Rsim.scenario$params)
+}
+
+#'@export  
+get.rsim.start_state<-function(Rsim.scenario){
+  return(Rsim.scenario$start_state)
+}
+
+#'@export  
+get.rsim.forcing<-function(Rsim.scenario){
+  return(Rsim.scenario$forcing)
+}
+
+#'@export  
+get.rsim.fishing<-function(Rsim.scenario){
+  return(Rsim.scenario$fishing)
+}
+
+#'@export  
+get.rsim.stanzas<-function(Rsim.scenario){
+  return(Rsim.scenario$stanzas)
+}
+
 
 #'Adjust Forcing Parameters
 #'
@@ -156,3 +199,7 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, time, value){
 
   return(Rsim.scenario)
 }
+
+
+
+
