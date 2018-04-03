@@ -52,10 +52,11 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
+  scene <- copy(Rpath.scenario)
 
   # Figure out starting and ending years for run
     if (length(years)<2){stop("Years should be a vector of year labels")}
-    sceneyears <- rownames(Rpath.scenario$fishing$FRATE)
+    sceneyears <- rownames(scene$fishing$FRATE)
     syear <- which(as.character(years[1])==sceneyears)
     eyear <- which(as.character(tail(years,1))==sceneyears)
 
@@ -63,24 +64,24 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
     if (length(eyear)!=1){stop("Ending year not found in scenario (or more than once).")}
     
   if(method == 'RK4'){
-    rout <- rk4_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
-                    Rpath.scenario$forcing, Rpath.scenario$fishing,
-                    Rpath.scenario$stanzas, syear, eyear)
+    rout <- rk4_run(scene$params,  scene$start_state, 
+                    scene$forcing, scene$fishing,
+                    scene$stanzas, syear, eyear)
   }
   if(method == 'AB'){
     #Run initial derivative
-    derv <- deriv_vector(Rpath.scenario$params, Rpath.scenario$start_state, 
-                         Rpath.scenario$forcing, Rpath.scenario$fishing, 
-                         Rpath.scenario$stanzas, syear, 0, 0)
+    derv <- deriv_vector(scene$params, scene$start_state, 
+                         scene$forcing, scene$fishing, 
+                         scene$stanzas, syear, 0, 0)
     #KYA added for first step bump correction 9/20/17
      
     #Run Adams Bashforth Alogrithm
-    rout <- Adams_run(Rpath.scenario$params,  Rpath.scenario$start_state, 
-                      Rpath.scenario$forcing, Rpath.scenario$fishing,
-                      Rpath.scenario$stanzas, syear, eyear, derv)
+    rout <- Adams_run(scene$params,  scene$start_state, 
+                      scene$forcing, scene$fishing,
+                      scene$stanzas, syear, eyear, derv)
   }
   # Nicely Name output vectors
-  sps <- Rpath.scenario$params$spname[1:(1+Rpath.scenario$params$NUM_BIO)]
+  sps <- scene$params$spname[1:(1+scene$params$NUM_BIO)]
   colnames(rout$out_BB)    <- sps
   colnames(rout$out_CC)    <- sps
   colnames(rout$annual_CC) <- sps
@@ -98,7 +99,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   #if(!is.null(Rpath.scenario$fitting$years)){
   #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_CC[,1]))
     # put years in row names
-     ys <- min(as.numeric(rownames(Rpath.scenario$fishing$CATCH)))
+     ys <- min(as.numeric(rownames(scene$fishing$CATCH)))
      ylist <- seq(ys,length.out=length(rout$annual_CC[,1]))
       rownames(rout$annual_CC) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_BB) <-    ylist #Rpath.scenario$fitting$years
@@ -106,20 +107,20 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
       rownames(rout$annual_Qlink) <- ylist #Rpath.scenario$fitting$years   
   #}
   
-  rout$pred <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyTo+1] 
-  rout$prey <- Rpath.scenario$params$spname[Rpath.scenario$params$PreyFrom+1] 
-  rout$Gear_CC_sp   <- Rpath.scenario$params$spname[Rpath.scenario$params$FishFrom+1] 
-  rout$Gear_CC_gear <- Rpath.scenario$params$spname[Rpath.scenario$params$FishThrough+1] 
-  rout$Gear_CC_disp <- ifelse(Rpath.scenario$params$FishTo == 0, 'Landing', 'Discard')
+  rout$pred <- scene$params$spname[scene$params$PreyTo+1] 
+  rout$prey <- scene$params$spname[scene$params$PreyFrom+1] 
+  rout$Gear_CC_sp   <- scene$params$spname[scene$params$FishFrom+1] 
+  rout$Gear_CC_gear <- scene$params$spname[scene$params$FishThrough+1] 
+  rout$Gear_CC_disp <- ifelse(scene$params$FishTo == 0, 'Landing', 'Discard')
   
-  rout$start_state       <- Rpath.scenario$start_state
-  rout$params$NUM_LIVING <- Rpath.scenario$params$NUM_LIVING
-  rout$params$NUM_DEAD   <- Rpath.scenario$params$NUM_DEAD
-  rout$params$NUM_GEARS  <- Rpath.scenario$params$NUM_GEARS
-  rout$params$spname     <- Rpath.scenario$params$spname
+  rout$start_state       <- scene$start_state
+  rout$params$NUM_LIVING <- scene$params$NUM_LIVING
+  rout$params$NUM_DEAD   <- scene$params$NUM_DEAD
+  rout$params$NUM_GEARS  <- scene$params$NUM_GEARS
+  rout$params$spname     <- scene$params$spname
   
   class(rout) <- 'Rsim.output'
-  attr(rout, 'eco.name') <- attr(Rpath.scenario, 'eco.name')
+  attr(rout, 'eco.name') <- attr(scene, 'eco.name')
   
   return(rout)
 }
@@ -194,12 +195,12 @@ rsim.mort <- function(rout,prey){
 #####################################################################################
 #'@export
 rsim.deriv <- function(Rpath.scenario, year=0, month=0, tstep=0){
+  scene <- copy(Rpath.scenario)
+  rout <- deriv_vector(scene$params,  scene$start_state, 
+                       scene$forcing, scene$fishing,
+                       scene$stanzas, year, month, tstep)
   
-  rout <- deriv_vector(Rpath.scenario$params,  Rpath.scenario$start_state, 
-                       Rpath.scenario$forcing, Rpath.scenario$fishing,
-                       Rpath.scenario$stanzas, year, month, tstep)
-  
-  rtab <- data.frame(Rpath.scenario$params$spname,rout$DerivT,rout$TotGain,rout$TotLoss, 
+  rtab <- data.frame(scene$params$spname,rout$DerivT,rout$TotGain,rout$TotLoss, 
                     rout$FoodGain, rout$DetritalGain, rout$FishingGain,      
                     rout$UnAssimLoss,rout$ActiveRespLoss,
                     rout$FoodLoss,rout$MzeroLoss,rout$FishingLoss,rout$DetritalLoss)
