@@ -227,7 +227,7 @@ rsim.deriv <- function(Rpath.scenario, year=0, month=0, tstep=0){
 #'@return Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 #'@export
 rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1, 
-                        scrambleselfwt = 1, handleselfwt = 1, 
+                        scrambleselfwt = 0, handleselfwt = 0, 
                         steps_yr = 12, steps_m = 1){
   
   nliving <- Rpath$NUM_LIVING

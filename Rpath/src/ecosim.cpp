@@ -587,8 +587,8 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 // Rcpp VECTOR VERSION
    NumericVector Q1 = 
              QQ * PDY * vpow(PYY, HandleSwitch * COUPLED) *
-           ( DD / ( DD-1.0 + vpow(Hself*PYY + (1.-Hself)*PySuite, COUPLED*HandleSwitch)) ) *
-           ( VV / ( VV-1.0 +      Sself*PDY + (1.-Sself)*PdSuite) );
+           ( DD / ( DD-1.0 + vpow((1.-Hself)*PYY + Hself*PySuite, COUPLED*HandleSwitch)) ) *
+           ( VV / ( VV-1.0 +      (1.-Sself)*PDY + Sself*PdSuite) );
    Q1[0] = 1.0; // get rid of NaN - moved from KYA's code 6/12/17
 
 // No vector solution here as we need to sum by both links and species 

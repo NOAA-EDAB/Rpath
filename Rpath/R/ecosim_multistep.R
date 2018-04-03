@@ -13,29 +13,31 @@
 #'
 #'@return Returns an Rsim.output object.
 #'@export
-rsim.step <- function(Rsim.scenario, Rsim.run, method = 'AB', start, end){
+rsim.step <- function(Rsim.scenario, Rsim.run, method = 'AB', step.end){
   full.run <- Rsim.run
+  last <- nrow(full.run$out_BB)
+  step.start <- last/12 + 1
   if(method == 'AB'){
     next.run <- Adams_run(Rsim.scenario$params, Rsim.run$end_state,
                           Rsim.scenario$forcing, Rsim.scenario$fishing,
-                          Rsim.scenario$stanzas, start - 1, end,
+                          Rsim.scenario$stanzas, step.start, step.end,
                           Rsim.run$dyt)
     }
   #Merge runs
-  first <- (start - 1) * 12 + 1
-  last  <- end * 12 + 1
-  full.run$out_BB <- rbind(full.run$out_BB, next.run$out_BB[(first + 1):last, ])
-  full.run$out_CC <- rbind(full.run$out_CC, next.run$out_CC[(first + 1):last, ])
+  start.month <- last + 1
+  end.month   <- step.end * 12
+  full.run$out_BB <- rbind(full.run$out_BB, next.run$out_BB[start.month:end.month, ])
+  full.run$out_CC <- rbind(full.run$out_CC, next.run$out_CC[start.month:end.month, ])
   full.run$out_Gear_CC <- rbind(full.run$out_Gear_CC, 
-                                next.run$out_Gear_CC[(first + 1):last, ])
-  full.run$annual_BB <- rbind(full.run$annual_BB[1:start - 1, ],
-                              next.run$annual_BB[start:end, ])
-  full.run$annual_CC <- rbind(full.run$annual_CC[1:start - 1, ],
-                              next.run$annual_CC[start:end, ])
-  full.run$annual_QB <- rbind(full.run$annual_QB[1:start - 1, ],
-                              next.run$annual_QB[start:end, ])
-  full.run$annual_Qlink <- rbind(full.run$annual_Qlink[1:start - 1, ],
-                                 next.run$annual_Qlink[start:end, ])
+                                next.run$out_Gear_CC[start.month:end.month, ])
+  full.run$annual_BB <- rbind(full.run$annual_BB,
+                              next.run$annual_BB[step.start:step.end, ])
+  full.run$annual_CC <- rbind(full.run$annual_CC,
+                              next.run$annual_CC[step.start:step.end, ])
+  full.run$annual_QB <- rbind(full.run$annual_QB,
+                              next.run$annual_QB[step.start:step.end, ])
+  full.run$annual_Qlink <- rbind(full.run$annual_Qlink,
+                                 next.run$annual_Qlink[step.start:step.end, ])
   full.run$end_state <- next.run$end_state
   
   return(full.run)
