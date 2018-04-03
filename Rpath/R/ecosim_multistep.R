@@ -6,15 +6,15 @@
 #'@family Rpath functions
 #'
 #'@param Rsim.scenario Rpath object created using rsim.scenario.
+#'@param Rsim.output Rpath ecosim run created by the rsim.run() function.
 #'@param method Which integration algorithim rsim.run will use (Currently only
 #'              supports 'AB')
-#'@param max.year maximum length of the simulation
-#'@param interval number of years inbetween simulations
+#'@param step.end The end year for the current interval
 #'
 #'@return Returns an Rsim.output object.
 #'@export
-rsim.step <- function(Rsim.scenario, Rsim.run, method = 'AB', step.end){
-  full.run <- Rsim.run
+rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB', step.end){
+  full.run <- Rsim.output
   last <- nrow(full.run$out_BB)
   step.start <- last/12 + 1
   if(method == 'AB'){

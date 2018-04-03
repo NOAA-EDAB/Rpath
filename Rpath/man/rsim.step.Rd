@@ -4,17 +4,17 @@
 \alias{rsim.step}
 \title{Initial function to step through ecosim}
 \usage{
-rsim.step(Rsim.scenario, Rsim.run, method = "AB", start, end)
+rsim.step(Rsim.scenario, Rsim.output, method = "AB", step.end)
 }
 \arguments{
 \item{Rsim.scenario}{Rpath object created using rsim.scenario.}
 
+\item{Rsim.output}{Rpath ecosim run created by the rsim.run() function.}
+
 \item{method}{Which integration algorithim rsim.run will use (Currently only
 supports 'AB')}
 
-\item{max.year}{maximum length of the simulation}
-
-\item{interval}{number of years inbetween simulations}
+\item{step.end}{The end year for the current interval}
 }
 \value{
 Returns an Rsim.output object.
@@ -23,7 +23,7 @@ Returns an Rsim.output object.
 Runs rsim.run at intervals and combines the run to one output
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -37,4 +37,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-
