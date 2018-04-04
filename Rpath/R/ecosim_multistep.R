@@ -14,14 +14,15 @@
 #'@return Returns an Rsim.output object.
 #'@export
 rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB', step.end){
-  full.run <- Rsim.output
+  scene    <- copy(Rsim.scenario)
+  full.run <- copy(Rsim.output)
   last <- nrow(full.run$out_BB)
   step.start <- last/12 + 1
   if(method == 'AB'){
-    next.run <- Adams_run(Rsim.scenario$params, Rsim.run$end_state,
-                          Rsim.scenario$forcing, Rsim.scenario$fishing,
-                          Rsim.scenario$stanzas, step.start, step.end,
-                          Rsim.run$dyt)
+    next.run <- Adams_run(scene$params, full.run$end_state,
+                          scene$forcing, scene$fishing,
+                          scene$stanzas, step.start, step.end,
+                          full.run$dyt)
     }
   #Merge runs
   start.month <- last + 1
