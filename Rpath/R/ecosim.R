@@ -52,7 +52,8 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
-  scene <- copy(Rpath.scenario)
+  #scene <- copy(Rpath.scenario) - need to figure out why this breaks
+  scene <- Rpath.scenario
 
   # Figure out starting and ending years for run
     if (length(years)<2){stop("Years should be a vector of year labels")}
