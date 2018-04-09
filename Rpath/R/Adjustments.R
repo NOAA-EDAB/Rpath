@@ -185,17 +185,21 @@ get.rsim.stanzas<-function(Rsim.scenario){
 #'@export 
 adjust.forcing <- function(Rsim.scenario, parameter, group, time, value){
   #Lookup group number
-  groupnum <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname == group)]
-  
-  #Lookup parameter number
-  if(parameter == 'byprey')    param.num <- 1
-  if(parameter == 'bymort')    param.num <- 2
-  if(parameter == 'byrecs')    param.num <- 3
-  if(parameter == 'bysearch')  param.num <- 4
-  if(parameter == 'bymigrate') param.num <- 5
-  
-  #Modify parameter
-  Rsim.scenario$forcing[[param.num]][time, groupnum + 1] <- value
+# KYA do we need to do numerical lookups can we do this by name in one line?
+
+  Rsim.scenario$forcing[[parameter]][time, group] <- value
+
+#  groupnum <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname == group)]
+#  
+#  #Lookup parameter number
+#  if(parameter == 'byprey')    param.num <- 1
+#  if(parameter == 'bymort')    param.num <- 2
+#  if(parameter == 'byrecs')    param.num <- 3
+#  if(parameter == 'bysearch')  param.num <- 4
+#  if(parameter == 'bymigrate') param.num <- 5
+#  
+#  #Modify parameter
+#  Rsim.scenario$forcing[[param.num]][time, groupnum + 1] <- value
 
   return(Rsim.scenario)
 }
