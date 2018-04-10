@@ -46,6 +46,8 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   
   class(rsim) <- 'Rsim.scenario'
   attr(rsim, 'eco.name') <- attr(Rpath, 'eco.name')
+  attr(rsim, 'Start year') <- years[1]
+  
   return(rsim)   
 }
 #####################################################################################
