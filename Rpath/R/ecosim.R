@@ -58,11 +58,12 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   scene <- Rpath.scenario
 
   # Figure out starting and ending years for run
-    if (length(years)<2){stop("Years should be a vector of year labels")}
-    sceneyears <- rownames(scene$fishing$FRATE)
-    syear <- which(as.character(years[1])==sceneyears)
-    eyear <- which(as.character(tail(years,1))==sceneyears)
-
+  # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
+    #if (length(years)<2){stop("Years should be a vector of year labels")}
+    scene.years <- row.names(Rpath.scenario$fishing$FRATE)
+    syear <- which(as.character(head(years,1))==scene.years)
+    eyear <- which(as.character(tail(years,1))==scene.years)
+    if (eyear<syear)     {stop("End year cannot be less than start year.")}
     if (length(syear)!=1){stop("Starting year not found in scenario (or more than once).")}
     if (length(eyear)!=1){stop("Ending year not found in scenario (or more than once).")}
     

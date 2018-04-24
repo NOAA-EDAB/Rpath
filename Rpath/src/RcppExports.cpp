@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // rk4_run
 List rk4_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear);
-RcppExport SEXP _Rpath_rk4_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+RcppExport SEXP Rpath_rk4_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,7 @@ END_RCPP
 }
 // Adams_run
 List Adams_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear, List InitDeriv);
-RcppExport SEXP _Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP, SEXP InitDerivSEXP) {
+RcppExport SEXP Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP, SEXP InitDerivSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ END_RCPP
 }
 // deriv_vector
 List deriv_vector(List params, List state, List forcing, List fishing, List stanzas, int inyear, int m, double tt);
-RcppExport SEXP _Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP inyearSEXP, SEXP mSEXP, SEXP ttSEXP) {
+RcppExport SEXP Rpath_deriv_vector(SEXP paramsSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP inyearSEXP, SEXP mSEXP, SEXP ttSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -60,7 +60,7 @@ END_RCPP
 }
 // SplitSetPred
 int SplitSetPred(List stanzas, List state);
-RcppExport SEXP _Rpath_SplitSetPred(SEXP stanzasSEXP, SEXP stateSEXP) {
+RcppExport SEXP Rpath_SplitSetPred(SEXP stanzasSEXP, SEXP stateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -72,7 +72,7 @@ END_RCPP
 }
 // SplitUpdate
 int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int mon);
-RcppExport SEXP _Rpath_SplitUpdate(SEXP stanzasSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP derivSEXP, SEXP yrSEXP, SEXP monSEXP) {
+RcppExport SEXP Rpath_SplitUpdate(SEXP stanzasSEXP, SEXP stateSEXP, SEXP forcingSEXP, SEXP derivSEXP, SEXP yrSEXP, SEXP monSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -85,18 +85,4 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(SplitUpdate(stanzas, state, forcing, deriv, yr, mon));
     return rcpp_result_gen;
 END_RCPP
-}
-
-static const R_CallMethodDef CallEntries[] = {
-    {"_Rpath_rk4_run", (DL_FUNC) &_Rpath_rk4_run, 7},
-    {"_Rpath_Adams_run", (DL_FUNC) &_Rpath_Adams_run, 8},
-    {"_Rpath_deriv_vector", (DL_FUNC) &_Rpath_deriv_vector, 8},
-    {"_Rpath_SplitSetPred", (DL_FUNC) &_Rpath_SplitSetPred, 2},
-    {"_Rpath_SplitUpdate", (DL_FUNC) &_Rpath_SplitUpdate, 6},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_Rpath(DllInfo *dll) {
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
 }
