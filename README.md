@@ -7,6 +7,8 @@ Files have been renamed to drop the version number and take advantage of this VC
 
 Beta version notes:
 
+v0.0.0.914 - Fixed bug with egg stanza calculation where the Wmat matrix was indexed wrong inthe calculation.
+
 v0.0.0.9013 - Fixed indexing issue with rsim.step and issue with rsim.run modifying initial rsim.scenario data table.
 
 v0.0.0.911 - ecosim scenario objects now parameterized with a vector of years for labeling, e.g. years=c(1970,2017), not a single number of years.
