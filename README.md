@@ -7,7 +7,9 @@ Files have been renamed to drop the version number and take advantage of this VC
 
 Beta version notes:
 
-v0.0.0.914 - Fixed bug with egg stanza calculation where the Wmat matrix was indexed wrong inthe calculation.
+v0.0.0.915 - Fixed bug with egg stanza calculation where the Wmat matrix was indexed wrong inthe calculation.
+
+v0.0.0.9014 - Updated adjustment functions.  Renamed parameter "year" to "sim.year".  Removed the "gear" parameter from adjust fishing as it is a group and there is never a group/fleet combo that needs to be specified.
 
 v0.0.0.9013 - Fixed indexing issue with rsim.step and issue with rsim.run modifying initial rsim.scenario data table.
 
