@@ -17,6 +17,9 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   scene    <- copy(Rsim.scenario)
   full.run <- copy(Rsim.output)
   
+  # KYA adds run date and some random salt to ensure uniquieness  
+    scene$rundate <- paste(Sys.time(),":salt:",runif(1))    
+  
   scene.years <- row.names(Rsim.scenario$fishing$FRATE)
   year.start  <- as.numeric(tail(row.names(Rsim.output$annual_BB),1)) + 1
   step.start  <- which(scene.years==year.start)
