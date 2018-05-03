@@ -1,7 +1,7 @@
 Package: Rpath
 Type: Package
 Title: R implementation of Ecopath with Ecosim
-Version: 0.0.0.914
+Version: 0.0.0.915
 Date: 2016-07-15
 Authors@R: c(
     person("Kerim", "Aydin",   email = "Kerim.Aydin@NOAA.gov",   role = "aut"),
