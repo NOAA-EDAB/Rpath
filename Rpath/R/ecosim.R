@@ -449,7 +449,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        }
        rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-       rstan$WWa[1:nrow(juvfile$StGroup[[isp]]), isp + 1]   <- juvfile$StGroup[[isp]]$WWa
+       rstan$WWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WWa
      }
      
      #Maturity
@@ -465,8 +465,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$baseEggsStanza <- c(0)
      for(isp in 1:rstan$Nsplit){
        #id which weight at age is higher than Wmat
-       rstan$baseEggsStanza[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp], 
-                                                 sum(NageS * (WageS - rstan$Wmat[isp]))]
+       rstan$baseEggsStanza[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp + 1], 
+                                                 sum(NageS * (WageS - rstan$Wmat[isp + 1]))]
      }
      rstan$EggsStanza <- rstan$baseEggsStanza
      
