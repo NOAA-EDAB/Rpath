@@ -54,8 +54,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
-  #scene <- copy(Rpath.scenario) - need to figure out why this breaks
-  scene <- Rpath.scenario
+  scene <- copy(Rpath.scenario) 
 
   # Figure out starting and ending years for run
   # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
@@ -459,12 +458,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      #Maturity
      MIN_REC_FACTOR     <- 6.906754779  #// This is ln(1/0.001 - 1) used to set min. logistic matuirty to 0.001
      rstan$Wmat     <- c(0, juvfile$stgroup$Wmat)
-     rstan$Wmat001  <- c(0, juvfile$stgroup$Wmat001)
-     rstan$Wmat50   <- c(0, juvfile$stgroup$Wmat50)
-     rstan$Amat001  <- c(0, juvfile$stgroup$Amat001)
-     rstan$Amat50   <- c(0, juvfile$stgroup$Amat50)
-     rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
-     rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
+     #rstan$Wmat001  <- c(0, juvfile$stgroup$Wmat001)
+     #rstan$Wmat50   <- c(0, juvfile$stgroup$Wmat50)
+     #rstan$Amat001  <- c(0, juvfile$stgroup$Amat001)
+     #rstan$Amat50   <- c(0, juvfile$stgroup$Amat50)
+     #rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
+     #rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
      rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
      rstan$recruits <- c(0, juvfile$stgroup$r)
      rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
@@ -480,17 +479,17 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        #id which weight at age is higher than Wmat
        #rstan$baseEggsStanza[isp + 1]
        # KYA 5/3/18 switchout
-       if ((is.na(rstan$Wmat[isp+1]))|(rstan$Wmat[isp+1]<0)){
-           eggs[isp + 1] <- 
-           juvfile$StGroup[[isp]][(WageS>rstan$Wmat001[isp+1])&(age>rstan$Amat001[isp+1]),
-           sum(WageS*NageS / (1. + exp( -((WageS - rstan$Wmat50[isp+1]) / rstan$WmatSpread[isp+1])   
-                                        -((age   - rstan$Amat50[isp+1]) / rstan$AmatSpread[isp+1]) ))) ]
-           rstan$Wmat[isp+1] <- -1.0
-       }
-       else{
+       #if ((is.na(rstan$Wmat[isp+1]))|(rstan$Wmat[isp+1]<0)){
+       #     eggs[isp + 1] <- 
+       #    juvfile$StGroup[[isp]][(WageS>rstan$Wmat001[isp+1])&(age>rstan$Amat001[isp+1]),
+       #    sum(WageS*NageS / (1. + exp( -((WageS - rstan$Wmat50[isp+1]) / rstan$WmatSpread[isp+1])   
+       #                                  -((age   - rstan$Amat50[isp+1]) / rstan$AmatSpread[isp+1]) ))) ]
+       #     rstan$Wmat[isp+1] <- -1.0
+       #}
+       #else{
           eggs[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp+1], 
                                                    sum(NageS * (WageS - rstan$Wmat[isp+1]))]
-       }
+       #}
      }
      #rstan$EggsStanza <- rstan$baseEggsStanza
      
@@ -544,12 +543,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$WWa            <- matrix(rep(0, 4), 2, 2)
      rstan$stanzaPred     <- c(0, 0)
      rstan$Wmat           <- c(0, 0)
-     rstan$Wmat001        <- c(0, 0)
-     rstan$Wmat50         <- c(0, 0)
-     rstan$Amat001        <- c(0, 0)
-     rstan$Amat50         <- c(0, 0)
-     rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
-     rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
+     #rstan$Wmat001        <- c(0, 0)
+     #rstan$Wmat50         <- c(0, 0)
+     #rstan$Amat001        <- c(0, 0)
+     #rstan$Amat50         <- c(0, 0)
+     #rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
+     #rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
      rstan$RecPower       <- c(0, 0)
      rstan$recruits       <- c(0, 0)
      rstan$VBGFd          <- c(0, 0)

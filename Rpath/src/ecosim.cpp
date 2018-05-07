@@ -837,12 +837,12 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
   const NumericVector Nstanzas       = as<NumericVector>(stanzas["Nstanzas"]);
   const NumericVector vBM            = as<NumericVector>(stanzas["vBM"]);
   const NumericVector Wmat           = as<NumericVector>(stanzas["Wmat"]);
-  const NumericVector Wmat001        = as<NumericVector>(stanzas["Wmat001"]);  
-  const NumericVector Wmat50         = as<NumericVector>(stanzas["Wmat50"]);  
-  const NumericVector WmatSpread     = as<NumericVector>(stanzas["WmatSpread"]);  
-  const NumericVector Amat001        = as<NumericVector>(stanzas["Amat001"]);  
-  const NumericVector Amat50         = as<NumericVector>(stanzas["Amat50"]);  
-  const NumericVector AmatSpread     = as<NumericVector>(stanzas["AmatSpread"]);  
+  //const NumericVector Wmat001        = as<NumericVector>(stanzas["Wmat001"]);  
+  //const NumericVector Wmat50         = as<NumericVector>(stanzas["Wmat50"]);  
+  //const NumericVector WmatSpread     = as<NumericVector>(stanzas["WmatSpread"]);  
+  //const NumericVector Amat001        = as<NumericVector>(stanzas["Amat001"]);  
+  //const NumericVector Amat50         = as<NumericVector>(stanzas["Amat50"]);  
+  //const NumericVector AmatSpread     = as<NumericVector>(stanzas["AmatSpread"]);  
   const NumericVector baseEggsStanza = as<NumericVector>(stanzas["baseEggsStanza"]);
   const NumericVector RscaleSplit    = as<NumericVector>(stanzas["RscaleSplit"]);
   const NumericVector RzeroS         = as<NumericVector>(stanzas["RzeroS"]);
@@ -882,18 +882,19 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
       for(ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         NageS(ia, isp) = NageS(ia, isp) * Su;
         WageS(ia, isp) = vBM[isp] * WageS(ia, isp) + Gf * SplitAlpha(ia, isp);
-        if(Wmat[isp]<0.0){
-          if ((WageS(ia, isp)>Wmat001[isp])&&(ia>Amat001[isp])){
-            SpawnBio[isp] += NageS(ia, isp) * WageS(ia, isp)/(1. + exp( 
-                           -((WageS(ia, isp) - Wmat50[isp]) / WmatSpread[isp])   
-                           -((ia             - Amat50[isp]) / AmatSpread[isp]) ));                   
-          }
-        }
-        else{
+      // KYA 5/7/18 - started to add alternate maturity method, commented out for now
+        //if(Wmat[isp]<0.0){
+        //  if ((WageS(ia, isp)>Wmat001[isp])&&(ia>Amat001[isp])){
+        //    SpawnBio[isp] += NageS(ia, isp) * WageS(ia, isp)/(1. + exp( 
+        //                   -((WageS(ia, isp) - Wmat50[isp]) / WmatSpread[isp])   
+        //                   -((ia             - Amat50[isp]) / AmatSpread[isp]) ));                   
+        //  }
+        //}
+        //else{
           if(WageS(ia, isp) > Wmat[isp]){
             SpawnBio[isp] += NageS(ia, isp) * (WageS(ia, isp) - Wmat[isp]);
           };
-        }
+        //}
       }
     }
     EggsStanza[isp] = SpawnBio[isp] * SpawnEnergy[isp] * SpawnX[isp] /
