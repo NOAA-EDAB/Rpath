@@ -452,7 +452,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        }
        rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-       rstan$WWa[1:nrow(juvfile$StGroup[[isp]]), isp + 1]   <- juvfile$StGroup[[isp]]$WWa
+       rstan$WWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WWa
      }
      
      #Maturity
