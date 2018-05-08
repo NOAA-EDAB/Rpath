@@ -54,8 +54,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 # Runs Ecosim
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
-  #scene <- copy(Rpath.scenario) - need to figure out why this breaks
-  scene <- Rpath.scenario
+  scene <- copy(Rpath.scenario) 
 
   # Figure out starting and ending years for run
   # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
@@ -66,6 +65,9 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
     if (eyear<syear)     {stop("End year cannot be less than start year.")}
     if (length(syear)!=1){stop("Starting year not found in scenario (or more than once).")}
     if (length(eyear)!=1){stop("Ending year not found in scenario (or more than once).")}
+  
+  # KYA adds run date and some random salt to ensure uniquieness  
+    scene$rundate <- paste(Sys.time(),":salt:",runif(1))    
     
   if(method == 'RK4'){
     rout <- rk4_run(scene$params,  scene$start_state, 
@@ -436,7 +438,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$WageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      rstan$NageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      rstan$WWa         <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
-     rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
+     
+     sPred <- rep(0, params$NUM_GROUPS + 1) #rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
      
      for(isp in 1:rstan$Nsplit){
        for(ist in 1:rstan$Nstanzas[isp + 1]){
@@ -453,7 +456,14 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      }
      
      #Maturity
+     MIN_REC_FACTOR     <- 6.906754779  #// This is ln(1/0.001 - 1) used to set min. logistic matuirty to 0.001
      rstan$Wmat     <- c(0, juvfile$stgroup$Wmat)
+     #rstan$Wmat001  <- c(0, juvfile$stgroup$Wmat001)
+     #rstan$Wmat50   <- c(0, juvfile$stgroup$Wmat50)
+     #rstan$Amat001  <- c(0, juvfile$stgroup$Amat001)
+     #rstan$Amat50   <- c(0, juvfile$stgroup$Amat50)
+     #rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
+     #rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
      rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
      rstan$recruits <- c(0, juvfile$stgroup$r)
      rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
@@ -462,13 +472,26 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      #Energy required to grow a unit in weight(scaled to Winf = 1)
      rstan$vBM <- c(0, (1 - 3 * juvfile$stgroups$VBGF_Ksp / 12))
      
-     rstan$baseEggsStanza <- c(0)
+     # Spawning Biomass and Eggs
+     
+     eggs <- c(0) #rstan$baseEggsStanza <- c(0)
      for(isp in 1:rstan$Nsplit){
        #id which weight at age is higher than Wmat
-       rstan$baseEggsStanza[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp + 1], 
-                                                 sum(NageS * (WageS - rstan$Wmat[isp + 1]))]
+       #rstan$baseEggsStanza[isp + 1]
+       # KYA 5/3/18 switchout
+       #if ((is.na(rstan$Wmat[isp+1]))|(rstan$Wmat[isp+1]<0)){
+       #     eggs[isp + 1] <- 
+       #    juvfile$StGroup[[isp]][(WageS>rstan$Wmat001[isp+1])&(age>rstan$Amat001[isp+1]),
+       #    sum(WageS*NageS / (1. + exp( -((WageS - rstan$Wmat50[isp+1]) / rstan$WmatSpread[isp+1])   
+       #                                  -((age   - rstan$Amat50[isp+1]) / rstan$AmatSpread[isp+1]) ))) ]
+       #     rstan$Wmat[isp+1] <- -1.0
+       #}
+       #else{
+          eggs[isp + 1] <- juvfile$StGroup[[isp]][WageS > rstan$Wmat[isp+1], 
+                                                   sum(NageS * (WageS - rstan$Wmat[isp+1]))]
+       #}
      }
-     rstan$EggsStanza <- rstan$baseEggsStanza
+     #rstan$EggsStanza <- rstan$baseEggsStanza
      
      #initialize splitalpha growth coefficients using pred information and
      rstan$SplitAlpha <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
@@ -484,7 +507,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
            rstan$vBM[isp + 1] * juvfile$StGroup[[isp]][, WageS]) * pred / StartEatenBy
          rstan$SplitAlpha[(first + 1):(last + 1), isp + 1] <- SplitAlpha[(first + 1):
                                                                        (last + 1)]
-         rstan$stanzaPred[ieco + 1] <- pred
+         sPred[ieco + 1] <- pred
        }
        #Carry over final split alpha to plus group
        rstan$SplitAlpha[rstan$Age2[isp + 1, rstan$Nstanzas[isp + 1] + 1] + 1, isp + 1] <- 
@@ -496,10 +519,13 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      #1.00001 or so is minimum
      rstan$SpawnX         <- c(0, rep(10000, rstan$Nsplit))
      rstan$SpawnEnergy    <- c(0, rep(1, rstan$Nsplit))
-     rstan$SpawnBio       <- rstan$EggsStanza
-     rstan$baseSpawnBio   <- rstan$EggsStanza
+     eggs1<-eggs+1; rstan$baseEggsStanza <- eggs1-1
+     eggs1<-eggs+1; rstan$EggsStanza     <- eggs1-1
+     eggs1<-eggs+1; rstan$SpawnBio       <- eggs1-1
+     eggs1<-eggs+1; rstan$baseSpawnBio   <- eggs1-1
      rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
-     rstan$stanzaBasePred <- rstan$stanzaPred
+     sPred1<-sPred+1; rstan$stanzaPred     <- sPred1-1
+     sPred1<-sPred+1; rstan$stanzaBasePred <- sPred1-1
      
     # SplitSetPred(rstan, state)
    }
@@ -517,6 +543,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$WWa            <- matrix(rep(0, 4), 2, 2)
      rstan$stanzaPred     <- c(0, 0)
      rstan$Wmat           <- c(0, 0)
+     #rstan$Wmat001        <- c(0, 0)
+     #rstan$Wmat50         <- c(0, 0)
+     #rstan$Amat001        <- c(0, 0)
+     #rstan$Amat50         <- c(0, 0)
+     #rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
+     #rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
      rstan$RecPower       <- c(0, 0)
      rstan$recruits       <- c(0, 0)
      rstan$VBGFd          <- c(0, 0)
