@@ -229,24 +229,30 @@ check.rpath.params <- function(Rpath.params){
     w <- w + 1
   }
   
-  #Check that types 0 and 1 have a PB
+  #Check that types 0 and 1 have a PB unless QB and ProdCons are entered
   if(length(Rpath.params$model[Type < 2 & is.na(PB), Group]) > 0){
-    warning(paste(Rpath.params$model[Type < 2 & is.na(PB), Group],
-               'are missing a PB...set to >= 0 \n', sep = ' '))
+    no.pb <- Rpath.params$model[Type < 2 & is.na(PB), Group]
+    if(length(Rpath.params$model[Group %in% no.pb & (is.na(QB) | is.na(ProdCons)), Group]) > 0){
+      warning(paste(Rpath.params$model[Group %in% no.pb & (is.na(QB) | is.na(ProdCons)), Group],
+               'are missing a PB without a QB and PQ...set to >= 0 \n', sep = ' '))
     w <- w + 1
-  }
+    }
+    }
   
-  #Check that consumers have a QB or ProdCons but not both
+  #Check that consumers have a QB or ProdCons but not both unless missing PB
   if(length(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type < 1, Group]) > 0){
     warning(paste(Rpath.params$model[is.na(QB) & is.na(ProdCons) & Type < 1, Group], 
                'are missing both QB and ProdCons...must enter one \n', sep = ' '))
     w <- w + 1
   }
   if(length(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group]) > 0){
-    warning(paste(Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group],
-               'have both QB and ProdCons...only one should be entered \n', 
-               sep = ' '))
-    w <- w + 1
+    both <- Rpath.params$model[!is.na(QB) & !is.na(ProdCons) & Type < 1, Group]
+    if(length(Rpath.params$model[Group %in% both & !is.na(PB), Group]) > 0){
+      warning(paste(Rpath.params$model[Group %in% both & !is.na(PB), Group],
+                    'have PB, QB, and ProdCons...only two should be entered \n', 
+                    sep = ' '))
+      w <- w + 1  
+    }
   }
   
   #Check that BioAcc / Unassim is NA for fleets and numeric for types < 3

@@ -56,11 +56,13 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   nodetrdiet <- diet[1:nliving, ]
   model[is.na(DetInput), DetInput := 0]
 
-  # fill in GE and QB from inputs
+  # fill in GE(PQ), QB, or PB from other inputs
   GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
-  QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE], model[, QB])
+  QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE],       model[, QB])
+  PB.1 <- ifelse(is.na(model[, PB]),       model[, ProdCons * QB], model[, PB])
   model[, QB := QB.1]
-
+  model[, PB := PB.1]
+  
   # define catch, discards, necessary sums
   catchmat    <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
   discardmat  <- model[, (10 + ndead + 1 + ngear):(10 + ndead + (2 * ngear)), with = F]
