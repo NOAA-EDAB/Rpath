@@ -51,7 +51,11 @@ frate.table <- function(Rsim.scenario){
 adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year, value){
   #Check that parameter and group exist
   if(!parameter %in% c('EFFORT', 'FRATE', 'CATCH')){stop("Fishing parameter not found")}
-  if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
+  
+  if(!all(group %in% Rsim.scenario$params$spname)){
+     stop("Groups not found:",group[!(group %in% Rsim.scenario$params$spname)])
+  }
+  #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
   #look-up what rows correspond to the year
   year.row <- which(rownames(Rsim.scenario$fishing[[parameter]]) %in% sim.year)
