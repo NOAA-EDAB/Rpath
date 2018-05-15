@@ -181,7 +181,10 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
   #Check that parameter and group exist
   if(!parameter %in% c('byprey', 'bymort', 'byrecs', 'bysearch', 'bymigrate', 
                        'bybio')){stop("Forcing parameter not found")}
-  if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
+  if(!all(group %in% Rsim.scenario$params$spname)){
+    stop("Groups not found:",group[!(group %in% Rsim.scenario$params$spname)])
+  }
+  #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
   #Forcing matrices are by month not year so need to convert year/month combo
   #unless bymonth is True
