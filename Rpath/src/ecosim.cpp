@@ -686,6 +686,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
              // KYA 10/6/17 Added productivity to BB limit for F>1 species (salmon inspired)
                 if (caught >= state_BB[sp] + NetProd[sp]){caught = (1.0 - EPSILON) * (state_BB[sp] + NetProd[sp]);}
+                if (caught<0){caught=0;}
              FishingLoss[sp] += caught;
              FishingThru[0]  += caught;
              FishingGain[0]  += caught;
