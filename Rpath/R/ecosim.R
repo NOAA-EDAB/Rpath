@@ -142,9 +142,13 @@ rsim.fishing <- function(params, years){
   YF <- (matrix(0.0, nyrs, params$NUM_BIO   + 1))
   #GF <- (matrix(1.0, nyrs, params$NUM_GEARS + 1))
   #if (length(years)>1){
-  #rownames(MF) <- years 
   rownames(YF) <- years
-  #rownames(GF) <- years
+  year.m <- c()
+  for(iyear in 1:nyrs){
+    iyear.m <- paste0(years[iyear], '.', 1:12)
+    year.m  <- c(year.m, iyear.m)
+  }
+  rownames(MF) <- year.m
   #}
   colnames(YF) <- params$spname[1:(params$NUM_BIO+1)]
   colnames(MF) <- c("Outside",params$spname[(params$NUM_BIO+2):(params$NUM_GROUPS+1)])
