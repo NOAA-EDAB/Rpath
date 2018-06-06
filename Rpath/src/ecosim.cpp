@@ -666,7 +666,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 //   
  double caught;   
    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
-      NumericVector EFFORT = (NumericVector)EffortMat(y,_);
+      NumericVector EFFORT = (NumericVector)EffortMat(dd,_);
       for (links=1; links<=NumFishingLinks; links++){
  				 prey = FishFrom[links];
  				 gr   = FishThrough[links];
