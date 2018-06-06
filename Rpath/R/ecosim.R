@@ -138,11 +138,11 @@ rsim.fishing <- function(params, years){
   nyrs <- length(years)
   #if (length(years)>1){nyrs <- length(years)} else {nyrs <- years}
   
-  MF <- (matrix(1.0, nyrs * 12, params$NUM_GROUPS + 1))
+  MF <- (matrix(1.0, nyrs * 12, params$NUM_GEARS + 1))
   YF <- (matrix(0.0, nyrs, params$NUM_BIO   + 1))
   #GF <- (matrix(1.0, nyrs, params$NUM_GEARS + 1))
   #if (length(years)>1){
-  rownames(MF) <- years 
+  #rownames(MF) <- years 
   rownames(YF) <- years
   #rownames(GF) <- years
   #}
