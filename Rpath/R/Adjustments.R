@@ -46,8 +46,6 @@ frate.table <- function(Rsim.scenario){
 #'@param sim.year Year of the simulation that should be modified.  Can be a range of years.
 #'@param sim.month Month of the year that should be modified.  If set to 0, all months of
 #'             the year are modified.#'@param value New value for the parameter.
-#'@param bymonth Boolean switch to use only the month parameter rather than the 
-#'               combination of year and month.  Months begin at 1.
 #'@return Returns an Rpath.sim object with the new fishing parameter.
 #'@export 
 adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1, 
@@ -177,8 +175,6 @@ get.rsim.stanzas<-function(Rsim.scenario){
 #'@param sim.year Year of the simulation that should be modified.  Can be a range of years.
 #'@param sim.month Month of the year that should be modified.  If set to 0, all months of
 #'             the year are modified.
-#'@param bymonth Boolean switch to use only the month parameter rather than the 
-#'               combination of year and month.  Months begin at 1.  
 #'@param value The new value for the parameter.
 #'@return Returns an Rsim.scenario object with the new parameter.
 #'@export 
@@ -193,20 +189,15 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
   #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
   #Forcing matrices are by month not year so need to convert year/month combo
-  #unless bymonth is True
-  if(bymonth == T){
-    time <- sim.month
-  } else {
-    start.year <- as.numeric(attr(Rsim.scenario, 'Start year'))
-    time <- (sim.year - start.year) * 12 + sim.month
-    if(length(time) == 1){
-      if(sim.month == 0) time <- (time + 1):(time + 12)
-    } else {
-      if(sim.month == 0) time <- (time[1] + 1):(time[length(sim.year)] + 12)
-    }
-  }
   
-  Rsim.scenario$forcing[[parameter]][time, group] <- value
+  #look-up what rows correspond to the year
+  #Regex used to account for year.month row names in Forcing Matrices
+  year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$forcing[[parameter]]))
+                    %in% sim.year)
+  
+  if(sim.month > 0) year.row <- year.row[1:12 %in% sim.month]
+  
+  Rsim.scenario$forcing[[parameter]][year.row, group] <- value
 
   return(Rsim.scenario)
 }
