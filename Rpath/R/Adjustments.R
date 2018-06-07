@@ -63,7 +63,13 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1,
   year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$fishing[[parameter]]))
                     %in% sim.year)
   
-  if(sim.month > 0) year.row <- year.row[1:12 %in% sim.month]
+  #Assuming if more than 1 month is provided than need to identify which rows
+  #correspond with the year month combo...also if month does not equal 0.
+  if(length(sim.month) > 1){
+    year.row <- year.row[1:12 %in% sim.month]
+  }else{
+    if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+  }
   Rsim.scenario$fishing[[parameter]][year.row, group] <- value
 
   return(Rsim.scenario)
@@ -195,7 +201,13 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
   year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$forcing[[parameter]]))
                     %in% sim.year)
   
-  if(sim.month > 0) year.row <- year.row[1:12 %in% sim.month]
+  #Assuming if more than 1 month is provided than need to identify which rows
+  #correspond with the year month combo...also if month does not equal 0.
+  if(length(sim.month) > 1){
+    year.row <- year.row[1:12 %in% sim.month]
+  }else{
+    if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+  }
   
   Rsim.scenario$forcing[[parameter]][year.row, group] <- value
 
