@@ -167,6 +167,12 @@ rsim.forcing <- function(params, years){
   
   nyrs <- length(years)
   MF <- (matrix(1.0, nyrs * 12, params$NUM_GROUPS + 1))
+  year.m <- c()
+  for(iyear in 1:nyrs){
+    iyear.m <- paste0(years[iyear], '.', 1:12)
+    year.m  <- c(year.m, iyear.m)
+  }
+  rownames(MF) <- year.m
   colnames(MF) <- params$spname
   forcing <- list(byprey    = MF, 
                   bymort    = MF, 
