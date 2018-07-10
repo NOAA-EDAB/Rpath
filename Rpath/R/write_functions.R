@@ -5,13 +5,19 @@
 #'@family Rpath functions
 #'
 #'@param x Rpath model created by the ecopath() function.
-#'@param file file name for resultant .csv file.  Be sure to include ".csv".
+#'@param file file name for resultant file.  Need to specify ".csv" or ".RData".
 #'@param morts Logical value whether to output basic parameters or mortalities.  
 #'
 #'@return Writes a .csv file with the basic parameters or mortalities from an Rpath object.
 #'@export
 #Write -- note, not a generic function
 write.Rpath <- function(x, file, morts = F, ...){
+  #Check extention for output type - if not supplied a .csv or .RData the output
+  #will be saved as a list object
+  ext <- 'list'
+  if(grepl('.csv', file) == T) ext <- 'csv'
+  if(grepl('.RData', file, ignore.case = T) == T) ext <- 'RData'
+  
   if(morts == F){
     removals <- rowSums(x$Catch) + rowSums(x$Discard)
     out <- data.frame(Group    = x$Group,
@@ -53,7 +59,9 @@ write.Rpath <- function(x, file, morts = F, ...){
              paste('M2.', x$Group[1:x$NUM_LIVING], sep = ''))
     out <- cbind(out, predM)
   }
-  write.csv(out, file = file)
+  if(ext == 'csv')   write.csv(out, file = file)
+  if(ext == 'RData') save(out, file = file)
+  if(ext == 'list')  return(out)
 }
 
 
