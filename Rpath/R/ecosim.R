@@ -34,6 +34,14 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   fishing     <- rsim.fishing(params, years)
   stanzas     <- rsim.stanzas(Rpath.params, start_state, params)
   
+  # Copy stanza base state to start_state
+  start_state$SpawnBio   <-stanzas$baseSpawnBio
+  start_state$StanzaPred <-stanzas$baseStanzaPred
+  start_state$EggsStanza <-stanzas$baseEggsStanza
+  start_state$NageS      <-stanzas$baseNageS
+  start_state$WageS      <-stanzas$baseWageS
+  start_state$WWa        <-stanzas$baseWWa
+    
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
   params$NoIntegrate[ieco + 1] <- -1 * ieco 
@@ -447,9 +455,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$EcopathCode <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$Age1        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
-     rstan$WageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
-     rstan$NageS       <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
-     rstan$WWa         <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$baseWageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$baseNageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$baseWWa     <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      
      sPred <- rep(0, params$NUM_GROUPS + 1) #rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
      
@@ -462,9 +470,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
          rstan$Age2[isp + 1, ist + 1] <- juvfile$stindiv[StGroupNum == isp & 
                                                    StanzaNum == ist, Last]
        }
-       rstan$WageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
-       rstan$NageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-       rstan$WWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WWa
+       rstan$baseWageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
+       rstan$baseNageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
+       rstan$baseWWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WWa
      }
      
      #Maturity
@@ -532,12 +540,12 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$SpawnX         <- c(0, rep(10000, rstan$Nsplit))
      rstan$SpawnEnergy    <- c(0, rep(1, rstan$Nsplit))
      eggs1<-eggs+1; rstan$baseEggsStanza <- eggs1-1
-     eggs1<-eggs+1; rstan$EggsStanza     <- eggs1-1
-     eggs1<-eggs+1; rstan$SpawnBio       <- eggs1-1
+     #eggs1<-eggs+1; rstan$EggsStanza     <- eggs1-1
+     #eggs1<-eggs+1; rstan$SpawnBio       <- eggs1-1
      eggs1<-eggs+1; rstan$baseSpawnBio   <- eggs1-1
      rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
-     sPred1<-sPred+1; rstan$stanzaPred     <- sPred1-1
-     sPred1<-sPred+1; rstan$stanzaBasePred <- sPred1-1
+     #sPred1<-sPred+1; rstan$stanzaPred     <- sPred1-1
+     sPred1<-sPred+1; rstan$baseStanzaPred <- sPred1-1
      
     # SplitSetPred(rstan, state)
    }
@@ -550,10 +558,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$EcopathCode    <- matrix(rep(0, 4), 2, 2)
      rstan$Age1           <- matrix(rep(0, 4), 2, 2)
      rstan$Age2           <- matrix(rep(0, 4), 2, 2)
-     rstan$WageS          <- matrix(rep(0, 4), 2, 2)
-     rstan$NageS          <- matrix(rep(0, 4), 2, 2)
-     rstan$WWa            <- matrix(rep(0, 4), 2, 2)
-     rstan$stanzaPred     <- c(0, 0)
+     rstan$baseWageS      <- matrix(rep(0, 4), 2, 2)
+     rstan$baseNageS      <- matrix(rep(0, 4), 2, 2)
+     rstan$baseWWa        <- matrix(rep(0, 4), 2, 2)
      rstan$Wmat           <- c(0, 0)
      #rstan$Wmat001        <- c(0, 0)
      #rstan$Wmat50         <- c(0, 0)
@@ -567,14 +574,14 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$RzeroS         <- c(0, 0)
      rstan$vBM            <- c(0, 0)
      rstan$baseEggsStanza <- c(0, 0)
-     rstan$EggsStanza     <- c(0, 0)
+     #rstan$EggsStanza     <- c(0, 0)
      rstan$SplitAlpha     <- matrix(rep(0, 4), 2, 2)
      rstan$SpawnX         <- c(0, 0)
      rstan$SpawnEnergy    <- c(0, 0)
-     rstan$SpawnBio       <- c(0, 0)
+     #rstan$SpawnBio       <- c(0, 0)
      rstan$baseSpawnBio   <- c(0, 0)
      rstan$RscaleSplit    <- c(0, 0)
-     rstan$stanzaBasePred <- c(0, 0)
+     rstan$baseStanzaPred <- c(0, 0)
      
    }
      

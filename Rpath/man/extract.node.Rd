@@ -18,7 +18,7 @@ Returns a list object with node specific data.
 Creates a list object with node specific data using Rsim.output object.
 }
 \seealso{
-Other Rpath functions: \code{\link{adjust.fishing}},
+Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -32,3 +32,4 @@ Other Rpath functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+
