@@ -58,19 +58,22 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1,
   }
   #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
-  #look-up what rows correspond to the year
-  #Regex used to account for year.month row names in Effort Matrix
-  year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$fishing[[parameter]]))
-                    %in% sim.year)
-  
-  #Assuming if more than 1 month is provided than need to identify which rows
-  #correspond with the year month combo...also if month does not equal 0.
-  if(length(sim.month) > 1){
-    year.row <- year.row[1:12 %in% sim.month]
-  }else{
-    if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+  #Loop over years if more than 1 sim.year provided
+  for(iyear in seq_along(sim.year)){
+    #look-up what rows correspond to the year
+    #Regex used to account for year.month row names in Effort Matrix
+    year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$fishing[[parameter]]))
+                      == sim.year[iyear])
+    
+    #If more than 1 month is provided than need to identify which rows
+    #correspond with the year month combo...also if month does not equal 0.
+    if(length(sim.month) > 1){
+      year.row <- year.row[1:12 %in% sim.month]
+    }else{
+      if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+    }
+    Rsim.scenario$fishing[[parameter]][year.row, group] <- value[iyear]
   }
-  Rsim.scenario$fishing[[parameter]][year.row, group] <- value
 
   return(Rsim.scenario)
 }
@@ -196,21 +199,24 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
   
   #Forcing matrices are by month not year so need to convert year/month combo
   
-  #look-up what rows correspond to the year
-  #Regex used to account for year.month row names in Forcing Matrices
-  year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$forcing[[parameter]]))
-                    %in% sim.year)
-  
-  #Assuming if more than 1 month is provided than need to identify which rows
-  #correspond with the year month combo...also if month does not equal 0.
-  if(length(sim.month) > 1){
-    year.row <- year.row[1:12 %in% sim.month]
-  }else{
-    if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+  #Loop over years if more than 1 sim.year provided
+  for(iyear in seq_along(sim.year)){
+    #look-up what rows correspond to the year
+    #Regex used to account for year.month row names in Forcing Matrices
+    year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$forcing[[parameter]]))
+                      == sim.year[iyear])
+    
+    #If more than 1 month is provided than need to identify which rows
+    #correspond with the year month combo...also if month does not equal 0.
+    if(length(sim.month) > 1){
+      year.row <- year.row[1:12 %in% sim.month]
+    }else{
+      if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+    }
+    
+    Rsim.scenario$forcing[[parameter]][year.row, group] <- value[iyear]
   }
   
-  Rsim.scenario$forcing[[parameter]][year.row, group] <- value
-
   return(Rsim.scenario)
 }
 
