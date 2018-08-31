@@ -11,4 +11,4 @@ code
 *.xlsx
 *.docx
 Ecopath_dev
-Rpath.Rcheck
+Rpath.Rcheck*
