@@ -179,7 +179,7 @@ without having to know the specific group numbers.  For example, we can double t
 effort of the trawler fleet after 25 years using the `adjust.fishing` function.
 
 ```{r Change effort}
-REco.sim <- adjust.fishing(REco.sim, 'EFFORT', gear = 'Trawlers', year = 25:100, 
+REco.sim <- adjust.fishing(REco.sim, 'EFFORT', group = 'Trawlers', sim.year = 25:100, 
                            value = 2)
 ```
 
