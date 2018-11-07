@@ -36,7 +36,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
                          Group    = Rpath.obj$Group, 
                          type     = Rpath.obj$type, 
                          TL       = Rpath.obj$TL, 
-                         Biomass  = Rpath.obj$BB)
+                         Biomass  = Rpath.obj$Biomass)
   pointmap[TL < 2,               TLlevel := 1]
   pointmap[TL >= 2.0 & TL < 3.0, TLlevel := 2]
   pointmap[TL >= 3.0 & TL < 3.5, TLlevel := 3]

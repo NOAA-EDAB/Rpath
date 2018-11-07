@@ -23,7 +23,7 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
     out <- data.frame(Group    = x$Group,
                       type     = x$type,
                       TL       = x$TL,
-                      Biomass  = x$BB,
+                      Biomass  = x$Biomass,
                       PB       = x$PB,
                       QB       = x$QB,
                       EE       = x$EE,
@@ -41,12 +41,12 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
     out <- cbind(out, M0)
     #Calculate F mortality
     totcatch <- x$Catch + x$Discards
-    Fmort    <- as.data.frame(totcatch / x$BB[row(as.matrix(totcatch))])
+    Fmort    <- as.data.frame(totcatch / x$Biomass[row(as.matrix(totcatch))])
     setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
              paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
     out  <- cbind(out, Fmort[1:ngroup, ])
     #Calculate M2
-    bio  <- x$BB[1:x$NUM_LIVING]
+    bio  <- x$Biomass[1:x$NUM_LIVING]
     BQB  <- bio * x$QB[1:x$NUM_LIVING]
     diet <- as.data.frame(x$DC)
     nodetrdiet <- diet[1:x$NUM_LIVING, ]
