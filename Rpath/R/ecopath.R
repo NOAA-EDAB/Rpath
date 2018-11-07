@@ -105,17 +105,20 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   # set up and solve the system of equations for living group B or EE
   living  <- model[alive == 1, ]
   
-  #Set up right hand side Q
-  living[, Q := totcatch + BioAcc]
+  #Set up right hand side b
+  living[, Ex := totcatch + BioAcc]
   living[, BioQB := Biomass * QB]
   cons  <- as.matrix(nodetrdiet) * living$BioQB[col(as.matrix(nodetrdiet))]
-  living[, Q := Q + rowSums(cons, na.rm = T)] 
-  living[BEE == 1, Q := Q - (Biomass * PB * EE)]
+  living[, b := Ex + rowSums(cons, na.rm = T)] 
   
   #Set up A matrix
   living[noEE == 1, diag.a := Biomass * PB]
   living[noEE == 0, diag.a := PB * EE]
-  living[noEE == 0 & noB == 0, diag.a := 0]
+  
+  #Special case where B and EE are known then need to solve for BA
+  #living[BEE == 1, b := b - (Biomass * PB * EE)]
+  #living[BEE  == 1, diag.a := 0] #Need to work on this solution
+  
   A       <- matrix(0, nliving, nliving)
   diag(A) <- living[, diag.a]
   QBDC    <- as.matrix(nodetrdiet) * living$QB[col(as.matrix(nodetrdiet))]
@@ -128,28 +131,28 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   #Switch flag back
   #living[BEE == 1, noB := 0]
    
-  
-  
   # Generalized inverse does the actual solving
-  pars <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, Q]
+  #Invert A and multiple by b to get x (unknowns)
+  x <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, b]
   
-  living[, EEa := pars * noEE]
+  #Assign unknown values
+  living[, EEa := x * noEE]
   living[is.na(EE), EE := EEa]
-  living[, EEa := NULL]
-  living[, B := pars * noB]
-  living[!is.na(Biomass), B := Biomass]
+  
+  living[, B := x * noB]
+  living[is.na(Biomass), Biomass := B]
 
   # detritus EE calcs
   living[, M0 := PB * (1 - EE)]
   living[, QBloss := QB]
   living[is.na(QBloss), QBloss := 0]
-  loss <- c((living[, M0] * living[, B]) + (living[, B] * living[, QBloss] * 
-                                              living[, Unassim]),
+  loss <- c((living[, M0] * living[, Biomass]) + 
+              (living[, Biomass] * living[, QBloss] * living[, Unassim]),
             model[Type ==2, DetInput], 
             geardisc)
   detinputs  <- colSums(loss * detfate)
   detdiet    <- diet[(nliving + 1):(nliving + ndead), ]
-  BQB        <- living[, B * QB]
+  BQB        <- living[, Biomass * QB]
   detcons    <- as.matrix(detdiet) * BQB[col(as.matrix(detdiet))]
   detoutputs <- rowSums(detcons, na.rm = T)
   EE         <- c(living[, EE], as.vector(detoutputs / detinputs))
@@ -195,7 +198,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
 
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
-  Bplus  <- c(living[, B], DetB, rep(0.0, ngear))
+  Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
   
   PBplus <- model[, PB] 
   PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
@@ -221,10 +224,10 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
                    Removals = RemPlus)
 
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
-  gearF   <- as.matrix(totcatchmat) / living[, B][row(as.matrix(totcatchmat))]
+  gearF   <- as.matrix(totcatchmat) / living[, Biomass][row(as.matrix(totcatchmat))]
   #newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
   newcons <- as.matrix(nodetrdiet)  * BQB[col(as.matrix(nodetrdiet))]
-  predM   <- as.matrix(newcons) / living[, B][row(as.matrix(newcons))]
+  predM   <- as.matrix(newcons) / living[, Biomass][row(as.matrix(newcons))]
   predM   <- rbind(predM, detcons)
   morts   <- list(Group = model[Type < 3, Group], 
                   PB    = model[Type < 3, PB], 
@@ -254,25 +257,24 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   detfatem[is.na(detfatem)]           <- 0
 
   # list structure for sim inputs
-  path.model <- list(NUM_GROUPS = ngroups,     #define NUM_GROUPS 80  INCLUDES GEAR
-                NUM_LIVING = nliving,          #define NUM_LIVING 60
-                NUM_DEAD   = ndead,            #define NUM_DEAD 3
-                NUM_GEARS  = ngear,            #define NUM_GEARS 17
-                Group      = as.character(balanced$Group),
-                type       = model[, Type],
-                TL         = TL,
-                BB         = balanced$Biomass, #float path_BB[1..NUM_GROUPS] vector
-                PB         = balanced$PB,      #float path_PB[1..NUM_GROUPS] vector
-                QB         = balanced$QB,      #float path_QB[1..NUM_GROUPS] vector
-                EE         = balanced$EE,      #float path_EE[1..NUM_GROUPS] vector
-                BA         = model[, BioAcc],  #float path_BA[1..NUM_GROUPS] vector
-                GS         = model[, Unassim], #float path_GS[1..NUM_GROUPS] vector
-                GE         = balanced$GE,      #float path_GS[1..NUM_GROUPS] vector
-                DC         = dietm,            #float path_DC[1..NUM_GROUPS][1..NUM_GROUPS]  matrix in [prey][pred] order     NUM_LIVING?
-                DetFate    = detfatem,         #float path_DetFate[1..NUM_DEAD][1..NUM_GROUPS]  matrix in [det][groups] order
-                Catch      = catchmatm,        #float path_Catch[1..NUM_GEARS][1..NUM_GROUPS]  matrix
-                Discards   = discardmatm)      #float path_Discards[1..NUM_GEARS][1..NUM_GROUPS] matrix
-
+  path.model <- list(NUM_GROUPS = ngroups,
+                     NUM_LIVING = nliving,
+                     NUM_DEAD   = ndead,
+                     NUM_GEARS  = ngear,
+                     Group      = as.character(balanced$Group),
+                     type       = model[, Type],
+                     TL         = TL,
+                     Biomass    = balanced$Biomass,
+                     PB         = balanced$PB,
+                     QB         = balanced$QB,
+                     EE         = balanced$EE,
+                     BA         = model[, BioAcc],
+                     GS         = model[, Unassim],
+                     GE         = balanced$GE,
+                     DC         = dietm,
+                     DetFate    = detfatem,
+                     Catch      = catchmatm,
+                     Discards   = discardmatm)      
 
 #Define class of output
 class(path.model) <- 'Rpath'
