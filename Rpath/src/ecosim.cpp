@@ -45,18 +45,18 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    
 // Monthly output matrices                     
    NumericMatrix out_Biomass(EndYear*12, NUM_BIO+1);           
-   NumericMatrix out_CC(EndYear*12, NUM_BIO+1);          
+   NumericMatrix out_Catch(EndYear*12, NUM_BIO+1);          
    NumericMatrix out_SSB(EndYear*12, NUM_BIO+1);        
    NumericMatrix out_rec(EndYear*12, NUM_BIO+1);
-   NumericMatrix out_Gear_CC(EndYear*12, NumFishingLinks+1);
+   NumericMatrix out_Gear_Catch(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
-   NumericMatrix annual_CC(EndYear, NUM_BIO+1);
+   NumericMatrix annual_Catch(EndYear, NUM_BIO+1);
    NumericMatrix annual_Biomass(EndYear, NUM_BIO+1);
    NumericMatrix annual_QB(EndYear, NUM_BIO+1);
    NumericMatrix annual_Qlink(EndYear, NumPredPreyLinks+1);   
 // Accumulator for monthly catch values
-   NumericVector cum_CC(NUM_BIO+1);
-   NumericVector cum_Gear_CC(NumFishingLinks +1);
+   NumericVector cum_Catch(NUM_BIO+1);
+   NumericVector cum_Gear_Catch(NumFishingLinks +1);
 
 //SML
 // Update sums of split groups to total biomass for derivative calcs
@@ -79,8 +79,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    if (y<1){stop("RK Year can't be less than 1");}
    // Monthly loop                                     
       for (m = 0; m < STEPS_PER_YEAR; m++){
-         cum_CC = NumericVector(NUM_BIO+1);  // monthly catch to accumulate   
-         cum_Gear_CC = NumericVector(NumFishingLinks+1);
+         cum_Catch = NumericVector(NUM_BIO+1);  // monthly catch to accumulate   
+         cum_Gear_Catch = NumericVector(NumFishingLinks+1);
          dd = (y-1) * STEPS_PER_YEAR + m;  
          // Sub-monthly integration loop
             for (t=0; t< STEPS_PER_MONTH; t++){
@@ -122,13 +122,13 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
           // Accumulate Catch (small timestep, so linear average)
              NumericVector FishingLoss = as<NumericVector>(k1["FishingLoss"]);
-             cum_CC += (hh * FishingLoss/old_Biomass) * (new_Biomass+old_Biomass)/2.0;
+             cum_Catch += (hh * FishingLoss/old_Biomass) * (new_Biomass+old_Biomass)/2.0;
              
           // Track catch by gear
              NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
              NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
              NumericVector GearCatch = as<NumericVector>(k1["GearCatch"]);
-             cum_Gear_CC += (hh * GearCatch / old_Biomass_flink) * (new_Biomass_flink + old_Biomass_flink)/2.0;
+             cum_Gear_Catch += (hh * GearCatch / old_Biomass_flink) * (new_Biomass_flink + old_Biomass_flink)/2.0;
              
           // Set state to new values, including min/max traps
              state["Biomass"]    = pmax(pmin(new_Biomass, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
@@ -170,9 +170,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
          out_Biomass( dd, _) = cur_Biomass;
          out_SSB(dd, _) = cur_Biomass;
          out_rec(dd, _) = cur_Biomass;
-         out_CC( dd, _) = cum_CC;
-         out_Gear_CC(dd, _) = cum_Gear_CC;
-         annual_CC(y-1, _) = annual_CC(y-1, _) + cum_CC;
+         out_Catch( dd, _) = cum_Catch;
+         out_Gear_Catch(dd, _) = cum_Gear_Catch;
+         annual_Catch(y-1, _) = annual_Catch(y-1, _) + cum_Catch;
          if (m==MEASURE_MONTH){
            annual_Biomass(y-1, _)    = cur_Biomass;
            annual_QB(y-1, _)    = FoodGain/cur_Biomass;
@@ -186,14 +186,14 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    //out_Biomass( dd+1, _) = as<NumericVector>(state["Biomass"]);
    //out_SSB(dd+1, _) = as<NumericVector>(state["Biomass"]);
    //out_rec(dd+1, _) = as<NumericVector>(state["Biomass"]);
-   //out_CC( dd+1, _) = out_CC( dd, _); 
+   //out_Catch( dd+1, _) = out_Catch( dd, _); 
   
 // Create Rcpp list to output  
 List outdat = List::create(
   _["out_Biomass"]=out_Biomass,
-  _["out_CC"]=out_CC,
-  _["out_Gear_CC"]=out_Gear_CC,
-  _["annual_CC"]=annual_CC,
+  _["out_Catch"]=out_Catch,
+  _["out_Gear_Catch"]=out_Gear_Catch,
+  _["annual_Catch"]=annual_Catch,
   _["annual_Biomass"]=annual_Biomass,
   _["annual_QB"]=annual_QB,
   _["annual_Qlink"]=annual_Qlink,
@@ -247,12 +247,12 @@ int y, m, dd;
    
 // Monthly output matrices                     
    NumericMatrix out_Biomass( EndYear * 12, NUM_BIO + 1);           
-   NumericMatrix out_CC( EndYear * 12, NUM_BIO + 1);          
+   NumericMatrix out_Catch( EndYear * 12, NUM_BIO + 1);          
    NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
    NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
-   NumericMatrix out_Gear_CC(EndYear*12, NumFishingLinks+1);
+   NumericMatrix out_Gear_Catch(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
-   NumericMatrix annual_CC(EndYear, NUM_BIO+1);
+   NumericMatrix annual_Catch(EndYear, NUM_BIO+1);
    NumericMatrix annual_Biomass(EndYear, NUM_BIO+1);
    NumericMatrix annual_QB(EndYear, NUM_BIO+1);
    NumericMatrix annual_Qlink(EndYear, NumPredPreyLinks+1); 
@@ -319,17 +319,17 @@ int y, m, dd;
         
      // Calculate catch assuming fixed Frate and exponential biomass change.
      // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
-        NumericVector new_CC = (DELTA_T * FishingLoss / old_Biomass) * 
+        NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
                                (new_Biomass + old_Biomass) / 2.0;
         
         // Track catch by gear
         NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
         NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
         NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
-        NumericVector new_Gear_CC = (DELTA_T * GearCatch / old_Biomass_flink) * 
+        NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
                                     (new_Biomass_flink + old_Biomass_flink)/2.0;
         
-        // NumericVector new_CC = 
+        // NumericVector new_Catch = 
         //               ifelse( new_Biomass==old_Biomass,
         //                 FishingLoss*DELTA_T,
         //                 (FishingLoss*DELTA_T/old_Biomass) *
@@ -381,9 +381,9 @@ int y, m, dd;
         out_Biomass( dd, _) = old_Biomass;
         out_SSB(dd, _) = old_Biomass;
         out_rec(dd, _) = old_Biomass;
-        out_CC( dd, _) = new_CC;
-        out_Gear_CC(dd, _) = new_Gear_CC;
-        annual_CC(y-1, _) = annual_CC(y-1, _) + new_CC;
+        out_Catch( dd, _) = new_Catch;
+        out_Gear_Catch(dd, _) = new_Gear_Catch;
+        annual_Catch(y-1, _) = annual_Catch(y-1, _) + new_Catch;
         if (m==MEASURE_MONTH){
           annual_Biomass(y-1, _)    = old_Biomass;
           annual_QB(y-1, _)    = FoodGain/old_Biomass;
@@ -403,8 +403,8 @@ int y, m, dd;
    //out_Biomass( dd+1, _) = as<NumericVector>(state["Biomass"]);
    //out_SSB(dd+1, _) = as<NumericVector>(state["Biomass"]);
    //out_rec(dd+1, _) = as<NumericVector>(state["Biomass"]);
-   //out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
-   //out_Gear_CC(dd+1, _) = out_Gear_CC(dd, _);        
+   //out_Catch( dd+1, _) = out_Catch( dd, _); // the "next" time interval
+   //out_Gear_Catch(dd+1, _) = out_Gear_Catch(dd, _);        
 //NOJUV         for (i = 1; i <= juv_N; i++){
 //NOJUV              out_SSB(dd, JuvNum[i]) = 0.0;
 //NOJUV						  out_SSB(dd, AduNum[i]) = SpawnBio[i];
@@ -414,9 +414,9 @@ int y, m, dd;
 // Create Rcpp list to output  
    List outdat = List::create(
      _["out_Biomass"]=out_Biomass,
-     _["out_CC"]=out_CC,
-     _["out_Gear_CC"]=out_Gear_CC,
-     _["annual_CC"]=annual_CC,
+     _["out_Catch"]=out_Catch,
+     _["out_Gear_Catch"]=out_Gear_Catch,
+     _["annual_Catch"]=annual_Catch,
      _["annual_Biomass"]=annual_Biomass,
      _["annual_QB"]=annual_QB,
      _["annual_Qlink"]=annual_Qlink,     

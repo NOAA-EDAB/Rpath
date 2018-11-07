@@ -97,25 +97,25 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   # Nicely Name output vectors
   sps <- scene$params$spname[1:(1+scene$params$NUM_BIO)]
   colnames(rout$out_Biomass)    <- sps
-  colnames(rout$out_CC)    <- sps
-  colnames(rout$annual_CC) <- sps
+  colnames(rout$out_Catch)    <- sps
+  colnames(rout$annual_Catch) <- sps
   colnames(rout$annual_Biomass) <- sps
   colnames(rout$annual_QB) <- sps
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
 
   # drop the last row (should be always 0; negative index is entry to drop)
-    #lastone <- length(rout$annual_CC[,1])
-    #rout$annual_CC <-    rout$annual_CC[-lastone,]
+    #lastone <- length(rout$annual_Catch[,1])
+    #rout$annual_Catch <-    rout$annual_Catch[-lastone,]
     #rout$annual_Biomass <-    rout$annual_Biomass[-lastone,]
     #rout$annual_QB <-    rout$annual_QB[-lastone,]
     #rout$annual_Qlink <- rout$annual_Qlink[-lastone,]  
   
   #if(!is.null(Rpath.scenario$fitting$years)){
-  #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_CC[,1]))
+  #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_Catch[,1]))
     # put years in row names
      ys <- min(as.numeric(rownames(scene$fishing$CATCH)))
-     ylist <- seq(ys,length.out=length(rout$annual_CC[,1]))
-      rownames(rout$annual_CC) <-    ylist #Rpath.scenario$fitting$years
+     ylist <- seq(ys,length.out=length(rout$annual_Catch[,1]))
+      rownames(rout$annual_Catch) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_Biomass) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_QB) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_Qlink) <- ylist #Rpath.scenario$fitting$years   
@@ -123,9 +123,9 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   
   rout$pred <- scene$params$spname[scene$params$PreyTo+1] 
   rout$prey <- scene$params$spname[scene$params$PreyFrom+1] 
-  rout$Gear_CC_sp   <- scene$params$spname[scene$params$FishFrom+1] 
-  rout$Gear_CC_gear <- scene$params$spname[scene$params$FishThrough+1] 
-  rout$Gear_CC_disp <- ifelse(scene$params$FishTo == 0, 'Landing', 'Discard')
+  rout$Gear_Catch_sp   <- scene$params$spname[scene$params$FishFrom+1] 
+  rout$Gear_Catch_gear <- scene$params$spname[scene$params$FishThrough+1] 
+  rout$Gear_Catch_disp <- ifelse(scene$params$FishTo == 0, 'Landing', 'Discard')
   
   rout$start_state       <- scene$start_state
   rout$params$NUM_LIVING <- scene$params$NUM_LIVING

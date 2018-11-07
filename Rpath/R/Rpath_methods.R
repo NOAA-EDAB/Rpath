@@ -64,16 +64,16 @@ print.Rsim.output <- function(Rsim.output, rows = NA, ...){
                                            Rsim.output$crash_year, "\n", sep = ''))
   
   gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
-  start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
-  end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
+  start_Catch <- c(Rsim.output$out_Catch[2, ], gear.zero)
+  end_Catch   <- c(Rsim.output$out_Catch[nrow(Rsim.output$out_Catch) - 1, ], gear.zero)
   out <- data.frame(Group      = Rsim.output$params$spname,
                     StartBio   = Rsim.output$start_state$Biomass,
                     EndBio     = Rsim.output$end_state$Biomass,
                     BioES      = Rsim.output$end_state$Biomass / 
                                  Rsim.output$start_state$Biomass,
-                    StartCatch = start_CC * 12,
-                    EndCatch   = end_CC * 12,
-                    CatchES    = (end_CC * 12) / (start_CC * 12))
+                    StartCatch = start_Catch * 12,
+                    EndCatch   = end_Catch * 12,
+                    CatchES    = (end_Catch * 12) / (start_Catch * 12))
   
   if(is.na(rows)) print(out, nrows = Inf) else head(out, n = rows)
 }
@@ -137,8 +137,8 @@ summary.Rsim.output <- function(x, ...){
   cat("\nSummary Statistics:\n")
   totbiomass.start <- sum(x$out_Biomass[1, ],                       na.rm = T)
   totbiomass.end   <- sum(x$out_Biomass[nrow(x$out_Biomass), ],          na.rm = T)
-  totcatch.start   <- sum(x$out_CC[1, ] * 12,                  na.rm = T)
-  totcatch.end     <- sum(x$out_CC[nrow(x$out_CC) - 1, ] * 12, na.rm = T)
+  totcatch.start   <- sum(x$out_Catch[1, ] * 12,                  na.rm = T)
+  totcatch.end     <- sum(x$out_Catch[nrow(x$out_Catch) - 1, ] * 12, na.rm = T)
   out <- data.frame(Num.Groups        = x$NUM_GROUPS,
                     Num.Living      = x$NUM_LIVING,
                     Num.Detritus    = x$NUM_DEAD,

@@ -86,16 +86,16 @@ write.Rsim <- function(Rsim.output, file = NA, ...){
   if(grepl('.RData', file, ignore.case = T) == T) ext <- 'RData'
   
   gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
-  start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
-  end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
+  start_Catch <- c(Rsim.output$out_Catch[2, ], gear.zero)
+  end_Catch   <- c(Rsim.output$out_Catch[nrow(Rsim.output$out_Catch) - 1, ], gear.zero)
   out <- data.frame(Group      = Rsim.output$params$spname,
                     StartBio   = Rsim.output$start_state$Biomass,
                     EndBio     = Rsim.output$end_state$Biomass,
                     BioES      = Rsim.output$end_state$Biomass / 
                                  Rsim.output$start_state$Biomass,
-                    StartCatch = start_CC * 12,
-                    EndCatch   = end_CC * 12,
-                    CatchES    = (end_CC * 12) / (start_CC * 12))
+                    StartCatch = start_Catch * 12,
+                    EndCatch   = end_Catch * 12,
+                    CatchES    = (end_Catch * 12) / (start_Catch * 12))
   if(ext == 'csv')   write.csv(out, file = file)
   if(ext == 'RData') save(out, file = file)
   if(ext == 'list')  return(out)

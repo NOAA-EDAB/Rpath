@@ -38,22 +38,22 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   
   # KYA - Need to subset here and add names, to prevent losing matrix format
   # and labels when only 1 year is run.
-  annual_CC    <- next.run$annual_CC[step.start:step.end,,drop=FALSE]
+  annual_Catch    <- next.run$annual_Catch[step.start:step.end,,drop=FALSE]
   annual_Biomass    <- next.run$annual_Biomass[step.start:step.end,,drop=FALSE]
   annual_QB    <- next.run$annual_QB[step.start:step.end,,drop=FALSE]
   annual_Qlink <- next.run$annual_Qlink[step.start:step.end,,drop=FALSE]
   ylist <- year.start:year.end
-  rownames(annual_CC) <-    ylist 
+  rownames(annual_Catch) <-    ylist 
   rownames(annual_Biomass) <-    ylist 
   rownames(annual_QB) <-    ylist
   rownames(annual_Qlink) <- ylist  
   
   full.run$out_Biomass <- rbind(full.run$out_Biomass, next.run$out_Biomass[start.month:end.month, ])
-  full.run$out_CC <- rbind(full.run$out_CC, next.run$out_CC[start.month:end.month, ])
-  full.run$out_Gear_CC <- rbind(full.run$out_Gear_CC, 
-                                next.run$out_Gear_CC[start.month:end.month, ])
+  full.run$out_Catch <- rbind(full.run$out_Catch, next.run$out_Catch[start.month:end.month, ])
+  full.run$out_Gear_Catch <- rbind(full.run$out_Gear_Catch, 
+                                next.run$out_Gear_Catch[start.month:end.month, ])
   full.run$annual_Biomass <- rbind(full.run$annual_Biomass, annual_Biomass)
-  full.run$annual_CC <- rbind(full.run$annual_CC, annual_CC)
+  full.run$annual_Catch <- rbind(full.run$annual_Catch, annual_Catch)
   full.run$annual_QB <- rbind(full.run$annual_QB, annual_QB)
   full.run$annual_Qlink <- rbind(full.run$annual_Qlink, annual_Qlink)
   full.run$end_state <- next.run$end_state
