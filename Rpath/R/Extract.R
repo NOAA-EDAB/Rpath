@@ -15,8 +15,8 @@ extract.node <- function(Rsim.output, group){
   
   #Create basic monthly and annual data
   node.out <- c()
-  node.out$Biomass          <- Rsim.output$out_BB[, groupnum]
-  node.out$AnnualBiomass    <- Rsim.output$annual_BB[, groupnum]
+  node.out$Biomass          <- Rsim.output$out_Biomass[, groupnum]
+  node.out$AnnualBiomass    <- Rsim.output$annual_Biomass[, groupnum]
   node.out$TotalCatch       <- Rsim.output$out_CC[, groupnum]
   node.out$AnnualTotalCatch <- Rsim.output$annual_CC[, groupnum] 
   

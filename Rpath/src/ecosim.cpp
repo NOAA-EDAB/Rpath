@@ -44,14 +44,14 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
-   NumericMatrix out_BB(EndYear*12, NUM_BIO+1);           
+   NumericMatrix out_Biomass(EndYear*12, NUM_BIO+1);           
    NumericMatrix out_CC(EndYear*12, NUM_BIO+1);          
    NumericMatrix out_SSB(EndYear*12, NUM_BIO+1);        
    NumericMatrix out_rec(EndYear*12, NUM_BIO+1);
    NumericMatrix out_Gear_CC(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
    NumericMatrix annual_CC(EndYear, NUM_BIO+1);
-   NumericMatrix annual_BB(EndYear, NUM_BIO+1);
+   NumericMatrix annual_Biomass(EndYear, NUM_BIO+1);
    NumericMatrix annual_QB(EndYear, NUM_BIO+1);
    NumericMatrix annual_Qlink(EndYear, NumPredPreyLinks+1);   
 // Accumulator for monthly catch values
@@ -86,7 +86,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
             for (t=0; t< STEPS_PER_MONTH; t++){
                double tt = (double)t*hh;  // sub monthly timestep in years     
             // Load state vars (note: this creates pointers, not new vals)
-               NumericVector old_BB    = as<NumericVector>(state["BB"]);
+               NumericVector old_Biomass    = as<NumericVector>(state["Biomass"]);
                NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
 
             // Calculate base derivative and RK-4 derivative steps (overwrites YY)   
@@ -94,25 +94,25 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
                List k1 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt);
                NumericVector kk1 = as<NumericVector>(k1["DerivT"]);  
       
-               YY["BB"] = old_BB + 0.5*kk1*hh;
+               YY["Biomass"] = old_Biomass + 0.5*kk1*hh;
                List k2 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + 0.5*hh);
                NumericVector kk2 = as<NumericVector>(k2["DerivT"]);  
 
-               YY["BB"] = old_BB + 0.5*kk2*hh;
+               YY["Biomass"] = old_Biomass + 0.5*kk2*hh;
                List k3 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + 0.5*hh);
                NumericVector kk3 = as<NumericVector>(k3["DerivT"]);
 
-               YY["BB"] = old_BB + kk3*hh; 
+               YY["Biomass"] = old_Biomass + kk3*hh; 
                List k4 = deriv_vector(params,YY,forcing,fishing,stanzas,y,m,tt + hh);
                NumericVector kk4 = as<NumericVector>(k4["DerivT"]);  
 
             // Take an rk4 step          
-               NumericVector new_BB = old_BB + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0;   
+               NumericVector new_Biomass = old_Biomass + hh*(kk1 + 2*kk2 + 2*kk3 + kk4)/6.0;   
 
            // Update Foraging time state variable
            // pd term is used to indicate differrent values used for 
-           // age-structured species, defaults to BB for non-aged structure
-              NumericVector pd = old_BB;
+           // age-structured species, defaults to Biomass for non-aged structure
+              NumericVector pd = old_Biomass;
               FoodGain         = as<NumericVector>(k1["FoodGain"]);
               Qlink            = as<NumericVector>(k1["Qlink"]);
               NumericVector new_Ftime =  ifelse((FoodGain>0)&(pd>0),
@@ -122,16 +122,16 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
           // Accumulate Catch (small timestep, so linear average)
              NumericVector FishingLoss = as<NumericVector>(k1["FishingLoss"]);
-             cum_CC += (hh * FishingLoss/old_BB) * (new_BB+old_BB)/2.0;
+             cum_CC += (hh * FishingLoss/old_Biomass) * (new_Biomass+old_Biomass)/2.0;
              
           // Track catch by gear
-             NumericVector old_BB_flink = as<NumericVector>(old_BB[FishFrom]);
-             NumericVector new_BB_flink = as<NumericVector>(new_BB[FishFrom]);
+             NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
+             NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
              NumericVector GearCatch = as<NumericVector>(k1["GearCatch"]);
-             cum_Gear_CC += (hh * GearCatch / old_BB_flink) * (new_BB_flink + old_BB_flink)/2.0;
+             cum_Gear_CC += (hh * GearCatch / old_Biomass_flink) * (new_Biomass_flink + old_Biomass_flink)/2.0;
              
           // Set state to new values, including min/max traps
-             state["BB"]    = pmax(pmin(new_BB, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
+             state["Biomass"]    = pmax(pmin(new_Biomass, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
              state["Ftime"] = pmin(new_Ftime, 2.0);      
           }// end of sub-monthly (t-indexed) loop
 
@@ -145,37 +145,37 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
         }
       
       // Make a copy of the current state for bounds testing
-         NumericVector cur_BB = as<NumericVector>(state["BB"]);
+         NumericVector cur_Biomass = as<NumericVector>(state["Biomass"]);
         
         // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
         // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
-        cur_BB = ifelse((cur_BB<0),NA_REAL,cur_BB);
+        cur_Biomass = ifelse((cur_Biomass<0),NA_REAL,cur_Biomass);
         
         // If the run is during the "burn-in" years, and biomass goes
         // into the discard range, set flag to exit the loop.  Should set "bad"
         // biomass values to NA                 
-        if (y < BURN_YEARS){ cur_BB = ifelse((cur_BB<B_BaseRef*LO_DISCARD)|
-            (cur_BB>B_BaseRef*HI_DISCARD),
-            NA_REAL,cur_BB);
+        if (y < BURN_YEARS){ cur_Biomass = ifelse((cur_Biomass<B_BaseRef*LO_DISCARD)|
+            (cur_Biomass>B_BaseRef*HI_DISCARD),
+            NA_REAL,cur_Biomass);
         }
         
         // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
         // should still write the NA or INF values back to the output.
-        if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
+        if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
         }
         
         
       // Write to monthly output matricies (vector write)     				          									                    
-         out_BB( dd, _) = cur_BB;
-         out_SSB(dd, _) = cur_BB;
-         out_rec(dd, _) = cur_BB;
+         out_Biomass( dd, _) = cur_Biomass;
+         out_SSB(dd, _) = cur_Biomass;
+         out_rec(dd, _) = cur_Biomass;
          out_CC( dd, _) = cum_CC;
          out_Gear_CC(dd, _) = cum_Gear_CC;
          annual_CC(y-1, _) = annual_CC(y-1, _) + cum_CC;
          if (m==MEASURE_MONTH){
-           annual_BB(y-1, _)    = cur_BB;
-           annual_QB(y-1, _)    = FoodGain/cur_BB;
+           annual_Biomass(y-1, _)    = cur_Biomass;
+           annual_QB(y-1, _)    = FoodGain/cur_Biomass;
            annual_Qlink(y-1, _) = Qlink;
          }      
     }  // End of main months loop
@@ -183,18 +183,18 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
   }// End of years loop
   
 // Write Last timestep (note:  SSB and rec only used for age-structure species) 
-   //out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
-   //out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
-   //out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_Biomass( dd+1, _) = as<NumericVector>(state["Biomass"]);
+   //out_SSB(dd+1, _) = as<NumericVector>(state["Biomass"]);
+   //out_rec(dd+1, _) = as<NumericVector>(state["Biomass"]);
    //out_CC( dd+1, _) = out_CC( dd, _); 
   
 // Create Rcpp list to output  
 List outdat = List::create(
-  _["out_BB"]=out_BB,
+  _["out_Biomass"]=out_Biomass,
   _["out_CC"]=out_CC,
   _["out_Gear_CC"]=out_Gear_CC,
   _["annual_CC"]=annual_CC,
-  _["annual_BB"]=annual_BB,
+  _["annual_Biomass"]=annual_Biomass,
   _["annual_QB"]=annual_QB,
   _["annual_Qlink"]=annual_Qlink,
   _["end_state"]=state,
@@ -246,14 +246,14 @@ int y, m, dd;
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
-   NumericMatrix out_BB( EndYear * 12, NUM_BIO + 1);           
+   NumericMatrix out_Biomass( EndYear * 12, NUM_BIO + 1);           
    NumericMatrix out_CC( EndYear * 12, NUM_BIO + 1);          
    NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
    NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
    NumericMatrix out_Gear_CC(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
    NumericMatrix annual_CC(EndYear, NUM_BIO+1);
-   NumericMatrix annual_BB(EndYear, NUM_BIO+1);
+   NumericMatrix annual_Biomass(EndYear, NUM_BIO+1);
    NumericMatrix annual_QB(EndYear, NUM_BIO+1);
    NumericMatrix annual_Qlink(EndYear, NumPredPreyLinks+1); 
 
@@ -280,7 +280,7 @@ int y, m, dd;
       for (m = 0; m < STEPS_PER_YEAR; m++){   
 				 dd = (y-1) * STEPS_PER_YEAR + m; // dd is index for monthly output                
       // Load old state and old derivative
-         NumericVector old_BB    = as<NumericVector>(state["BB"]);
+         NumericVector old_Biomass    = as<NumericVector>(state["Biomass"]);
          NumericVector old_Ftime = as<NumericVector>(state["Ftime"]);         
  	       NumericVector dydt0     = as<NumericVector>(dyt["DerivT"]);
  	       NumericVector stanzaPred = as<NumericVector>(state["StanzaPred"]);
@@ -296,15 +296,15 @@ int y, m, dd;
          NumericVector Qlink       = as<NumericVector>(dyt["Qlink"]);
                
       // Now Update the new State Biomass using Adams-Basforth
-         NumericVector new_BB = 
+         NumericVector new_Biomass = 
                        ifelse( NoIntegrate == 0,
-                         (1.0 - SORWT) * biomeq + SORWT * old_BB,
+                         (1.0 - SORWT) * biomeq + SORWT * old_Biomass,
                          ifelse( NoIntegrate > 0,
-                         old_BB + (DELTA_T / 2.0) * (3.0 * dydt1 - dydt0),
-                         old_BB)); 
+                         old_Biomass + (DELTA_T / 2.0) * (3.0 * dydt1 - dydt0),
+                         old_Biomass)); 
       
       // Then Update Foraging Time 
-         NumericVector pd = ifelse(NoIntegrate < 0, stanzaPred, old_BB);
+         NumericVector pd = ifelse(NoIntegrate < 0, stanzaPred, old_Biomass);
          NumericVector new_Ftime = ifelse((FoodGain > 0) & (pd > 0),
            0.1 + 0.9 * old_Ftime * ((1.0 - FtimeAdj) + FtimeAdj * FtimeQBOpt / 
            (FoodGain / pd)),
@@ -315,78 +315,78 @@ int y, m, dd;
           SplitUpdate(stanzas, state, forcing, dyt, y, m + 1);
           SplitSetPred(stanzas, state); 
         }
-        new_BB = ifelse(NoIntegrate < 0, as<NumericVector>(state["BB"]), new_BB);
+        new_Biomass = ifelse(NoIntegrate < 0, as<NumericVector>(state["Biomass"]), new_Biomass);
         
      // Calculate catch assuming fixed Frate and exponential biomass change.
      // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
-        NumericVector new_CC = (DELTA_T * FishingLoss / old_BB) * 
-                               (new_BB + old_BB) / 2.0;
+        NumericVector new_CC = (DELTA_T * FishingLoss / old_Biomass) * 
+                               (new_Biomass + old_Biomass) / 2.0;
         
         // Track catch by gear
-        NumericVector old_BB_flink = as<NumericVector>(old_BB[FishFrom]);
-        NumericVector new_BB_flink = as<NumericVector>(new_BB[FishFrom]);
+        NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
+        NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
         NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
-        NumericVector new_Gear_CC = (DELTA_T * GearCatch / old_BB_flink) * 
-                                    (new_BB_flink + old_BB_flink)/2.0;
+        NumericVector new_Gear_CC = (DELTA_T * GearCatch / old_Biomass_flink) * 
+                                    (new_Biomass_flink + old_Biomass_flink)/2.0;
         
         // NumericVector new_CC = 
-        //               ifelse( new_BB==old_BB,
+        //               ifelse( new_Biomass==old_Biomass,
         //                 FishingLoss*DELTA_T,
-        //                 (FishingLoss*DELTA_T/old_BB) *
-        //                   (new_BB-old_BB)/log(new_BB/old_BB) 
+        //                 (FishingLoss*DELTA_T/old_Biomass) *
+        //                   (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass) 
         //               );       
 
-     // KYA 9/13/17 - noticed that cur_BB is never copied back into state["BB"] after
-     // bounds testing.  Error?  Moved state["BB"] setting, hopefully nothing breaks...
+     // KYA 9/13/17 - noticed that cur_Biomass is never copied back into state["Biomass"] after
+     // bounds testing.  Error?  Moved state["Biomass"] setting, hopefully nothing breaks...
      // Set state to new values, including min/max traps
-        //state["BB"]    = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON);
+        //state["Biomass"]    = pmax(pmin(new_Biomass, B_BaseRef * BIGNUM), B_BaseRef * EPSILON);
         //state["Ftime"] = pmin(new_Ftime, 2.0);    
                                                                  										                         
      // Make a copy of the current state for bounds testing
-        NumericVector cur_BB = pmax(pmin(new_BB, B_BaseRef * BIGNUM), B_BaseRef * EPSILON); // as<NumericVector>(state["BB"]);
+        NumericVector cur_Biomass = pmax(pmin(new_Biomass, B_BaseRef * BIGNUM), B_BaseRef * EPSILON); // as<NumericVector>(state["Biomass"]);
 
         NumericVector bforce = force_bybio((y-1) * STEPS_PER_YEAR + m, _);
-        cur_BB = ifelse(bforce>B_BaseRef * EPSILON, bforce, cur_BB);
+        cur_Biomass = ifelse(bforce>B_BaseRef * EPSILON, bforce, cur_Biomass);
         
      // insert forced biomass levels    
         //for (i=0; i<NumForcedBio; i++){
-         // sp = BforceNum[i]; /* if (NoIntegrate[sp]>=0){cur_BB[sp]=BforceVal(sp,m);} */
+         // sp = BforceNum[i]; /* if (NoIntegrate[sp]>=0){cur_Biomass[sp]=BforceVal(sp,m);} */
         //}            
         
      // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
      // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
-        cur_BB = ifelse((cur_BB<0),NA_REAL,cur_BB);
+        cur_Biomass = ifelse((cur_Biomass<0),NA_REAL,cur_Biomass);
 
      // If the run is during the "burn-in" years, and biomass goes
      // into the discard range, set flag to exit the loop.  Should set "bad"
      // biomass values to NA                 
-        if (y < BURN_YEARS){ cur_BB = ifelse((cur_BB<B_BaseRef*LO_DISCARD)|
-                                             (cur_BB>B_BaseRef*HI_DISCARD),
-                                      NA_REAL,cur_BB);
+        if (y < BURN_YEARS){ cur_Biomass = ifelse((cur_Biomass<B_BaseRef*LO_DISCARD)|
+                                             (cur_Biomass>B_BaseRef*HI_DISCARD),
+                                      NA_REAL,cur_Biomass);
         }
       
     // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
     // should still write the NA or INF values back to the output.
     //NOJUV make sure crash tests work for juveniles.
     
-           if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
+           if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
   
-    // KYA 9/13/17 - Now copy cur_BB into state    
-       state["BB"]    = cur_BB;
+    // KYA 9/13/17 - Now copy cur_Biomass into state    
+       state["Biomass"]    = cur_Biomass;
        state["Ftime"] = pmin(new_Ftime, 2.0);
   
      // Write to output matricies     				          									                    
-        out_BB( dd, _) = old_BB;
-        out_SSB(dd, _) = old_BB;
-        out_rec(dd, _) = old_BB;
+        out_Biomass( dd, _) = old_Biomass;
+        out_SSB(dd, _) = old_Biomass;
+        out_rec(dd, _) = old_Biomass;
         out_CC( dd, _) = new_CC;
         out_Gear_CC(dd, _) = new_Gear_CC;
         annual_CC(y-1, _) = annual_CC(y-1, _) + new_CC;
         if (m==MEASURE_MONTH){
-          annual_BB(y-1, _)    = old_BB;
-          annual_QB(y-1, _)    = FoodGain/old_BB;
+          annual_Biomass(y-1, _)    = old_Biomass;
+          annual_QB(y-1, _)    = FoodGain/old_Biomass;
           annual_Qlink(y-1, _) = Qlink;
         }
         
@@ -400,9 +400,9 @@ int y, m, dd;
    }// End of years loop
 
 // Write Last timestep 
-   //out_BB( dd+1, _) = as<NumericVector>(state["BB"]);
-   //out_SSB(dd+1, _) = as<NumericVector>(state["BB"]);
-   //out_rec(dd+1, _) = as<NumericVector>(state["BB"]);
+   //out_Biomass( dd+1, _) = as<NumericVector>(state["Biomass"]);
+   //out_SSB(dd+1, _) = as<NumericVector>(state["Biomass"]);
+   //out_rec(dd+1, _) = as<NumericVector>(state["Biomass"]);
    //out_CC( dd+1, _) = out_CC( dd, _); // the "next" time interval
    //out_Gear_CC(dd+1, _) = out_Gear_CC(dd, _);        
 //NOJUV         for (i = 1; i <= juv_N; i++){
@@ -413,11 +413,11 @@ int y, m, dd;
  
 // Create Rcpp list to output  
    List outdat = List::create(
-     _["out_BB"]=out_BB,
+     _["out_Biomass"]=out_Biomass,
      _["out_CC"]=out_CC,
      _["out_Gear_CC"]=out_Gear_CC,
      _["annual_CC"]=annual_CC,
-     _["annual_BB"]=annual_BB,
+     _["annual_Biomass"]=annual_Biomass,
      _["annual_QB"]=annual_QB,
      _["annual_Qlink"]=annual_Qlink,     
      _["end_state"]=state,
@@ -491,7 +491,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericMatrix EcopathCode          = as<NumericMatrix>(stanzas["EcopathCode"]);
 
 // State vectors
-   const NumericVector state_BB        = as<NumericVector>(state["BB"]);
+   const NumericVector state_Biomass        = as<NumericVector>(state["Biomass"]);
    const NumericVector state_Ftime     = as<NumericVector>(state["Ftime"]);
    const NumericVector stanzaPred      = as<NumericVector>(state["StanzaPred"]);
    
@@ -537,8 +537,8 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    
 // Set effective biomass for pred/prey response
 // default is B/Bref
-   NumericVector preyYY = state_Ftime * state_BB/B_BaseRef * force_byprey(dd,_);;
-   NumericVector predYY = state_Ftime * state_BB/B_BaseRef * force_bysearch(dd,_);
+   NumericVector preyYY = state_Ftime * state_Biomass/B_BaseRef * force_byprey(dd,_);;
+   NumericVector predYY = state_Ftime * state_Biomass/B_BaseRef * force_bysearch(dd,_);
 
 // Set functional response biomass for juvenile and adult groups (including foraging time) 
    if(Nsplit > 0){
@@ -597,14 +597,14 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
       pred = PreyTo[links];
    // If model is uncoupled, food loss doesn't change with prey or predator levels.
       if (COUPLED){  FoodLoss[prey]  += Q1[links]; }
-      else{  FoodLoss[prey]  += state_BB[prey] * QQ[links]/B_BaseRef[prey]; }
+      else{  FoodLoss[prey]  += state_Biomass[prey] * QQ[links]/B_BaseRef[prey]; }
       FoodGain[pred]         += Q1[links];
    }
 
 // By Species Rates 
    UnAssimLoss    = FoodGain  * UnassimRespFrac; 
    ActiveRespLoss = FoodGain  * ActiveRespFrac;  												 
-   MzeroLoss      = MzeroMort * state_BB;
+   MzeroLoss      = MzeroMort * state_Biomass;
    
    NumericVector NetProd = FoodGain - UnAssimLoss - ActiveRespLoss - MzeroLoss - FoodLoss;
    
@@ -636,10 +636,10 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 //   //RFISH 									}
 //   //RFISH 						  }
 //   //RFISH 						  fish_Effort[gr] = FORCED_CATCH[gr][y]/ 
-//   //RFISH 							                  (totQ * state_BB[sp]);
-//   //RFISH 							if (FORCED_CATCH[gr][y] >= state_BB[sp])
-//   //RFISH 							   {fish_Effort[gr] = (1.0-EPSILON)*(state_BB[sp])/ 
-//   //RFISH 				    			                  (totQ * state_BB[sp]);}
+//   //RFISH 							                  (totQ * state_Biomass[sp]);
+//   //RFISH 							if (FORCED_CATCH[gr][y] >= state_Biomass[sp])
+//   //RFISH 							   {fish_Effort[gr] = (1.0-EPSILON)*(state_Biomass[sp])/ 
+//   //RFISH 				    			                  (totQ * state_Biomass[sp]);}
 //   //RFISH 					 }
 //   //RFISH 					 // By putting F after catch, Frates override absolute catch
 //   //RFISH 			     if ((FORCED_FTARGET[gr]>0) && (FORCED_FRATE[gr][y]>-EPSILON)){
@@ -652,14 +652,14 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 //   //RFISH 									}
 //   //RFISH 						  }
 //   //RFISH 						  fish_Effort[gr] = FORCED_FRATE[gr][y]/totQ;
-//   //RFISH 							//if (FORCED_CATCH[gr][y] >= state_BB[sp])
-//   //RFISH 							//   {fish_Effort[gr] = (1.0-EPSILON)*(state_BB[sp])/ 
-//   //RFISH 				    //			                  (totQ * state_BB[sp]);}
+//   //RFISH 							//if (FORCED_CATCH[gr][y] >= state_Biomass[sp])
+//   //RFISH 							//   {fish_Effort[gr] = (1.0-EPSILON)*(state_Biomass[sp])/ 
+//   //RFISH 				    //			                  (totQ * state_Biomass[sp]);}
 //   //RFISH 					 }					 
 //   //RFISH 					 
 //   //RFISH 				   //if ((y==0) && (m==0) && (d==0)){
 //   //RFISH 					 //    cout << path_species[gr] << " " << FORCED_TARGET[gr] << " " << path_species[sp] << " " 
-//   //RFISH 					 //	      << state_BB[sp] << " " << FORCED_CATCH[gr][y] << " "
+//   //RFISH 					 //	      << state_Biomass[sp] << " " << FORCED_CATCH[gr][y] << " "
 //   //RFISH 					 //		      << fish_Effort[gr] << endl;
 //   //RFISH 					 //} 					 
 //   //RFISH 			 }
@@ -672,7 +672,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
  				 gr   = FishThrough[links];
  				 dest = FishTo[links];
          egr  = FishThrough[links] - (NUM_LIVING + NUM_DEAD);
- 				 caught =  FishQ[links] * EFFORT[egr] * state_BB[prey]; 
+ 				 caught =  FishQ[links] * EFFORT[egr] * state_Biomass[prey]; 
           FishingLoss[prey] += caught;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
@@ -681,32 +681,32 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
     NumericVector FORCE_F = (NumericVector)FORCED_FRATE(y,_);
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_BB[sp];
+             caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_Biomass[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
-                // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_BB[sp];}
-             // KYA 10/6/17 Added productivity to BB limit for F>1 species (salmon inspired)
-                if (caught >= state_BB[sp] + NetProd[sp]){caught = (1.0 - EPSILON) * (state_BB[sp] + NetProd[sp]);}
+                // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_Biomass[sp];}
+             // KYA 10/6/17 Added productivity to Biomass limit for F>1 species (salmon inspired)
+                if (caught >= state_Biomass[sp] + NetProd[sp]){caught = (1.0 - EPSILON) * (state_Biomass[sp] + NetProd[sp]);}
                 if (caught<0){caught=0;}
              FishingLoss[sp] += caught;
              FishingThru[0]  += caught;
              FishingGain[0]  += caught;
              //if(sp==1){Rprintf("%d %g %g %g \n",sp,FORCED_FRATE(y,sp),caught,FishingLoss[sp]);}
-             //TerminalF[sp] = caught/state_BB[sp];
+             //TerminalF[sp] = caught/state_Biomass[sp];
         }
             
 // KINKED CONTROL RULE - NEEDS INPUT of TARGET BIOMASS and TARGET CATCH
   //FISHING      double RefBio, maxcaught;
   //FISHING      for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
   //FISHING        if (TARGET_BIO[sp] > EPSILON){
-  //FISHING          RefBio    = state_BB[sp] / TARGET_BIO[sp];
-  //FISHING          maxcaught = TARGET_F[sp] * state_BB[sp];         
+  //FISHING          RefBio    = state_Biomass[sp] / TARGET_BIO[sp];
+  //FISHING          maxcaught = TARGET_F[sp] * state_Biomass[sp];         
   //FISHING          if      (RefBio > 1.0)           {caught = maxcaught;}
   //FISHING          else if (RefBio >= ALPHA[sp]) {caught = maxcaught * (RefBio - ALPHA[sp])/(1.0 - ALPHA[sp]);}
   //FISHING          else                             {caught = 0.0;}
   //FISHING          FishingLoss[sp] += caught;
   //FISHING          FishingThru[0]  += caught;
   //FISHING          FishingGain[0]  += caught;
-  //FISHING          TerminalF[sp] = caught/state_BB[sp];
+  //FISHING          TerminalF[sp] = caught/state_Biomass[sp];
   //FISHING        }          
   //FISHING      }
     
@@ -732,7 +732,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    }
    
 // Add migration forcing
-   MigrateLoss = clone(state_BB);
+   MigrateLoss = clone(state_Biomass);
    for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
      MigrateLoss[i]  *= force_bymigrate(y * STEPS_PER_YEAR + m, i);
    }
@@ -746,7 +746,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    LossPropToB[0] = 0;  
    LossPropToQ[0] = 0;
    TotLoss = LossPropToQ + LossPropToB;      
-   biomeq  = TotGain/(TotLoss/state_BB);
+   biomeq  = TotGain/(TotLoss/state_Biomass);
    biomeq[0] = 1.0;
    DerivT  = TotGain - TotLoss; 
 
@@ -804,7 +804,7 @@ int SplitSetPred(List stanzas, List state){
   NumericMatrix WWa            = as<NumericMatrix>(state["WWa"]);
   NumericVector stanzaPred     = as<NumericVector>(state["StanzaPred"]);
   //state parameters
-  NumericVector state_BB = as<NumericVector>(state["BB"]);
+  NumericVector state_Biomass = as<NumericVector>(state["Biomass"]);
   NumericVector state_NN = as<NumericVector>(state["NN"]);
 
   for (isp = 1; isp <= Nsplit; isp++){
@@ -818,7 +818,7 @@ int SplitSetPred(List stanzas, List state){
         pt = pt + NageS(ia, isp) * WWa(ia, isp);
         Nt = Nt + NageS(ia, isp);
       }
-      state_BB[ieco] = Bt;
+      state_Biomass[ieco] = Bt;
       state_NN[ieco] = Nt;
       stanzaPred[ieco] = pt;
     }
@@ -866,7 +866,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
   NumericVector stanzaPred           = as<NumericVector>(state["StanzaPred"]);  
   
   //state parameters
-  const NumericVector state_BB = as<NumericVector>(state["BB"]);
+  const NumericVector state_Biomass = as<NumericVector>(state["Biomass"]);
   
   //forcing parameters
   NumericMatrix force_byrecs   = as<NumericMatrix>(forcing["byrecs"]);
@@ -880,7 +880,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
     SpawnBio[isp] = 0;
     for(ist = 1; ist <= Nstanzas[isp]; ist++){
       ieco = EcopathCode(isp, ist);
-      Su = exp(-LossPropToB[ieco] / STEPS_PER_YEAR / state_BB[ieco]);
+      Su = exp(-LossPropToB[ieco] / STEPS_PER_YEAR / state_Biomass[ieco]);
       Gf = FoodGain[ieco] / stanzaPred[ieco];
       for(ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         NageS(ia, isp) = NageS(ia, isp) * Su;

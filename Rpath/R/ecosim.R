@@ -96,17 +96,17 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   }
   # Nicely Name output vectors
   sps <- scene$params$spname[1:(1+scene$params$NUM_BIO)]
-  colnames(rout$out_BB)    <- sps
+  colnames(rout$out_Biomass)    <- sps
   colnames(rout$out_CC)    <- sps
   colnames(rout$annual_CC) <- sps
-  colnames(rout$annual_BB) <- sps
+  colnames(rout$annual_Biomass) <- sps
   colnames(rout$annual_QB) <- sps
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
 
   # drop the last row (should be always 0; negative index is entry to drop)
     #lastone <- length(rout$annual_CC[,1])
     #rout$annual_CC <-    rout$annual_CC[-lastone,]
-    #rout$annual_BB <-    rout$annual_BB[-lastone,]
+    #rout$annual_Biomass <-    rout$annual_Biomass[-lastone,]
     #rout$annual_QB <-    rout$annual_QB[-lastone,]
     #rout$annual_Qlink <- rout$annual_Qlink[-lastone,]  
   
@@ -116,7 +116,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
      ys <- min(as.numeric(rownames(scene$fishing$CATCH)))
      ylist <- seq(ys,length.out=length(rout$annual_CC[,1]))
       rownames(rout$annual_CC) <-    ylist #Rpath.scenario$fitting$years
-      rownames(rout$annual_BB) <-    ylist #Rpath.scenario$fitting$years
+      rownames(rout$annual_Biomass) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_QB) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_Qlink) <- ylist #Rpath.scenario$fitting$years   
   #}
@@ -196,7 +196,7 @@ rsim.forcing <- function(params, years){
 #####################################################################################
 #'@export
 rsim.state <- function(params){
-  state  <- list(BB    = params$B_BaseRef, 
+  state  <- list(Biomass    = params$B_BaseRef, 
                  NN    = rep(0, params$NUM_GROUPS + 1),
                  Ftime = rep(1, length(params$B_BaseRef)))
   class(state) <- "Rsim.state"
@@ -268,11 +268,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$NUM_GEARS  <- Rpath$NUM_GEARS
   simpar$NUM_BIO    <- simpar$NUM_LIVING + simpar$NUM_DEAD
   simpar$spname     <- c("Outside", Rpath$Group)
-  simpar$spnum      <- 0:length(Rpath$BB) 
+  simpar$spnum      <- 0:length(Rpath$Biomass) 
   
   #Energetics for Living and Dead Groups
   #Reference biomass for calculating YY
-  simpar$B_BaseRef <- c(1.0, Rpath$BB) 
+  simpar$B_BaseRef <- c(1.0, Rpath$Biomass) 
   #Mzero proportional to (1-EE)
   simpar$MzeroMort <- c(0.0, Rpath$PB * (1.0 - Rpath$EE)) 
   #Unassimilated is the proportion of CONSUMPTION that goes to detritus.  
@@ -309,7 +309,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                      1:length(Rpath$PB),
                      0)
   primFrom <- rep(0, length(Rpath$PB))
-  primQ    <- Rpath$PB * Rpath$BB
+  primQ    <- Rpath$PB * Rpath$Biomass
   #Change production to consumption for mixotrophs
   mixotrophs <- which(Rpath$type > 0 & Rpath$type < 1)
   primQ[mixotrophs] <- primQ[mixotrophs] / Rpath$GE[mixotrophs] * 
@@ -320,13 +320,13 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   #                    1:ncol(Rpath$DC),
   #                    0)
   # importFrom <- rep(0, ncol(Rpath$DC))
-  # importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$BB[1:nliving]
+  # importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$Biomass[1:nliving]
   
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
   preyto    <- col(Rpath$DC)	
   predpreyQ <- Rpath$DC[1:(nliving + ndead + 1), ] * 
-    t(matrix(Rpath$QB[1:nliving] * Rpath$BB[1:nliving],
+    t(matrix(Rpath$QB[1:nliving] * Rpath$Biomass[1:nliving],
              nliving, nliving + ndead + 1))
   
   #combined
@@ -432,8 +432,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$NumDetLinks <- length(simpar$DetFrac) - 1
   
 # STATE VARIABLE DEFAULT 
-  #simpar$state_BB    <- simpar$B_BaseRef
-  #simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
+  #simpar$state_Biomass    <- simpar$B_BaseRef
+  #simpar$state_Ftime <- rep(1, length(Rpath$Biomass) + 1)
   simpar$BURN_YEARS <- -1
   simpar$COUPLED    <-  1
   simpar$RK4_STEPS  <- 4.0 

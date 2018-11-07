@@ -67,10 +67,10 @@ print.Rsim.output <- function(Rsim.output, rows = NA, ...){
   start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
   end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
   out <- data.frame(Group      = Rsim.output$params$spname,
-                    StartBio   = Rsim.output$start_state$BB,
-                    EndBio     = Rsim.output$end_state$BB,
-                    BioES      = Rsim.output$end_state$BB / 
-                                 Rsim.output$start_state$BB,
+                    StartBio   = Rsim.output$start_state$Biomass,
+                    EndBio     = Rsim.output$end_state$Biomass,
+                    BioES      = Rsim.output$end_state$Biomass / 
+                                 Rsim.output$start_state$Biomass,
                     StartCatch = start_CC * 12,
                     EndCatch   = end_CC * 12,
                     CatchES    = (end_CC * 12) / (start_CC * 12))
@@ -135,8 +135,8 @@ summary.Rsim.output <- function(x, ...){
   cat(paste("Rsim parameters fos:", attr(x, 'eco.name'),"\n"))
   if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
-  totbiomass.start <- sum(x$out_BB[1, ],                       na.rm = T)
-  totbiomass.end   <- sum(x$out_BB[nrow(x$out_BB), ],          na.rm = T)
+  totbiomass.start <- sum(x$out_Biomass[1, ],                       na.rm = T)
+  totbiomass.end   <- sum(x$out_Biomass[nrow(x$out_Biomass), ],          na.rm = T)
   totcatch.start   <- sum(x$out_CC[1, ] * 12,                  na.rm = T)
   totcatch.end     <- sum(x$out_CC[nrow(x$out_CC) - 1, ] * 12, na.rm = T)
   out <- data.frame(Num.Groups        = x$NUM_GROUPS,

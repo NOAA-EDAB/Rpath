@@ -89,10 +89,10 @@ write.Rsim <- function(Rsim.output, file = NA, ...){
   start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
   end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
   out <- data.frame(Group      = Rsim.output$params$spname,
-                    StartBio   = Rsim.output$start_state$BB,
-                    EndBio     = Rsim.output$end_state$BB,
-                    BioES      = Rsim.output$end_state$BB / 
-                                 Rsim.output$start_state$BB,
+                    StartBio   = Rsim.output$start_state$Biomass,
+                    EndBio     = Rsim.output$end_state$Biomass,
+                    BioES      = Rsim.output$end_state$Biomass / 
+                                 Rsim.output$start_state$Biomass,
                     StartCatch = start_CC * 12,
                     EndCatch   = end_CC * 12,
                     CatchES    = (end_CC * 12) / (start_CC * 12))

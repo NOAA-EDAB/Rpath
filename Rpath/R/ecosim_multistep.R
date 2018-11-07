@@ -21,7 +21,7 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
     scene$rundate <- paste(Sys.time(),":salt:",runif(1))    
   
   scene.years <- row.names(Rsim.scenario$fishing$FRATE)
-  year.start  <- as.numeric(tail(row.names(Rsim.output$annual_BB),1)) + 1
+  year.start  <- as.numeric(tail(row.names(Rsim.output$annual_Biomass),1)) + 1
   step.start  <- which(scene.years==year.start)
   step.end    <- which(scene.years==year.end)
   
@@ -32,27 +32,27 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
                           full.run$dyt)
   }
   #Merge runs
-  last <- nrow(full.run$out_BB)
+  last <- nrow(full.run$out_Biomass)
   start.month <- last + 1
   end.month   <- step.end * 12
   
   # KYA - Need to subset here and add names, to prevent losing matrix format
   # and labels when only 1 year is run.
   annual_CC    <- next.run$annual_CC[step.start:step.end,,drop=FALSE]
-  annual_BB    <- next.run$annual_BB[step.start:step.end,,drop=FALSE]
+  annual_Biomass    <- next.run$annual_Biomass[step.start:step.end,,drop=FALSE]
   annual_QB    <- next.run$annual_QB[step.start:step.end,,drop=FALSE]
   annual_Qlink <- next.run$annual_Qlink[step.start:step.end,,drop=FALSE]
   ylist <- year.start:year.end
   rownames(annual_CC) <-    ylist 
-  rownames(annual_BB) <-    ylist 
+  rownames(annual_Biomass) <-    ylist 
   rownames(annual_QB) <-    ylist
   rownames(annual_Qlink) <- ylist  
   
-  full.run$out_BB <- rbind(full.run$out_BB, next.run$out_BB[start.month:end.month, ])
+  full.run$out_Biomass <- rbind(full.run$out_Biomass, next.run$out_Biomass[start.month:end.month, ])
   full.run$out_CC <- rbind(full.run$out_CC, next.run$out_CC[start.month:end.month, ])
   full.run$out_Gear_CC <- rbind(full.run$out_Gear_CC, 
                                 next.run$out_Gear_CC[start.month:end.month, ])
-  full.run$annual_BB <- rbind(full.run$annual_BB, annual_BB)
+  full.run$annual_Biomass <- rbind(full.run$annual_Biomass, annual_Biomass)
   full.run$annual_CC <- rbind(full.run$annual_CC, annual_CC)
   full.run$annual_QB <- rbind(full.run$annual_QB, annual_QB)
   full.run$annual_Qlink <- rbind(full.run$annual_Qlink, annual_Qlink)
