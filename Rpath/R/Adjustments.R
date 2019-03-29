@@ -204,6 +204,9 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
   }
   #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
+  #Create vector of values if only one supplied for multiple years
+  if(length(value) == 1 & length(sim.year) > 1) value <- rep(value, length(sim.year))
+  
   if(bymonth == F){
     #Forcing matrices are by month not year so need to convert year/month combo
     #Loop over years if more than 1 sim.year provided
