@@ -4,7 +4,7 @@
 \alias{write.Rsim}
 \title{Write function for Ecosim object}
 \usage{
-write.Rsim(Rsim.output, file, ...)
+write.Rsim(Rsim.output, file = NA, ...)
 }
 \arguments{
 \item{Rsim.output}{object created by the rsim.run() function.}
@@ -19,7 +19,8 @@ from an Rpath.sim object.
 Outputs start/end biomass and catch to a .csv file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{MTI}},
+  \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -33,4 +34,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rpath}},
   \code{\link{write.rpath.params}}
 }
-

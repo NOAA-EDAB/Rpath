@@ -4,12 +4,12 @@
 \alias{write.Rpath}
 \title{Write function for Ecopath object}
 \usage{
-write.Rpath(x, file, morts = F, ...)
+write.Rpath(x, file = NA, morts = F, ...)
 }
 \arguments{
 \item{x}{Rpath model created by the ecopath() function.}
 
-\item{file}{file name for resultant .csv file.  Be sure to include ".csv".}
+\item{file}{file name for resultant file.  Need to specify ".csv" or ".RData".}
 
 \item{morts}{Logical value whether to output basic parameters or mortalities.}
 }
@@ -20,7 +20,8 @@ Writes a .csv file with the basic parameters or mortalities from an Rpath object
 Outputs basic parameters or mortalities to a .csv file.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{MTI}},
+  \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
@@ -34,4 +35,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-
