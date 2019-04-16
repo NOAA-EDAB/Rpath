@@ -28,6 +28,11 @@ MTI <- function(Rpath, Rpath.params, increase = T){
       DC[, icol + 1 := .SD/DC.colsum[icol], .SDcols = DC.cols[icol]]
     }
   }
+  #Add detritus columns
+  n.detritus <- length(which(x$model$Type == 2))
+  det.cols <- matrix(rep(0, n.detritus * nrow(DC)), nrow(DC), n.detritus)
+  DC <- cbind(DC, det.cols)
+  
   #Calculate proportion of catch for fishing "DC"
   totcatch <- y$Catch + y$Discards
   totcatch.sum <- colSums(totcatch)
