@@ -16,48 +16,63 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   y <- copy(Rpath)
   
   #MTI is a matrix where MTIij = DCij - FCji
+  #Get number of fleets and detrital groups
+  nfleets       <- length(which(x$model$Type == 3))
+  ndetritus     <- length(which(x$model$Type == 2))
+  ngroups       <- length(x$model$Group)
+  fleetnames    <- x$model$Group[which(x$model$Type == 3)]
+  detritusnames <- x$model$Group[which(x$model$Type == 2)]
+  allnames      <- x$model$Group
   
-  #DCij
+  #Set up DCij including detritus and fleet
   DC <- as.data.table(x$diet)
+  newcols <- as.data.table(matrix(rep(0, (nfleets + ndetritus) * ngroups),
+                           ngroups, nfleets + ndetritus))
+  setnames(newcols, paste0('V', seq_along(c(detritusnames, fleetnames))),
+                           c(detritusnames, fleetnames))
+  DC <- cbind(DC, newcols)
+  
   #Remove import and re-standardize remaining DC
-  DC.cols <- names(DC)[which(names(DC) != 'Group')]
   DC <- DC[Group != 'Import']
-  DC.colsum <- DC[, colSums(.SD, na.rm = T), .SDcols = DC.cols]
-  for(icol in 1:length(DC.cols)){
-    if(DC.colsum[icol] != 1){
-      DC[, icol + 1 := .SD/DC.colsum[icol], .SDcols = DC.cols[icol]]
+  DC.colsum <- DC[, colSums(.SD, na.rm = T), .SDcols = allnames]
+  for(icol in 1:length(allnames)){
+    if(round(DC.colsum[icol], 4) != 1){
+      DC[, icol + 1 := .SD/DC.colsum[icol], .SDcols = allnames[icol]]
     }
   }
-  #Add detritus columns
-  n.detritus <- length(which(x$model$Type == 2))
-  det.cols <- matrix(rep(0, n.detritus * nrow(DC)), nrow(DC), n.detritus)
-  DC <- cbind(DC, det.cols)
+  #Fix NAs
+  DC[is.na(DC)] <- 0
+  
+  #Add fleet "prey" rows
+  fleetrows <- as.data.table(matrix(rep(0, nfleets * ncol(DC)), nfleets, 
+                                    ncol(DC)))
+  fleetrows[, V1 := fleetnames]
+  DC <- rbindlist(list(DC, fleetrows))
   
   #Calculate proportion of catch for fishing "DC"
   totcatch <- y$Catch + y$Discards
   totcatch.sum <- colSums(totcatch)
-  totcatch.prop <- c()
   for(icol in 1:ncol(totcatch)){
-    fleet.prop <- totcatch[, icol] / totcatch.sum[icol]
-    totcatch.prop <- cbind(totcatch.prop, fleet.prop)
+    fleet.prop <- as.data.table(totcatch[, icol] / totcatch.sum[icol])
+    setnames(fleet.prop, 'V1', fleetnames[icol])
+    if(icol == 1){
+      totcatch.prop <- fleet.prop
+    }else{
+      totcatch.prop <- cbind(totcatch.prop, fleet.prop)
+    }
   }
-  #Add fleet "DC" to DC
-  #Remove fleet rows from fleet DC
-  ngroup <- length(x$model$Group[which(x$model$Type != 3)])
-  fleet.DC <- totcatch.prop[1:ngroup, ]
-  DC <- cbind(DC, fleet.DC)
+  #Remove dummy Fishery columns and add actual "DC"
+  setnames(DC, fleetnames, paste0('V', seq_along(fleetnames)))
+  DC[, paste0('V', seq_along(fleetnames)) := NULL]
+  DC <- cbind(DC, totcatch.prop)
+  
+  #Ensure column order is correct
+  matrix.order <- c('Group', DC$Group)
+  setcolorder(DC, matrix.order)
   
   #Remove Group names
   DC[, Group := NULL]
   
-  #Add fleet "prey"
-  nfleets <- length(x$model$Group[which(x$model$Type == 3)])
-  fleet.row <- matrix(rep(0, nfleets * ncol(DC)), nfleets, ncol(DC))
-  colnames(fleet.row) <- colnames(DC)
-  DC <- rbind(DC, fleet.row)
-  
-  #Convert NAs to 0
-  DC[is.na(DC)] <- 0
   
   #FCji - Proportion of predation on j from predator i
   #Calculate M2
