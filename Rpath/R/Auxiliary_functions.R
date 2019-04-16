@@ -54,10 +54,6 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   DC[is.na(DC)] <- 0
   
   #FCji - Proportion of predation on j from predator i
-  #Calculate F mortality
-  Fmort    <- as.data.frame(totcatch / y$BB[row(as.matrix(totcatch))])
-  Fmort <- Fmort[1:ngroup, ]
-  
   #Calculate M2
   bio  <- y$BB[1:y$NUM_LIVING]
   BQB  <- bio * y$QB[1:y$NUM_LIVING]
@@ -70,6 +66,13 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   predM      <- rbind(predM, detcons)
   setnames(predM, paste('V',  1:y$NUM_LIVING,    sep = ''),
            paste('M2.', y$Group[1:y$NUM_LIVING], sep = ''))
+  
+  #Add Detrital groups
+  predM <- cbind(predM, det.cols)
+  
+  #Calculate F mortality
+  Fmort    <- as.data.frame(totcatch / y$BB[row(as.matrix(totcatch))])
+  Fmort <- Fmort[1:ngroup, ]
   
   FC <- as.data.table(cbind(predM, Fmort))
   
