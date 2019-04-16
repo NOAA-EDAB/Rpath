@@ -50,6 +50,12 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   #Remove Group names
   DC[, Group := NULL]
   
+  #Add fleet "prey"
+  nfleets <- length(x$model$Group[which(x$model$Type == 3)])
+  fleet.row <- matrix(rep(0, nfleets * ncol(DC)), nfleets, ncol(DC))
+  colnames(fleet.row) <- colnames(DC)
+  DC <- rbind(DC, fleet.row)
+  
   #Convert NAs to 0
   DC[is.na(DC)] <- 0
   
@@ -80,6 +86,10 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   FC[, mort.sum := rowSums(.SD), .SDcols = names(FC)]
   FC <- FC[, .SD / mort.sum, .SDcols = names(FC)]
   FC[, mort.sum := NULL]
+  
+  #Add Fleet rows
+  colnames(fleet.row) <- colnames(FC)
+  FC <- rbind(FC, fleet.row)
   
   #Merge pred and prey
   MTI <- as.matrix(DC - FC)
