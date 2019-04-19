@@ -75,39 +75,31 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   
   
   #FCji - Proportion of predation on j from predator i
-  #Calculate M2
-  bio  <- y$BB[1:y$NUM_LIVING]
-  BQB  <- bio * y$QB[1:y$NUM_LIVING]
-  diet <- as.data.frame(y$DC)
-  nodetrdiet <- diet[1:y$NUM_LIVING, ]
-  detrdiet   <- diet[(y$NUM_LIVING +1):ngroup, ]
-  newcons    <- nodetrdiet * BQB[col(as.matrix(nodetrdiet))]
-  predM      <- newcons / bio[row(as.matrix(newcons))]
-  detcons    <- detrdiet * BQB[col(as.matrix(detrdiet))]
-  predM      <- rbind(predM, detcons)
-  setnames(predM, paste('V',  1:y$NUM_LIVING,    sep = ''),
-           paste('M2.', y$Group[1:y$NUM_LIVING], sep = ''))
+  #Calculate consumption
+  bio  <- y$BB
+  BQB  <- bio * y$QB
+  Tij <- DC * BQB[col(as.matrix(DC))]
   
-  #Add Detrital groups
-  predM <- cbind(predM, det.cols)
+  #Add fishery removals
+  setnames(Tij, fleetnames, paste0('V', seq_along(fleetnames)))
+  Tij[, paste0('V', seq_along(fleetnames)) := NULL]
+  Tij <- cbind(Tij, totcatch)
+  setnames(Tij, paste0('V', seq_along(fleetnames)), fleetnames)
   
-  #Calculate F mortality
-  Fmort    <- as.data.frame(totcatch / y$BB[row(as.matrix(totcatch))])
-  Fmort <- Fmort[1:ngroup, ]
+  #Calculate net production
+  Tim <- rowSums(Tij)
   
-  FC <- as.data.table(cbind(predM, Fmort))
-  
-  #Convert to proportions of total mortality
-  FC[, mort.sum := rowSums(.SD), .SDcols = names(FC)]
-  FC <- FC[, .SD / mort.sum, .SDcols = names(FC)]
-  FC[, mort.sum := NULL]
-  
-  #Add Fleet rows
-  colnames(fleet.row) <- colnames(FC)
-  FC <- rbind(FC, fleet.row)
-  
+  #Calculate fraction of i's production consumed by pred j
+  FCij <- c()
+  for(i in 1:nrow(Tij)){
+    fij <- Tij[i, ] / Tim[i]
+    FCij <- rbind(FCij, fij)
+  }
+  FCji <- t(FCij)
+  FCji[is.na(FCji)] <- 0
+ 
   #Merge pred and prey
-  MTI <- as.matrix(DC - FC)
+  MTI <- as.matrix(DC - FCji)
   
   #Add small increase
   if(increase == T){
