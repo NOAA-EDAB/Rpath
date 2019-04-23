@@ -81,8 +81,7 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   Tij <- DC * BQB[col(as.matrix(DC))]
   
   #Add fishery removals
-  setnames(Tij, fleetnames, paste0('V', seq_along(fleetnames)))
-  Tij[, paste0('V', seq_along(fleetnames)) := NULL]
+  Tij <- Tij[, which(!names(Tij) %in% fleetnames), with = F]
   Tij <- cbind(Tij, totcatch)
   setnames(Tij, paste0('V', seq_along(fleetnames)), fleetnames)
   
@@ -91,8 +90,8 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   
   #Calculate fraction of i's production consumed by pred j
   FCij <- c()
-  for(i in 1:nrow(Tij)){
-    fij <- Tij[i, ] / Tim[i]
+  for(iprey in 1:nrow(Tij)){
+    fij <- Tij[iprey, ] / Tim[iprey]
     FCij <- rbind(FCij, fij)
   }
   FCji <- t(FCij)
