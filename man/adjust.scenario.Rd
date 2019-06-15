@@ -27,7 +27,8 @@ Returns an Rsim.scenario object with the new parameter.
 Modifies the various parameters of the rsim scenario object.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{MTI}},
+  \code{\link{adjust.fishing}},
   \code{\link{adjust.forcing}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
@@ -40,4 +41,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-

@@ -19,8 +19,8 @@ adjust.forcing(Rsim.scenario, parameter, group, sim.year = 1, sim.month = 0,
 \item{sim.month}{Month of the year that should be modified.  If set to 0, all months of
 the year are modified.}
 
-\item{bymonth}{Boolean switch to use only the month parameter rather than the 
-combination of year and month.  Months begin at 1.}
+\item{bymonth}{Boolean value that denotes whether to use sim.year/sim.month combo
+or just sim.month as a sequential vector starting at 1.}
 
 \item{value}{The new value for the parameter.}
 }
@@ -31,7 +31,8 @@ Returns an Rsim.scenario object with the new parameter.
 Modifies the various forcing parameters of the rsim scenario object.
 }
 \seealso{
-Other Rpath.functions: \code{\link{adjust.fishing}},
+Other Rpath functions: \code{\link{MTI}},
+  \code{\link{adjust.fishing}},
   \code{\link{adjust.scenario}},
   \code{\link{check.rpath.params}},
   \code{\link{create.rpath.params}},
@@ -44,4 +45,3 @@ Other Rpath.functions: \code{\link{adjust.fishing}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
-
