@@ -2,10 +2,15 @@ Rpath
 =====
 This is the repository for Rpath - the R version of the Ecopath with Ecosim model
 
+The new public facing repository (NOAA-EDAB/Rpath) was established for release with 
+the Rpath manuscript (Lucey et al. submitted).  Previous repository is no longer maintained.
+
 The initial files are the code sent by Kerim to Sean on March 31, 2014 (ecopath_sim_r_v0_04_toSean_31_03_14.zip)
 Files have been renamed to drop the version number and take advantage of this VCS
 
 Beta version notes:
+v0.0.1.0 - Acknowledgement of package submission along with manuscript
+
 v0.0.0.917 - Fixed bug with adjust.fishing so one value can be applied over a range of sim.years
 
 v0.0.0.916 - Fixed bug with original scenario file and stanza files being overwritten by C code.
