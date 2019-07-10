@@ -303,7 +303,7 @@ return(path.model)
 #'@export 
 rpath.stanzas <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
-  STGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
+  StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
   WageS <- age <- WWa <- Survive <- Z <- surv <- bs.num <- qs.num <- Leading <- NULL
   Group <- Biomass <- r <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- NULL

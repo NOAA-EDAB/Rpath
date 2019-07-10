@@ -447,6 +447,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  #####################################################################################
  #'@export
  rsim.stanzas <- function(Rpath.params, state, params){
+   #Need to define variables to eliminate check() note about no visible binding
+   StGroupNum <- STanzaNum <- GropNum <- First <- Last <- WageS <- NageS <- age <- NULL
+   WWa <- Cons <- NULL
+   
    juvfile <- Rpath.params$stanzas
    if(Rpath.params$stanzas$NStanzaGroups > 0){
      #Set up multistanza parameters to pass to C
