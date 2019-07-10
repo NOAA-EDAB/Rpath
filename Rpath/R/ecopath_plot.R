@@ -31,6 +31,9 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                     labels = FALSE, label.pos = NULL, label.num = FALSE, label.cex = 1,
                     fleets = FALSE, type.col = 'black', box.order = NULL, ...){
+  #Need to define variables to eliminate check() note about no visible binding
+  TL <- TLlevel <- type <- n <- x.space <- x.offset <- Group <- x.pos <- GroupNum <- NULL
+  
   opar <- par(no.readonly = T)
   pointmap <- data.table(GroupNum = 1:length(Rpath.obj$TL), 
                          Group    = Rpath.obj$Group, 
@@ -190,6 +193,9 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@export
 stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
                                                                 'blue', 'red'), ...){
+  #Need to define variables to eliminate check() note about no visible binding
+  B <- NageS <- WageS <- age <- B.scale <- NageS.scale <- WageS.scale <- StGroupNum <- Last <- NULL
+  
   opar <- par(no.readonly = T)
   
   #Convert StanzaGroup to number
