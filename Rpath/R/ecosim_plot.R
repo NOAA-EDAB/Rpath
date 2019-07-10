@@ -8,6 +8,7 @@
 #'
 #'@return Creates a figure of relative biomass.
 #'@import data.table
+#'@importFrom grDevices rainbow
 #'@export
 rsim.plot <- function(Rsim.output, spname, indplot = F, ...){
   opar <- par(no.readonly = T)

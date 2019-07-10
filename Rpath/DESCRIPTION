@@ -13,12 +13,16 @@ Description: This package implements the core equations from the popular
 License: GPL (>= 2)
 Imports:
     data.table,
+    graphics,
+    grDevices,
     MASS,
-    Rcpp (>= 0.11.3)
+    Rcpp (>= 0.11.3),
+    stats,
+    utils
 LinkingTo: Rcpp
 Suggests:
     knitr,
     pandoc,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

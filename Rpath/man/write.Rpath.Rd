@@ -35,3 +35,4 @@ Other Rpath functions: \code{\link{MTI}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+\concept{Rpath functions}

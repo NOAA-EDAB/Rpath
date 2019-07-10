@@ -60,6 +60,8 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 }
 #####################################################################################
 # Runs Ecosim
+#'@import utils
+#'@import stats
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   scene <- copy(Rpath.scenario) 

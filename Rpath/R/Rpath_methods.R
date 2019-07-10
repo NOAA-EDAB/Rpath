@@ -1,5 +1,6 @@
 #Functions for Rpath objects
 #Print Rpath
+#'@import utils
 #'@export
 print.Rpath <- function(x, rows = NA, morts = F, ...){
   cat(paste("Rpath model:", attr(x, 'eco.name'), "\n"))
@@ -57,6 +58,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 }
 
 #Print Rpath.sim
+#'@import utils
 #'@export
 print.Rsim.output <- function(Rsim.output, rows = NA, ...){
   cat(paste("Rpath sim results:", attr(Rsim.output, 'eco.name'),"\n"))
@@ -79,6 +81,7 @@ print.Rsim.output <- function(Rsim.output, rows = NA, ...){
 }
 
 #Print Rsim.scenario
+#'@import utils
 #'@export
 print.Rsim.scenario <- function(x, ...){
   cat(paste("Rpath scenario for", attr(x, 'eco.name'), "\n\n"))
@@ -90,6 +93,7 @@ Modify $forcing or $fishing to alter scenario run")
 }
 
 #Print Rsim.scenario
+#'@import utils
 #'@export
 print.Rsim.params <- function(x, ...){
   cat(paste("Rsim parameters for", attr(x, 'eco.name'), "\n\n"))

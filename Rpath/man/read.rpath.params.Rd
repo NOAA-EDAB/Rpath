@@ -4,8 +4,8 @@
 \alias{read.rpath.params}
 \title{Read Rpath parameters from .csv files}
 \usage{
-read.rpath.params(modfile, dietfile, pedfile = NA, stanzagroupfile = NA,
-  stanzafile = NA)
+read.rpath.params(modfile, dietfile, pedfile = NA,
+  stanzagroupfile = NA, stanzafile = NA)
 }
 \arguments{
 \item{modfile}{file location of the flat file containing the model parameters.}
@@ -45,3 +45,4 @@ Other Rpath functions: \code{\link{MTI}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+\concept{Rpath functions}

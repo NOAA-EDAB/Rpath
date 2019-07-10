@@ -26,6 +26,8 @@
 #'
 #'@return Creates a figure of the food web.
 #'@import data.table
+#'@import graphics
+#'@import utils
 #'@export
 webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col = 'grey',
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
@@ -190,6 +192,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'
 #'@return Creates a figure showing the break down of biomass and number per stanza.
 #'@import data.table
+#'@import graphics
 #'@export
 stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
                                                                 'blue', 'red'), ...){
