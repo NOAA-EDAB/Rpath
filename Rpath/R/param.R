@@ -1,5 +1,4 @@
 ## Rpath functions for creating and checking parameter files  
-#' importfrom Rpath check.rpath.params create.rpath.params read.rpath.params write.rpath.params
 
 #'Creates a shell for the Rpath.params object
 #'
