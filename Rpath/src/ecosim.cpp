@@ -1,5 +1,5 @@
 
-#include "ecosim.h"
+#include "ecosim.h" 
                        
 //################################################################----------
 // Runge-Kutta 4th order method for integrating Ecosim equations
@@ -369,8 +369,9 @@ int y, m, dd;
     // should still write the NA or INF values back to the output.
     //NOJUV make sure crash tests work for juveniles.
     
-           if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
-          CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
+       if ( any(is_na(cur_BB)) | any(is_infinite(cur_BB)) | any(is_nan(cur_BB)) )  {
+              //Rprintf("Exit in %d %d\n",y,m);
+              CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
   
     // KYA 9/13/17 - Now copy cur_BB into state    
