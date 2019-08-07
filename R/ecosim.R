@@ -286,8 +286,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                                           0.0))
   #Ftime related parameters
   simpar$FtimeAdj   <- rep(0.0, length(simpar$B_BaseRef))
-  simpar$FtimeQBOpt <-   c(1.0, Rpath$QB)
-  simpar$PBopt      <-   c(1.0, Rpath$PB)           
+  simpar$FtimeQBOpt <-   c(1.0, ifelse(Rpath$type==1,Rpath$PB,Rpath$QB))
+  simpar$PBopt      <-   c(1.0, Rpath$PB)            
   
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
   #KYA EFFORT REMOVED FROM PARAMS July 2015 (was used for gear targeting)
