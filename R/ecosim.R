@@ -359,18 +359,18 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$PredPredWeight <- AA * Btmp[pd] 
   simpar$PreyPreyWeight <- AA * Btmp[py] 
   
-  simpar$PredTotWeight <- rep(0, length(simpar$B_BaseRef))
-  simpar$PreyTotWeight <- rep(0, length(simpar$B_BaseRef))
+  PredTotWeight <- rep(0, length(simpar$B_BaseRef))
+  PreyTotWeight <- rep(0, length(simpar$B_BaseRef))
   
   for(links in 1:numpredprey){
-    simpar$PredTotWeight[py[links]] <- simpar$PredTotWeight[py[links]] + simpar$PredPredWeight[links]
-    simpar$PreyTotWeight[pd[links]] <- simpar$PreyTotWeight[pd[links]] + simpar$PreyPreyWeight[links]    
+    PredTotWeight[py[links]] <- PredTotWeight[py[links]] + simpar$PredPredWeight[links]
+    PreyTotWeight[pd[links]] <- PreyTotWeight[pd[links]] + simpar$PreyPreyWeight[links]    
   }  
-  #simpar$PredTotWeight[]   <- as.numeric(tapply(simpar$PredPredWeight,py,sum))
-  #simpar$PreyTotWeight[]   <- as.numeric(tapply(simpar$PreyPreyWeight,pd,sum))
+  #PredTotWeight[]   <- as.numeric(tapply(simpar$PredPredWeight,py,sum))
+  #PreyTotWeight[]   <- as.numeric(tapply(simpar$PreyPreyWeight,pd,sum))
   
-  simpar$PredPredWeight <- simpar$PredPredWeight/simpar$PredTotWeight[py]
-  simpar$PreyPreyWeight <- simpar$PreyPreyWeight/simpar$PreyTotWeight[pd]
+  simpar$PredPredWeight <- simpar$PredPredWeight/PredTotWeight[py]
+  simpar$PreyPreyWeight <- simpar$PreyPreyWeight/PreyTotWeight[pd]
   
   simpar$NumPredPreyLinks <- numpredprey
   simpar$PreyFrom       <- c(0, simpar$PreyFrom)

@@ -128,7 +128,7 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
   }
   
   if(parameter %in% c('QQ', 'DD', 'VV', 'HandleSwitch', 'PredPredWeight', 
-                      'PreyPreyWeight', 'PredTotWeight', 'PreyTotWeight')){
+                      'PreyPreyWeight')){
       linknum <- which(Rsim.scenario$params$PreyFrom %in% groupnum &
                          Rsim.scenario$params$PreyTo == groupnumto)  
     Rsim.scenario$params[[param.num]][linknum] <- value
