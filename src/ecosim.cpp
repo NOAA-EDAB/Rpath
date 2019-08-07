@@ -464,7 +464,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    const NumericVector ActiveRespFrac  = as<NumericVector>(params["ActiveRespFrac"]);
    const NumericVector HandleSelf      = as<NumericVector>(params["HandleSelf"]);
    const NumericVector ScrambleSelf    = as<NumericVector>(params["ScrambleSelf"]);
-   const NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
+   //const NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
 
 // NumPredPreyLinks Length vectors
    const IntegerVector PreyFrom        = as<IntegerVector>(params["PreyFrom"]);

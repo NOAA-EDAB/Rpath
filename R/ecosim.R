@@ -290,10 +290,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$PBopt      <-   c(1.0, Rpath$PB)           
   
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
-  #KYA EFFORT REMOVED FROM PARAMS July 2015
-  simpar$fish_Effort <- ifelse(simpar$spnum <= nliving + ndead,
-                               0.0,
-                               1.0) 
+  #KYA EFFORT REMOVED FROM PARAMS July 2015 (was used for gear targeting)
+  #simpar$fish_Effort <- ifelse(simpar$spnum <= nliving + ndead,
+  #                             0.0,
+  #                             1.0) 
   
   #NoIntegrate
   simpar$NoIntegrate <- ifelse(simpar$MzeroMort * simpar$B_BaseRef > 

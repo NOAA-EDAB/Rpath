@@ -122,7 +122,7 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
   
   #Modify parameter
   if(parameter %in% c('B_BaseRef', 'MzeroMort', 'UnassimRespFrac', 'ActiveRespFrac',
-                      'FtimeAdj', 'FtimeQBOpt', 'PBopt', 'fish_Effort', 
+                      'FtimeAdj', 'FtimeQBOpt', 'PBopt', 
                       'NoIntegrate', 'HandleSelf', 'ScrambleSelf')){
     Rsim.scenario$params[[param.num]][groupnum + 1] <- value
   }
