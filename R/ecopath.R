@@ -37,12 +37,12 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL]
 
   #Adjust diet comp of mixotrophs
-  #mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
-  #mix.Q <- 1 - model[mixotrophs, Type]
-  # for(i in seq_along(mixotrophs)){
-  #   new.dc <- diet[, mixotrophs[i], with = F] * mix.Q[i]
-  #   diet[, mixotrophs[i] := new.dc, with = F]
-  # }
+  mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  mix.Q <- 1 - model[mixotrophs, Type]
+   for(i in seq_along(mixotrophs)){
+     new.dc <- diet[, mixotrophs[i], with = F] * mix.Q[i]
+     diet[, mixotrophs[i] := new.dc]
+   }
   
   #Convert NAs to zero in diet matrix
   diet[is.na(diet)] <- 0
@@ -178,12 +178,13 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
-  #Adjust for mixotrophs (partial primary producers)
-  mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
-  mix.Q <- 1 - model[mixotrophs, Type]
-  for(i in seq_along(mixotrophs)){
-    dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
-  }
+  #Adjust for mixotrophs (partial primary producers) - #Moved this code up so that
+  #it also impacted the EE calculation
+  # mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  # mix.Q <- 1 - model[mixotrophs, Type]
+  # for(i in seq_along(mixotrophs)){
+  #   dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
+  # }
   #Adjust for diet import (Consumption outside model)
   import <- which(dietplus[nrow(diet), ] > 0)
   for(i in seq_along(import)){
