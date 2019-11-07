@@ -11,7 +11,7 @@
 #'
 #'@return Returns a matrix of mixed trophic impacts.
 #'@export 
-MTI <- function(Rpath, Rpath.params, increase = T){
+MTI <- function(Rpath, Rpath.params){
   x <- copy(Rpath.params)
   y <- copy(Rpath)
   
@@ -98,21 +98,18 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   FCji[is.na(FCji)] <- 0
  
   #Merge pred and prey
-  MTI <- as.matrix(DC - FCji)
+  net.impact <- as.matrix(DC - FCji)
   
-  #Add small increase
-  if(increase == T){
-    MTI.diag <- diag(MTI) + 1
-  }else{
-    MTI.diag <- diag(MTI) - 1
-  }
+  #Create Identity Matrix
+  identity.matrix <- diag(ncol(net.impact))
   
-  diag(MTI) <- MTI.diag
+  #Calculate all Mixed Trophic Impacts
+  MTI <- MASS::ginv(identity.matrix - net.impact) - identity.matrix
   
-  #Inverse
-  out <- MASS::ginv(MTI)
   
-  return(out)
+  return(MTI)
+  
+  
 }
 
 
