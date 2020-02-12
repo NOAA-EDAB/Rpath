@@ -85,6 +85,7 @@ create.rpath.params <- function(group, type, stgroup = NA){
                            VBGF_Ksp    = NA,
                            VBGF_d      = 0.66667,
                            Wmat        = NA,
+                           BAB         = 0,
                            RecPower    = 1)
     
     #Individual Stanza Parameters
