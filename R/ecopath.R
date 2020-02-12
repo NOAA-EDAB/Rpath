@@ -343,7 +343,8 @@ rpath.stanzas <- function(Rpath.params){
     prev.surv <- 1
     for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
-      month.z <- stanzafile[StGroupNum == isp & StanzaNum == ist, Z] / 12
+      month.z <- (stanzafile[StGroupNum == isp & StanzaNum == ist, Z] + 
+                    groupfile[StGroupNum == isp, BAB]) / 12
       StGroup[age %in% first[ist]:second[ist], surv := exp(-1*month.z)]
       
       if(first[ist] > 0){
