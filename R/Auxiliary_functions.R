@@ -11,7 +11,9 @@
 #'
 #'@return Returns a matrix of mixed trophic impacts.
 #'@export 
-MTI <- function(Rpath, Rpath.params){
+MTI <- function(Rpath, Rpath.params, increase = T){
+  #Need to define variables to eliminate check() note about no visible binding
+  Group <- Type <- V1 <- NULL
   x <- copy(Rpath.params)
   y <- copy(Rpath)
   

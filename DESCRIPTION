@@ -8,17 +8,22 @@ Authors@R: c(
     person("Sean", "Lucey",    email = "Sean.Lucey@NOAA.gov",    
            role = c("aut", "cre")),
     person("Sarah", "Gaichas", email = "Sarah.Gaichas@NOAA.gov", role = "aut"))
-Description: This package implements the core equations from the popular
-    Ecopath with Ecosim mass balance model. (Need to expand)
+Description: This package implements the core mass balance equations made popular
+    by Ecopath with Ecosim. There are two parts to the package, the static snapshot
+    of energy flow through the system using rpath and dynamic simulations run using 
+    the rsim family of functions.
 License: GPL (>= 2)
 Imports:
     data.table,
+    graphics,
+    grDevices,
     MASS,
-    Rcpp (>= 0.11.3)
+    Rcpp (>= 0.11.3),
+    stats,
+    utils
 LinkingTo: Rcpp
 Suggests:
     knitr,
-    pandoc,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

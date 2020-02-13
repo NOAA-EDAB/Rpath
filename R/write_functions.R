@@ -9,6 +9,7 @@
 #'@param morts Logical value whether to output basic parameters or mortalities.  
 #'
 #'@return Writes a .csv file with the basic parameters or mortalities from an Rpath object.
+#'@import utils
 #'@export
 #Write -- note, not a generic function
 write.Rpath <- function(x, file = NA, morts = F, ...){
@@ -76,6 +77,7 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
 #'
 #'@return Writes a .csv file with the start and end biomass and catch per group
 #' from an Rpath.sim object.
+#'@import utils
 #'@export
 #Write -- note, not a generic function
 write.Rsim <- function(Rsim.output, file = NA, ...){
