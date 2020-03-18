@@ -1,5 +1,6 @@
 #Functions for Rpath objects
 #Print Rpath
+#'@import utils
 #'@export
 print.Rpath <- function(x, rows = NA, morts = F, ...){
   cat(paste("Rpath model:", attr(x, 'eco.name'), "\n"))
@@ -57,11 +58,11 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
 }
 
 #Print Rpath.sim
+#'@import utils
 #'@export
-print.Rsim.output <- function(Rsim.output, rows = NA, ...){
-  cat(paste("Rpath sim results:", attr(Rsim.output, 'eco.name'),"\n"))
-  if(Rsim.output$crash_year > 0) cat(paste("Run crashed at", 
-                                           Rsim.output$crash_year, "\n", sep = ''))
+print.Rsim.output <- function(x, rows = NA, ...){
+  cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
+  if(x$crash_year > 0) cat(paste("Run crashed at", x$crash_year, "\n", sep = ''))
   
   gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
   start_Catch <- c(Rsim.output$out_Catch[2, ], gear.zero)
@@ -79,6 +80,7 @@ print.Rsim.output <- function(Rsim.output, rows = NA, ...){
 }
 
 #Print Rsim.scenario
+#'@import utils
 #'@export
 print.Rsim.scenario <- function(x, ...){
   cat(paste("Rpath scenario for", attr(x, 'eco.name'), "\n\n"))
@@ -90,6 +92,7 @@ Modify $forcing or $fishing to alter scenario run")
 }
 
 #Print Rsim.scenario
+#'@import utils
 #'@export
 print.Rsim.params <- function(x, ...){
   cat(paste("Rsim parameters for", attr(x, 'eco.name'), "\n\n"))
@@ -105,10 +108,10 @@ print.Rsim.params <- function(x, ...){
 
 #Summary for Rpath
 #'@export
-summary.Rpath <- function(x, ...){
-  cat(paste("Rpath model:", attr(x, 'eco.name'),"\n"))
-  if(max(x$EE, na.rm = T) > 1){
-    unbalanced.groups <- x$Group[which(x$EE > 1)]
+summary.Rpath <- function(object, ...){
+  cat(paste("Rpath model:", attr(object, 'eco.name'),"\n"))
+  if(max(object$EE, na.rm = T) > 1){
+    unbalanced.groups <- object$Group[which(object$EE > 1)]
     cat("     Status: Unbalanced! \nThe following groups have EE > 1:\n")
     print(unbalanced.groups)
     cat("\n")
@@ -116,25 +119,35 @@ summary.Rpath <- function(x, ...){
     cat("     Status: Balanced\n")
   }
   cat("\nSummary Statistics:\n")
+<<<<<<< HEAD
   totbiomass <- sum(x$Biomass[which(x$type == 0)],    na.rm = T)
   totcatch   <- sum(x$Catch, na.rm = T)
   out <- data.frame(Num.Groups   = x$NUM_GROUPS,
                     Num.Living   = x$NUM_LIVING,
                     Num.Detritus = x$NUM_DEAD,
                     Num.Fleets   = x$NUM_GEARS,
+=======
+  totbiomass <- sum(object$BB[which(object$type == 0)],    na.rm = T)
+  totcatch   <- sum(object$Catch, na.rm = T)
+  out <- data.frame(Num.Groups   = object$NUM_GROUPS,
+                    Num.Living   = object$NUM_LIVING,
+                    Num.Detritus = object$NUM_DEAD,
+                    Num.Fleets   = object$NUM_GEARS,
+>>>>>>> master
                     TotBiomass   = totbiomass,
                     TotCatch     = totcatch)
   print(out)
   cat("\nRpath model also includes:\n")
-  print(names(x))
+  print(names(object))
 }
 
 #Summary for Rpath.sim
 #'@export
-summary.Rsim.output <- function(x, ...){
-  cat(paste("Rsim parameters fos:", attr(x, 'eco.name'),"\n"))
-  if(x$CRASH_YEAR > 0) cat(paste("Run crashed at", x$CRASH_YEAR, "\n", sep = ''))
+summary.Rsim.output <- function(object, ...){
+  cat(paste("Rsim parameters for:", attr(object, 'eco.name'),"\n"))
+  if(object$CRASH_YEAR > 0) cat(paste("Run crashed at", object$CRASH_YEAR, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
+<<<<<<< HEAD
   totbiomass.start <- sum(x$out_Biomass[1, ],                       na.rm = T)
   totbiomass.end   <- sum(x$out_Biomass[nrow(x$out_Biomass), ],          na.rm = T)
   totcatch.start   <- sum(x$out_Catch[1, ] * 12,                  na.rm = T)
@@ -143,13 +156,23 @@ summary.Rsim.output <- function(x, ...){
                     Num.Living      = x$NUM_LIVING,
                     Num.Detritus    = x$NUM_DEAD,
                     Num.Fleets      = x$NUM_GEARS,
+=======
+  totbiomass.start <- sum(object$out_BB[1, ],                       na.rm = T)
+  totbiomass.end   <- sum(object$out_BB[nrow(object$out_BB), ],          na.rm = T)
+  totcatch.start   <- sum(object$out_CC[1, ] * 12,                  na.rm = T)
+  totcatch.end     <- sum(object$out_CC[nrow(object$out_CC) - 1, ] * 12, na.rm = T)
+  out <- data.frame(Num.Groups        = object$NUM_GROUPS,
+                    Num.Living      = object$NUM_LIVING,
+                    Num.Detritus    = object$NUM_DEAD,
+                    Num.Fleets      = object$NUM_GEARS,
+>>>>>>> master
                     TotBiomassStart = totbiomass.start,
                     TotBiomassEnd   = totbiomass.end,
                     TotCatchStart   = totcatch.start,
                     TotCatchEnd     = totcatch.end)
   print(out)
   cat("\nRpath sim also includes:\n")
-  print(names(x))
+  print(names(object))
 }
 
 

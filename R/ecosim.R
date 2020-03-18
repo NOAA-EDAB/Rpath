@@ -60,6 +60,8 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 }
 #####################################################################################
 # Runs Ecosim
+#'@import utils
+#'@import stats
 #'@export
 rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   scene <- copy(Rpath.scenario) 
@@ -284,14 +286,14 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                                           0.0))
   #Ftime related parameters
   simpar$FtimeAdj   <- rep(0.0, length(simpar$B_BaseRef))
-  simpar$FtimeQBOpt <-   c(1.0, Rpath$QB)
-  simpar$PBopt      <-   c(1.0, Rpath$PB)           
+  simpar$FtimeQBOpt <-   c(1.0, ifelse(Rpath$type==1,Rpath$PB,Rpath$QB))
+  simpar$PBopt      <-   c(1.0, Rpath$PB)            
   
   #Fishing Effort defaults to 0 for non-gear, 1 for gear
-  #KYA EFFORT REMOVED FROM PARAMS July 2015
-  simpar$fish_Effort <- ifelse(simpar$spnum <= nliving + ndead,
-                               0.0,
-                               1.0) 
+  #KYA EFFORT REMOVED FROM PARAMS July 2015 (was used for gear targeting)
+  #simpar$fish_Effort <- ifelse(simpar$spnum <= nliving + ndead,
+  #                             0.0,
+  #                             1.0) 
   
   #NoIntegrate
   simpar$NoIntegrate <- ifelse(simpar$MzeroMort * simpar$B_BaseRef > 
@@ -357,25 +359,25 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$PredPredWeight <- AA * Btmp[pd] 
   simpar$PreyPreyWeight <- AA * Btmp[py] 
   
-  simpar$PredTotWeight <- rep(0, length(simpar$B_BaseRef))
-  simpar$PreyTotWeight <- rep(0, length(simpar$B_BaseRef))
+  PredTotWeight <- rep(0, length(simpar$B_BaseRef))
+  PreyTotWeight <- rep(0, length(simpar$B_BaseRef))
   
   for(links in 1:numpredprey){
-    simpar$PredTotWeight[py[links]] <- simpar$PredTotWeight[py[links]] + simpar$PredPredWeight[links]
-    simpar$PreyTotWeight[pd[links]] <- simpar$PreyTotWeight[pd[links]] + simpar$PreyPreyWeight[links]    
+    PredTotWeight[py[links]] <- PredTotWeight[py[links]] + simpar$PredPredWeight[links]
+    PreyTotWeight[pd[links]] <- PreyTotWeight[pd[links]] + simpar$PreyPreyWeight[links]    
   }  
-  #simpar$PredTotWeight[]   <- as.numeric(tapply(simpar$PredPredWeight,py,sum))
-  #simpar$PreyTotWeight[]   <- as.numeric(tapply(simpar$PreyPreyWeight,pd,sum))
+  #PredTotWeight[]   <- as.numeric(tapply(simpar$PredPredWeight,py,sum))
+  #PreyTotWeight[]   <- as.numeric(tapply(simpar$PreyPreyWeight,pd,sum))
   
-  simpar$PredPredWeight <- simpar$PredPredWeight/simpar$PredTotWeight[py]
-  simpar$PreyPreyWeight <- simpar$PreyPreyWeight/simpar$PreyTotWeight[pd]
+  simpar$PredPredWeight <- simpar$PredPredWeight/PredTotWeight[py]
+  simpar$PreyPreyWeight <- simpar$PreyPreyWeight/PreyTotWeight[pd]
   
   simpar$NumPredPreyLinks <- numpredprey
   simpar$PreyFrom       <- c(0, simpar$PreyFrom)
   simpar$PreyTo         <- c(0, simpar$PreyTo)
   simpar$QQ             <- c(0, simpar$QQ)
-  simpar$DD             <- c(0, simpar$DD)
-  simpar$VV             <- c(0, simpar$VV) 
+  simpar$DD             <- c(mhandle, simpar$DD)
+  simpar$VV             <- c(mscramble, simpar$VV) 
   simpar$HandleSwitch   <- c(0, simpar$HandleSwitch) 
   simpar$PredPredWeight <- c(0, simpar$PredPredWeight)
   simpar$PreyPreyWeight <- c(0, simpar$PreyPreyWeight)
@@ -445,6 +447,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  #####################################################################################
  #'@export
  rsim.stanzas <- function(Rpath.params, state, params){
+   #Need to define variables to eliminate check() note about no visible binding
+   StGroupNum <- StanzaNum <- GroupNum <- First <- Last <- WageS <- NageS <- age <- NULL
+   WWa <- Cons <- NULL
+   
    juvfile <- Rpath.params$stanzas
    if(Rpath.params$stanzas$NStanzaGroups > 0){
      #Set up multistanza parameters to pass to C

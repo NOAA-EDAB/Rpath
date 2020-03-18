@@ -1,0 +1,4 @@
+Rpath.Rproj
+
+^.*\.Rproj$
+^\.Rproj\.user$

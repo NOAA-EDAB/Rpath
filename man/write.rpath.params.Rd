@@ -37,3 +37,4 @@ Other Rpath functions: \code{\link{MTI}},
   \code{\link{stanzaplot}}, \code{\link{webplot}},
   \code{\link{write.Rpath}}, \code{\link{write.Rsim}}
 }
+\concept{Rpath functions}

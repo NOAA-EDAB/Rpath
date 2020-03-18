@@ -1,5 +1,5 @@
 
-#include "ecosim.h"
+#include "ecosim.h" 
                        
 //################################################################----------
 // Runge-Kutta 4th order method for integrating Ecosim equations
@@ -368,7 +368,7 @@ int y, m, dd;
     // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
     // should still write the NA or INF values back to the output.
     //NOJUV make sure crash tests work for juveniles.
-    
+   
            if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
@@ -463,7 +463,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    const NumericVector ActiveRespFrac  = as<NumericVector>(params["ActiveRespFrac"]);
    const NumericVector HandleSelf      = as<NumericVector>(params["HandleSelf"]);
    const NumericVector ScrambleSelf    = as<NumericVector>(params["ScrambleSelf"]);
-   const NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
+   //const NumericVector fish_Effort     = as<NumericVector>(params["fish_Effort"]);
 
 // NumPredPreyLinks Length vectors
    const IntegerVector PreyFrom        = as<IntegerVector>(params["PreyFrom"]);

@@ -9,6 +9,9 @@
 #'@return Returns a data table of F values for each species/gear combination.
 #'@export 
 frate.table <- function(Rsim.scenario){
+  #Need to define variables to eliminate check() note about no visible binding
+  Group <- Gear <- Q <- NULL
+  
   fish <- data.table(Group = Rsim.scenario$params$FishFrom,
                      Gear  = Rsim.scenario$params$FishThrough,
                      Q     = Rsim.scenario$params$FishQ)
@@ -119,13 +122,13 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
   
   #Modify parameter
   if(parameter %in% c('B_BaseRef', 'MzeroMort', 'UnassimRespFrac', 'ActiveRespFrac',
-                      'FtimeAdj', 'FtimeQBOpt', 'PBopt', 'fish_Effort', 
+                      'FtimeAdj', 'FtimeQBOpt', 'PBopt', 
                       'NoIntegrate', 'HandleSelf', 'ScrambleSelf')){
     Rsim.scenario$params[[param.num]][groupnum + 1] <- value
   }
   
   if(parameter %in% c('QQ', 'DD', 'VV', 'HandleSwitch', 'PredPredWeight', 
-                      'PreyPreyWeight', 'PredTotWeight', 'PreyTotWeight')){
+                      'PreyPreyWeight')){
       linknum <- which(Rsim.scenario$params$PreyFrom %in% groupnum &
                          Rsim.scenario$params$PreyTo == groupnumto)  
     Rsim.scenario$params[[param.num]][linknum] <- value

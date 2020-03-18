@@ -5,10 +5,10 @@
 \title{Plot routine for Ecopath food web}
 \usage{
 webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"),
-  line.col = "grey", highlight = NULL, highlight.col = c("black", "red",
-  "orange"), labels = FALSE, label.pos = NULL, label.num = FALSE,
-  label.cex = 1, fleets = FALSE, type.col = "black", box.order = NULL,
-  ...)
+  line.col = "grey", highlight = NULL, highlight.col = c("black",
+  "red", "orange"), labels = FALSE, label.pos = NULL,
+  label.num = FALSE, label.cex = 1, fleets = FALSE,
+  type.col = "black", box.order = NULL, ...)
 }
 \arguments{
 \item{Rpath.obj}{Rpath model created by the ecopath() function.}
@@ -65,3 +65,4 @@ Other Rpath functions: \code{\link{MTI}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+\concept{Rpath functions}

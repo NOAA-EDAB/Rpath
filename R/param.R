@@ -21,6 +21,9 @@
 #'@import data.table
 #'@export
 create.rpath.params <- function(group, type, stgroup = NA){
+  #Need to define variables to eliminate check() note about no visible binding
+  Group <- DetInput <- V1 <- StGroupNum <- NULL
+  
   Rpath.params <- list()
   
   pred.group  <- group[which(type < 2)]
@@ -157,6 +160,9 @@ create.rpath.params <- function(group, type, stgroup = NA){
 #'@import data.table
 #'@export
 check.rpath.params <- function(Rpath.params){
+  #Need to define variables to eliminate check() note about no visible binding
+  Type <- Group <- Biomass <- EE <- PB <- QB <- ProdCons <- BioAcc <- Unassim <- DetInput <- NULL
+  
   w <- 0 #warning counter
   #Check to make sure all types are represented
   if(nrow(Rpath.params$model[Type == 0, ]) == 0){
@@ -399,6 +405,9 @@ if(w == 0){
 #'@export
 read.rpath.params <- function(modfile, dietfile, pedfile = NA,
                               stanzagroupfile = NA, stanzafile = NA){
+  #Need to define variables to eliminate check() note about no visible binding
+  Type <- Group <- V1 <- NULL
+  
   Rpath.params <- list()
   Rpath.params$model <- as.data.table(read.csv(modfile,  header = T))
   Rpath.params$diet  <- as.data.table(read.csv(dietfile, header = T))

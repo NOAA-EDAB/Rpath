@@ -4,8 +4,8 @@
 \alias{stanzaplot}
 \title{Plot routine for Ecopath multistanzas}
 \usage{
-stanzaplot(Rpath.params, StanzaGroup, line.cols = c("black", "green", "blue",
-  "red"), ...)
+stanzaplot(Rpath.params, StanzaGroup, line.cols = c("black", "green",
+  "blue", "red"), ...)
 }
 \arguments{
 \item{Rpath.params}{R object containing the Rpath parameters modified by the 
@@ -38,3 +38,4 @@ Other Rpath functions: \code{\link{MTI}},
   \code{\link{write.Rsim}},
   \code{\link{write.rpath.params}}
 }
+\concept{Rpath functions}

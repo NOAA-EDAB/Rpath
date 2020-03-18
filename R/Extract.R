@@ -10,6 +10,9 @@
 #'@return Returns a list object with node specific data.
 #'@export 
 extract.node <- function(Rsim.output, group){
+  #Need to define variables to eliminate check() note about no visible binding
+  Total <- NULL
+  
   #Determine which group number cooresponds to the node
   groupnum <- which(Rsim.output$params$spname == group)
   
