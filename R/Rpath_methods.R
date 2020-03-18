@@ -119,21 +119,12 @@ summary.Rpath <- function(object, ...){
     cat("     Status: Balanced\n")
   }
   cat("\nSummary Statistics:\n")
-<<<<<<< HEAD
-  totbiomass <- sum(x$Biomass[which(x$type == 0)],    na.rm = T)
-  totcatch   <- sum(x$Catch, na.rm = T)
-  out <- data.frame(Num.Groups   = x$NUM_GROUPS,
-                    Num.Living   = x$NUM_LIVING,
-                    Num.Detritus = x$NUM_DEAD,
-                    Num.Fleets   = x$NUM_GEARS,
-=======
-  totbiomass <- sum(object$BB[which(object$type == 0)],    na.rm = T)
+  totbiomass <- sum(object$Biomass[which(object$type == 0)], na.rm = T)
   totcatch   <- sum(object$Catch, na.rm = T)
   out <- data.frame(Num.Groups   = object$NUM_GROUPS,
                     Num.Living   = object$NUM_LIVING,
                     Num.Detritus = object$NUM_DEAD,
                     Num.Fleets   = object$NUM_GEARS,
->>>>>>> master
                     TotBiomass   = totbiomass,
                     TotCatch     = totcatch)
   print(out)
@@ -147,25 +138,14 @@ summary.Rsim.output <- function(object, ...){
   cat(paste("Rsim parameters for:", attr(object, 'eco.name'),"\n"))
   if(object$CRASH_YEAR > 0) cat(paste("Run crashed at", object$CRASH_YEAR, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
-<<<<<<< HEAD
-  totbiomass.start <- sum(x$out_Biomass[1, ],                       na.rm = T)
-  totbiomass.end   <- sum(x$out_Biomass[nrow(x$out_Biomass), ],          na.rm = T)
-  totcatch.start   <- sum(x$out_Catch[1, ] * 12,                  na.rm = T)
-  totcatch.end     <- sum(x$out_Catch[nrow(x$out_Catch) - 1, ] * 12, na.rm = T)
-  out <- data.frame(Num.Groups        = x$NUM_GROUPS,
-                    Num.Living      = x$NUM_LIVING,
-                    Num.Detritus    = x$NUM_DEAD,
-                    Num.Fleets      = x$NUM_GEARS,
-=======
-  totbiomass.start <- sum(object$out_BB[1, ],                       na.rm = T)
-  totbiomass.end   <- sum(object$out_BB[nrow(object$out_BB), ],          na.rm = T)
-  totcatch.start   <- sum(object$out_CC[1, ] * 12,                  na.rm = T)
-  totcatch.end     <- sum(object$out_CC[nrow(object$out_CC) - 1, ] * 12, na.rm = T)
-  out <- data.frame(Num.Groups        = object$NUM_GROUPS,
+  totbiomass.start <- sum(object$out_Biomass[1, ], na.rm = T)
+  totbiomass.end   <- sum(object$out_Biomass[nrow(object$out_Biomass), ], na.rm = T)
+  totcatch.start   <- sum(object$out_Catch[1, ] * 12, na.rm = T)
+  totcatch.end     <- sum(object$out_Catch[nrow(object$out_Catch) - 1, ] * 12, na.rm = T)
+  out <- data.frame(Num.Groups      = object$NUM_GROUPS,
                     Num.Living      = object$NUM_LIVING,
                     Num.Detritus    = object$NUM_DEAD,
                     Num.Fleets      = object$NUM_GEARS,
->>>>>>> master
                     TotBiomassStart = totbiomass.start,
                     TotBiomassEnd   = totbiomass.end,
                     TotCatchStart   = totcatch.start,
