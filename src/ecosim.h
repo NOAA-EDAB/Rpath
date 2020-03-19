@@ -28,8 +28,15 @@ using namespace Rcpp;
    int Adams_Basforth_old (List mod, int StartYear, int EndYear);
 
 // Power function that works with NumericVectors
-   NumericVector vpow(const NumericVector base, const NumericVector exp) {
+struct pow_wrapper{
+   public: double operator()(double a, double b){
+      return ::pow(a, b);
+   }
+};
+
+NumericVector vpow(const NumericVector base, const NumericVector exp) {
    NumericVector out(base.size());
-   std::transform(base.begin(), base.end(),
-                 exp.begin(), out.begin(), ::pow); return out; }
+   std::transform(base.cbegin(), base.cend(), exp.cbegin(), out.begin(), pow_wrapper());
+   return out;
+}
          
