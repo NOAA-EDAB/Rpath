@@ -40,7 +40,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   start_state$EggsStanza <-stanzas$baseEggsStanza
   start_state$NageS      <-stanzas$baseNageS
   start_state$WageS      <-stanzas$baseWageS
-  start_state$QageS        <-stanzas$baseWWa
+  start_state$QageS        <-stanzas$baseQageS
     
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
@@ -463,7 +463,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$baseWageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      rstan$baseNageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
-     rstan$baseWWa     <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$baseQageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      
      sPred <- rep(0, params$NUM_GROUPS + 1) #rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
      
@@ -478,7 +478,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        }
        rstan$baseWageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$baseNageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-       rstan$baseWWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$QageS
+       rstan$baseQageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$QageS
      }
      
      #Maturity
@@ -566,7 +566,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$Age2           <- matrix(rep(0, 4), 2, 2)
      rstan$baseWageS      <- matrix(rep(0, 4), 2, 2)
      rstan$baseNageS      <- matrix(rep(0, 4), 2, 2)
-     rstan$baseWWa        <- matrix(rep(0, 4), 2, 2)
+     rstan$baseQageS      <- matrix(rep(0, 4), 2, 2)
      rstan$Wmat           <- c(0, 0)
      #rstan$Wmat001        <- c(0, 0)
      #rstan$Wmat50         <- c(0, 0)
