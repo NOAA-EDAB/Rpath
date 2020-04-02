@@ -273,7 +273,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
                      QB         = balanced$QB,
                      EE         = balanced$EE,
                      BA         = model[, BioAcc],
-                     Unassim    = model[, Unassim],
+                     U          = model[, Unassim],
                      GE         = balanced$GE,
                      DC         = dietm,
                      DetFate    = detfatem,
