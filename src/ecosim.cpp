@@ -224,7 +224,7 @@ int y, m, dd;
    //const int NumForcedBio        = as<int>(fitting["NumForcedBio"]);
    //const IntegerVector BforceNum = as<IntegerVector>(fitting["BforceNum"]);
    // KYA TODO 11/1/2017 put force_bybio in RK!
-   NumericMatrix force_bybio       = as<NumericMatrix>(forcing["bybio"]);
+   NumericMatrix force_bybio       = as<NumericMatrix>(forcing["ForcedBio"]);
 
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
@@ -502,16 +502,16 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 
 // "Environmental" forcing matrices (dd-indexed month x species)
 // SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
-   NumericMatrix force_byprey     = as<NumericMatrix>(forcing["byprey"]);
-   NumericMatrix force_bymort     = as<NumericMatrix>(forcing["bymort"]);
-   NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["bysearch"]);
-   NumericMatrix force_bymigrate  = as<NumericMatrix>(forcing["bymigrate"]);
+   NumericMatrix force_byprey     = as<NumericMatrix>(forcing["ForcedPrey"]);
+   NumericMatrix force_bymort     = as<NumericMatrix>(forcing["ForcedMort"]);
+   NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["ForcedSearch"]);
+   NumericMatrix force_bymigrate  = as<NumericMatrix>(forcing["ForcedMigrate"]);
    
 // Fishing forcing matrices (indexed year x species)  
 // SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
-   NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["FRATE"]);
-   NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["CATCH"]);
-   NumericMatrix EffortMat        = as<NumericMatrix>(fishing["EFFORT"]); 
+   NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["ForcedFRate"]);
+   NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["ForcedCatch"]);
+   NumericMatrix EffortMat        = as<NumericMatrix>(fishing["Effort"]); 
 
 // Components of derivative calculated here  
    NumericVector TotGain(NUM_GROUPS+1);       
@@ -666,13 +666,13 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 //   
  double caught;   
    // Apply specified Effort by Gear to catch (using Ecopath-set Q)
-      NumericVector EFFORT = (NumericVector)EffortMat(dd,_);
+      NumericVector Effort = (NumericVector)EffortMat(dd,_);
       for (links=1; links<=NumFishingLinks; links++){
  				 prey = FishFrom[links];
  				 gr   = FishThrough[links];
  				 dest = FishTo[links];
          egr  = FishThrough[links] - (NUM_LIVING + NUM_DEAD);
- 				 caught =  FishQ[links] * EFFORT[egr] * state_Biomass[prey]; 
+ 				 caught =  FishQ[links] * Effort[egr] * state_Biomass[prey]; 
           FishingLoss[prey] += caught;
           FishingThru[gr]   += caught;
           FishingGain[dest] += caught;
@@ -869,7 +869,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
   const NumericVector state_Biomass = as<NumericVector>(state["Biomass"]);
   
   //forcing parameters
-  NumericMatrix force_byrecs   = as<NumericMatrix>(forcing["byrecs"]);
+  NumericMatrix force_byrecs   = as<NumericMatrix>(forcing["ForcedRecs"]);
 
   //derivatives
   const NumericVector LossPropToB = as<NumericVector>(deriv["LossPropToB"]);

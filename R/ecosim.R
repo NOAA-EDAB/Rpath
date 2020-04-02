@@ -69,7 +69,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   # Figure out starting and ending years for run
   # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
     #if (length(years)<2){stop("Years should be a vector of year labels")}
-    scene.years <- row.names(Rpath.scenario$fishing$FRATE)
+    scene.years <- row.names(Rpath.scenario$fishing$ForcedFRate)
     syear <- which(as.character(head(years,1))==scene.years)
     eyear <- which(as.character(tail(years,1))==scene.years)
     if (eyear<syear)     {stop("End year cannot be less than start year.")}
@@ -115,7 +115,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   #if(!is.null(Rpath.scenario$fitting$years)){
   #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_Catch[,1]))
     # put years in row names
-     ys <- min(as.numeric(rownames(scene$fishing$CATCH)))
+     ys <- min(as.numeric(rownames(scene$fishing$ForcedCatch)))
      ylist <- seq(ys,length.out=length(rout$annual_Catch[,1]))
       rownames(rout$annual_Catch) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_Biomass) <-    ylist #Rpath.scenario$fitting$years
@@ -162,9 +162,9 @@ rsim.fishing <- function(params, years){
   #}
   colnames(YF) <- params$spname[1:(params$NUM_BIO+1)]
   colnames(MF) <- c("Outside",params$spname[(params$NUM_BIO+2):(params$NUM_GROUPS+1)])
-  fishing <- list(EFFORT = MF,
-                  FRATE  = YF,
-                  CATCH  = YF)   
+  fishing <- list(Effort      = MF,
+                  ForcedFRate = YF,
+                  ForcedCatch = YF)   
   
   class(fishing) <- "Rsim.fishing"
   return (fishing)
@@ -184,12 +184,12 @@ rsim.forcing <- function(params, years){
   }
   rownames(MF) <- year.m
   colnames(MF) <- params$spname
-  forcing <- list(byprey    = MF, 
-                  bymort    = MF, 
-                  byrecs    = MF, 
-                  bysearch  = MF,
-                  bymigrate = MF * 0,
-                  bybio     = MF * -1)
+  forcing <- list(ForcedPrey    = MF, 
+                  ForcedMort    = MF, 
+                  ForcedRecs    = MF, 
+                  ForcedSearch  = MF,
+                  ForcedMigrate = MF * 0,
+                  ForcedBio     = MF * -1)
   
   class(forcing) <- "Rsim.forcing"
   return (forcing)

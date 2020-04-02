@@ -20,7 +20,7 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   # KYA adds run date and some random salt to ensure uniquieness  
     scene$rundate <- paste(Sys.time(),":salt:",runif(1))    
   
-  scene.years <- row.names(Rsim.scenario$fishing$FRATE)
+  scene.years <- row.names(Rsim.scenario$fishing$ForcedFRate)
   year.start  <- as.numeric(tail(row.names(Rsim.output$annual_Biomass),1)) + 1
   step.start  <- which(scene.years==year.start)
   step.end    <- which(scene.years==year.end)
