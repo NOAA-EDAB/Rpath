@@ -307,7 +307,7 @@ return(path.model)
 rpath.stanzas <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
   StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
-  WageS <- age <- WWa <- Survive <- Z <- surv <- bs.num <- qs.num <- Leading <- NULL
+  WageS <- age <- QageS <- Survive <- Z <- surv <- bs.num <- qs.num <- Leading <- NULL
   Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- NULL
   
@@ -346,7 +346,7 @@ rpath.stanzas <- function(Rpath.params){
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
     StGroup[, WageS := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
-    StGroup[, WWa   := WageS ^ d]
+    StGroup[, QageS   := WageS ^ d]
     
     #Calculate the relative number of animals at age a
     #Vector of survival rates from 1 stanza to the next
@@ -367,7 +367,7 @@ rpath.stanzas <- function(Rpath.params){
       }
       
       StGroup[, B := Survive * WageS]
-      StGroup[, Q := Survive * WWa]
+      StGroup[, Q := Survive * QageS]
       
       #Numerator for the relative biomass/consumption calculations
       b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]

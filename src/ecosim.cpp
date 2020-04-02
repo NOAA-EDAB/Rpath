@@ -801,7 +801,7 @@ int SplitSetPred(List stanzas, List state){
   //Parts of Stanza State  
   NumericMatrix NageS          = as<NumericMatrix>(state["NageS"]);
   NumericMatrix WageS          = as<NumericMatrix>(state["WageS"]);
-  NumericMatrix WWa            = as<NumericMatrix>(state["WWa"]);
+  NumericMatrix QageS          = as<NumericMatrix>(state["QageS"]);
   NumericVector stanzaPred     = as<NumericVector>(state["StanzaPred"]);
   //state parameters
   NumericVector state_Biomass = as<NumericVector>(state["Biomass"]);
@@ -815,7 +815,7 @@ int SplitSetPred(List stanzas, List state){
       Nt = 1e-30;
       for (ia = Age1(isp, ist); ia <= Age2(isp, ist); ia++){
         Bt = Bt + NageS(ia, isp) * WageS(ia, isp);
-        pt = pt + NageS(ia, isp) * WWa(ia, isp);
+        pt = pt + NageS(ia, isp) * QageS(ia, isp);
         Nt = Nt + NageS(ia, isp);
       }
       state_Biomass[ieco] = Bt;
@@ -862,7 +862,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
   NumericVector EggsStanza           = as<NumericVector>(state["EggsStanza"]);  
   NumericMatrix NageS                = as<NumericMatrix>(state["NageS"]);
   NumericMatrix WageS                = as<NumericMatrix>(state["WageS"]);  
-  NumericMatrix WWa                  = as<NumericMatrix>(state["WWa"]);
+  NumericMatrix QageS                = as<NumericMatrix>(state["QageS"]);
   NumericVector stanzaPred           = as<NumericVector>(state["StanzaPred"]);  
   
   //state parameters
@@ -933,7 +933,7 @@ int SplitUpdate(List stanzas, List state, List forcing, List deriv, int yr, int 
     //Uses generalized vonB (exponent is d)
     //Added for stability 4/13/07 (Unlucky Friday)
     for(ia = 0; ia <= last; ia++){
-      WWa(ia, isp) = pow(double(WageS(ia, isp)), double(vBGFd[isp]));
+      QageS(ia, isp) = pow(double(WageS(ia, isp)), double(vBGFd[isp]));
     }
   }
 

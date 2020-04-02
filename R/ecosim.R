@@ -40,7 +40,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   start_state$EggsStanza <-stanzas$baseEggsStanza
   start_state$NageS      <-stanzas$baseNageS
   start_state$WageS      <-stanzas$baseWageS
-  start_state$WWa        <-stanzas$baseWWa
+  start_state$QageS        <-stanzas$baseWWa
     
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
@@ -449,7 +449,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  rsim.stanzas <- function(Rpath.params, state, params){
    #Need to define variables to eliminate check() note about no visible binding
    StGroupNum <- StanzaNum <- GroupNum <- First <- Last <- WageS <- NageS <- age <- NULL
-   WWa <- Cons <- NULL
+   QageS <- Cons <- NULL
    
    juvfile <- Rpath.params$stanzas
    if(Rpath.params$stanzas$NStanzaGroups > 0){
@@ -478,7 +478,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        }
        rstan$baseWageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$baseNageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-       rstan$baseWWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WWa
+       rstan$baseWWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$QageS
      }
      
      #Maturity
@@ -526,7 +526,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
          ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
          first <- rstan$Age1[isp + 1, ist + 1]
          last  <- rstan$Age2[isp + 1, ist + 1]
-         pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
+         pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * QageS])
          StartEatenBy <- juvfile$stindiv[StGroupNum == isp & StanzaNum == ist, Cons]
   
          SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
