@@ -491,7 +491,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      #rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
      #rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
      rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
-     rstan$recruits <- c(0, juvfile$stgroup$r)
+     rstan$recruits <- c(0, juvfile$stgroup$R)
      rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
      rstan$RzeroS   <- rstan$recruits
      

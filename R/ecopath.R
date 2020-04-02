@@ -308,7 +308,7 @@ rpath.stanzas <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
   StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
   WageS <- age <- WWa <- Survive <- Z <- surv <- bs.num <- qs.num <- Leading <- NULL
-  Group <- Biomass <- r <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
+  Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- NULL
   
   #Determine the total number of groups with multistanzas
@@ -384,7 +384,7 @@ rpath.stanzas <- function(Rpath.params){
     BioPerEgg <- StGroup[age %in% BaseStanza[, First]:BaseStanza[, Last], sum(B)]
     recruits <- Rpath.params$model[Group == BaseStanza[, Group], Biomass] / BioPerEgg
     #Save recruits
-    groupfile[StGroupNum == isp, r := recruits]
+    groupfile[StGroupNum == isp, R := recruits]
 
     #Numbers at age S
     StGroup[, NageS := Survive * recruits]
