@@ -278,11 +278,11 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   #Mzero proportional to (1-EE)
   simpar$MzeroMort <- c(0.0, Rpath$PB * (1.0 - Rpath$EE)) 
   #Unassimilated is the proportion of CONSUMPTION that goes to detritus.  
-  simpar$UnassimRespFrac <- c(0.0, Rpath$Unassim);
+  simpar$UnassimRespFrac <- c(0.0, Rpath$U);
   #Active respiration is proportion of CONSUMPTION that goes to "heat"
   #Passive respiration/ VonB adjustment is left out here
   simpar$ActiveRespFrac <-  c(0.0, ifelse(Rpath$QB > 0, 
-                                          1.0 - (Rpath$PB / Rpath$QB) - Rpath$Unassim, 
+                                          1.0 - (Rpath$PB / Rpath$QB) - Rpath$U, 
                                           0.0))
   #Ftime related parameters
   simpar$FtimeAdj   <- rep(0.0, length(simpar$B_BaseRef))
