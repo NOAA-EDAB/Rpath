@@ -126,11 +126,11 @@ create.rpath.params <- function(group, type, stgroup = NA){
   Rpath.params$stanzas$stindiv  <- stindiv
     
   #Pedigree
-  pedigree <- data.table(Group = group,
-                         B     = 1,
-                         PB    = 1,
-                         QB    = 1,
-                         Diet  = 1)
+  pedigree <- data.table(Group   = group,
+                         Biomass = 1,
+                         PB      = 1,
+                         QB      = 1,
+                         Diet    = 1)
   #Add fleet pedigree
   for(i in 1:length(fleet.group)){
     pedigree[, V1 := 1]
