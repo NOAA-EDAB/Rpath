@@ -14,7 +14,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
     cat("     Status: Balanced\n")
   }
   if(morts == F){
-    removals <- rowSums(x$Catch) + rowSums(x$Discard)
+    removals <- rowSums(x$Landings) + rowSums(x$Discard)
     out <- data.frame(Group    = x$Group,
                       type     = x$type,
                       TL       = x$TL,
@@ -35,7 +35,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
              x$EE[(x$NUM_LIVING + 1):ngroup])
     out <- cbind(out, M0)
     #Calculate F mortality
-    totcatch <- x$Catch + x$Discards
+    totcatch <- x$Landings + x$Discards
     Fmort    <- as.data.frame(totcatch / x$Biomass[row(as.matrix(totcatch))])
     setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
                     paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
@@ -120,13 +120,13 @@ summary.Rpath <- function(object, ...){
   }
   cat("\nSummary Statistics:\n")
   totbiomass <- sum(object$Biomass[which(object$type == 0)], na.rm = T)
-  totcatch   <- sum(object$Catch, na.rm = T)
+  totland    <- sum(object$Landings, na.rm = T)
   out <- data.frame(Num.Groups   = object$NUM_GROUPS,
                     Num.Living   = object$NUM_LIVING,
                     Num.Detritus = object$NUM_DEAD,
                     Num.Fleets   = object$NUM_GEARS,
                     TotBiomass   = totbiomass,
-                    TotCatch     = totcatch)
+                    TotLandings  = totland)
   print(out)
   cat("\nRpath model also includes:\n")
   print(names(object))

@@ -66,29 +66,29 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   model[, QB := QB.1]
   model[, PB := PB.1]
   
-  # define catch, discards, necessary sums
-  catchmat    <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
+  # define landings, discards, necessary sums
+  landmat     <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
   discardmat  <- model[, (10 + ndead + 1 + ngear):(10 + ndead + (2 * ngear)), with = F]
-  totcatchmat <- catchmat + discardmat
+  totcatchmat <- landmat + discardmat
     
   # KYA 1/16/14 Need if statement here because rowSums fail if only one 
   # fishery (catch is vector instead of matrix)     ##FIX PROPAGATION HERE
   if (is.data.frame(totcatchmat)){
-    totcatch  <- rowSums(totcatchmat)
-    catch     <- rowSums(catchmat)    
-    discards  <- rowSums(discardmat)  
-    gearcatch <- colSums(catchmat,   na.rm = T)
-    geardisc  <- colSums(discardmat, na.rm = T)
+    totcatch <- rowSums(totcatchmat)
+    landings <- rowSums(landmat)    
+    discards <- rowSums(discardmat)  
+    gearland <- colSums(landmat,   na.rm = T)
+    geardisc <- colSums(discardmat, na.rm = T)
   }else{
-    totcatch  <- totcatchmat
-    catch     <- catchmat    
-    discards  <- discardmat 
-    gearcatch <- sum(catchmat,   na.rm = T)
-    geardisc  <- sum(discardmat, na.rm = T)                     
+    totcatch <- totcatchmat
+    landings <- landmat    
+    discards <- discardmat 
+    gearland <- sum(landmat,    na.rm = T)
+    geardisc <- sum(discardmat, na.rm = T)                     
   }   
   
-  geartot <- gearcatch + geardisc
-  model[, catch    := catch]
+  geartot <- gearland + geardisc
+  model[, landings := landings]
   model[, discards := discards]
   model[, totcatch := totcatch]
 
@@ -250,9 +250,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   dietm                               <- as.matrix(diet)
   dimnames(dietm)                     <- list(NULL, NULL)
   dietm[is.na(dietm)]                 <- 0
-  catchmatm                           <- as.matrix(catchmat)
-  dimnames(catchmatm)                 <- list(NULL, NULL)
-  catchmatm[is.na(catchmatm)]         <- 0
+  landmatm                            <- as.matrix(landmat)
+  dimnames(landmatm)                  <- list(NULL, NULL)
+  landmatm[is.na(landmatm)]           <- 0
   discardmatm                         <- as.matrix(discardmat)
   dimnames(discardmatm)               <- list(NULL, NULL)
   discardmatm[is.na(discardmatm)]     <- 0
@@ -277,7 +277,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
                      GE         = balanced$GE,
                      DC         = dietm,
                      DetFate    = detfatem,
-                     Catch      = catchmatm,
+                     Landings   = landmatm,
                      Discards   = discardmatm)      
 
 #Define class of output

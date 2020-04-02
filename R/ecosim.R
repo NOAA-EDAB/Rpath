@@ -382,10 +382,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$PredPredWeight <- c(0, simpar$PredPredWeight)
   simpar$PreyPreyWeight <- c(0, simpar$PreyPreyWeight)
   
-  #catchlinks
-  fishfrom    <- row(as.matrix(Rpath$Catch))
-  fishthrough <- col(as.matrix(Rpath$Catch)) + (nliving + ndead)
-  fishcatch   <- Rpath$Catch
+  #landing links
+  fishfrom    <- row(as.matrix(Rpath$Landings))
+  fishthrough <- col(as.matrix(Rpath$Landings)) + (nliving + ndead)
+  fishcatch   <- Rpath$Landings
   fishto      <- fishfrom * 0
   
   if(sum(fishcatch) > 0){
