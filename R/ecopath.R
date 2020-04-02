@@ -307,7 +307,7 @@ return(path.model)
 rpath.stanzas <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
   StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
-  WageS <- age <- QageS <- Survive <- Z <- surv <- bs.num <- qs.num <- Leading <- NULL
+  WageS <- age <- QageS <- Survive <- Z <- l <- bs.num <- qs.num <- Leading <- NULL
   Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- NULL
   
@@ -355,7 +355,7 @@ rpath.stanzas <- function(Rpath.params){
     for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
       month.z <- stanzafile[StGroupNum == isp & StanzaNum == ist, Z] / 12
-      StGroup[age %in% first[ist]:second[ist], surv := exp(-1*month.z)]
+      StGroup[age %in% first[ist]:second[ist], l := exp(-1*month.z)]
       
       if(first[ist] > 0){
         StGroup[age == first[ist], Survive := StGroup[age == first[ist] - 1, 
@@ -363,7 +363,7 @@ rpath.stanzas <- function(Rpath.params){
       }
       
       for(a in (first[ist] + 1):second[ist]){
-        StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * surv]
+        StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * l]
       }
       
       StGroup[, B := Survive * WageS]
