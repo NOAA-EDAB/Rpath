@@ -805,7 +805,7 @@ int SplitSetPred(List stanzas, List state){
   NumericVector stanzaPred     = as<NumericVector>(state["StanzaPred"]);
   //state parameters
   NumericVector state_Biomass = as<NumericVector>(state["Biomass"]);
-  NumericVector state_NN = as<NumericVector>(state["NN"]);
+  NumericVector state_N = as<NumericVector>(state["N"]);
 
   for (isp = 1; isp <= Nsplit; isp++){
     for (ist = 1; ist <= Nstanzas[isp]; ist++){
@@ -819,7 +819,7 @@ int SplitSetPred(List stanzas, List state){
         Nt = Nt + NageS(ia, isp);
       }
       state_Biomass[ieco] = Bt;
-      state_NN[ieco] = Nt;
+      state_N[ieco] = Nt;
       stanzaPred[ieco] = pt;
     }
   }
