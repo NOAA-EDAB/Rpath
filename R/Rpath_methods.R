@@ -64,14 +64,14 @@ print.Rsim.output <- function(x, rows = NA, ...){
   cat(paste("Rpath sim results:", attr(x, 'eco.name'),"\n"))
   if(x$crash_year > 0) cat(paste("Run crashed at", x$crash_year, "\n", sep = ''))
   
-  gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
-  start_Catch <- c(Rsim.output$out_Catch[2, ], gear.zero)
-  end_Catch   <- c(Rsim.output$out_Catch[nrow(Rsim.output$out_Catch) - 1, ], gear.zero)
-  out <- data.frame(Group      = Rsim.output$params$spname,
-                    StartBio   = Rsim.output$start_state$Biomass,
-                    EndBio     = Rsim.output$end_state$Biomass,
-                    BioES      = Rsim.output$end_state$Biomass / 
-                                 Rsim.output$start_state$Biomass,
+  gear.zero <- rep(0, x$params$NUM_GEARS)
+  start_Catch <- c(x$out_Catch[2, ], gear.zero)
+  end_Catch   <- c(x$out_Catch[nrow(x$out_Catch) - 1, ], gear.zero)
+  out <- data.frame(Group      = x$params$spname,
+                    StartBio   = x$start_state$Biomass,
+                    EndBio     = x$end_state$Biomass,
+                    BioES      = x$end_state$Biomass / 
+                                 x$start_state$Biomass,
                     StartCatch = start_Catch * 12,
                     EndCatch   = end_Catch * 12,
                     CatchES    = (end_Catch * 12) / (start_Catch * 12))
@@ -88,7 +88,8 @@ print.Rsim.scenario <- function(x, ...){
 $forcing contains the forcing parameters
 $fishing contains the fishing parameters
 $state contains the initial state parameters \n
-Modify $forcing or $fishing to alter scenario run")
+Use adjust functions to modify
+$forcing or $fishing to alter scenario run")
 }
 
 #Print Rsim.scenario
@@ -96,10 +97,10 @@ Modify $forcing or $fishing to alter scenario run")
 #'@export
 print.Rsim.params <- function(x, ...){
   cat(paste("Rsim parameters for", attr(x, 'eco.name'), "\n\n"))
-  out <- data.frame(Num.Groups   = x$NUM_GROUPS,
-                    Num.Living   = x$NUM_LIVING,
-                    Num.Detritus = x$NUM_DEAD,
-                    Num.Fleets   = x$NUM_GEARS)
+  out <- data.frame(NumGroups   = x$NUM_GROUPS,
+                    NumLiving   = x$NUM_LIVING,
+                    NumDetritus = x$NUM_DEAD,
+                    NumFleets   = x$NUM_GEARS)
   print(out)
   cat("\n$params also includes:\n")
   print(names(x))
@@ -121,10 +122,10 @@ summary.Rpath <- function(object, ...){
   cat("\nSummary Statistics:\n")
   totbiomass <- sum(object$Biomass[which(object$type == 0)], na.rm = T)
   totland    <- sum(object$Landings, na.rm = T)
-  out <- data.frame(Num.Groups   = object$NUM_GROUPS,
-                    Num.Living   = object$NUM_LIVING,
-                    Num.Detritus = object$NUM_DEAD,
-                    Num.Fleets   = object$NUM_GEARS,
+  out <- data.frame(NumGroups   = object$NUM_GROUPS,
+                    NumLiving   = object$NUM_LIVING,
+                    NumDetritus = object$NUM_DEAD,
+                    NumFleets   = object$NUM_GEARS,
                     TotBiomass   = totbiomass,
                     TotLandings  = totland)
   print(out)
@@ -136,16 +137,16 @@ summary.Rpath <- function(object, ...){
 #'@export
 summary.Rsim.output <- function(object, ...){
   cat(paste("Rsim parameters for:", attr(object, 'eco.name'),"\n"))
-  if(object$CRASH_YEAR > 0) cat(paste("Run crashed at", object$CRASH_YEAR, "\n", sep = ''))
+  if(object$crash_year > 0) cat(paste("Run crashed at", object$crash_year, "\n", sep = ''))
   cat("\nSummary Statistics:\n")
   totbiomass.start <- sum(object$out_Biomass[1, ], na.rm = T)
   totbiomass.end   <- sum(object$out_Biomass[nrow(object$out_Biomass), ], na.rm = T)
   totcatch.start   <- sum(object$out_Catch[1, ] * 12, na.rm = T)
   totcatch.end     <- sum(object$out_Catch[nrow(object$out_Catch) - 1, ] * 12, na.rm = T)
-  out <- data.frame(Num.Groups      = object$NUM_GROUPS,
-                    Num.Living      = object$NUM_LIVING,
-                    Num.Detritus    = object$NUM_DEAD,
-                    Num.Fleets      = object$NUM_GEARS,
+  out <- data.frame(NumGroups      = length(object$params$spname) - 1,
+                    NumLiving      = object$params$NUM_LIVING,
+                    NumDetritus    = object$params$NUM_DEAD,
+                    NumFleets      = object$params$NUM_GEARS,
                     TotBiomassStart = totbiomass.start,
                     TotBiomassEnd   = totbiomass.end,
                     TotCatchStart   = totcatch.start,
