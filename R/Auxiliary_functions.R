@@ -53,7 +53,7 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   DC <- cbind(DC, detcols)
   
   #Calculate proportion of catch for fishing "DC"
-  totcatch <- y$Catch + y$Discards
+  totcatch <- y$Landings + y$Discards
   totcatch.sum <- colSums(totcatch)
   for(ifleet in 1:ncol(totcatch)){
     fleet.prop <- as.data.table(totcatch[, ifleet] / totcatch.sum[ifleet])

@@ -66,29 +66,29 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   model[, QB := QB.1]
   model[, PB := PB.1]
   
-  # define catch, discards, necessary sums
-  catchmat    <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
+  # define landings, discards, necessary sums
+  landmat     <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
   discardmat  <- model[, (10 + ndead + 1 + ngear):(10 + ndead + (2 * ngear)), with = F]
-  totcatchmat <- catchmat + discardmat
+  totcatchmat <- landmat + discardmat
     
   # KYA 1/16/14 Need if statement here because rowSums fail if only one 
   # fishery (catch is vector instead of matrix)     ##FIX PROPAGATION HERE
   if (is.data.frame(totcatchmat)){
-    totcatch  <- rowSums(totcatchmat)
-    catch     <- rowSums(catchmat)    
-    discards  <- rowSums(discardmat)  
-    gearcatch <- colSums(catchmat,   na.rm = T)
-    geardisc  <- colSums(discardmat, na.rm = T)
+    totcatch <- rowSums(totcatchmat)
+    landings <- rowSums(landmat)    
+    discards <- rowSums(discardmat)  
+    gearland <- colSums(landmat,   na.rm = T)
+    geardisc <- colSums(discardmat, na.rm = T)
   }else{
-    totcatch  <- totcatchmat
-    catch     <- catchmat    
-    discards  <- discardmat 
-    gearcatch <- sum(catchmat,   na.rm = T)
-    geardisc  <- sum(discardmat, na.rm = T)                     
+    totcatch <- totcatchmat
+    landings <- landmat    
+    discards <- discardmat 
+    gearland <- sum(landmat,    na.rm = T)
+    geardisc <- sum(discardmat, na.rm = T)                     
   }   
   
-  geartot <- gearcatch + geardisc
-  model[, catch    := catch]
+  geartot <- gearland + geardisc
+  model[, landings := landings]
   model[, discards := discards]
   model[, totcatch := totcatch]
 
@@ -108,17 +108,20 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   # set up and solve the system of equations for living group B or EE
   living  <- model[alive == 1, ]
   
-  #Set up right hand side Q
-  living[, Q := totcatch + BioAcc]
+  #Set up right hand side b
+  living[, Ex := totcatch + BioAcc]
   living[, BioQB := Biomass * QB]
   cons  <- as.matrix(nodetrdiet) * living$BioQB[col(as.matrix(nodetrdiet))]
-  living[, Q := Q + rowSums(cons, na.rm = T)] 
-  living[BEE == 1, Q := Q - (Biomass * PB * EE)]
+  living[, b := Ex + rowSums(cons, na.rm = T)] 
   
   #Set up A matrix
   living[noEE == 1, diag.a := Biomass * PB]
   living[noEE == 0, diag.a := PB * EE]
-  living[noEE == 0 & noB == 0, diag.a := 0]
+  
+  #Special case where B and EE are known then need to solve for BA
+  #living[BEE == 1, b := b - (Biomass * PB * EE)]
+  #living[BEE  == 1, diag.a := 0] #Need to work on this solution
+  
   A       <- matrix(0, nliving, nliving)
   diag(A) <- living[, diag.a]
   QBDC    <- as.matrix(nodetrdiet) * living$QB[col(as.matrix(nodetrdiet))]
@@ -131,28 +134,28 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   #Switch flag back
   #living[BEE == 1, noB := 0]
    
-  
-  
   # Generalized inverse does the actual solving
-  pars <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, Q]
+  #Invert A and multiple by b to get x (unknowns)
+  x <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, b]
   
-  living[, EEa := pars * noEE]
+  #Assign unknown values
+  living[, EEa := x * noEE]
   living[is.na(EE), EE := EEa]
-  living[, EEa := NULL]
-  living[, B := pars * noB]
-  living[!is.na(Biomass), B := Biomass]
+  
+  living[, B := x * noB]
+  living[is.na(Biomass), Biomass := B]
 
   # detritus EE calcs
   living[, M0 := PB * (1 - EE)]
   living[, QBloss := QB]
   living[is.na(QBloss), QBloss := 0]
-  loss <- c((living[, M0] * living[, B]) + (living[, B] * living[, QBloss] * 
-                                              living[, Unassim]),
+  loss <- c((living[, M0] * living[, Biomass]) + 
+              (living[, Biomass] * living[, QBloss] * living[, Unassim]),
             model[Type ==2, DetInput], 
             geardisc)
   detinputs  <- colSums(loss * detfate)
   detdiet    <- diet[(nliving + 1):(nliving + ndead), ]
-  BQB        <- living[, B * QB]
+  BQB        <- living[, Biomass * QB]
   detcons    <- as.matrix(detdiet) * BQB[col(as.matrix(detdiet))]
   detoutputs <- rowSums(detcons, na.rm = T)
   EE         <- c(living[, EE], as.vector(detoutputs / detinputs))
@@ -178,7 +181,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
-  #Adjust for mixotrophs (partial primary producers)
+
+  #Adjust for mixotrophs (partial primary producers) - #Moved this code up so that
+  #it also impacted the EE calculation
   # mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
   # mix.Q <- 1 - model[mixotrophs, Type]
   # for(i in seq_along(mixotrophs)){
@@ -198,7 +203,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
 
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
-  Bplus  <- c(living[, B], DetB, rep(0.0, ngear))
+  Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
   
   PBplus <- model[, PB] 
   PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
@@ -224,10 +229,10 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
                    Removals = RemPlus)
 
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
-  gearF   <- as.matrix(totcatchmat) / living[, B][row(as.matrix(totcatchmat))]
+  gearF   <- as.matrix(totcatchmat) / living[, Biomass][row(as.matrix(totcatchmat))]
   #newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
   newcons <- as.matrix(nodetrdiet)  * BQB[col(as.matrix(nodetrdiet))]
-  predM   <- as.matrix(newcons) / living[, B][row(as.matrix(newcons))]
+  predM   <- as.matrix(newcons) / living[, Biomass][row(as.matrix(newcons))]
   predM   <- rbind(predM, detcons)
   morts   <- list(Group = model[Type < 3, Group], 
                   PB    = model[Type < 3, PB], 
@@ -246,9 +251,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   dietm                               <- as.matrix(diet)
   dimnames(dietm)                     <- list(NULL, NULL)
   dietm[is.na(dietm)]                 <- 0
-  catchmatm                           <- as.matrix(catchmat)
-  dimnames(catchmatm)                 <- list(NULL, NULL)
-  catchmatm[is.na(catchmatm)]         <- 0
+  landmatm                            <- as.matrix(landmat)
+  dimnames(landmatm)                  <- list(NULL, NULL)
+  landmatm[is.na(landmatm)]           <- 0
   discardmatm                         <- as.matrix(discardmat)
   dimnames(discardmatm)               <- list(NULL, NULL)
   discardmatm[is.na(discardmatm)]     <- 0
@@ -257,25 +262,24 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   detfatem[is.na(detfatem)]           <- 0
 
   # list structure for sim inputs
-  path.model <- list(NUM_GROUPS = ngroups,     #define NUM_GROUPS 80  INCLUDES GEAR
-                NUM_LIVING = nliving,          #define NUM_LIVING 60
-                NUM_DEAD   = ndead,            #define NUM_DEAD 3
-                NUM_GEARS  = ngear,            #define NUM_GEARS 17
-                Group      = as.character(balanced$Group),
-                type       = model[, Type],
-                TL         = TL,
-                BB         = balanced$Biomass, #float path_BB[1..NUM_GROUPS] vector
-                PB         = balanced$PB,      #float path_PB[1..NUM_GROUPS] vector
-                QB         = balanced$QB,      #float path_QB[1..NUM_GROUPS] vector
-                EE         = balanced$EE,      #float path_EE[1..NUM_GROUPS] vector
-                BA         = model[, BioAcc],  #float path_BA[1..NUM_GROUPS] vector
-                GS         = model[, Unassim], #float path_GS[1..NUM_GROUPS] vector
-                GE         = balanced$GE,      #float path_GS[1..NUM_GROUPS] vector
-                DC         = dietm,            #float path_DC[1..NUM_GROUPS][1..NUM_GROUPS]  matrix in [prey][pred] order     NUM_LIVING?
-                DetFate    = detfatem,         #float path_DetFate[1..NUM_DEAD][1..NUM_GROUPS]  matrix in [det][groups] order
-                Catch      = catchmatm,        #float path_Catch[1..NUM_GEARS][1..NUM_GROUPS]  matrix
-                Discards   = discardmatm)      #float path_Discards[1..NUM_GEARS][1..NUM_GROUPS] matrix
-
+  path.model <- list(NUM_GROUPS = ngroups,
+                     NUM_LIVING = nliving,
+                     NUM_DEAD   = ndead,
+                     NUM_GEARS  = ngear,
+                     Group      = as.character(balanced$Group),
+                     type       = model[, Type],
+                     TL         = TL,
+                     Biomass    = balanced$Biomass,
+                     PB         = balanced$PB,
+                     QB         = balanced$QB,
+                     EE         = balanced$EE,
+                     BA         = model[, BioAcc],
+                     Unassim    = model[, Unassim],
+                     GE         = balanced$GE,
+                     DC         = dietm,
+                     DetFate    = detfatem,
+                     Landings   = landmatm,
+                     Discards   = discardmatm)      
 
 #Define class of output
 class(path.model) <- 'Rpath'
@@ -304,8 +308,8 @@ return(path.model)
 rpath.stanzas <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
   StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
-  WageS <- age <- WWa <- Survive <- Z <- surv <- bs.num <- qs.num <- Leading <- NULL
-  Group <- Biomass <- r <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
+  WageS <- age <- QageS <- Survive <- Z <- survive_L <- bs.num <- qs.num <- Leading <- NULL
+  Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- NULL
   
   #Determine the total number of groups with multistanzas
@@ -343,7 +347,7 @@ rpath.stanzas <- function(Rpath.params){
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
     StGroup[, WageS := (1 - exp(-k * (1 - d) * (age))) ^ (1 / (1 - d))]
-    StGroup[, WWa   := WageS ^ d]
+    StGroup[, QageS   := WageS ^ d]
     
     #Calculate the relative number of animals at age a
     #Vector of survival rates from 1 stanza to the next
@@ -361,11 +365,11 @@ rpath.stanzas <- function(Rpath.params){
       }
       
       for(a in (first[ist] + 1):second[ist]){
-        StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * surv]
+        StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * survive_L]
       }
       
       StGroup[, B := Survive * WageS]
-      StGroup[, Q := Survive * WWa]
+      StGroup[, Q := Survive * QageS]
       
       #Numerator for the relative biomass/consumption calculations
       b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]
@@ -382,7 +386,7 @@ rpath.stanzas <- function(Rpath.params){
     BioPerEgg <- StGroup[age %in% BaseStanza[, First]:BaseStanza[, Last], sum(B)]
     recruits <- Rpath.params$model[Group == BaseStanza[, Group], Biomass] / BioPerEgg
     #Save recruits
-    groupfile[StGroupNum == isp, r := recruits]
+    groupfile[StGroupNum == isp, R := recruits]
 
     #Numbers at age S
     StGroup[, NageS := Survive * recruits]

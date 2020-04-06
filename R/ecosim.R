@@ -40,7 +40,7 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   start_state$EggsStanza <-stanzas$baseEggsStanza
   start_state$NageS      <-stanzas$baseNageS
   start_state$WageS      <-stanzas$baseWageS
-  start_state$WWa        <-stanzas$baseWWa
+  start_state$QageS        <-stanzas$baseQageS
     
   #Set NoIntegrate Flags
   ieco <- as.vector(stanzas$EcopathCode[which(!is.na(stanzas$EcopathCode))])
@@ -69,7 +69,7 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   # Figure out starting and ending years for run
   # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
     #if (length(years)<2){stop("Years should be a vector of year labels")}
-    scene.years <- row.names(Rpath.scenario$fishing$FRATE)
+    scene.years <- row.names(Rpath.scenario$fishing$ForcedFRate)
     syear <- which(as.character(head(years,1))==scene.years)
     eyear <- which(as.character(tail(years,1))==scene.years)
     if (eyear<syear)     {stop("End year cannot be less than start year.")}
@@ -98,36 +98,36 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
   }
   # Nicely Name output vectors
   sps <- scene$params$spname[1:(1+scene$params$NUM_BIO)]
-  colnames(rout$out_BB)    <- sps
-  colnames(rout$out_CC)    <- sps
-  colnames(rout$annual_CC) <- sps
-  colnames(rout$annual_BB) <- sps
+  colnames(rout$out_Biomass)    <- sps
+  colnames(rout$out_Catch)    <- sps
+  colnames(rout$annual_Catch) <- sps
+  colnames(rout$annual_Biomass) <- sps
   colnames(rout$annual_QB) <- sps
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
 
   # drop the last row (should be always 0; negative index is entry to drop)
-    #lastone <- length(rout$annual_CC[,1])
-    #rout$annual_CC <-    rout$annual_CC[-lastone,]
-    #rout$annual_BB <-    rout$annual_BB[-lastone,]
+    #lastone <- length(rout$annual_Catch[,1])
+    #rout$annual_Catch <-    rout$annual_Catch[-lastone,]
+    #rout$annual_Biomass <-    rout$annual_Biomass[-lastone,]
     #rout$annual_QB <-    rout$annual_QB[-lastone,]
     #rout$annual_Qlink <- rout$annual_Qlink[-lastone,]  
   
   #if(!is.null(Rpath.scenario$fitting$years)){
-  #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_CC[,1]))
+  #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_Catch[,1]))
     # put years in row names
-     ys <- min(as.numeric(rownames(scene$fishing$CATCH)))
-     ylist <- seq(ys,length.out=length(rout$annual_CC[,1]))
-      rownames(rout$annual_CC) <-    ylist #Rpath.scenario$fitting$years
-      rownames(rout$annual_BB) <-    ylist #Rpath.scenario$fitting$years
+     ys <- min(as.numeric(rownames(scene$fishing$ForcedCatch)))
+     ylist <- seq(ys,length.out=length(rout$annual_Catch[,1]))
+      rownames(rout$annual_Catch) <-    ylist #Rpath.scenario$fitting$years
+      rownames(rout$annual_Biomass) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_QB) <-    ylist #Rpath.scenario$fitting$years
       rownames(rout$annual_Qlink) <- ylist #Rpath.scenario$fitting$years   
   #}
   
   rout$pred <- scene$params$spname[scene$params$PreyTo+1] 
   rout$prey <- scene$params$spname[scene$params$PreyFrom+1] 
-  rout$Gear_CC_sp   <- scene$params$spname[scene$params$FishFrom+1] 
-  rout$Gear_CC_gear <- scene$params$spname[scene$params$FishThrough+1] 
-  rout$Gear_CC_disp <- ifelse(scene$params$FishTo == 0, 'Landing', 'Discard')
+  rout$Gear_Catch_sp   <- scene$params$spname[scene$params$FishFrom+1] 
+  rout$Gear_Catch_gear <- scene$params$spname[scene$params$FishThrough+1] 
+  rout$Gear_Catch_disp <- ifelse(scene$params$FishTo == 0, 'Landing', 'Discard')
   
   rout$start_state       <- scene$start_state
   rout$params$NUM_LIVING <- scene$params$NUM_LIVING
@@ -162,9 +162,9 @@ rsim.fishing <- function(params, years){
   #}
   colnames(YF) <- params$spname[1:(params$NUM_BIO+1)]
   colnames(MF) <- c("Outside",params$spname[(params$NUM_BIO+2):(params$NUM_GROUPS+1)])
-  fishing <- list(EFFORT = MF,
-                  FRATE  = YF,
-                  CATCH  = YF)   
+  fishing <- list(Effort      = MF,
+                  ForcedFRate = YF,
+                  ForcedCatch = YF)   
   
   class(fishing) <- "Rsim.fishing"
   return (fishing)
@@ -184,12 +184,12 @@ rsim.forcing <- function(params, years){
   }
   rownames(MF) <- year.m
   colnames(MF) <- params$spname
-  forcing <- list(byprey    = MF, 
-                  bymort    = MF, 
-                  byrecs    = MF, 
-                  bysearch  = MF,
-                  bymigrate = MF * 0,
-                  bybio     = MF * -1)
+  forcing <- list(ForcedPrey    = MF, 
+                  ForcedMort    = MF, 
+                  ForcedRecs    = MF, 
+                  ForcedSearch  = MF,
+                  ForcedMigrate = MF * 0,
+                  ForcedBio     = MF * -1)
   
   class(forcing) <- "Rsim.forcing"
   return (forcing)
@@ -198,9 +198,9 @@ rsim.forcing <- function(params, years){
 #####################################################################################
 #'@export
 rsim.state <- function(params){
-  state  <- list(BB    = params$B_BaseRef, 
-                 NN    = rep(0, params$NUM_GROUPS + 1),
-                 Ftime = rep(1, length(params$B_BaseRef)))
+  state  <- list(Biomass = params$B_BaseRef, 
+                 N       = rep(0, params$NUM_GROUPS + 1),
+                 Ftime   = rep(1, length(params$B_BaseRef)))
   class(state) <- "Rsim.state"
   return(state)
 }
@@ -270,19 +270,19 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$NUM_GEARS  <- Rpath$NUM_GEARS
   simpar$NUM_BIO    <- simpar$NUM_LIVING + simpar$NUM_DEAD
   simpar$spname     <- c("Outside", Rpath$Group)
-  simpar$spnum      <- 0:length(Rpath$BB) 
+  simpar$spnum      <- 0:length(Rpath$Biomass) 
   
   #Energetics for Living and Dead Groups
   #Reference biomass for calculating YY
-  simpar$B_BaseRef <- c(1.0, Rpath$BB) 
+  simpar$B_BaseRef <- c(1.0, Rpath$Biomass) 
   #Mzero proportional to (1-EE)
   simpar$MzeroMort <- c(0.0, Rpath$PB * (1.0 - Rpath$EE)) 
   #Unassimilated is the proportion of CONSUMPTION that goes to detritus.  
-  simpar$UnassimRespFrac <- c(0.0, Rpath$GS);
+  simpar$UnassimRespFrac <- c(0.0, Rpath$Unassim);
   #Active respiration is proportion of CONSUMPTION that goes to "heat"
   #Passive respiration/ VonB adjustment is left out here
   simpar$ActiveRespFrac <-  c(0.0, ifelse(Rpath$QB > 0, 
-                                          1.0 - (Rpath$PB / Rpath$QB) - Rpath$GS, 
+                                          1.0 - (Rpath$PB / Rpath$QB) - Rpath$Unassim, 
                                           0.0))
   #Ftime related parameters
   simpar$FtimeAdj   <- rep(0.0, length(simpar$B_BaseRef))
@@ -311,7 +311,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
                      1:length(Rpath$PB),
                      0)
   primFrom <- rep(0, length(Rpath$PB))
-  primQ    <- Rpath$PB * Rpath$BB
+  primQ    <- Rpath$PB * Rpath$Biomass
   #Change production to consumption for mixotrophs
   mixotrophs <- which(Rpath$type > 0 & Rpath$type < 1)
   primQ[mixotrophs] <- primQ[mixotrophs] / Rpath$GE[mixotrophs] * 
@@ -322,13 +322,13 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   #                    1:ncol(Rpath$DC),
   #                    0)
   # importFrom <- rep(0, ncol(Rpath$DC))
-  # importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$BB[1:nliving]
+  # importQ <- Rpath$DC[nrow(Rpath$DC), ] * Rpath$QB[1:nliving] * Rpath$Biomass[1:nliving]
   
   #Predator/prey links
   preyfrom  <- row(Rpath$DC)
   preyto    <- col(Rpath$DC)	
   predpreyQ <- Rpath$DC[1:(nliving + ndead + 1), ] * 
-    t(matrix(Rpath$QB[1:nliving] * Rpath$BB[1:nliving],
+    t(matrix(Rpath$QB[1:nliving] * Rpath$Biomass[1:nliving],
              nliving, nliving + ndead + 1))
   
   #combined
@@ -382,10 +382,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   simpar$PredPredWeight <- c(0, simpar$PredPredWeight)
   simpar$PreyPreyWeight <- c(0, simpar$PreyPreyWeight)
   
-  #catchlinks
-  fishfrom    <- row(as.matrix(Rpath$Catch))
-  fishthrough <- col(as.matrix(Rpath$Catch)) + (nliving + ndead)
-  fishcatch   <- Rpath$Catch
+  #landing links
+  fishfrom    <- row(as.matrix(Rpath$Landings))
+  fishthrough <- col(as.matrix(Rpath$Landings)) + (nliving + ndead)
+  fishcatch   <- Rpath$Landings
   fishto      <- fishfrom * 0
   
   if(sum(fishcatch) > 0){
@@ -450,7 +450,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
  rsim.stanzas <- function(Rpath.params, state, params){
    #Need to define variables to eliminate check() note about no visible binding
    StGroupNum <- StanzaNum <- GroupNum <- First <- Last <- WageS <- NageS <- age <- NULL
-   WWa <- Cons <- NULL
+   QageS <- Cons <- NULL
    
    juvfile <- Rpath.params$stanzas
    if(Rpath.params$stanzas$NStanzaGroups > 0){
@@ -464,7 +464,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
      rstan$baseWageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      rstan$baseNageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
-     rstan$baseWWa     <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+     rstan$baseQageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
      
      sPred <- rep(0, params$NUM_GROUPS + 1) #rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
      
@@ -479,7 +479,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
        }
        rstan$baseWageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WageS
        rstan$baseNageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$NageS
-       rstan$baseWWa[  1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$WWa
+       rstan$baseQageS[1:nrow(juvfile$StGroup[[isp]]), isp + 1] <- juvfile$StGroup[[isp]]$QageS
      }
      
      #Maturity
@@ -492,7 +492,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      #rstan$WmatSpread <- -(rstan$Wmat001 - rstan$Wmat50)/MIN_REC_FACTOR
      #rstan$AmatSpread <- -(rstan$Amat001 - rstan$Amat50)/MIN_REC_FACTOR
      rstan$RecPower <- c(0, juvfile$stgroup$RecPower)
-     rstan$recruits <- c(0, juvfile$stgroup$r)
+     rstan$recruits <- c(0, juvfile$stgroup$R)
      rstan$vBGFd    <- c(0, juvfile$stgroup$VBGF_d)
      rstan$RzeroS   <- rstan$recruits
      
@@ -527,7 +527,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
          ieco  <- rstan$EcopathCode[isp + 1, ist + 1]
          first <- rstan$Age1[isp + 1, ist + 1]
          last  <- rstan$Age2[isp + 1, ist + 1]
-         pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * WWa])
+         pred  <- sum(juvfile$StGroup[[isp]][age %in% first:last, NageS * QageS])
          StartEatenBy <- juvfile$stindiv[StGroupNum == isp & StanzaNum == ist, Cons]
   
          SplitAlpha <- (juvfile$StGroup[[isp]][, shift(WageS, type = 'lead')] - 
@@ -567,7 +567,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
      rstan$Age2           <- matrix(rep(0, 4), 2, 2)
      rstan$baseWageS      <- matrix(rep(0, 4), 2, 2)
      rstan$baseNageS      <- matrix(rep(0, 4), 2, 2)
-     rstan$baseWWa        <- matrix(rep(0, 4), 2, 2)
+     rstan$baseQageS      <- matrix(rep(0, 4), 2, 2)
      rstan$Wmat           <- c(0, 0)
      #rstan$Wmat001        <- c(0, 0)
      #rstan$Wmat50         <- c(0, 0)

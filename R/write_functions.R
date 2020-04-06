@@ -24,7 +24,7 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
     out <- data.frame(Group    = x$Group,
                       type     = x$type,
                       TL       = x$TL,
-                      Biomass  = x$BB,
+                      Biomass  = x$Biomass,
                       PB       = x$PB,
                       QB       = x$QB,
                       EE       = x$EE,
@@ -42,12 +42,12 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
     out <- cbind(out, M0)
     #Calculate F mortality
     totcatch <- x$Catch + x$Discards
-    Fmort    <- as.data.frame(totcatch / x$BB[row(as.matrix(totcatch))])
+    Fmort    <- as.data.frame(totcatch / x$Biomass[row(as.matrix(totcatch))])
     setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
              paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
     out  <- cbind(out, Fmort[1:ngroup, ])
     #Calculate M2
-    bio  <- x$BB[1:x$NUM_LIVING]
+    bio  <- x$Biomass[1:x$NUM_LIVING]
     BQB  <- bio * x$QB[1:x$NUM_LIVING]
     diet <- as.data.frame(x$DC)
     nodetrdiet <- diet[1:x$NUM_LIVING, ]
@@ -88,16 +88,16 @@ write.Rsim <- function(Rsim.output, file = NA, ...){
   if(grepl('.RData', file, ignore.case = T) == T) ext <- 'RData'
   
   gear.zero <- rep(0, Rsim.output$params$NUM_GEARS)
-  start_CC <- c(Rsim.output$out_CC[2, ], gear.zero)
-  end_CC   <- c(Rsim.output$out_CC[nrow(Rsim.output$out_CC) - 1, ], gear.zero)
+  start_Catch <- c(Rsim.output$out_Catch[2, ], gear.zero)
+  end_Catch   <- c(Rsim.output$out_Catch[nrow(Rsim.output$out_Catch) - 1, ], gear.zero)
   out <- data.frame(Group      = Rsim.output$params$spname,
-                    StartBio   = Rsim.output$start_state$BB,
-                    EndBio     = Rsim.output$end_state$BB,
-                    BioES      = Rsim.output$end_state$BB / 
-                                 Rsim.output$start_state$BB,
-                    StartCatch = start_CC * 12,
-                    EndCatch   = end_CC * 12,
-                    CatchES    = (end_CC * 12) / (start_CC * 12))
+                    StartBio   = Rsim.output$start_state$Biomass,
+                    EndBio     = Rsim.output$end_state$Biomass,
+                    BioES      = Rsim.output$end_state$Biomass / 
+                                 Rsim.output$start_state$Biomass,
+                    StartCatch = start_Catch * 12,
+                    EndCatch   = end_Catch * 12,
+                    CatchES    = (end_Catch * 12) / (start_Catch * 12))
   if(ext == 'csv')   write.csv(out, file = file)
   if(ext == 'RData') save(out, file = file)
   if(ext == 'list')  return(out)

@@ -13,7 +13,7 @@
 rsim.plot <- function(Rsim.output, spname, indplot = F, ...){
   opar <- par(no.readonly = T)
   if(indplot == F){
-    biomass <- Rsim.output$out_BB[, 2:ncol(Rsim.output$out_BB)]
+    biomass <- Rsim.output$out_Biomass[, 2:ncol(Rsim.output$out_Biomass)]
     n <- ncol(biomass)
     start.bio <- biomass[1, ]
     start.bio[which(start.bio == 0)] <- 1
@@ -22,7 +22,7 @@ rsim.plot <- function(Rsim.output, spname, indplot = F, ...){
   }
   if(indplot == T){
     spnum <- which(Rsim.output$params$spname == spname)
-    biomass <- Rsim.output$out_BB[, spnum]
+    biomass <- Rsim.output$out_Biomass[, spnum]
     n <- 1
     rel.bio <- biomass / biomass[1]
   }
