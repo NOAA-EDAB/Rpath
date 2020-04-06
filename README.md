@@ -10,6 +10,24 @@ Files have been renamed to drop the version number and take advantage of this VC
 
 Beta version notes:
 
+v0.0.1.2
+
+ * Added BAB to multistanzas
+ * `adjust.scenario` can be applied to multiple groups at once rather than one at a time.
+ * Changed variable names to align with manuscript
+     - BB to Biomass
+     - CC to Catch
+     - GS to Unassim
+     - Catch to Landings
+     - Recruits from r to R
+     - WWa to QageS
+     - surv to survive_L
+     - B to Biomass in Pedigree param list
+     - All "byx" functions to "ForcedX"
+     - EFFORT to Effort
+     - CATCH and FRATE to ForcedCatch and ForcedFRate
+  * Change default values of scramble flags from 1 to 0. Zero indicating the flag is off, 1 indicating it is on.
+ 
 v0.0.1.1 - Fixed mixotroph diet calculations and MTI calculation.
 
 v0.0.1.0 - Acknowledgement of package submission along with manuscript
