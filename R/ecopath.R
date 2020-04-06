@@ -357,7 +357,7 @@ rpath.stanzas <- function(Rpath.params){
       #Convert Z to a monthly Z
       month.z <- (stanzafile[StGroupNum == isp & StanzaNum == ist, Z] + 
                     groupfile[StGroupNum == isp, BAB]) / 12
-      StGroup[age %in% first[ist]:second[ist], surv := exp(-1*month.z)]
+      StGroup[age %in% first[ist]:second[ist], survive_L := exp(-1*month.z)]
       
       if(first[ist] > 0){
         StGroup[age == first[ist], Survive := StGroup[age == first[ist] - 1, 
