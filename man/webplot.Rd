@@ -4,11 +4,21 @@
 \alias{webplot}
 \title{Plot routine for Ecopath food web}
 \usage{
-webplot(Rpath.obj, eco.name = attr(Rpath.obj, "eco.name"),
-  line.col = "grey", highlight = NULL, highlight.col = c("black",
-  "red", "orange"), labels = FALSE, label.pos = NULL,
-  label.num = FALSE, label.cex = 1, fleets = FALSE,
-  type.col = "black", box.order = NULL, ...)
+webplot(
+  Rpath.obj,
+  eco.name = attr(Rpath.obj, "eco.name"),
+  line.col = "grey",
+  highlight = NULL,
+  highlight.col = c("black", "red", "orange"),
+  labels = FALSE,
+  label.pos = NULL,
+  label.num = FALSE,
+  label.cex = 1,
+  fleets = FALSE,
+  type.col = "black",
+  box.order = NULL,
+  ...
+)
 }
 \arguments{
 \item{Rpath.obj}{Rpath model created by the ecopath() function.}
@@ -18,7 +28,7 @@ rpath object.}
 
 \item{line.col}{The color of the lines between nodes of the food web.}
 
-\item{highlight}{Box number to highlight connections.}
+\item{highlight}{Set to the group number or name to highlight the connections of that group.}
 
 \item{highlight.col}{Color of the connections to the highlighted group.}
 
@@ -40,8 +50,6 @@ instead of names.}
 of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.}
 
 \item{box.order}{Vector of box numbers to change the default plot order.  Must include all box numbers}
-
-\item{highlight}{Set to the group number or name to highlight the connections of that group.}
 }
 \value{
 Creates a figure of the food web.
@@ -50,19 +58,25 @@ Creates a figure of the food web.
 Plots the food web associated with an Rpath object.
 }
 \seealso{
-Other Rpath functions: \code{\link{MTI}},
-  \code{\link{adjust.fishing}},
-  \code{\link{adjust.forcing}},
-  \code{\link{adjust.scenario}},
-  \code{\link{check.rpath.params}},
-  \code{\link{create.rpath.params}},
-  \code{\link{extract.node}}, \code{\link{frate.table}},
-  \code{\link{read.rpath.params}},
-  \code{\link{rpath.stanzas}}, \code{\link{rpath}},
-  \code{\link{rsim.params}}, \code{\link{rsim.plot}},
-  \code{\link{rsim.scenario}}, \code{\link{rsim.step}},
-  \code{\link{stanzaplot}}, \code{\link{write.Rpath}},
-  \code{\link{write.Rsim}},
-  \code{\link{write.rpath.params}}
+Other Rpath functions: 
+\code{\link{MTI}()},
+\code{\link{adjust.fishing}()},
+\code{\link{adjust.forcing}()},
+\code{\link{adjust.scenario}()},
+\code{\link{check.rpath.params}()},
+\code{\link{create.rpath.params}()},
+\code{\link{extract.node}()},
+\code{\link{frate.table}()},
+\code{\link{read.rpath.params}()},
+\code{\link{rpath.stanzas}()},
+\code{\link{rpath}()},
+\code{\link{rsim.params}()},
+\code{\link{rsim.plot}()},
+\code{\link{rsim.scenario}()},
+\code{\link{rsim.step}()},
+\code{\link{stanzaplot}()},
+\code{\link{write.Rpath}()},
+\code{\link{write.Rsim}()},
+\code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}

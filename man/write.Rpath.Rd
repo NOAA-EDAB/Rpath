@@ -20,19 +20,25 @@ Writes a .csv file with the basic parameters or mortalities from an Rpath object
 Outputs basic parameters or mortalities to a .csv file.
 }
 \seealso{
-Other Rpath functions: \code{\link{MTI}},
-  \code{\link{adjust.fishing}},
-  \code{\link{adjust.forcing}},
-  \code{\link{adjust.scenario}},
-  \code{\link{check.rpath.params}},
-  \code{\link{create.rpath.params}},
-  \code{\link{extract.node}}, \code{\link{frate.table}},
-  \code{\link{read.rpath.params}},
-  \code{\link{rpath.stanzas}}, \code{\link{rpath}},
-  \code{\link{rsim.params}}, \code{\link{rsim.plot}},
-  \code{\link{rsim.scenario}}, \code{\link{rsim.step}},
-  \code{\link{stanzaplot}}, \code{\link{webplot}},
-  \code{\link{write.Rsim}},
-  \code{\link{write.rpath.params}}
+Other Rpath functions: 
+\code{\link{MTI}()},
+\code{\link{adjust.fishing}()},
+\code{\link{adjust.forcing}()},
+\code{\link{adjust.scenario}()},
+\code{\link{check.rpath.params}()},
+\code{\link{create.rpath.params}()},
+\code{\link{extract.node}()},
+\code{\link{frate.table}()},
+\code{\link{read.rpath.params}()},
+\code{\link{rpath.stanzas}()},
+\code{\link{rpath}()},
+\code{\link{rsim.params}()},
+\code{\link{rsim.plot}()},
+\code{\link{rsim.scenario}()},
+\code{\link{rsim.step}()},
+\code{\link{stanzaplot}()},
+\code{\link{webplot}()},
+\code{\link{write.Rsim}()},
+\code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}

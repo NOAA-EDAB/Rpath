@@ -436,9 +436,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 # STATE VARIABLE DEFAULT 
   #simpar$state_BB    <- simpar$B_BaseRef
   #simpar$state_Ftime <- rep(1, length(Rpath$BB) + 1)
-  simpar$BURN_YEARS <- -1
-  simpar$COUPLED    <-  1
-  simpar$RK4_STEPS  <- 4.0 
+  simpar$BURN_YEARS  <- -1
+  simpar$COUPLED     <-  1
+  simpar$RK4_STEPS   <- 4.0
+  simpar$SENSE_LIMIT <- c(1e-4, 1e4)
   
   class(simpar) <- "Rsim.params"
   return(simpar)

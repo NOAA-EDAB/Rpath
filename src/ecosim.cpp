@@ -24,6 +24,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
    
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+   const NumericVector SENSE_LIMIT = as<NumericVector>(params["SENSE_LIMIT"]);  
+   const double LO_DISCARD = (SENSE_LIMIT[0]);
+   const double HI_DISCARD = (SENSE_LIMIT[1]);         
    int CRASH_YEAR = -1;
    int MEASURE_MONTH = 5;   
    
@@ -228,6 +231,9 @@ int y, m, dd;
 
 // Switches for run modes
    const int BURN_YEARS = as<int>(params["BURN_YEARS"]);
+   const NumericVector SENSE_LIMIT = as<NumericVector>(params["SENSE_LIMIT"]);  
+   const double LO_DISCARD = (SENSE_LIMIT[0]);
+   const double HI_DISCARD = (SENSE_LIMIT[1]);         
    int CRASH_YEAR = -1;
    int MEASURE_MONTH = 5;
    

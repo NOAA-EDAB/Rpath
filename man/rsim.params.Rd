@@ -4,8 +4,16 @@
 \alias{rsim.params}
 \title{Initial set up for Ecosim modual of Rpath}
 \usage{
-rsim.params(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
-  scrambleselfwt = 0, handleselfwt = 0, steps_yr = 12, steps_m = 1)
+rsim.params(
+  Rpath,
+  mscramble = 2,
+  mhandle = 1000,
+  preyswitch = 1,
+  scrambleselfwt = 0,
+  handleselfwt = 0,
+  steps_yr = 12,
+  steps_m = 1
+)
 }
 \arguments{
 \item{Rpath}{Rpath object containing a balanced model.}
@@ -31,19 +39,25 @@ Returns an Rpath.sim object that can be supplied to the ecosim.run function.
 Converts the outputs from ecopath into rates for use in ecosim.
 }
 \seealso{
-Other Rpath functions: \code{\link{MTI}},
-  \code{\link{adjust.fishing}},
-  \code{\link{adjust.forcing}},
-  \code{\link{adjust.scenario}},
-  \code{\link{check.rpath.params}},
-  \code{\link{create.rpath.params}},
-  \code{\link{extract.node}}, \code{\link{frate.table}},
-  \code{\link{read.rpath.params}},
-  \code{\link{rpath.stanzas}}, \code{\link{rpath}},
-  \code{\link{rsim.plot}}, \code{\link{rsim.scenario}},
-  \code{\link{rsim.step}}, \code{\link{stanzaplot}},
-  \code{\link{webplot}}, \code{\link{write.Rpath}},
-  \code{\link{write.Rsim}},
-  \code{\link{write.rpath.params}}
+Other Rpath functions: 
+\code{\link{MTI}()},
+\code{\link{adjust.fishing}()},
+\code{\link{adjust.forcing}()},
+\code{\link{adjust.scenario}()},
+\code{\link{check.rpath.params}()},
+\code{\link{create.rpath.params}()},
+\code{\link{extract.node}()},
+\code{\link{frate.table}()},
+\code{\link{read.rpath.params}()},
+\code{\link{rpath.stanzas}()},
+\code{\link{rpath}()},
+\code{\link{rsim.plot}()},
+\code{\link{rsim.scenario}()},
+\code{\link{rsim.step}()},
+\code{\link{stanzaplot}()},
+\code{\link{webplot}()},
+\code{\link{write.Rpath}()},
+\code{\link{write.Rsim}()},
+\code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}
