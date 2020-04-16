@@ -82,7 +82,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   mtext(2, text = 'Trophic Level', line = 2)
   
   #Web connections
-  tot.catch <- Rpath.obj$Catch + Rpath.obj$Discards
+  tot.catch <- Rpath.obj$Landings + Rpath.obj$Discards
   pred      <- pointmap[!type %in% 1:2, GroupNum]
   
   for(i in pred){
