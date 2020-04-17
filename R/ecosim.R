@@ -162,9 +162,9 @@ rsim.fishing <- function(params, years){
   #}
   colnames(YF) <- params$spname[1:(params$NUM_BIO+1)]
   colnames(MF) <- c("Outside",params$spname[(params$NUM_BIO+2):(params$NUM_GROUPS+1)])
-  fishing <- list(Effort      = MF,
-                  ForcedFRate = YF,
-                  ForcedCatch = YF)   
+  fishing <- list(ForcedEffort = MF,
+                  ForcedFRate  = YF,
+                  ForcedCatch  = YF)   
   
   class(fishing) <- "Rsim.fishing"
   return (fishing)

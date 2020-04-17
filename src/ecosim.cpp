@@ -517,7 +517,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 // SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
    NumericMatrix FORCED_FRATE     = as<NumericMatrix>(fishing["ForcedFRate"]);
    NumericMatrix FORCED_CATCH     = as<NumericMatrix>(fishing["ForcedCatch"]);
-   NumericMatrix EffortMat        = as<NumericMatrix>(fishing["Effort"]); 
+   NumericMatrix EffortMat        = as<NumericMatrix>(fishing["ForcedEffort"]); 
 
 // Components of derivative calculated here  
    NumericVector TotGain(NUM_GROUPS+1);       
