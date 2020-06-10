@@ -27,3 +27,5 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 7.0.2
+URL: https://github.com/NOAA-EDAB/Rpath
+BugReports: https://github.com/NOAA-EDAB/Rpath/issues
