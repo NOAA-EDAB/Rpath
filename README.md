@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![R build status](https://github.com/NOAA-EDAB/Rpath/workflows/R-CMD-check/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions)
+<!-- badges: end -->
+
 Rpath
 =====
 This is the repository for Rpath - the R implementation of the mass balance algorithms.
