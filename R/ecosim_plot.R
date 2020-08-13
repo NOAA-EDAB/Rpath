@@ -10,10 +10,13 @@
 #'@import data.table
 #'@importFrom grDevices rainbow
 #'@export
-rsim.plot <- function(Rsim.output, spname, indplot = F, ...){
+rsim.plot <- function(Rsim.output, spname="all", indplot = F, ...){
   opar <- par(no.readonly = T)
   if(indplot == F){
-    biomass <- Rsim.output$out_Biomass[, 2:ncol(Rsim.output$out_Biomass)]
+    # KYA April 2020 this seems incorrect?
+    #biomass <- Rsim.output$out_Biomass[, 2:ncol(Rsim.output$out_Biomass)]
+    if("all" %in% spname){spname <- colnames(Rsim.output$out_Biomass[,2:ncol(Rsim.output$out_Biomass)])}
+    biomass <- Rsim.output$out_Biomass[, spname]
     n <- ncol(biomass)
     start.bio <- biomass[1, ]
     start.bio[which(start.bio == 0)] <- 1
