@@ -239,7 +239,10 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
                   M0    = M0plus, 
                   F     = gearF[1:(nliving + ndead), ], 
                   M2    = predM)
-     
+  
+  # convert from levels to characters
+  gnames <- as.character(balanced$Group)
+  
   # cleanup before sending to sim -- C code wants 0 as missing value, not NA
   balanced$Biomass[is.na(balanced$Biomass)] <- 0
   balanced$PB[is.na(balanced$PB)]     <- 0
@@ -249,33 +252,45 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   model$BioAcc[is.na(model$BioAcc)]   <- 0
   model$Unassim[is.na(model$Unassim)] <- 0
   dietm                               <- as.matrix(diet)
-  dimnames(dietm)                     <- list(NULL, NULL)
+  dimnames(dietm)                     <- list(c(gnames[1:(nliving+ndead)],"Import"), gnames[1:nliving])
   dietm[is.na(dietm)]                 <- 0
   landmatm                            <- as.matrix(landmat)
-  dimnames(landmatm)                  <- list(NULL, NULL)
+  dimnames(landmatm)                  <- list(gnames, gnames[(ngroups-ngear+1):ngroups])
   landmatm[is.na(landmatm)]           <- 0
   discardmatm                         <- as.matrix(discardmat)
-  dimnames(discardmatm)               <- list(NULL, NULL)
+  dimnames(discardmatm)               <- list(gnames, gnames[(ngroups-ngear+1):ngroups])
   discardmatm[is.na(discardmatm)]     <- 0
   detfatem                            <- as.matrix(detfate)
-  dimnames(detfatem)                  <- list(NULL, NULL)
+  dimnames(detfatem)                  <- list(gnames, gnames[(nliving+1):(nliving+ndead)])
   detfatem[is.na(detfatem)]           <- 0
 
+  # KYA April 2020 - added names for output list
+    out.Group   <- gnames;           names(out.Group) <- gnames
+    out.type    <- model[, Type];    names(out.type) <- gnames
+    out.TL      <- TL;               names(out.TL) <- gnames
+    out.Biomass <- balanced$Biomass; names(out.Biomass) <- gnames
+    out.PB      <- balanced$PB;      names(out.PB) <- gnames
+    out.QB      <- balanced$QB;      names(out.QB) <- gnames
+    out.EE      <- balanced$EE;      names(out.EE) <- gnames
+    out.BA      <- model[, BioAcc];  names(out.BA) <- gnames
+    out.Unassim <- model[, Unassim]; names(out.Unassim) <- gnames
+    out.GE      <- balanced$GE;      names(out.GE) <- gnames    
+    
   # list structure for sim inputs
   path.model <- list(NUM_GROUPS = ngroups,
                      NUM_LIVING = nliving,
                      NUM_DEAD   = ndead,
                      NUM_GEARS  = ngear,
-                     Group      = as.character(balanced$Group),
-                     type       = model[, Type],
-                     TL         = TL,
-                     Biomass    = balanced$Biomass,
-                     PB         = balanced$PB,
-                     QB         = balanced$QB,
-                     EE         = balanced$EE,
-                     BA         = model[, BioAcc],
-                     Unassim    = model[, Unassim],
-                     GE         = balanced$GE,
+                     Group      = out.Group,
+                     type       = out.type,
+                     TL         = out.TL,
+                     Biomass    = out.Biomass,
+                     PB         = out.PB,
+                     QB         = out.QB,
+                     EE         = out.EE,
+                     BA         = out.BA,
+                     Unassim    = out.Unassim,
+                     GE         = out.GE,
                      DC         = dietm,
                      DetFate    = detfatem,
                      Landings   = landmatm,
