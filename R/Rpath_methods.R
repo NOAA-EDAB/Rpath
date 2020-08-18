@@ -37,7 +37,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
     #Calculate F mortality
     totcatch <- x$Landings + x$Discards
     Fmort    <- as.data.frame(totcatch / x$Biomass[row(as.matrix(totcatch))])
-    setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
+    setnames(Fmort, x$Group[(ngroup +1):x$NUM_GROUPS], 
                     paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
     out  <- cbind(out, Fmort[1:ngroup, ])
     #Calculate M2
@@ -50,7 +50,7 @@ print.Rpath <- function(x, rows = NA, morts = F, ...){
     predM      <- newcons / bio[row(as.matrix(newcons))]
     detcons    <- detrdiet * BQB[col(as.matrix(detrdiet))]
     predM      <- rbind(predM, detcons)
-    setnames(predM, paste('V',  1:x$NUM_LIVING,    sep = ''), 
+    setnames(predM, x$Group[1:x$NUM_LIVING], 
              paste('M2.', x$Group[1:x$NUM_LIVING], sep = ''))
     out <- cbind(out, predM)
   }
