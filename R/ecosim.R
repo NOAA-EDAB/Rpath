@@ -63,13 +63,13 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 #'@import utils
 #'@import stats
 #'@export
-rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
-  scene <- copy(Rpath.scenario) 
+rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100){
+  scene <- copy(Rsim.scenario) 
 
   # Figure out starting and ending years for run
   # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
     #if (length(years)<2){stop("Years should be a vector of year labels")}
-    scene.years <- row.names(Rpath.scenario$fishing$ForcedFRate)
+    scene.years <- row.names(Rsim.scenario$fishing$ForcedFRate)
     syear <- which(as.character(head(years,1))==scene.years)
     eyear <- which(as.character(tail(years,1))==scene.years)
     if (eyear<syear)     {stop("End year cannot be less than start year.")}
@@ -112,15 +112,15 @@ rsim.run <- function(Rpath.scenario, method = 'RK4', years = 1:100){
     #rout$annual_QB <-    rout$annual_QB[-lastone,]
     #rout$annual_Qlink <- rout$annual_Qlink[-lastone,]  
   
-  #if(!is.null(Rpath.scenario$fitting$years)){
+  #if(!is.null(Rsim.scenario$fitting$years)){
   #  ylist <- seq(scene$fitting$years[1],length.out=length(rout$annual_Catch[,1]))
     # put years in row names
      ys <- min(as.numeric(rownames(scene$fishing$ForcedCatch)))
      ylist <- seq(ys,length.out=length(rout$annual_Catch[,1]))
-      rownames(rout$annual_Catch) <-    ylist #Rpath.scenario$fitting$years
-      rownames(rout$annual_Biomass) <-    ylist #Rpath.scenario$fitting$years
-      rownames(rout$annual_QB) <-    ylist #Rpath.scenario$fitting$years
-      rownames(rout$annual_Qlink) <- ylist #Rpath.scenario$fitting$years   
+      rownames(rout$annual_Catch) <-    ylist #Rsim.scenario$fitting$years
+      rownames(rout$annual_Biomass) <-    ylist #Rsim.scenario$fitting$years
+      rownames(rout$annual_QB) <-    ylist #Rsim.scenario$fitting$years
+      rownames(rout$annual_Qlink) <- ylist #Rsim.scenario$fitting$years   
   #}
   
   rout$pred <- scene$params$spname[scene$params$PreyTo+1] 
@@ -222,8 +222,8 @@ rsim.mort <- function(rout,prey){
 }  
 #####################################################################################
 #'@export
-rsim.deriv <- function(Rpath.scenario, year=0, month=0, tstep=0){
-  scene <- copy(Rpath.scenario)
+rsim.deriv <- function(Rsim.scenario, year=0, month=0, tstep=0){
+  scene <- copy(Rsim.scenario)
   rout <- deriv_vector(scene$params,  scene$start_state, 
                        scene$forcing, scene$fishing,
                        scene$stanzas, year, month, tstep)

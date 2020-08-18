@@ -83,7 +83,7 @@ print.Rsim.output <- function(x, rows = NA, ...){
 #'@import utils
 #'@export
 print.Rsim.scenario <- function(x, ...){
-  cat(paste("Rpath scenario for", attr(x, 'eco.name'), "\n\n"))
+  cat(paste("Rsim scenario for", attr(x, 'eco.name'), "\n\n"))
   cat("$params contains the parameters from rpath
 $forcing contains the forcing parameters
 $fishing contains the fishing parameters
