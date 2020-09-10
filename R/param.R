@@ -138,7 +138,7 @@ create.rpath.params <- function(group, type, stgroup = NA){
     setnames(pedigree, "V1", fleet.group[i])
   }
   Rpath.params$pedigree <- pedigree
-  
+  class(Rpath.params) <- 'Rpath.params'
   return(Rpath.params)
 }
 
@@ -455,6 +455,7 @@ read.rpath.params <- function(modfile, dietfile, pedfile = NA,
       setnames(Rpath.params$pedigree, 'V1', fleets[i])
     }
   }
+  class(Rpath.params) <- 'Rpath.params'
   return(Rpath.params)
 }
 
