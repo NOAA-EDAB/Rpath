@@ -45,6 +45,7 @@ Other Rpath functions:
 \code{\link{create.rpath.params}()},
 \code{\link{extract.node}()},
 \code{\link{frate.table}()},
+\code{\link{rpath.groups}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{rpath}()},
 \code{\link{rsim.params}()},

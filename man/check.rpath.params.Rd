@@ -31,6 +31,7 @@ Other Rpath functions:
 \code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
+\code{\link{rpath.groups}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{rpath}()},
 \code{\link{rsim.params}()},
