@@ -20,7 +20,7 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
   if(grepl('.RData', file, ignore.case = T) == T) ext <- 'RData'
   
   if(morts == F){
-    removals <- rowSums(x$Catch) + rowSums(x$Discard)
+    removals <- rowSums(x$Landings) + rowSums(x$Discard)
     out <- data.frame(Group    = x$Group,
                       type     = x$type,
                       TL       = x$TL,
@@ -41,7 +41,7 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
              x$EE[(x$NUM_LIVING + 1):ngroup])
     out <- cbind(out, M0)
     #Calculate F mortality
-    totcatch <- x$Catch + x$Discards
+    totcatch <- x$Landings + x$Discards
     Fmort    <- as.data.frame(totcatch / x$Biomass[row(as.matrix(totcatch))])
     setnames(Fmort, paste('V',  1:x$NUM_GEARS,                     sep = ''), 
              paste('F.', x$Group[(ngroup +1):x$NUM_GROUPS], sep = ''))
