@@ -45,7 +45,7 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   fleetrows <- as.data.table(matrix(rep(0, nfleets * ncol(DC)), nfleets, 
                                     ncol(DC)))
   fleetrows[, V1 := fleetnames]
-  DC <- rbindlist(list(DC, fleetrows))
+  DC <- rbindlist(list(DC, fleetrows), use.names = F)
   
   #Add detritus and fleet "pred" columns
   detcols <- as.data.table(matrix(rep(0, ndetritus * ngroups), ngroups, ndetritus))
@@ -85,7 +85,7 @@ MTI <- function(Rpath, Rpath.params, increase = T){
   #Add fishery removals
   Tij <- Tij[, which(!names(Tij) %in% fleetnames), with = F]
   Tij <- cbind(Tij, totcatch)
-  setnames(Tij, paste0('V', seq_along(fleetnames)), fleetnames)
+  # fleetnames are already in the colnames, removed: setnames(Tij, paste0('V', seq_along(fleetnames)), fleetnames)
   
   #Calculate net production
   Tim <- rowSums(Tij)
