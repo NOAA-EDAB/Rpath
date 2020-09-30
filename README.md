@@ -1,6 +1,6 @@
-<!-- badges: start -->
-[![R build status](https://github.com/NOAA-EDAB/Rpath/workflows/R-CMD-check/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions)
-<!-- badges: end -->
+#<!-- badges: start -->
+#[![R build status](https://github.com/NOAA-EDAB/Rpath/workflows/R-CMD-check/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions)
+#<!-- badges: end -->
 
 Rpath
 =====
