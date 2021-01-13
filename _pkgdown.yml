@@ -1,0 +1,40 @@
+reference:
+- title: "Rpath"
+  desc: "Functions for creating a mass balance food web"
+- contents:
+  - create.rpath.params
+  - check.rpath.params
+  - read.rpath.params
+  - rpath
+  - rpath.stanzas
+- title: "Rsim"
+  desc: "Functions for creating dynamic simulations of the mass balance model"
+- contents:
+  - rsim.scenario
+  - rsim.run
+  - rsim.step
+  - rsim.params
+  - rsim.fishing
+  - rsim.forcing
+- subtitle: "Adjustment Tools"
+  desc: "Functions for adjusting Rsim scenarios"
+- contents:
+  - adjust.scenario
+  - adjust.fishing
+  - adjust.forcing
+- title: "Visualization Tools"
+  desc: "Functions for visualizing rpath and rsim outputs" 
+- contents:
+  - webplot
+  - rsim.plot
+- title: "Output Tools"
+  desc: "Functions for writing and exporting outputs from Rpath"
+- contents:
+  - write.rpath.params
+  - write.Rpath
+  - write.Rsim
+  - extract.node
+- title: "Auxiliary Tools"
+  desc: "Additional tools"
+- contents:
+  - MTI
