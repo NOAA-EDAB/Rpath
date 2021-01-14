@@ -15,3 +15,4 @@ src/*.o
 src/*.dll
 NAMESPACE
 
+docs
