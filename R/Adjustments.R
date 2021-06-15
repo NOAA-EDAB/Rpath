@@ -107,15 +107,15 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1,
 #'@export 
 adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value){
   #Lookup group numbers
-  if(group == 'all'){
+  if(group[1] == 'all'){
     groupnum <- 0:Rsim.scenario$params$NUM_GROUPS
   } else {
     groupnum <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname 
-                                                 == group)]
+                                                 %in% group)]
   }
   if(!is.na(groupto)){
     groupnumto <- Rsim.scenario$params$spnum[which(Rsim.scenario$params$spname 
-                                                 == groupto)]
+                                                 %in% groupto)]
   }
   
   #Lookup parameter number
