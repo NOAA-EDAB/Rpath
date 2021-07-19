@@ -378,9 +378,9 @@ rpath.stanzas <- function(Rpath.params){
         StGroup[age == first[ist], Survive := StGroup[age == first[ist] - 1, 
                                                     Survive] * prev.surv]
       }
-      
+
       for(a in (first[ist] + 1):second[ist]){
-        StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * survive_L]
+        StGroup[age == a, Survive := data.table::shift(Survive) * survive_L]
       }
       
       StGroup[, B := Survive * WageS]
