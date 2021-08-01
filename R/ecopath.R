@@ -333,15 +333,28 @@ rpath.stanzas <- function(Rpath.params){
   stanzafile <- Rpath.params$stanza$stindiv
   
   #Need to add vector of stanza number
+  lastmonth <- rep(NA,Nsplit)
   for(isp in 1:Nsplit){
     stnum <- order(stanzafile[StGroupNum == isp, First])
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
+
+    st <- stanzafile[StGroupNum == isp&Leading,]
+    gp <- groupfile[isp,]
+    
+    AGE <- st$First:5999
+    mz <- (st$Z+gp$BAB)/12
+    k  <- gp$VBGF_Ksp
+    d  <- gp$VBGF_d
+    NN <- shift(cumprod(rep(exp(-1*mz),length(AGE))),1,1.0)
+    BB <- NN * (1 - exp(-k * (1 - d) * (AGE))) ^ (1 / (1 - d))
+    BBcum <- cumsum(BB)/sum(BB)
+    
+    lastmonth[isp] <- ceiling(AGE[min(which(BBcum>0.9999))]/12) * 12 - 1
   }
   
   #Calculate the last month for the final stanza
   #Months to get to 99% Winf (We don't use an accumulator function like EwE)
-  groupfile[, last := floor(log(1 - 0.9999^(1 - VBGF_d)) / 
-                                  (-1 * (VBGF_Ksp * 3 / 12) * (1 - VBGF_d)))]
+  groupfile[, last := lastmonth]
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
