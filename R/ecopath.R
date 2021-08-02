@@ -335,25 +335,33 @@ rpath.stanzas <- function(Rpath.params){
   #Need to add vector of stanza number
   lastmonth <- rep(NA,Nsplit)
   for(isp in 1:Nsplit){
+    #Put the stanzas in order for each split species
     stnum <- order(stanzafile[StGroupNum == isp, First])
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
 
-    st <- stanzafile[StGroupNum == isp&Leading,]
+    #Calculate the last month for the final ("leading") stanza
+    #KYA Aug 2021:
+    # Formerly used fraction of Winf, but that didn't work for species
+    # with rapid growth but low mortality (e.g. marine mammals).
+    # So instead, calculate biomass out for a very long time and
+    # taking 0.99999 of cumulative biomass as a cutoff.
+    st <- stanzafile[StGroupNum == isp&Leading,] 
     gp <- groupfile[isp,]
-    
+    #Max age class in months should be one less than a multiple of 12
+    #(trying 5999 - probably overkill but for safety)
     AGE <- st$First:5999
-    mz <- (st$Z+gp$BAB)/12
+    mz <- (st$Z + gp$BAB)/12
     k  <- gp$VBGF_Ksp
     d  <- gp$VBGF_d
     NN <- shift(cumprod(rep(exp(-1*mz),length(AGE))),1,1.0)
     BB <- NN * (1 - exp(-k * (1 - d) * (AGE))) ^ (1 / (1 - d))
     BBcum <- cumsum(BB)/sum(BB)
-    
-    lastmonth[isp] <- ceiling(AGE[min(which(BBcum>0.9999))]/12) * 12 - 1
+    #Age at which 0.99999 of cumulative leading stanza biomass is represented,
+    #rounded to nearest higher multiple of 12 (-1 since index starts at 0)
+    lastmonth[isp] <- ceiling(AGE[min(which(BBcum>0.99999))]/12) * 12 - 1
   }
   
-  #Calculate the last month for the final stanza
-  #Months to get to 99% Winf (We don't use an accumulator function like EwE)
+  #Save the maximum month vector in the table
   groupfile[, last := lastmonth]
   
   for(isp in 1:Nsplit){
