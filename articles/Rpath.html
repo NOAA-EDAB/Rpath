@@ -88,7 +88,7 @@
       <h1 data-toc-skip>Rpath using R Ecosystem</h1>
                         <h4 class="author">Sean M. Lucey</h4>
             
-            <h4 class="date">2021-02-04</h4>
+            <h4 class="date">2021-08-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/master/vignettes/Rpath.Rmd"><code>vignettes/Rpath.Rmd</code></a></small>
       <div class="hidden name"><code>Rpath.Rmd</code></div>
@@ -1602,8 +1602,6 @@
 <p>The final month of the ultimate stanza can be set to any value. The function <code>rpath.stanzas</code> will calculate the final month as the point where the species reaches 90% Winf. The function <code>rpath.stanzas</code> will also add data tables containing the weight, number, and consumption at age for each stanza group.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">REco.params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rpath.stanzas.html">rpath.stanzas</a></span><span class="op">(</span><span class="va">REco.params</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Warning in kable_pipe(x = structure(character(0), .Dim = c(0L, 0L), .Dimnames =
-#&gt; list(: The table should have a header (column names)</code></pre>
 <p>Table: Completed stanzas table</p>
 <p>|| || || ||</p>
 <table class="table">
@@ -1613,7 +1611,6 @@
 <th align="right">WageS</th>
 <th align="right">QageS</th>
 <th align="right">Survive</th>
-<th align="right">survive_L</th>
 <th align="right">B</th>
 <th align="right">Q</th>
 <th align="right">NageS</th>
@@ -1624,7 +1621,6 @@
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="right">1.0000000</td>
-<td align="right">0.8446497</td>
 <td align="right">0.00e+00</td>
 <td align="right">0.0000000</td>
 <td align="right">23.43377</td>
@@ -1633,7 +1629,6 @@
 <td align="right">1</td>
 <td align="right">0.0000017</td>
 <td align="right">0.0001442</td>
-<td align="right">0.8446497</td>
 <td align="right">0.8446497</td>
 <td align="right">1.50e-06</td>
 <td align="right">0.0001218</td>
@@ -1644,7 +1639,6 @@
 <td align="right">0.0000136</td>
 <td align="right">0.0005700</td>
 <td align="right">0.7134331</td>
-<td align="right">0.8446497</td>
 <td align="right">9.70e-06</td>
 <td align="right">0.0004067</td>
 <td align="right">16.71843</td>
@@ -1654,7 +1648,6 @@
 <td align="right">0.0000451</td>
 <td align="right">0.0012673</td>
 <td align="right">0.6026010</td>
-<td align="right">0.8446497</td>
 <td align="right">2.72e-05</td>
 <td align="right">0.0007637</td>
 <td align="right">14.12121</td>
@@ -1664,7 +1657,6 @@
 <td align="right">0.0001050</td>
 <td align="right">0.0022261</td>
 <td align="right">0.5089867</td>
-<td align="right">0.8446497</td>
 <td align="right">5.35e-05</td>
 <td align="right">0.0011330</td>
 <td align="right">11.92748</td>
@@ -1674,7 +1666,6 @@
 <td align="right">0.0002015</td>
 <td align="right">0.0034369</td>
 <td align="right">0.4299155</td>
-<td align="right">0.8446497</td>
 <td align="right">8.66e-05</td>
 <td align="right">0.0014776</td>
 <td align="right">10.07454</td>
@@ -1682,14 +1673,14 @@
 </tbody>
 </table>
 <p>Output from the <code>rpath.stanzas</code> function can be plotted using the <code>stanzaplot</code> function.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/stanzaplot.html">stanzaplot</a></span><span class="op">(</span><span class="va">REco.params</span>, StanzaGroup <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="Rpath_files/figure-html/stanzaplot-1.png" width="864" style="display: block; margin: auto;"> Note: If you do not have multistanza groups in your model, you do not have to run <code>rpath.stanzas</code>.</p>
 <p>###Diet Parameters The data entered in the diet list is the same as the data entered in the diet composition tab in EwE. Just as within EwE, the columns represent the predators while the rows represent the prey. Individual diet components can be adjusted by specifying the prey in the ‘Group’ variable and assigning a value to the predator. For example, if you wanted to assign 10% of the seabird diet as ‘Other Groundfish’ you could do it like this:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">REco.params</span><span class="op">$</span><span class="va">diet</span><span class="op">[</span><span class="va">Group</span> <span class="op">==</span> <span class="st">'OtherGroundfish'</span>, <span class="va">Seabirds</span> <span class="op">:=</span> <span class="fl">0.1</span><span class="op">]</span></code></pre></div>
 <p>You can also assign the entire diet composition for a predator:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">whale.diet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0.01</span>, <span class="cn">NA</span>, <span class="fl">0.01</span>, <span class="cn">NA</span>, <span class="fl">0.01</span>, <span class="cn">NA</span>, <span class="fl">0.01</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fl">0.1</span>,
                 <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0.86</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="cn">NA</span><span class="op">)</span>
 <span class="va">REco.params</span><span class="op">$</span><span class="va">diet</span><span class="op">[</span>, <span class="va">Whales</span> <span class="op">:=</span> <span class="va">whale.diet</span><span class="op">]</span></code></pre></div>
@@ -1818,7 +1809,7 @@
 </tbody>
 </table>
 <p>Here is the completed model parameter file for R Ecosystem:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">REco.params</span><span class="op">$</span><span class="va">diet</span><span class="op">[</span>, <span class="va">Seabirds</span>        <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">11</span><span class="op">)</span>, <span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, 
                                         <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">6</span><span class="op">)</span>, <span class="fl">0.3</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">]</span>
 <span class="va">REco.params</span><span class="op">$</span><span class="va">diet</span><span class="op">[</span>, <span class="va">Whales</span>          <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0.01</span>, <span class="cn">NA</span>, <span class="fl">0.01</span>, <span class="cn">NA</span>, <span class="fl">0.01</span>, 
@@ -2714,7 +2705,7 @@
 <h2 class="hasAnchor">
 <a href="#running-ecopath" class="anchor"></a>Running Ecopath</h2>
 <p>After creating the parameter object, running ecopath in R is relatively straightforward. It is just the function <code>rpath</code> supplied with the parameter object. Additionally, you can supply an ecosystem name for the output.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">REco</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rpath.html">rpath</a></span><span class="op">(</span><span class="va">REco.params</span>, eco.name <span class="op">=</span> <span class="st">'R Ecosystem'</span><span class="op">)</span>
 <span class="va">REco</span>
 <span class="co">#&gt; Rpath model: R Ecosystem </span>
@@ -2774,7 +2765,7 @@
 <span class="co">#&gt; Dredgers        0.000000e+00 0.000000000 0.00e+00</span></code></pre></div>
 <p>The output object from <code>rpath</code> is an S3 object type called ‘Rpath’. Rpath objects are a list of parameters from the mass balance. However, the <code>print</code> function will display the same information as the “Basic Estimates” tab from EwE. You will also notice that the <code>print</code> function will display whether the model is balanced or not. If the model was not balanced, it would list the groups that are not balanced.</p>
 <p>You can also display the mortalities associated with each group by supplying the argument <code>morts = T</code> to the <code>print</code> function.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">REco</span>, morts <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 <span class="co">#&gt; Rpath model: R Ecosystem </span>
 <span class="co">#&gt; Model Area: 1 </span>
@@ -2942,7 +2933,7 @@
 <span class="co">#&gt; Discards           0.0000000       0.0000000           0.00                0</span></code></pre></div>
 <p>Note that if you wish to save the <code>print</code> output you need to use the function <code>write.rpath</code>. This function will also accept the argument ‘morts = T’.</p>
 <p>The generic function <code>summary</code> will display some summary statistics on the model as well as a list of attributes you can access. To access any of the other attributes simply use the standard list notation.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">REco</span><span class="op">)</span>
 <span class="co">#&gt; Rpath model: R Ecosystem </span>
 <span class="co">#&gt;      Status: Balanced</span>
@@ -2968,13 +2959,13 @@
 <span class="co">#&gt;        Detritus        Discards        Trawlers        Midwater        Dredgers </span>
 <span class="co">#&gt;        1.000000        1.000000        4.768917        4.149361        3.863316</span></code></pre></div>
 <p>One of the advantages of R is its graphical ability. Users can feel free to develop their own graphical routines for the Rpath outputs. However, we have included a basic food web plot. The routine can include fisheries, display group numbers or names, and even highlight a particular group.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/webplot.html">webplot</a></span><span class="op">(</span><span class="va">REco</span><span class="op">)</span></code></pre></div>
 <p><img src="Rpath_files/figure-html/Food%20Web%20Plots-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/webplot.html">webplot</a></span><span class="op">(</span><span class="va">REco</span>, labels <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
 <p><img src="Rpath_files/figure-html/Food%20Web%20Plots-2.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/webplot.html">webplot</a></span><span class="op">(</span><span class="va">REco</span>, fleets <span class="op">=</span> <span class="cn">T</span>, highlight <span class="op">=</span> <span class="st">'AduRoundfish1'</span><span class="op">)</span></code></pre></div>
 <p><img src="Rpath_files/figure-html/Food%20Web%20Plots-3.png" width="672" style="display: block; margin: auto;"></p>
 </div>
