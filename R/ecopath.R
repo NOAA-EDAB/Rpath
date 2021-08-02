@@ -366,8 +366,7 @@ rpath.stanzas <- function(Rpath.params){
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
-    t99 <- groupfile[StGroupNum == isp, last]
-    stanzafile[StGroupNum == isp & StanzaNum == nstanzas, Last := t99]
+    stanzafile[StGroupNum == isp & Leading, Last := lastmonth[isp]]
     
     #Grab ecopath group codes
     group.codes <- stanzafile[StGroupNum == isp, GroupNum]
@@ -378,7 +377,7 @@ rpath.stanzas <- function(Rpath.params){
         
     #Calculate weight and consumption at age    
     StGroup <- data.table(age = stanzafile[StGroupNum == isp & StanzaNum == 1, First]:
-                            t99)
+                            lastmonth[isp])
     #Calculate monthly generalized k: (Ksp * 3) / 12
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
