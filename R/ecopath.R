@@ -366,34 +366,31 @@ rpath.stanzas <- function(Rpath.params){
     
     #Calculate the relative number of animals at age a
     #Vector of survival rates from 1 stanza to the next
-    StGroup[age == 0, Survive := 1]
-    prev.surv <- 1
+    
+    #Unwind the by-stanza mortality rates into by-month survival rates
+    #by looping through the stanzas
+    survive_L <- rep(NA,length(StGroup$age))
     for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
       month.z <- (stanzafile[StGroupNum == isp & StanzaNum == ist, Z] + 
-                    groupfile[StGroupNum == isp, BAB]) / 12
-      StGroup[age %in% first[ist]:second[ist], survive_L := exp(-1*month.z)]
+                   groupfile[StGroupNum == isp, BAB]) / 12
+      survive_L[which(StGroup$age %in% first[ist]:second[ist])] <- exp(-1*month.z)
+    } 
+    
+    #Shift survival rates forward one - first survival is 1.0
+    survive_L <- shift(survive_L,1,1.0)
+    #Use cumulative product to get overall survival to each month
+    StGroup[, Survive := cumprod(survive_L)]
       
-      if(first[ist] > 0){
-        StGroup[age == first[ist], Survive := StGroup[age == first[ist] - 1, 
-                                                    Survive] * prev.surv]
-      }
-      
-      for(a in (first[ist] + 1):second[ist]){
-        StGroup[age == a, Survive := StGroup[age == a - 1, Survive] * survive_L]
-      }
-      
-      StGroup[, B := Survive * WageS]
-      StGroup[, Q := Survive * QageS]
-      
+    StGroup[, B := Survive * WageS]
+    StGroup[, Q := Survive * QageS]
+    for(ist in 1:nstanzas){      
       #Numerator for the relative biomass/consumption calculations
       b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]
       q.num <- StGroup[age %in% first[ist]:second[ist], sum(Q)]
       
       stanzafile[StGroupNum == isp & StanzaNum == ist, bs.num := b.num]
       stanzafile[StGroupNum == isp & StanzaNum == ist, qs.num := q.num]
-      
-      prev.surv <- exp(-1 * month.z)
     }
       
     #Scale numbers up to total recruits
