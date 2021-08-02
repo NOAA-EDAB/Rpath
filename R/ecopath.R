@@ -348,7 +348,7 @@ rpath.stanzas <- function(Rpath.params){
     
     #this selects all of the stanza lines, then picks the last one
     #(maybe data table has a better way...)
-    stmax <- max(stanzafile[StGroupNum == isp,]$StanzaNum)
+    stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
     st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
     
     gp <- groupfile[isp,]
