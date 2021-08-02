@@ -345,7 +345,12 @@ rpath.stanzas <- function(Rpath.params){
     # with rapid growth but low mortality (e.g. marine mammals).
     # So instead, calculate biomass out for a very long time and
     # taking 0.99999 of cumulative biomass as a cutoff.
-    st <- stanzafile[StGroupNum == isp&Leading,] 
+    
+    #this selects all of the stanza lines, then picks the last one
+    #(maybe data table has a better way...)
+    stmax <- max(stanzafile[StGroupNum == isp,]$StanzaNum)
+    st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
+    
     gp <- groupfile[isp,]
     #Max age class in months should be one less than a multiple of 12
     #(trying 5999 - probably overkill but for safety)
