@@ -17,8 +17,9 @@
 #'@export
 rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   #Need to define variables to eliminate check() note about no visible binding
-  Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- BEE <- NULL
-  Biomass <- Q <- BioAcc <- BioQB <- diag.a <- EEa <- B <- M0 <- QBloss <- Unassim <- NULL
+  Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- NULL
+  BEE <- Biomass <- Q <- BioAcc <- BioQB <- diag.a <- EEa <- B <- M0 <- NULL
+  QBloss <- Unassim <- Ex <- NULL
   
   # Model Parameters - Basic parameters, detritus fate, catch, discards in that order
   model <- copy(Rpath.params$model)
@@ -325,7 +326,7 @@ rpath.stanzas <- function(Rpath.params){
   StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
   WageS <- age <- QageS <- Survive <- Z <- survive_L <- bs.num <- qs.num <- Leading <- NULL
   Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
-  QB <- NULL
+  QB <- BAB <- Ex <- NULL
   
   #Determine the total number of groups with multistanzas
   Nsplit     <- Rpath.params$stanza$NStanzaGroups
