@@ -333,20 +333,45 @@ rpath.stanzas <- function(Rpath.params){
   stanzafile <- Rpath.params$stanza$stindiv
   
   #Need to add vector of stanza number
+  lastmonth <- rep(NA,Nsplit)
   for(isp in 1:Nsplit){
+    #Put the stanzas in order for each split species
     stnum <- order(stanzafile[StGroupNum == isp, First])
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
+
+    #Calculate the last month for the final ("leading") stanza
+    #KYA Aug 2021:
+    # Formerly used fraction of Winf, but that didn't work for species
+    # with rapid growth but low mortality (e.g. marine mammals).
+    # So instead, calculate biomass out for a very long time and
+    # taking 0.99999 of cumulative biomass as a cutoff.
+    
+    #this selects all of the stanza lines, then picks the last one
+    #(maybe data table has a better way...)
+    stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
+    st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
+    
+    gp <- groupfile[isp,]
+    #Max age class in months should be one less than a multiple of 12
+    #(trying 5999 - probably overkill but for safety)
+    AGE <- st$First:5999
+    mz <- (st$Z + gp$BAB)/12
+    k  <- gp$VBGF_Ksp
+    d  <- gp$VBGF_d
+    NN <- shift(cumprod(rep(exp(-1*mz),length(AGE))),1,1.0)
+    BB <- NN * (1 - exp(-k * (1 - d) * (AGE))) ^ (1 / (1 - d))
+    BBcum <- cumsum(BB)/sum(BB)
+    #Age at which 0.99999 of cumulative leading stanza biomass is represented,
+    #rounded to nearest higher multiple of 12 (-1 since index starts at 0)
+    lastmonth[isp] <- ceiling(AGE[min(which(BBcum>0.99999))]/12) * 12 - 1
   }
   
-  #Calculate the last month for the final stanza
-  #Months to get to 99% Winf (We don't use an accumulator function like EwE)
-  groupfile[, last := floor(log(1 - 0.9999^(1 - VBGF_d)) / 
-                                  (-1 * (VBGF_Ksp * 3 / 12) * (1 - VBGF_d)))]
+  #Save the maximum month vector in the table
+  groupfile[, last := lastmonth]
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
-    t99 <- groupfile[StGroupNum == isp, last]
-    stanzafile[StGroupNum == isp & StanzaNum == nstanzas, Last := t99]
+    stanzafile[StGroupNum == isp & Leading, Last := lastmonth[isp]]
     
     #Grab ecopath group codes
     group.codes <- stanzafile[StGroupNum == isp, GroupNum]
@@ -357,7 +382,7 @@ rpath.stanzas <- function(Rpath.params){
         
     #Calculate weight and consumption at age    
     StGroup <- data.table(age = stanzafile[StGroupNum == isp & StanzaNum == 1, First]:
-                            t99)
+                            lastmonth[isp])
     #Calculate monthly generalized k: (Ksp * 3) / 12
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
