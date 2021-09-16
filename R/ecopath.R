@@ -313,8 +313,7 @@ return(path.model)
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.params Object containing the Rpath parameters generated either by 
-#'  create.rpath.params or read.rpath.params
+#'@inheritParams rpath
 #'
 #'@return Calculates and adds biomass and consumption for trailing stanza groups.  
 #'  Also adds weight at age and number at age for multi-staza groups.
