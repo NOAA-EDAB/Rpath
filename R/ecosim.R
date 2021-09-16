@@ -240,9 +240,9 @@ rsim.state <- function(params){
 #'
 #'@export
 #'
-rsim.diet <- function(rout,predator){
-   pmat <-  rout$annual_Qlink[,rout$pred==predator]
-   colnames(pmat) <- rout$prey[rout$pred==predator]
+rsim.diet <- function(Rsim.output, group){
+   pmat <- Rsim.output$annual_Qlink[, Rsim.output$pred == group]
+   colnames(pmat) <- Rsim.output$prey[Rsim.output$pred == group]
    return(pmat)
 }  
 
@@ -254,9 +254,9 @@ rsim.diet <- function(rout,predator){
 #'
 #'@export
 #'
-rsim.mort <- function(rout,prey){
-  pmat <-  rout$annual_Qlink[,rout$prey==prey]
-  colnames(pmat) <- rout$pred[rout$prey==prey]
+rsim.mort <- function(Rsim.output, group){
+  pmat <- Rsim.output$annual_Qlink[, Rsim.output$prey == group]
+  colnames(pmat) <- Rsim.output$pred[Rsim.output$prey == group]
   return(pmat)
 }  
 
@@ -271,11 +271,11 @@ rsim.mort <- function(rout,prey){
 #'
 #'@export
 #'
-rsim.deriv <- function(Rsim.scenario, year=0, month=0, tstep=0){
+rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
   scene <- copy(Rsim.scenario)
   rout <- deriv_vector(scene$params,  scene$start_state, 
                        scene$forcing, scene$fishing,
-                       scene$stanzas, year, month, tstep)
+                       scene$stanzas, sim.year, sim.month, tstep)
   
   rtab <- data.frame(scene$params$spname,rout$DerivT,rout$TotGain,rout$TotLoss, 
                     rout$FoodGain, rout$DetritalGain, rout$FishingGain,      
