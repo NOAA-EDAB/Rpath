@@ -270,7 +270,7 @@ rsim.mort <- function(Rsim.output, group){
 #'
 #'Calculates the derivative for a single time step and saves the output 
 #'
-#'@inheritParams rsim.fishing
+#'@inheritParams rsim.run
 #'@param sim.year Will inherit from apply functions
 #'@param sim.month Will inherit from apply functions
 #'@param tstep Sub-monthly time step usually set to 0. 
