@@ -59,7 +59,7 @@ frate.table <- function(Rsim.scenario){
 #'    values.
 #'@export 
 adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1, 
-                           sim.month = 0, bymonth = F, value){
+                           sim.month = 0, value){
   #Check that parameter and group exist
   if(!parameter %in% c('ForcedEffort', 'ForcedFRate', 'ForcedCatch')){stop("Fishing parameter not found")}
   
