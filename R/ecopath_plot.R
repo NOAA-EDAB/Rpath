@@ -32,7 +32,7 @@
 webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col = 'grey',
                     highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                     labels = FALSE, label.pos = NULL, label.num = FALSE, label.cex = 1,
-                    fleets = FALSE, type.col = 'black', box.order = NULL, ...){
+                    fleets = FALSE, type.col = 'black', box.order = NULL){
   #Need to define variables to eliminate check() note about no visible binding
   TL <- TLlevel <- type <- n <- x.space <- x.offset <- Group <- x.pos <- GroupNum <- NULL
   
@@ -184,9 +184,8 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.params R object containing the Rpath parameters modified by the 
-#'  rpath.stanza function.
-#'@param StanzaNum The Stanza group's number to be plotted.
+#'@inheritParams rpath
+#'@param StanzaGroup The Stanza group's name to be plotted.
 #'@param line.cols A vector of four colors used to represent the population biomass,
 #'relative number, indvidual weights, and stanza separation lines.
 #'
@@ -195,7 +194,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #'@import graphics
 #'@export
 stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green', 
-                                                                'blue', 'red'), ...){
+                                                                'blue', 'red')){
   #Need to define variables to eliminate check() note about no visible binding
   B <- NageS <- WageS <- age <- B.scale <- NageS.scale <- WageS.scale <- StGroupNum <- Last <- NULL
   
