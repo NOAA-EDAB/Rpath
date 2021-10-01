@@ -218,7 +218,7 @@ stanzaplot <- function(Rpath.params, StanzaGroup, line.cols = c('black', 'green'
   
   #Plot the total biomass
   plot(stanza.data[, age], stanza.data[, B.scale], xlab = '', ylab = '', 
-       type = 'l', lwd = 3, axes = F, col = line.cols[1], ...)
+       type = 'l', lwd = 3, axes = F, col = line.cols[1])
   
   #Add total number line and weight at age line
   lines(stanza.data[, age], stanza.data[, NageS.scale], lwd = 3, col = line.cols[2])

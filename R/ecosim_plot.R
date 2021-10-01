@@ -51,7 +51,7 @@ rsim.plot <- function(Rsim.output, spname="all", indplot = F){
   
   par(omd=c(0, 1-w, 0, 1))
   plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, xmax), 
-       axes = F, xlab = '', ylab = '', type = 'n', ...)
+       axes = F, xlab = '', ylab = '', type = 'n')
   axis(1)
   axis(2, las = T)
   box(lwd = 2)
