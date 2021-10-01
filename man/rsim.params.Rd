@@ -2,7 +2,7 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.params}
 \alias{rsim.params}
-\title{Initial set up for Ecosim modual of Rpath}
+\title{Initial set up for Rsim module of Rpath}
 \usage{
 rsim.params(
   Rpath,
@@ -16,7 +16,7 @@ rsim.params(
 )
 }
 \arguments{
-\item{Rpath}{Rpath object containing a balanced model.}
+\item{Rpath}{R object containing a balanced \code{Rpath} model.}
 
 \item{mscramble}{WILL REMOVE}
 
@@ -33,32 +33,17 @@ rsim.params(
 \item{steps_m}{Number of time steps per month.}
 }
 \value{
-Returns an Rpath.sim object that can be supplied to the ecosim.run function.
+Returns an \code{Rsim.params} object that is passed to the \code{rsim.run} 
+   function via the \code{rsim.scenario} function.
 }
 \description{
-Converts the outputs from ecopath into rates for use in ecosim.
+Converts the outputs from Rpath into rates for use in Rsim.
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{MTI}()},
-\code{\link{adjust.fishing}()},
-\code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()},
-\code{\link{check.rpath.params}()},
-\code{\link{create.rpath.params}()},
-\code{\link{extract.node}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{rpath}()},
+Other Rsim functions: 
 \code{\link{rsim.plot}()},
+\code{\link{rsim.run}()},
 \code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
-\code{\link{write.rpath.params}()}
+\code{\link{rsim.step}()}
 }
-\concept{Rpath functions}
+\concept{Rsim functions}
