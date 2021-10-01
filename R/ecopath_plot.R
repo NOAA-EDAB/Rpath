@@ -75,7 +75,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   ymin <- min(pointmap[, TL]) - 0.1 * min(pointmap[, TL])
   ymax <- max(pointmap[, TL]) + 0.1 * max(pointmap[, TL])
   plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, 1), typ = 'n', xlab = '', 
-       ylab = '', axes = F, ...)
+       ylab = '', axes = F)
   if(!is.null(eco.name)) mtext(3, text = eco.name, cex = 1.5)
   axis(2, las = T)
   box()
