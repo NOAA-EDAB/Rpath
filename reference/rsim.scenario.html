@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Rsim modual of Rpath — rsim.scenario • Rpath</title>
+<title>Rsim module of Rpath — rsim.scenario • Rpath</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,10 @@
 
 
 
-<meta property="og:title" content="Rsim modual of Rpath — rsim.scenario" />
-<meta property="og:description" content="Prepares a balanced Rpath model and creates a scenario consisting of 5 list objects:
-params, start_state, forcing, fishing, and stanzas." />
+<meta property="og:title" content="Rsim module of Rpath — rsim.scenario" />
+<meta property="og:description" content="Uses a balanced Rpath model and creates a scenario consisting of 5 list objects:
+params, start_state, forcing, fishing, and 
+stanzas." />
 
 
 
@@ -127,14 +128,15 @@ params, start_state, forcing, fishing, and stanzas." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Rsim modual of Rpath</h1>
+    <h1>Rsim module of <code>Rpath</code></h1>
     <small class="dont-index">Source: <a href='https://github.com/NOAA-EDAB/Rpath/blob/master/R/ecosim.R'><code>R/ecosim.R</code></a></small>
     <div class="hidden name"><code>rsim.scenario.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepares a balanced Rpath model and creates a scenario consisting of 5 list objects:
-params, start_state, forcing, fishing, and stanzas.</p>
+    <p>Uses a balanced <code>Rpath</code> model and creates a scenario consisting of 5 list objects:
+<code>params</code>, <code>start_state</code>, <code>forcing</code>, <code>fishing</code>, and 
+<code>stanzas</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>rsim.scenario</span><span class='op'>(</span><span class='va'>Rpath</span>, <span class='va'>Rpath.params</span>, years <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>)</span></pre>
@@ -144,7 +146,7 @@ params, start_state, forcing, fishing, and stanzas.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Rpath</th>
-      <td><p>R object containing a balanced Rpath model.</p></td>
+      <td><p>R object containing a balanced <code>Rpath</code> model.</p></td>
     </tr>
     <tr>
       <th>Rpath.params</th>
@@ -159,30 +161,15 @@ either by the create.rpath.params or read.rpath.params functions.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Returns an Rsim.scenario object that can be supplied to the rsim.run function.</p>
+    <p>Returns an <code>Rsim.scenario</code> object that can be supplied to the 
+    <code>rsim.run</code> function.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Rpath functions: 
-<code><a href='MTI.html'>MTI</a>()</code>,
-<code><a href='adjust.fishing.html'>adjust.fishing</a>()</code>,
-<code><a href='adjust.forcing.html'>adjust.forcing</a>()</code>,
-<code><a href='adjust.scenario.html'>adjust.scenario</a>()</code>,
-<code><a href='check.rpath.params.html'>check.rpath.params</a>()</code>,
-<code><a href='create.rpath.params.html'>create.rpath.params</a>()</code>,
-<code><a href='extract.node.html'>extract.node</a>()</code>,
-<code><a href='frate.table.html'>frate.table</a>()</code>,
-<code><a href='read.rpath.params.html'>read.rpath.params</a>()</code>,
-<code><a href='rpath.groups.html'>rpath.groups</a>()</code>,
-<code><a href='rpath.stanzas.html'>rpath.stanzas</a>()</code>,
-<code><a href='rpath.html'>rpath</a>()</code>,
+    <div class='dont-index'><p>Other Rsim functions: 
 <code><a href='rsim.params.html'>rsim.params</a>()</code>,
 <code><a href='rsim.plot.html'>rsim.plot</a>()</code>,
-<code><a href='rsim.step.html'>rsim.step</a>()</code>,
-<code><a href='stanzaplot.html'>stanzaplot</a>()</code>,
-<code><a href='webplot.html'>webplot</a>()</code>,
-<code><a href='write.Rpath.html'>write.Rpath</a>()</code>,
-<code><a href='write.Rsim.html'>write.Rsim</a>()</code>,
-<code><a href='write.rpath.params.html'>write.rpath.params</a>()</code></p></div>
+<code><a href='rsim.run.html'>rsim.run</a>()</code>,
+<code><a href='rsim.step.html'>rsim.step</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

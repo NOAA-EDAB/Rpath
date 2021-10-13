@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot routine for Ecosim runs — rsim.plot • Rpath</title>
+<title>Plot routine for Rsim runs — rsim.plot • Rpath</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Plot routine for Ecosim runs — rsim.plot" />
-<meta property="og:description" content="Plots the relative biomass of each group from a run of ecosim." />
+<meta property="og:title" content="Plot routine for Rsim runs — rsim.plot" />
+<meta property="og:description" content="Plots the relative biomass of each group from an Rsim.output object." />
 
 
 
@@ -126,23 +126,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot routine for Ecosim runs</h1>
+    <h1>Plot routine for Rsim runs</h1>
     <small class="dont-index">Source: <a href='https://github.com/NOAA-EDAB/Rpath/blob/master/R/ecosim_plot.R'><code>R/ecosim_plot.R</code></a></small>
     <div class="hidden name"><code>rsim.plot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plots the relative biomass of each group from a run of ecosim.</p>
+    <p>Plots the relative biomass of each group from an <code>Rsim.output</code> object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rsim.plot</span><span class='op'>(</span><span class='va'>Rsim.output</span>, spname <span class='op'>=</span> <span class='st'>"all"</span>, indplot <span class='op'>=</span> <span class='cn'>F</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>rsim.plot</span><span class='op'>(</span><span class='va'>Rsim.output</span>, spname <span class='op'>=</span> <span class='st'>"all"</span>, indplot <span class='op'>=</span> <span class='cn'>F</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Rsim.output</th>
-      <td><p>Rpath ecosim run created by the rsim.run() function.</p></td>
+      <td><p>R object containing the output from <code>rsim.run</code>.</p></td>
+    </tr>
+    <tr>
+      <th>spname</th>
+      <td><p>Vector of species names to be displayed.  The default "all" will
+display all group names.</p></td>
+    </tr>
+    <tr>
+      <th>indplot</th>
+      <td><p>Logical value of whether to plot a single group or multiple groups</p></td>
     </tr>
     </table>
 
@@ -151,27 +160,11 @@
     <p>Creates a figure of relative biomass.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Rpath functions: 
-<code><a href='MTI.html'>MTI</a>()</code>,
-<code><a href='adjust.fishing.html'>adjust.fishing</a>()</code>,
-<code><a href='adjust.forcing.html'>adjust.forcing</a>()</code>,
-<code><a href='adjust.scenario.html'>adjust.scenario</a>()</code>,
-<code><a href='check.rpath.params.html'>check.rpath.params</a>()</code>,
-<code><a href='create.rpath.params.html'>create.rpath.params</a>()</code>,
-<code><a href='extract.node.html'>extract.node</a>()</code>,
-<code><a href='frate.table.html'>frate.table</a>()</code>,
-<code><a href='read.rpath.params.html'>read.rpath.params</a>()</code>,
-<code><a href='rpath.groups.html'>rpath.groups</a>()</code>,
-<code><a href='rpath.stanzas.html'>rpath.stanzas</a>()</code>,
-<code><a href='rpath.html'>rpath</a>()</code>,
+    <div class='dont-index'><p>Other Rsim functions: 
 <code><a href='rsim.params.html'>rsim.params</a>()</code>,
+<code><a href='rsim.run.html'>rsim.run</a>()</code>,
 <code><a href='rsim.scenario.html'>rsim.scenario</a>()</code>,
-<code><a href='rsim.step.html'>rsim.step</a>()</code>,
-<code><a href='stanzaplot.html'>stanzaplot</a>()</code>,
-<code><a href='webplot.html'>webplot</a>()</code>,
-<code><a href='write.Rpath.html'>write.Rpath</a>()</code>,
-<code><a href='write.Rsim.html'>write.Rsim</a>()</code>,
-<code><a href='write.rpath.params.html'>write.rpath.params</a>()</code></p></div>
+<code><a href='rsim.step.html'>rsim.step</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

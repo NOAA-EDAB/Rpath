@@ -88,7 +88,7 @@
       <h1 data-toc-skip>Rsim using R Ecosystem</h1>
                         <h4 class="author">Sean M. Lucey</h4>
             
-            <h4 class="date">2021-08-03</h4>
+            <h4 class="date">2021-10-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/master/vignettes/Rsim.Rmd"><code>vignettes/Rsim.Rmd</code></a></small>
       <div class="hidden name"><code>Rsim.Rmd</code></div>
@@ -111,7 +111,7 @@
                            value <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p>The final part is to apply the modified Rsim.scenario function to the <code>rsim.run</code> function. The only arguments to the <code>rsim.run</code> function are the Rsim.scenario object, the method for numerical integration, and the length of the simulation. Rpath allows for both Adams-Bashforth and Runge-Kutta 4 numerical integration. Older versions of EwE use the Adams-Bashforth method while the latest version (6+) uses Runge-Kutta (The default method for Rpath).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">REco.run1</span> <span class="op">&lt;-</span> <span class="fu">rsim.run</span><span class="op">(</span><span class="va">REco.sim</span>, method <span class="op">=</span> <span class="st">'RK4'</span>, years <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">REco.run1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rsim.run.html">rsim.run</a></span><span class="op">(</span><span class="va">REco.sim</span>, method <span class="op">=</span> <span class="st">'RK4'</span>, years <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
 <p>The output from <code>rsim.run</code> is another S3 object class called ‘Rsim.output’. Similar to the Rpath object created by <code>rpath</code>, the generic function <code>print</code> will give output similar to the ‘Ecosim results’ tab in EwE. If you want to save the <code>print</code> results you need to use the function <code>write.rpath.sim</code>. The function <code>summary</code> just like for the Rpath object will display what other list items are available.</p>
 <p>Add code for rsim print…</p>
 <p>In addition, there is a quick graphical routine for plotting biomass trajectories over time. Other plots similar to the group plots are possible but at this time we do not have a built-in function.</p>

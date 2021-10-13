@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Initial set up for Ecosim modual of Rpath — rsim.params • Rpath</title>
+<title>Initial set up for Rsim module of Rpath — rsim.params • Rpath</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Initial set up for Ecosim modual of Rpath — rsim.params" />
-<meta property="og:description" content="Converts the outputs from ecopath into rates for use in ecosim." />
+<meta property="og:title" content="Initial set up for Rsim module of Rpath — rsim.params" />
+<meta property="og:description" content="Converts the outputs from Rpath into rates for use in Rsim." />
 
 
 
@@ -126,13 +126,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Initial set up for Ecosim modual of Rpath</h1>
+    <h1>Initial set up for Rsim module of Rpath</h1>
     <small class="dont-index">Source: <a href='https://github.com/NOAA-EDAB/Rpath/blob/master/R/ecosim.R'><code>R/ecosim.R</code></a></small>
     <div class="hidden name"><code>rsim.params.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Converts the outputs from ecopath into rates for use in ecosim.</p>
+    <p>Converts the outputs from Rpath into rates for use in Rsim.</p>
     </div>
 
     <pre class="usage"><span class='fu'>rsim.params</span><span class='op'>(</span>
@@ -151,7 +151,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Rpath</th>
-      <td><p>Rpath object containing a balanced model.</p></td>
+      <td><p>R object containing a balanced <code>Rpath</code> model.</p></td>
     </tr>
     <tr>
       <th>mscramble</th>
@@ -185,30 +185,15 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Returns an Rpath.sim object that can be supplied to the ecosim.run function.</p>
+    <p>Returns an <code>Rsim.params</code> object that is passed to the <code>rsim.run</code> 
+   function via the <code>rsim.scenario</code> function.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Rpath functions: 
-<code><a href='MTI.html'>MTI</a>()</code>,
-<code><a href='adjust.fishing.html'>adjust.fishing</a>()</code>,
-<code><a href='adjust.forcing.html'>adjust.forcing</a>()</code>,
-<code><a href='adjust.scenario.html'>adjust.scenario</a>()</code>,
-<code><a href='check.rpath.params.html'>check.rpath.params</a>()</code>,
-<code><a href='create.rpath.params.html'>create.rpath.params</a>()</code>,
-<code><a href='extract.node.html'>extract.node</a>()</code>,
-<code><a href='frate.table.html'>frate.table</a>()</code>,
-<code><a href='read.rpath.params.html'>read.rpath.params</a>()</code>,
-<code><a href='rpath.groups.html'>rpath.groups</a>()</code>,
-<code><a href='rpath.stanzas.html'>rpath.stanzas</a>()</code>,
-<code><a href='rpath.html'>rpath</a>()</code>,
+    <div class='dont-index'><p>Other Rsim functions: 
 <code><a href='rsim.plot.html'>rsim.plot</a>()</code>,
+<code><a href='rsim.run.html'>rsim.run</a>()</code>,
 <code><a href='rsim.scenario.html'>rsim.scenario</a>()</code>,
-<code><a href='rsim.step.html'>rsim.step</a>()</code>,
-<code><a href='stanzaplot.html'>stanzaplot</a>()</code>,
-<code><a href='webplot.html'>webplot</a>()</code>,
-<code><a href='write.Rpath.html'>write.Rpath</a>()</code>,
-<code><a href='write.Rsim.html'>write.Rsim</a>()</code>,
-<code><a href='write.rpath.params.html'>write.rpath.params</a>()</code></p></div>
+<code><a href='rsim.step.html'>rsim.step</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
