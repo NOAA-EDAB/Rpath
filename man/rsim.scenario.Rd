@@ -2,12 +2,12 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.scenario}
 \alias{rsim.scenario}
-\title{Rsim modual of Rpath}
+\title{Rsim module of \code{Rpath}}
 \usage{
 rsim.scenario(Rpath, Rpath.params, years = 1:100)
 }
 \arguments{
-\item{Rpath}{R object containing a balanced Rpath model.}
+\item{Rpath}{R object containing a balanced \code{Rpath} model.}
 
 \item{Rpath.params}{R object containing the Rpath parameters.  This is generated
 either by the create.rpath.params or read.rpath.params functions.}
@@ -15,33 +15,19 @@ either by the create.rpath.params or read.rpath.params functions.}
 \item{years}{A vector of each year of the simulation.}
 }
 \value{
-Returns an Rsim.scenario object that can be supplied to the rsim.run function.
+Returns an \code{Rsim.scenario} object that can be supplied to the 
+    \code{rsim.run} function.
 }
 \description{
-Prepares a balanced Rpath model and creates a scenario consisting of 5 list objects:
-params, start_state, forcing, fishing, and stanzas.
+Uses a balanced \code{Rpath} model and creates a scenario consisting of 5 list objects:
+\code{params}, \code{start_state}, \code{forcing}, \code{fishing}, and 
+\code{stanzas}.
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{MTI}()},
-\code{\link{adjust.fishing}()},
-\code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()},
-\code{\link{check.rpath.params}()},
-\code{\link{create.rpath.params}()},
-\code{\link{extract.node}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{rpath}()},
+Other Rsim functions: 
 \code{\link{rsim.params}()},
 \code{\link{rsim.plot}()},
-\code{\link{rsim.step}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
-\code{\link{write.rpath.params}()}
+\code{\link{rsim.run}()},
+\code{\link{rsim.step}()}
 }
-\concept{Rpath functions}
+\concept{Rsim functions}

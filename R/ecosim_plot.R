@@ -1,16 +1,21 @@
-#'Plot routine for Ecosim runs
+#'Plot routine for Rsim runs
 #'
-#'Plots the relative biomass of each group from a run of ecosim.
+#'Plots the relative biomass of each group from an \code{Rsim.output} object.
 #'
-#'@family Rpath functions
+#'@family Rsim functions
 #'
-#'@param Rsim.output Rpath ecosim run created by the rsim.run() function.
+#'@param Rsim.output R object containing the output from \code{rsim.run}.
+#'@param spname Vector of species names to be displayed.  The default "all" will
+#'     display all group names.
+#'@param indplot Logical value of whether to plot a single group or multiple groups
 #'
 #'@return Creates a figure of relative biomass.
 #'@import data.table
 #'@importFrom grDevices rainbow
+#'
 #'@export
-rsim.plot <- function(Rsim.output, spname="all", indplot = F, ...){
+#'
+rsim.plot <- function(Rsim.output, spname="all", indplot = F){
   opar <- par(no.readonly = T)
   if(indplot == F){
     # KYA April 2020 this seems incorrect?
@@ -46,7 +51,7 @@ rsim.plot <- function(Rsim.output, spname="all", indplot = F, ...){
   
   par(omd=c(0, 1-w, 0, 1))
   plot(0, 0, ylim = c(ymin, ymax), xlim = c(0, xmax), 
-       axes = F, xlab = '', ylab = '', type = 'n', ...)
+       axes = F, xlab = '', ylab = '', type = 'n')
   axis(1)
   axis(2, las = T)
   box(lwd = 2)

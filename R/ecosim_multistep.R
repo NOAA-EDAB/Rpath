@@ -1,18 +1,18 @@
-#####################################################################################
-#'Initial function to step through ecosim
+#'Function to add a time step to an Rsim run
 #'
-#'Runs rsim.run at intervals and combines the run to one output
+#'Runs \code{rsim.run} and appends the output to a previous \code{Rsim.output}.
+#'Currently only works with the Adams-Bashforth numerical integration method (AB).
 #'
-#'@family Rpath functions
+#'@family Rsim functions
 #'
-#'@param Rsim.scenario Rpath object created using rsim.scenario.
-#'@param Rsim.output Rpath ecosim run created by the rsim.run() function.
-#'@param method Which integration algorithim rsim.run will use (Currently only
-#'              supports 'AB')
-#'@param step.end The end year for the current interval
+#'@inheritParams rsim.run
+#'@inheritParams rsim.diet
+#'@param year.end The final year for the step interval
 #'
-#'@return Returns an Rsim.output object.
+#'@return Returns an \code{Rsim.output} object.
+#'
 #'@export
+#'
 rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   scene    <- copy(Rsim.scenario)
   full.run <- copy(Rsim.output)
