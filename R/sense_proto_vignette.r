@@ -5,9 +5,7 @@ library('viridis')
 
 data("sense_vignette")
 source("R/ecosense.R")
-
-# Run lines 1:207 in ecosense.R to load rsim.sense(). NOTE: The depricated sense
-# code is still included in ecosense.R (lines 211:401) for testing purposes.
+# NOTE: The depricated sense code is still included in ecosense.R (lines 211:401) for testing purposes.
 
 # One generated system (params)
 # one_ecosys <- rsim.sense(EBS_scene,EBS_unbal,Vvary = c(-4.5,4.5), Dvary = c(0,0))
