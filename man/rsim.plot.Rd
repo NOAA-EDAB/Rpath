@@ -2,40 +2,29 @@
 % Please edit documentation in R/ecosim_plot.R
 \name{rsim.plot}
 \alias{rsim.plot}
-\title{Plot routine for Ecosim runs}
+\title{Plot routine for Rsim runs}
 \usage{
-rsim.plot(Rsim.output, spname = "all", indplot = F, ...)
+rsim.plot(Rsim.output, spname = "all", indplot = F)
 }
 \arguments{
-\item{Rsim.output}{Rpath ecosim run created by the rsim.run() function.}
+\item{Rsim.output}{R object containing the output from \code{rsim.run}.}
+
+\item{spname}{Vector of species names to be displayed.  The default "all" will
+display all group names.}
+
+\item{indplot}{Logical value of whether to plot a single group or multiple groups}
 }
 \value{
 Creates a figure of relative biomass.
 }
 \description{
-Plots the relative biomass of each group from a run of ecosim.
+Plots the relative biomass of each group from an \code{Rsim.output} object.
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{MTI}()},
-\code{\link{adjust.fishing}()},
-\code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()},
-\code{\link{check.rpath.params}()},
-\code{\link{create.rpath.params}()},
-\code{\link{extract.node}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{rpath}()},
+Other Rsim functions: 
 \code{\link{rsim.params}()},
+\code{\link{rsim.run}()},
 \code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
-\code{\link{write.rpath.params}()}
+\code{\link{rsim.step}()}
 }
-\concept{Rpath functions}
+\concept{Rsim functions}
