@@ -512,6 +512,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    NumericMatrix force_bymort     = as<NumericMatrix>(forcing["ForcedMort"]);
    NumericMatrix force_bysearch   = as<NumericMatrix>(forcing["ForcedSearch"]);
    NumericMatrix force_bymigrate  = as<NumericMatrix>(forcing["ForcedMigrate"]);
+   NumericMatrix force_byactresp  = as<NumericMatrix>(forcing["ForcedActresp"]);
    
 // Fishing forcing matrices (indexed year x species)  
 // SHOULD BE CONST, but no row extraction for CONST (per Rcpp issues wiki)
@@ -543,7 +544,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    
 // Set effective biomass for pred/prey response
 // default is B/Bref
-   NumericVector preyYY = state_Ftime * state_Biomass/B_BaseRef * force_byprey(dd,_);;
+   NumericVector preyYY = state_Ftime * state_Biomass/B_BaseRef * force_byprey(dd,_);
    NumericVector predYY = state_Ftime * state_Biomass/B_BaseRef * force_bysearch(dd,_);
 
 // Set functional response biomass for juvenile and adult groups (including foraging time) 
@@ -609,7 +610,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
 
 // By Species Rates 
    UnAssimLoss    = FoodGain  * UnassimRespFrac; 
-   ActiveRespLoss = FoodGain  * ActiveRespFrac;  												 
+   ActiveRespLoss = FoodGain  * ActiveRespFrac  * force_byactresp(dd,_);  												 
    MzeroLoss      = MzeroMort * state_Biomass;
    
    NumericVector NetProd = FoodGain - UnAssimLoss - ActiveRespLoss - MzeroLoss - FoodLoss;
@@ -733,14 +734,14 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
     
 // Add mortality forcing
    for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     FoodLoss[i]  *= force_bymort(y * STEPS_PER_YEAR + m, i);
-     MzeroLoss[i] *= force_bymort(y * STEPS_PER_YEAR + m, i);
+     FoodLoss[i]  *= force_bymort(dd, i);
+     MzeroLoss[i] *= force_bymort(dd, i);
    }
    
 // Add migration forcing
    MigrateLoss = clone(state_Biomass);
    for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     MigrateLoss[i]  *= force_bymigrate(y * STEPS_PER_YEAR + m, i);
+     MigrateLoss[i]  *= force_bymigrate(dd, i);
    }
    
 // Sum up derivitive parts (vector sums)
