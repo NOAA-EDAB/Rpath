@@ -68,27 +68,36 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1,
   }
   #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
+  #Create index in case the number of values is equal to length(sim.year) * length(sim.month)
+  ivalue <- 0 
+  
   #Loop over years if more than 1 sim.year provided
   for(iyear in seq_along(sim.year)){
-    #look-up what rows correspond to the year
-    #Regex used to account for year.month row names in Effort Matrix
-    year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$fishing[[parameter]]))
-                      == sim.year[iyear])
-    
-    #If more than 1 month is provided than need to identify which rows
-    #correspond with the year month combo...also if month does not equal 0.
-    if(length(sim.month) > 1){
-      year.row <- year.row[1:12 %in% sim.month]
-    }else{
-      if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
-    }
-    #If only 1 value is supplied for multiple years need to only point to that value
-    if(length(value) == 1){
-      Rsim.scenario$fishing[[parameter]][year.row, group] <- value
-    }else{
-      Rsim.scenario$fishing[[parameter]][year.row, group] <- value[iyear]
+    for(imonth in seq_along(sim.month)){
+      ivalue <- ivalue + 1
+      #look-up what rows correspond to the year
+      #Regex used to account for year.month row names in Effort Matrix
+      year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$fishing[[parameter]]))
+                        == sim.year[iyear])
+      
+      #identify what rows correspond to the sim.months - 0 indicates the whole year
+      if(sim.month[1] != 0){
+        year.row <- year.row[1:12 %in% sim.month[imonth]]
+        }
+      
+      #Apply the value to the correct row
+      if(length(value) == 1){
+        #If only 1 value is supplied for multiple years need to only point to that value
+        Rsim.scenario$fishing[[parameter]][year.row, group] <- value
+        }else if(sim.month[1] == 0){
+          Rsim.scenario$fishing[[parameter]][year.row, group] <- value[iyear]
+          }else if(length(value) == length(sim.month)){
+            Rsim.scenario$fishing[[parameter]][year.row, group] <- value[imonth]
+            }else {
+              Rsim.scenario$fishing[[parameter]][year.row, group] <- value[ivalue]
+            }
       }
-  }
+    }
 
   return(Rsim.scenario)
 }
@@ -167,32 +176,41 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
   }
   #if(!group %in% Rsim.scenario$params$spname){stop("Group not found")}
   
-  #Create vector of values if only one supplied for multiple years
-  if(length(value) == 1 & length(sim.year) > 1) value <- rep(value, length(sim.year))
+  if(bymonth){
+    Rsim.scenario$forcing[[parameter]][sim.month, group] <- value
+  }else {
+    
+  #Create index in case the number of values is equal to length(sim.year) * length(sim.month)
+  ivalue <- 0 
   
-  if(bymonth == F){
-    #Forcing matrices are by month not year so need to convert year/month combo
-    #Loop over years if more than 1 sim.year provided
-    for(iyear in seq_along(sim.year)){
+  #Loop over years if more than 1 sim.year provided
+  for(iyear in seq_along(sim.year)){
+    for(imonth in seq_along(sim.month)){
+      ivalue <- ivalue + 1
       #look-up what rows correspond to the year
-      #Regex used to account for year.month row names in Forcing Matrices
+      #Regex used to account for year.month row names in Effort Matrix
       year.row <- which(gsub("\\..*", "", rownames(Rsim.scenario$forcing[[parameter]]))
                         == sim.year[iyear])
       
-      #If more than 1 month is provided than need to identify which rows
-      #correspond with the year month combo...also if month does not equal 0.
-      if(length(sim.month) > 1){
-        year.row <- year.row[1:12 %in% sim.month]
-      }else{
-        if(sim.month > 0) year.row <- year.row[1:12 == sim.month]
+      #identify what rows correspond to the sim.months - 0 indicates the whole year
+      if(sim.month[1] != 0){
+        year.row <- year.row[1:12 %in% sim.month[imonth]]
       }
       
-      Rsim.scenario$forcing[[parameter]][year.row, group] <- value[iyear]
+      #Apply the value to the correct row
+      if(length(value) == 1){
+        #If only 1 value is supplied for multiple years need to only point to that value
+        Rsim.scenario$forcing[[parameter]][year.row, group] <- value
+      }else if(sim.month[1] == 0){
+        Rsim.scenario$forcing[[parameter]][year.row, group] <- value[iyear]
+      }else if(length(value) == length(sim.month)){
+        Rsim.scenario$forcing[[parameter]][year.row, group] <- value[imonth]
+      }else {
+        Rsim.scenario$forcing[[parameter]][year.row, group] <- value[ivalue]
+      }
     }
-  }else{
-    Rsim.scenario$forcing[[parameter]][sim.month, group] <- value
   }
-  
+  }
   
   return(Rsim.scenario)
 }
