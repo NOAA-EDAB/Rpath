@@ -376,9 +376,9 @@ check.rpath.params <- function(Rpath.params){
   }
 
 if(w == 0){
-  cat('Rpath parameter file is functional')
+  cat('Rpath parameter file is functional.\n')
 } else {
-    cat('Rpath parameter file needs attention!')
+    cat('Rpath parameter file needs attention!\n')
   }  
 }
 
