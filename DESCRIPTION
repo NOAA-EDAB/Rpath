@@ -21,7 +21,9 @@ Imports:
     MASS,
     Rcpp (>= 0.11.3),
     stats,
-    utils
+    utils,
+    ggplot2,
+    ggrepel
 LinkingTo: Rcpp
 Suggests:
     knitr,
