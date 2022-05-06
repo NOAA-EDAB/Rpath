@@ -17,13 +17,15 @@ ggwebplot(
   type.col = "grey50",
   box.order = NULL,
   line.alpha = 0.5,
+  point.size = 0.5,
+  text.size = 5,
   max.overlaps = 10
 )
 }
 \arguments{
-\item{Rpath.obj}{Rpath model created by the `rpath()` function.}
+\item{Rpath.obj}{Rpath model created by the \code{rpath()} function.}
 
-\item{eco.name}{Optional name of the ecosystem. Default is the `eco.name` 
+\item{eco.name}{Optional name of the ecosystem. Default is the \code{eco.name} 
 attribute from the rpath object.}
 
 \item{line.col}{The color of the lines between nodes of the food web.}
@@ -35,7 +37,7 @@ attribute from the rpath object.}
 \item{labels}{Logical whether or not to display group names.}
 
 \item{label.num}{Logical whether or not to display group numbers instead of points at nodes. 
-If `TRUE`, `type.col` must be length 1, not 4.}
+If \code{TRUE}, \code{type.col} must be length 1, not 4.}
 
 \item{label.cex}{}
 
@@ -45,12 +47,15 @@ If `TRUE`, `type.col` must be length 1, not 4.}
 of length 1 or 4. Color order will be living, primary producers, detrital, and fleet groups.}
 
 \item{box.order}{Vector of box numbers to change the default plot order. Must include all box numbers. 
-Passed to `summarize.for.webplot()`}
+Passed to \code{summarize.for.webplot()}}
 
-\item{line.alpha}{Transparency of lines between nodes of the food web}
+\item{line.alpha}{Transparency of lines between nodes of the food web.}
 
-\item{max.overlaps}{Maximum number of overlaps allowed for group labels by `ggrepel`
-Defaults to 10.}
+\item{point.size}{Size of points at nodes.}
+
+\item{text.size}{Size of text}
+
+\item{max.overlaps}{Maximum number of overlaps allowed for group labels by \code{ggrepel}}
 }
 \value{
 Returns a ggplot object visualizing the food web

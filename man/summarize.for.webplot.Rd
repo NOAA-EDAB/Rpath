@@ -7,19 +7,19 @@
 summarize.for.webplot(Rpath.obj, fleets = FALSE, box.order = NULL)
 }
 \arguments{
-\item{Rpath.obj}{Rpath model created by the `rpath()` function.}
+\item{Rpath.obj}{Rpath model created by the \code{rpath()} function.}
 
 \item{fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
 
 \item{box.order}{Vector of box numbers to change the default plot order. Must include all box numbers}
 }
 \value{
-Returns a list of length 2. The first element, `pointmap` is a data table of
+Returns a list of length 2. The first element, \code{pointmap} is a data table of
 the functional group names, group numbers, type (0- living, 1- producer, 2- detritus, 3- fleet),
-trophic level, biomass, and `x.pos` which determines the x coordinate of the node 
+trophic level, biomass, and \code{x.pos} which determines the x coordinate of the node 
 when plotting. The second element is a data table with one row for each trophic connection, 
-and columns for predator and prey trophic levels, predator and prey `x.pos` from `pointmap`,
-and predator and prey group numbers (`id`).
+and columns for predator and prey trophic levels, predator and prey \code{x.pos} from \code{pointmap},
+and predator and prey group numbers (\code{id}).
 }
 \description{
 Prepare and summarize food web model for plotting by generating x-values for node 

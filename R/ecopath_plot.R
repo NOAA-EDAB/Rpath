@@ -131,24 +131,25 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #' 
 #' Plots the food web associated with an Rpath object using ggplot functions
 #'
-#' @param Rpath.obj Rpath model created by the `rpath()` function.
-#' @param eco.name Optional name of the ecosystem. Default is the `eco.name` 
+#' @param Rpath.obj Rpath model created by the \code{rpath()} function.
+#' @param eco.name Optional name of the ecosystem. Default is the \code{eco.name} 
 #'                 attribute from the rpath object.
 #' @param line.col The color of the lines between nodes of the food web.
 #' @param highlight Set to the group number or name to highlight the connections of that group.
 #' @param highlight.col Color of the connections to the highlighted group, vector of length 3
 #' @param labels Logical whether or not to display group names.  
 #' @param label.num Logical whether or not to display group numbers instead of points at nodes. 
-#' If `TRUE`, `type.col` must be length 1, not 4.
+#' If \code{TRUE}, \code{type.col} must be length 1, not 4.
 #' @param label.cex 
 #' @param fleets Logical value indicating whether or not to include fishing fleets in the food web.
 #' @param type.col The color of the points cooresponding to the types of the group.  Can either be 
 #'  of length 1 or 4. Color order will be living, primary producers, detrital, and fleet groups.  
 #' @param box.order Vector of box numbers to change the default plot order. Must include all box numbers. 
-#' Passed to `summarize.for.webplot()`
-#' @param line.alpha Transparency of lines between nodes of the food web
-#' @param max.overlaps Maximum number of overlaps allowed for group labels by `ggrepel`
-#' Defaults to 10.
+#' Passed to \code{summarize.for.webplot()}
+#' @param line.alpha Transparency of lines between nodes of the food web.
+#' @param point.size Size of points at nodes. 
+#' @param text.size Size of text
+#' @param max.overlaps Maximum number of overlaps allowed for group labels by \code{ggrepel}
 #'
 #' @return Returns a ggplot object visualizing the food web
 #' @import data.table
@@ -160,7 +161,8 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
                       highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                       labels = FALSE, label.num = FALSE, label.cex = 1,
                       fleets = FALSE, type.col = 'grey50', box.order = NULL, 
-                      line.alpha = 0.5, max.overlaps = 10) {
+                      line.alpha = 0.5, point.size = 0.5, text.size = 5,
+                      max.overlaps = 10) {
   # build pointmap and set of connections
   web.info <- summarize.for.webplot(Rpath.obj, fleets, box.order)
   list2env(web.info, sys.frame(sys.nframe()))
@@ -177,14 +179,15 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
   # plot nodes
   if(length(type.col) == 1) {
     if(label.num) {
-      p <- p + geom_text(aes(x = x.pos, y = TL, label = GroupNum), 
+      p <- p + geom_text(aes(x = x.pos, y = TL, label = GroupNum), size = text.size,
                          col = type.col, data = pointmap)
     } else {
-      p <- p + geom_point(aes(x = x.pos, y = TL), col = type.col, data = pointmap)
+      p <- p + geom_point(aes(x = x.pos, y = TL), col = type.col, size = point.size,
+                          data = pointmap)
     }
   } else {
     p <- p + geom_point(aes(x = x.pos, y = TL, fill = factor(type)),
-                        pch = 21, data = pointmap) +
+                        pch = 21, size = point.size, data = pointmap) +
       scale_fill_manual(values = type.col, name = 'Type', 
                         labels = c('Living', 'Primary', 'Detrital', 'Fleet'))
   }
@@ -192,7 +195,8 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
     # label nodes
     if(labels) {
       p <- p + ggrepel::geom_text_repel(aes(x = x.pos, y = TL, label = Group), 
-                                        max.overlaps = max.overlaps, data = pointmap)
+                                        max.overlaps = max.overlaps, 
+                                        size = text.size, data = pointmap)
     }
     
     # highlight group
@@ -201,14 +205,14 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
       
       # make the highlight data frame
       highlight.df <- connections[prey.id == highlight | pred.id == highlight][,
-                                  type := factor(ifelse(pred.id == highlight, 'prey',
+                                  type := factor(ifelse(pred.id == highlight, 'predator',
                                                         ifelse(pred.id %in% pointmap[type==3, GroupNum], 
-                                                               'fleet', 'predator')),
+                                                               'fleet', 'prey')),
                                                  levels = c('predator', 'prey', 'fleet'))]
       p <- p + geom_segment(aes(x = pred.x, y = pred.y, xend = prey.x, yend = prey.y,
                                 col = type),
                             data = highlight.df) +
-        scale_color_manual(values = highlight.col, name = 'Connection to')
+        scale_color_manual(values = highlight.col, name = 'Connection')
     }
     return(p)
 }
@@ -219,16 +223,16 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
 #' locations and creating a data frame of all trophic connections. This function could
 #' be useful for building custom plotting functions. 
 #'
-#' @param Rpath.obj Rpath model created by the `rpath()` function.
+#' @param Rpath.obj Rpath model created by the \code{rpath()} function.
 #' @param fleets Logical value indicating whether or not to include fishing fleets in the food web.
 #' @param box.order Vector of box numbers to change the default plot order. Must include all box numbers
 #'
-#' @return Returns a list of length 2. The first element, `pointmap` is a data table of
+#' @return Returns a list of length 2. The first element, \code{pointmap} is a data table of
 #' the functional group names, group numbers, type (0- living, 1- producer, 2- detritus, 3- fleet),
-#' trophic level, biomass, and `x.pos` which determines the x coordinate of the node 
+#' trophic level, biomass, and \code{x.pos} which determines the x coordinate of the node 
 #' when plotting. The second element is a data table with one row for each trophic connection, 
-#' and columns for predator and prey trophic levels, predator and prey `x.pos` from `pointmap`,
-#' and predator and prey group numbers (`id`). 
+#' and columns for predator and prey trophic levels, predator and prey \code{x.pos} from \code{pointmap},
+#' and predator and prey group numbers (\code{id}). 
 #' @import data.table
 #' @import utils
 #' @export
