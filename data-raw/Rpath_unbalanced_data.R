@@ -13,6 +13,18 @@
 library(usethis)
 library(Rpath)
 
-EBS.sensemodel <- read.rpath.params("")
-
-usethis::use_data(DATASET, overwrite = TRUE)
+Ecosense.EBS <- read.rpath.params("data-raw/Ecosense_EBS_base.csv",
+                                  "data-raw/Ecosense_EBS_diet.csv",
+                                  "data-raw/Ecosense_EBS_pedigree.csv"
+)
+Ecosense.GOA <- read.rpath.params("data-raw/Ecosense_GOA_base.csv",
+                                  "data-raw/Ecosense_GOA_diet.csv",
+                                  "data-raw/Ecosense_GOA_pedigree.csv"
+)
+Ecosense.ECS <- read.rpath.params("data-raw/Ecosense_ECS_base.csv",
+                                  "data-raw/Ecosense_ECS_diet.csv",
+                                  "data-raw/Ecosense_ECS_pedigree.csv"
+)
+usethis::use_data(Ecosense.EBS, overwrite = TRUE)
+usethis::use_data(Ecosense.GOA, overwrite = TRUE)
+usethis::use_data(Ecosense.ECS, overwrite = TRUE)
