@@ -333,45 +333,20 @@ rpath.stanzas <- function(Rpath.params){
   stanzafile <- Rpath.params$stanza$stindiv
   
   #Need to add vector of stanza number
-  lastmonth <- rep(NA,Nsplit)
   for(isp in 1:Nsplit){
-    #Put the stanzas in order for each split species
     stnum <- order(stanzafile[StGroupNum == isp, First])
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
-
-    #Calculate the last month for the final ("leading") stanza
-    #KYA Aug 2021:
-    # Formerly used fraction of Winf, but that didn't work for species
-    # with rapid growth but low mortality (e.g. marine mammals).
-    # So instead, calculate biomass out for a very long time and
-    # taking 0.99999 of cumulative biomass as a cutoff.
-    
-    #this selects all of the stanza lines, then picks the last one
-    #(maybe data table has a better way...)
-    stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
-    st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
-    
-    gp <- groupfile[isp,]
-    #Max age class in months should be one less than a multiple of 12
-    #(trying 5999 - probably overkill but for safety)
-    AGE <- st$First:5999
-    mz <- (st$Z + gp$BAB)/12
-    k  <- gp$VBGF_Ksp
-    d  <- gp$VBGF_d
-    NN <- shift(cumprod(rep(exp(-1*mz),length(AGE))),1,1.0)
-    BB <- NN * (1 - exp(-k * (1 - d) * (AGE))) ^ (1 / (1 - d))
-    BBcum <- cumsum(BB)/sum(BB)
-    #Age at which 0.99999 of cumulative leading stanza biomass is represented,
-    #rounded to nearest higher multiple of 12 (-1 since index starts at 0)
-    lastmonth[isp] <- ceiling(AGE[min(which(BBcum>0.99999))]/12) * 12 - 1
   }
   
-  #Save the maximum month vector in the table
-  groupfile[, last := lastmonth]
+  #Calculate the last month for the final stanza
+  #Months to get to 99% Winf (We don't use an accumulator function like EwE)
+  groupfile[, last := floor(log(1 - 0.9999^(1 - VBGF_d)) / 
+                              (-1 * (VBGF_Ksp * 3 / 12) * (1 - VBGF_d)))]
   
   for(isp in 1:Nsplit){
     nstanzas <- groupfile[StGroupNum == isp, nstanzas]
-    stanzafile[StGroupNum == isp & Leading, Last := lastmonth[isp]]
+    t99 <- groupfile[StGroupNum == isp, last]
+    stanzafile[StGroupNum == isp & StanzaNum == nstanzas, Last := t99]
     
     #Grab ecopath group codes
     group.codes <- stanzafile[StGroupNum == isp, GroupNum]
@@ -379,10 +354,10 @@ rpath.stanzas <- function(Rpath.params){
     #Grab index for first and last months for stanzas
     first   <- stanzafile[StGroupNum == isp, First]
     second  <- stanzafile[StGroupNum == isp, Last]
-        
+    
     #Calculate weight and consumption at age    
     StGroup <- data.table(age = stanzafile[StGroupNum == isp & StanzaNum == 1, First]:
-                            lastmonth[isp])
+                            t99)
     #Calculate monthly generalized k: (Ksp * 3) / 12
     k <- (groupfile[StGroupNum == isp, VBGF_Ksp] * 3) / 12
     d <-  groupfile[StGroupNum == isp, VBGF_d]
@@ -391,33 +366,38 @@ rpath.stanzas <- function(Rpath.params){
     
     #Calculate the relative number of animals at age a
     #Vector of survival rates from 1 stanza to the next
-    
-    #Unwind the by-stanza mortality rates into by-month survival rates
-    #by looping through the stanzas
-    survive_L <- rep(NA,length(StGroup$age))
+    StGroup[age == 0, Survive := 1]
+    prev.surv <- 1
     for(ist in 1:nstanzas){
       #Convert Z to a monthly Z
       month.z <- (stanzafile[StGroupNum == isp & StanzaNum == ist, Z] + 
-                   groupfile[StGroupNum == isp, BAB]) / 12
-      survive_L[which(StGroup$age %in% first[ist]:second[ist])] <- exp(-1*month.z)
-    } 
-    
-    #Shift survival rates forward one - first survival is 1.0
-    survive_L <- shift(survive_L,1,1.0)
-    #Use cumulative product to get overall survival to each month
-    StGroup[, Survive := cumprod(survive_L)]
+                    groupfile[StGroupNum == isp, BAB]) / 12
+      StGroup[age %in% first[ist]:second[ist], survive_L := exp(-1*month.z)]
       
-    StGroup[, B := Survive * WageS]
-    StGroup[, Q := Survive * QageS]
-    for(ist in 1:nstanzas){      
+      if(first[ist] > 0){
+        StGroup[age == first[ist], Survive := StGroup[age == first[ist] - 1, 
+                                                      Survive] * prev.surv]
+      }
+      
+      for(a in (first[ist] + 1):second[ist]){
+        StGroup[, lastSurv := data.table::shift(Survive)]
+        StGroup[age == a, Survive := lastSurv * survive_L]
+      }
+      StGroup[, lastSurv := NULL]
+      
+      StGroup[, B := Survive * WageS]
+      StGroup[, Q := Survive * QageS]
+      
       #Numerator for the relative biomass/consumption calculations
       b.num <- StGroup[age %in% first[ist]:second[ist], sum(B)]
       q.num <- StGroup[age %in% first[ist]:second[ist], sum(Q)]
       
       stanzafile[StGroupNum == isp & StanzaNum == ist, bs.num := b.num]
       stanzafile[StGroupNum == isp & StanzaNum == ist, qs.num := q.num]
-    }
       
+      prev.surv <- exp(-1 * month.z)
+    }
+    
     #Scale numbers up to total recruits
     BaseStanza <- stanzafile[StGroupNum == isp & Leading == T, ]
     BioPerEgg <- StGroup[age %in% BaseStanza[, First]:BaseStanza[, Last], sum(B)]
