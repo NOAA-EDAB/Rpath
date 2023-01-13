@@ -5,9 +5,9 @@
 ## Only re-run if changing input data changes, or if structure of unbalanced
 ## ecosystem object changes.
 ##
-## Also create entry in R/data.R file for each ecosystem.
+## Also CREATE ENTRY in R/data.R file for each ecosystem.
 
-## This must be run from the Rpath package's root directory (the
+## This MUST BE RUN from the Rpath package's root directory (the
 ## directory with the /data, /R, /data-raw and /inst folders).
 
 library(usethis)
@@ -28,3 +28,18 @@ Ecosense.ECS <- read.rpath.params("data-raw/Ecosense_ECS_base.csv",
 usethis::use_data(Ecosense.EBS, overwrite = TRUE)
 usethis::use_data(Ecosense.GOA, overwrite = TRUE)
 usethis::use_data(Ecosense.ECS, overwrite = TRUE)
+
+#files you want available to the user to inspect
+extfiles <- c("data-raw/Ecosense_EBS_base.csv",
+              "data-raw/Ecosense_EBS_diet.csv",
+              "data-raw/Ecosense_EBS_pedigree.csv",
+              "data-raw/Ecosense_GOA_base.csv",
+              "data-raw/Ecosense_GOA_diet.csv",
+              "data-raw/Ecosense_GOA_pedigree.csv",
+              "data-raw/Ecosense_ECS_base.csv",
+              "data-raw/Ecosense_ECS_diet.csv",
+              "data-raw/Ecosense_ECS_pedigree.csv")
+
+file.copy(extfiles,"inst/extdata", overwrite=TRUE)
+              
+              
