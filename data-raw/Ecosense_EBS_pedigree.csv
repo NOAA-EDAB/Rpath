@@ -1,0 +1,54 @@
+Group,B,PB,QB,Diet,F_Fishery/Subsistence
+Toothed whales,0.8,0.6,0.6,0.8,0.3
+Gray whales,0.5,0.6,0.6,0.8,0
+Other baleen,0.8,0.6,0.6,0.8,0.3
+Bowhead whales,0.5,0.1,0.6,0.8,0
+Other pinnipeds,0.5,0.6,0.8,0.8,0.3
+Walrus/bearded seal,0.5,0.6,0.6,0.7,0.3
+Wintering seals,0.5,0.6,0.6,0.7,0.3
+Procellarids,0.8,0.6,0.6,0.8,0.5
+Alcids piscivorous,0.5,0.6,0.6,0.8,0.5
+Larids,0.5,0.6,0.6,0.8,0.5
+Alcids planktivorous,0.5,0.6,0.6,0.8,0.5
+Other seabirds,0.8,0.6,0.6,0.8,0.5
+Cormorants,0.5,0.6,0.6,0.8,0.5
+Sharks,0.5,0.7,0.7,0.8,0.7
+Walleye pollock,0.5,0.4,0.4,0.1,0.1
+Pacific cod,0.8,0.4,0.4,0.1,0.7
+Pelagic forage fish,0.8,0.7,0.7,0.8,0.5
+Lg.-mouth flatfish,0.8,0.6,0.8,0.3,0.7
+Sm.-mouth flatfish,0.8,0.6,0.8,0.7,0.3
+Skates,0.5,0.7,0.7,0.7,0.7
+Other demersals,0.8,0.7,0.8,0.8,0.8
+Eelpouts,0.8,0.7,0.7,0.8,0.7
+Lg.-mouth sculpins,0.1,0.7,0.7,0.3,0.8
+Other sculpins,0.8,0.7,0.7,0.3,0
+Misc. shallow fish,0.8,0.7,0.7,0.7,0.7
+Octopods,0.8,0.7,0.7,0.8,0.4
+Squids,0.8,0.7,0.7,0.8,0.4
+Salmon returning,0.8,0.5,0.8,0.7,0.3
+Salmon outgoing,0.8,0.6,0.6,0.8,0
+Other crabs,0.8,0.6,0.8,0.8,0.8
+Snow crab,0.1,0.6,0.8,0.7,0.3
+Shrimps,0.8,0.6,0.8,0.8,0.5
+Sea stars,0.5,0.6,0.7,0.8,0.8
+Brittle stars,0.8,0.6,0.7,0.8,0
+Urchins dollars cucumbers,0.8,0.6,0.7,0.8,0.5
+Snails,0.8,0.6,0.7,0.8,0.5
+Misc. crustacean,0.8,0.6,0.7,0.8,0
+Benthic amphipods,0.8,0.6,0.7,0.8,0
+Anemones,0.5,0.6,0.7,0.8,0.5
+Corals and sea pens,0.5,0.6,0.7,0.8,0.5
+Worms etc.,0.8,0.6,0.7,0.8,0
+Benthic urochordate,0.5,0.6,0.7,0.8,0.5
+Sponge,0.5,0.6,0.7,0.8,0.5
+Bivalves,0.8,0.6,0.7,0.8,0.5
+Polychaetes,0.8,0.6,0.7,0.8,0
+Scyphozoid Jellies,0.5,0.6,0.6,0.8,0.5
+Other zooplankton,0.8,0.7,0.8,0.8,0
+Copepods,0.8,0.7,0.8,0.8,0
+Pelagic microbes,0.8,0.7,0.7,0.8,0
+Benthic microbes,0.8,0.7,0.7,0.1,0
+Primary production,0.8,0.7,0,0.01,0
+Pelagic detritus,0.8,0,0,0,0
+Benthic detritus,0.8,0,0,0,0
