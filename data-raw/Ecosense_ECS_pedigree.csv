@@ -1,0 +1,53 @@
+Group,B,PB,QB,Diet,F_Fishery/Subsistence
+Polar bears,0.8,0.5,0.6,0.8,0.8
+Toothed whales,0.5,0.6,0.6,0.7,0.5
+Gray whale,0.5,0.6,0.6,0.7,0
+Bowhead whale,0.5,0.6,0.6,0.7,0.1
+Walrus/bearded seal,0.8,0.6,0.6,0.7,0.5
+Wintering seals,0.8,0.6,0.6,0.6,0.5
+Procellarids,0.5,0.6,0.6,0.8,0
+Cormorants,0.5,0.6,0.6,0.8,0
+Other seabirds,0.5,0.6,0.6,0.8,0
+Larids,0.5,0.6,0.6,0.8,0
+Alcids piscivorous,0.5,0.6,0.6,0.8,0
+Alcids planktivorous,0.5,0.6,0.6,0.8,0
+Lg.-mouth flatfish,0.8,0.5,0.5,0.3,0
+Sm.-mouth flatfish,0.8,0.6,0.6,0.3,0
+Lg.-mouth sculpins,0.8,0.6,0.6,0.3,0
+Other sculpins,0.8,0.6,0.6,0.3,0
+Eelpouts,0.8,0.6,0.6,0.3,0
+Pelagic forage fish,0.8,0.6,0.6,0.3,0
+Misc. shallow fish,0.8,0.6,0.6,0.3,0
+Other demersals,0.8,0.6,0.6,0.3,0
+Skates,0.1,0.6,0.7,0.8,0
+Walleye pollock,0.1,0.6,0.6,0.3,0
+Pacific cod,0.1,0.6,0.6,0.8,0
+Arctic cod,0.8,0.2,0.2,0.3,0
+Snow crab,0.1,0.6,0.6,0.8,0
+Bivalves,0.1,0.5,0.7,0.8,0
+Snails,0.1,0.6,0.7,0.8,0
+Other crabs,0.1,0.6,0.7,0.8,0
+Shrimps,0.8,0.6,0.7,0.8,0
+Sea stars,0.1,0.6,0.7,0.8,0
+Brittle stars,0.1,0.6,0.7,0.8,0
+Basket stars,0.1,0.6,0.7,0.8,0
+"Urchins, dollars, cucumbers",0.1,0.5,0.7,0.8,0
+Sponge,0.1,0.6,0.7,0.8,0
+Anemones,0.1,0.6,0.7,0.8,0
+Benthic urochordate,0.1,0.6,0.7,0.8,0
+Corals and sea pens,0.1,0.6,0.7,0.8,0
+Scyphozoid jellies,0.1,0.6,0.6,0.8,0
+Octopods,0.8,0.6,0.7,0.8,0
+Salmon outgoing,0.8,0.6,0.6,0.8,0
+Salmon returning,0.8,0.6,0.6,0.8,0
+Benthic amphipods,0.8,0.6,0.7,0.8,0
+Polychaetes,0.1,0.5,0.7,0.8,0
+Worms etc.,0.1,0.6,0.7,0.8,0
+Misc. crustaceans,0.1,0.6,0.7,0.8,0
+Copepods,0.8,0.6,0.6,0.8,0
+Other zooplankton,0.8,0.6,0.7,0.8,0
+Pelagic microbes,0.8,0.7,0.7,0.8,0
+Benthic microbes,0.8,0.7,0.7,0.8,0
+Primary production,0.8,0.7,0,0.01,0
+Pelagic detritus,0,0,0,0,0
+Benthic detritus,0,0,0,0,0
