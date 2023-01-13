@@ -40,8 +40,6 @@ Modifies the various forcing parameters of the rsim scenario object.
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.fishing}()},
-\code{\link{adjust.scenario}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
 \code{\link{extract.node}()},
@@ -50,10 +48,6 @@ Other Rpath functions:
 \code{\link{rpath.groups}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{rpath}()},
-\code{\link{rsim.params}()},
-\code{\link{rsim.plot}()},
-\code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()},
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},
 \code{\link{write.Rpath}()},

@@ -12,7 +12,7 @@
 #'@import utils
 #'@export
 #Write -- note, not a generic function
-write.Rpath <- function(x, file = NA, morts = F, ...){
+write.Rpath <- function(x, file = NA, morts = F){
   #Check extention for output type - if not supplied a .csv or .RData the output
   #will be saved as a list object
   ext <- 'list'
@@ -79,7 +79,7 @@ write.Rpath <- function(x, file = NA, morts = F, ...){
 #'@import utils
 #'@export
 #Write -- note, not a generic function
-write.Rsim <- function(Rsim.output, file = NA, ...){
+write.Rsim <- function(Rsim.output, file = NA){
   #Check extention for output type - if not supplied a .csv or .RData the output
   #will be saved as a list object
   ext <- 'list'

@@ -11,7 +11,6 @@
 #'@param type Numeric vector of group type. Living = 0, Producer = 1, Detritus = 2,
 #'  Fleet = 3.
 #'@param stgroup Vector of multistanza group names.  Include NA for non-stanza groups.
-#'@param nstanzas Numeric vector of the number of stanzas per multistanza groups.
 #'
 #'@return Outputs a list object of Rpath parameters which are populated with values 
 #'  of NA or logical default values.  Values can then be filled in using
@@ -150,16 +149,14 @@ create.rpath.params <- function(group, type, stgroup = NA){
 #'
 #'@family Rpath functions
 #'
-#'@param filename Name of the parameter file.  Can be the path to a .csv or an R
-#'object. 
-#'@param parameter The type of parameter file you are checking.  Choices include 
-#"model", "diet", "juvenile", and "pedigree".
+#'@inheritParams rpath
 #'
 #'@return Checks Rpath parameter files for consistency.  An error message will be produced if one of
 #'  the logical checks fails.  Checks include: 
 #'  (NOTE: This does not ensure data is correct just that it is in the right places).
 #'@import data.table
 #'@export
+#'
 check.rpath.params <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
   Type <- Group <- Biomass <- EE <- PB <- QB <- ProdCons <- BioAcc <- Unassim <- DetInput <- NULL
@@ -379,9 +376,9 @@ check.rpath.params <- function(Rpath.params){
   }
 
 if(w == 0){
-  cat('Rpath parameter file is functional')
+  cat('Rpath parameter file is functional.\n')
 } else {
-    cat('Rpath parameter file needs attention!')
+    cat('Rpath parameter file needs attention!\n')
   }  
 }
 

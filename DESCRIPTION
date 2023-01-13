@@ -1,8 +1,8 @@
 Package: Rpath
 Type: Package
 Title: R implementation of Ecopath with Ecosim
-Version: 0.0.1.2
-Date: 2016-07-15
+Version: 0.0.1.3
+Date: 2021-04-25
 Authors@R: c(
     person("Kerim", "Aydin",   email = "Kerim.Aydin@NOAA.gov",   role = "aut"),
     person("Sean", "Lucey",    email = "Sean.Lucey@NOAA.gov",    
@@ -12,7 +12,8 @@ Description: This package implements the core mass balance equations made popula
     by Ecopath with Ecosim. There are two parts to the package, the static snapshot
     of energy flow through the system using rpath and dynamic simulations run using 
     the rsim family of functions.
-License: GPL (>= 2)
+License: file LICENSE
+Encoding: UTF-8
 Imports:
     data.table,
     graphics,
