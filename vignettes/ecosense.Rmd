@@ -2,11 +2,13 @@
 title: "Generating an Rsim ensemble with Ecosense"
 author: "George A. Whitehouse"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  html_document: default
+  pdf_document: default
 vignette: >
   %\VignetteIndexEntry{Generating an Rsim ensemble with Ecosense}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
