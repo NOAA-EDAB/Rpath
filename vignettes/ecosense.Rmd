@@ -3,8 +3,8 @@ title: "Generating an Rsim ensemble with Ecosense"
 author: "George A. Whitehouse"
 date: "`r Sys.Date()`"
 output: 
-  pdf_document: default
   html_document: default
+  pdf_document: default
 vignette: >
   %\VignetteIndexEntry{Generating an Rsim ensemble with Ecosense}
   %\VignetteEncoding{UTF-8}
