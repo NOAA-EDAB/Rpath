@@ -13,5 +13,5 @@ Rpath.Rcheck*
 src/*.o
 src/*.dll
 NAMESPACE
-
 docs
+Rpath.Rproj
