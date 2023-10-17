@@ -20,7 +20,7 @@ webplot(
 )
 }
 \arguments{
-\item{Rpath.obj}{Rpath model created by the ecopath() function.}
+\item{Rpath.obj}{Rpath model created by the rpath() function.}
 
 \item{eco.name}{Optional name of the ecosystem.  Default is the eco.name attribute from the
 rpath object.}
