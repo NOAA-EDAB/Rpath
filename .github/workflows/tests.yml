@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/tests.yml'
+    - 'R/*'
+    - 'tests/testthat/*'
+  push:
+    paths:
+    - '.github/workflows/tests.yml'
+    - 'R/*'
+    - 'tests/testthat/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-pandoc@v1
+      - name: Install dependencies
+        run: Rscript -e "install.packages(c('testthat', 'tidyverse', 'here'))"
+      - name: Run tests
+        run: Rscript -e "source('tests/testthat.R')"
+
+  tests:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v1
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-pandoc@v1
+      - name: Install dependencies
+        run: Rscript -e "install.packages(c('testthat', 'tidyverse', 'here'))"
+      - name: Run tests
+        run: Rscript -e "source('tests/testthat.R')"
+
