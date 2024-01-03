@@ -4,14 +4,22 @@
 *.png
 *.jpg
 *.tif
+*.tar
+*.so
 outputs
 code
 *.xlsx
 *.docx
+*.pdf
 Ecopath_dev
 Rpath.Rcheck*
 src/*.o
 src/*.dll
+tests/testthat/data/output/*
+tests/testthat/data/bkup/*
+tests/testthat/data/input/current/*
+tests/testthat/old/*
+tests/testthat/bkup/*
+tests/testthat/old dat files/*
 NAMESPACE
-
 docs
