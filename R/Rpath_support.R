@@ -1,3 +1,5 @@
+library(methods)
+
 ########################################################################################
 # Set of functions for returning functional group names (character vector)
 # using the type input column
