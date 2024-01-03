@@ -60,6 +60,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 // Accumulator for monthly catch values
    NumericVector cum_Catch(NUM_BIO+1);
    NumericVector cum_Gear_Catch(NumFishingLinks +1);
+   
+   // RSK - added for force by biomass
+   NumericMatrix force_bybio = as<NumericMatrix>(forcing["ForcedBio"]);
 
 //SML
 // Update sums of split groups to total biomass for derivative calcs
@@ -149,6 +152,11 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
       
       // Make a copy of the current state for bounds testing
          NumericVector cur_Biomass = as<NumericVector>(state["Biomass"]);
+        
+        // RSK added forced biomass logic
+        NumericVector bforce = force_bybio((y-1) * STEPS_PER_YEAR + m, _);
+        cur_Biomass = ifelse(bforce>B_BaseRef * EPSILON, bforce, cur_Biomass);
+        
         
         // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
         // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
@@ -688,8 +696,10 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
     NumericVector FORCE_F = (NumericVector)FORCED_FRATE(y,_);
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
-             caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_Biomass[sp];
-             // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
+          // RSK testing...
+          // caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_Biomass[sp];
+          caught =                          FORCE_F[sp] * state_Biomass[sp];
+          // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_Biomass[sp];}
              // KYA 10/6/17 Added productivity to Biomass limit for F>1 species (salmon inspired)
                 if (caught >= state_Biomass[sp] + NetProd[sp]){caught = (1.0 - EPSILON) * (state_Biomass[sp] + NetProd[sp]);}

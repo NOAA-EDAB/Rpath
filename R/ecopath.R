@@ -15,7 +15,7 @@
 #'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
 #'@import data.table
 #'@export
-rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
+rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #Need to define variables to eliminate check() note about no visible binding
   Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- NULL
   BEE <- Biomass <- Q <- BioAcc <- BioQB <- diag.a <- EEa <- B <- M0 <- NULL
@@ -121,7 +121,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
   
   #Special case where B and EE are known then need to solve for BA
   #living[BEE == 1, b := b - (Biomass * PB * EE)]
-  #living[BEE  == 1, diag.a := 0] #Need to work on this solution
+  #living[BEE  == 1, diag.a := 0] #Need to wrk on this solution
   
   A       <- matrix(0, nliving, nliving)
   diag(A) <- living[, diag.a]
