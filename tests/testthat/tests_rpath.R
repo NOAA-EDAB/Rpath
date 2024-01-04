@@ -1,11 +1,16 @@
 library(Rpath)
+library(qpdf)
 library(testthat)
 library(stringr)
 library(distillery)
 library(ggplot2)
 library(ggpubr)
 library(rlist)
-library(qpdf)
+
+# ---- Modify this toggle to TRUE to generate the baseline files. ----
+# ---- Reset it back to FALSE to run the tests. ----------------------
+# CREATE_BASELINE_FILES <- TRUE
+CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
@@ -13,13 +18,15 @@ SEED   <- 1
 SEED_OFFSET <- 1000
 TOLERANCE <- 1e-5
 RUN_QUIET <- TRUE
-# CREATE_BASELINE_FILES <- TRUE
-CREATE_BASELINE_FILES <- FALSE
+YLIMIT_DIFFERENCE_PLOTS <- 0.05
+
 PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
 PLOT_SHOW <- 2 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
-INPUT_DATA_DIR_BASELINE  <- 'data/input/baseline'
-INPUT_DATA_DIR_CURRENT   <- 'data/input/current'
-OUTPUT_DATA_DIR          <- 'data/output'
+
+originalWorkingDir <- str_replace(getwd(),".Rcheck","")
+INPUT_DATA_DIR_BASELINE  <- file.path(originalWorkingDir,'data/input/baseline')
+INPUT_DATA_DIR_CURRENT   <- file.path(originalWorkingDir,'data/input/current')
+OUTPUT_DATA_DIR          <- file.path(originalWorkingDir,'data/output')
 
 
 #' Stepify Effort
@@ -272,7 +279,7 @@ plotResultsDifference <- function(BaseData,CurrData,baseAlg,currAlg,tableName,fo
            title=paste0('Sim Run using ',forcedData,' with ',forcedType,' Noise - ',member),
            subtitle=paste0("Dataset: ",tableName)) +
       scale_color_manual(name="Legend:",values=c('darkblue')) +
-      coord_cartesian(ylim = c(-0.1, 0.1)) + # RSK
+      coord_cartesian(ylim = c(-YLIMIT_DIFFERENCE_PLOTS, YLIMIT_DIFFERENCE_PLOTS)) + # RSK
       theme( plot.title = element_text(hjust=0.5),
              plot.subtitle = element_text(hjust=0.5),
              legend.position='bottom',
@@ -435,11 +442,11 @@ testthat::test_that("Rpath Unit Tests", {
   fleets  <- c('Trawlers','Midwater','Dredgers')
   species <- c('OtherGroundfish','Megabenthos','Seals')
   originalWorkingDir <- getwd();
-print(paste0("CWD: ",originalWorkingDir))
-  REcosystemScript <- file.path(originalWorkingDir,"..","..","data-raw","REcosystem.R")
-print(paste0("REcosystemScript: ",REcosystemScript))  
+#  originalWorkingDir <- str_replace(originalWorkingDir,".Rcheck","")
+#  REcosystemScript   <- file.path(originalWorkingDir,"..","..","data-raw","REcosystem.R")
   # source("../../data-raw/REcosystem.R")
-  # source(REcosystemScript)
+#print(paste0("-----path: ",REcosystemScript))  
+#  source(REcosystemScript)
   modNum <- 1
   runNum <- 0
   
