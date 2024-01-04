@@ -1,0 +1,69 @@
+---
+title: "Using Unit Tests"
+author: "Ron Klasky"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Unit Tests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Unit Tests
+
+The Unit Tests can be run explicitly by clicking on the Test or Check buttons in RStudio or whenever the user does a push or makes pull request. The code for the unit tests resides in the tests/testthat folder. The output of the tests is a pdf file with a variety of plots.
+
+## Unit Tests Details
+
+Unit Tests consist of testing a current model value (i.e., string, table) to a previously stored "baseline" value. The baseline files may be reset by editing tests/tests_rpath.R:
+
+```{r Create Baseline 1}
+CREATE_BASELINE_FILES <- TRUE
+```
+
+and running the Unit Tests by clicking the Test button under the Build tab.  After the baseline files have been 
+generated, be sure to reset the variable back:
+
+```{r Create Baseline 2}
+CREATE_BASELINE_FILES <- FALSE
+```
+
+## Figures
+
+The Unit Tests compare current runs with baseline runs and produce plots in a pdf file. The plots depict the output of a current run in blue and of the baseline run in red. If there are no errors, then there should be no red visible on the plots. There are two types of plots available also set by a variable in tests/tests_rpath.R:
+
+```{r Plot Type 1}
+PLOT_TYPE <- 1 
+```
+
+If PLOT_TYPE is set to 1, then the plot depicts the current model in blue superimposed over the baseline model in red. If PLOT_TYPE is set to 2, then the difference (current-baseline) is displayed.
+
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+---
+title: "Output Plots"
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+---
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+```{r figs1, echo=FALSE, fig.cap="No Difference in Baseline vs Current Models"}
+knitr::include_graphics("img/plot_01_no_difference.png")
+```
+
+```{r figs2, echo=FALSE, fig.cap="Difference in red of Baseline vs Current Models"}
+knitr::include_graphics("img/plot_02_superimposed_with_difference.png")
+```
+
+```{r figs3, echo=FALSE, fig.cap="Current-Baseline Result"}
+knitr::include_graphics("img/plot_03_current-baseline.png")
+```
