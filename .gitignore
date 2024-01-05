@@ -21,5 +21,6 @@ tests/testthat/data/input/current/*
 tests/testthat/old/*
 tests/testthat/bkup/*
 tests/testthat/old dat files/*
-NAMESPACE
 docs
+doc
+Meta
