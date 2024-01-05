@@ -25,6 +25,7 @@ Imports:
     utils
 LinkingTo: Rcpp
 Suggests:
+    here,
     knitr,
     rmarkdown,
     distillery,
