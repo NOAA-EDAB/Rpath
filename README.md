@@ -1,13 +1,15 @@
+
+
+Rpath
+=====
+
 <!-- badges: start -->
-<!--[![R build status](https://github.com/NOAA-EDAB/Rpath/workflows/R-CMD-check/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions)
+[![R build status](https://github.com/NOAA-EDAB/Rpath/workflows/R-CMD-check/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions)
 
 [![gitleaks](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml)
 
 [![R-CMD-check](https://github.com/NOAA-EDAB/Rpath/workflows/R-CMD-check/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions)
 <!-- badges: end -->
-
-Rpath
-=====
 
 This is the repository for Rpath - the R implementation of the mass balance algorithms.
 
