@@ -138,5 +138,5 @@ REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59
                                         NA, NA)]
 REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA, NA)]
 
-usethis::use_data(REco.params, overwrite = T)
+#usethis::use_data(REco.params, overwrite = T)
  

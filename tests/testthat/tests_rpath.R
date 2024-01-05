@@ -752,7 +752,7 @@ testthat::test_that("Rpath Unit Tests", {
     REcosystem_Baseline_RK4_ForcedCat_OutCatch_Stepped     <- read.table(BaselineRK4ForcedCatOutCatchStepped,    fill = TRUE, sep = " ")
     REcosystem_Baseline_RK4_ForcedCat_OutGearCatch_Stepped <- read.table(BaselineRK4ForcedCatOutGearCatchStepped,fill = TRUE, sep = " ")
   }
-  
+   
   # 
   # Save current Rpath run data
   REco <- rpath(REco.params, eco.name = 'R Ecosystem')
