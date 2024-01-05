@@ -4,6 +4,6 @@
 #originalWorkingDir <- getwd()
 #originalWorkingDir <- str_replace(originalWorkingDir,".Rcheck","")
 #REcosystemScript   <- file.path(originalWorkingDir,"..","data-raw","REcosystem.R")
-source_file("/home/rklasky/R/packages/Rpath/data-raw/REcosystem.R")
+#source_file("/home/rklasky/R/packages/Rpath/data-raw/REcosystem.R")
 #source(REcosystemScript)
  
