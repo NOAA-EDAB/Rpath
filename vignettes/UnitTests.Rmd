@@ -181,7 +181,7 @@ The following unit tests have been developed. Note that some tests consist of ad
 
 ## Figures
 
-The Unit Tests compare current runs with baseline runs and produce plots in a pdf file. The plots depict the output of a current run in blue and of the baseline run in red. If there are no errors, then there should be no red visible on the plots. There are two types of plots available also set by a variable in tests/tests_rpath.R:
+The Unit Tests compare current runs with baseline runs and produce plots in a pdf file. These plots may be useful for diagnostic purposes. The plots depict the output of a current run in blue and of the baseline run in red. If there are no errors, then there should be no red visible on the plots. There are two types of plots available, also set by a variable in tests/tests_rpath.R:
 
 ```{r Plot Type 1}
 PLOT_TYPE <- 1 
