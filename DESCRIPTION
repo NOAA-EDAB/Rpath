@@ -34,6 +34,7 @@ Suggests:
     rlist,
     stringr,
     qpdf,
+    usethis,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
