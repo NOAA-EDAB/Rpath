@@ -16,10 +16,10 @@ License: file LICENSE
 Encoding: UTF-8
 Imports:
     data.table,
+    methods,
     graphics,
     grDevices,
     MASS,
-    methods,
     Rcpp (>= 0.11.3),
     stats,
     utils

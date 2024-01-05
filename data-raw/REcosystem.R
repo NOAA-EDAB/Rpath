@@ -1,6 +1,12 @@
 #R Ecosystem
 #Tutorial ecosystem for teaching Rpath
 
+#'
+#' Script that creates REco.params example model file
+#' 
+#' @param REco.params Rpath parameters
+#' 
+
 library(Rpath); library(data.table); library(here)
  
 #Groups and types for the R Ecosystem----

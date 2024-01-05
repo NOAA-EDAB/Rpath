@@ -5,6 +5,9 @@ library(methods)
 # using the type input column
 #
 # Internal supporting function for group names to check type 
+#'
+#' @importFrom methods is
+#' 
 grouptype <- function(Rpath) {
   if (is(Rpath,"Rpath")) {
     gt<-list(type=Rpath$type, grp=Rpath$Group)
