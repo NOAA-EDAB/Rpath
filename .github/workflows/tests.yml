@@ -11,6 +11,8 @@ on:
     - '.github/workflows/tests.yml'
     - 'R/*'
     - 'tests/testthat/*'
+    - 'README.md'
+    - 'DESCRIPTION'
 
 jobs:
   # build:
