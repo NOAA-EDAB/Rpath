@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
+.Renviron
 *.png
 *.jpg
 *.tif
