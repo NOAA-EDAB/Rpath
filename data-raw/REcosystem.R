@@ -7,7 +7,7 @@
 #' @param REco.params Rpath parameters
 #' 
 
-library(Rpath); library(data.table); library(here)
+library(Rpath); library(data.table); library(here); library(qpdf)
  
 #Groups and types for the R Ecosystem----
 
