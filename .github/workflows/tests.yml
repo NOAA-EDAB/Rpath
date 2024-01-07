@@ -43,7 +43,9 @@ jobs:
       - name: Install dependencies
         #run: Rscript -e "install.packages(c('remotes','testthat', 'tidyverse', 'here'))"
         run: |
-          install.packages(c('usethis','remotes','testthat','tidyverse','here','rmarkdown','dplyr','qpdf'))
+          install.packages(c('usethis','remotes','testthat','tidyverse','here','rmarkdown','dplyr','qpdf'),repos='http://cran.us.r-project.org')
+          remotes::install_deps(dependencies=TRUE)
+          remotes::install_github("repo/package")
           remotes::install_github("NOAA-EDAB/Rpath")
         shell: Rscript {0}
       - name: Run tests
