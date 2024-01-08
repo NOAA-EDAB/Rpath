@@ -43,7 +43,10 @@ jobs:
       - name: Install dependencies
         #run: Rscript -e "install.packages(c('remotes','testthat', 'tidyverse', 'here'))"
         run: |
-          install.packages(c('usethis','remotes','testthat','tidyverse','here','rmarkdown','dplyr','qpdf'))
+          sudo apt update
+          sudo apt-get install -y curl
+#         install.packages(c('usethis','remotes','testthat','tidyverse','here','rmarkdown','dplyr','qpdf'))
+          install.packages(c('usethis','remotes','testthat','tidyverse','here','rmarkdown','qpdf'))
           remotes::install_github("NOAA-EDAB/Rpath")
         shell: Rscript {0}
       - name: Run tests
