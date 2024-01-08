@@ -8,7 +8,7 @@ on:
     - 'tests/testthat/*'
   push:
     paths:
-    - '.github/workflows/*.yml'
+    - '.github/workflows/tests.yml'
     - 'R/*'
     - 'tests/testthat/*'
     - 'README.md'
