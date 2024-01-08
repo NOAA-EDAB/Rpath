@@ -8,12 +8,11 @@ on:
     - 'tests/testthat/*'
   push:
     paths:
-    - '.github/workflows/tests.yml'
+    - '.github/workflows/*.yml'
     - 'R/*'
     - 'tests/testthat/*'
     - 'README.md'
     - 'DESCRIPTION'
-    - 'tests.yml'
 
 jobs:
   # build:
