@@ -25,7 +25,8 @@ YLIMIT_DIFFERENCE_PLOTS <- 0.05
 PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
 PLOT_SHOW <- 2 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
 
-originalWorkingDir <- str_replace(getwd(),".Rcheck","")
+# originalWorkingDir <- str_replace(getwd(),".Rcheck","")
+originalWorkingDir <- getwd()
 INPUT_DATA_DIR_BASELINE  <- file.path(originalWorkingDir,'data/input/baseline')
 INPUT_DATA_DIR_CURRENT   <- file.path(originalWorkingDir,'data/input/current')
 OUTPUT_DATA_DIR          <- file.path(originalWorkingDir,'data/output')
