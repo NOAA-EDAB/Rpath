@@ -50,5 +50,5 @@ jobs:
         #run: Rscript -e "source('tests/testthat.R')"
         run: |
           source(here::here("data-raw/REcosystem.R"))
-          source(here::here("tests/testthat.R"))
+          source("tests/testthat.R")
         shell: Rscript {0}
