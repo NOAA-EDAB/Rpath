@@ -760,15 +760,16 @@ testthat::test_that("Rpath Unit Tests", {
   RpathObjTopLevel <- if (CREATE_BASELINE_FILES) BaselineRpathObjTopLevel else CurrentRpathObjTopLevel
 print(paste0("******* Saving to: ",RpathObjTopLevel))
   # sink(RpathObjTopLevel)
-    capture.output(print(REco),file=RpathObjTopLevel)
+    # capture.output(print(REco),file=RpathObjTopLevel)
+    # print(REco)
   # sink()
   
   # Save current Rpath run summary data
   setwd(originalWorkingDir)
   RpathObjSummary <- if (CREATE_BASELINE_FILES) BaselineRpathObjSummary else CurrentRpathObjSummary
-  sink(RpathObjSummary)
-    cat(summary(REco))
-  sink()
+  # sink(RpathObjSummary)
+  #   cat(summary(REco))
+  # sink()
 
   # Save current Rpath sim run data for AB and RK4
   setwd(originalWorkingDir)
