@@ -23,11 +23,11 @@ RUN_QUIET <- TRUE
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
 
 PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
-PLOT_SHOW <- 2 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
+PLOT_SHOW <- 1 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
 
 # originalWorkingDir <- str_replace(getwd(),".Rcheck","")
 # originalWorkingDir <- getwd()
-originalWorkingDir <- "."
+# originalWorkingDir <- "."
 # INPUT_DATA_DIR_BASELINE  <- file.path(originalWorkingDir,'data/input/baseline')
 # INPUT_DATA_DIR_CURRENT   <- file.path(originalWorkingDir,'data/input/current')
 # OUTPUT_DATA_DIR          <- file.path(originalWorkingDir,'data/output')
@@ -36,10 +36,10 @@ INPUT_DATA_DIR_CURRENT   <- here::here('data/input/current')
 OUTPUT_DATA_DIR          <- here::here('data/output')
 
 if (! file.exists(INPUT_DATA_DIR_CURRENT)) {
-  dir.create(INPUT_DATA_DIR_CURRENT)
+  dir.create(INPUT_DATA_DIR_CURRENT,recursive=TRUE)
 }
 if (! file.exists(OUTPUT_DATA_DIR)) {
-  dir.create(OUTPUT_DATA_DIR)
+  dir.create(OUTPUT_DATA_DIR,recursive=TRUE)
 }
 
 #' Stepify Effort
