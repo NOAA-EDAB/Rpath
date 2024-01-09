@@ -31,7 +31,7 @@ originalWorkingDir <- "."
 # INPUT_DATA_DIR_BASELINE  <- file.path(originalWorkingDir,'data/input/baseline')
 # INPUT_DATA_DIR_CURRENT   <- file.path(originalWorkingDir,'data/input/current')
 # OUTPUT_DATA_DIR          <- file.path(originalWorkingDir,'data/output')
-INPUT_DATA_DIR_BASELINE  <- here::here('data/input/baseline')
+INPUT_DATA_DIR_BASELINE  <- 'data/input/baseline'
 INPUT_DATA_DIR_CURRENT   <- here::here('data/input/current')
 OUTPUT_DATA_DIR          <- here::here('data/output')
 
