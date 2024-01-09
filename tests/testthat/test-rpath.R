@@ -26,7 +26,8 @@ PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Curre
 PLOT_SHOW <- 2 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
 
 # originalWorkingDir <- str_replace(getwd(),".Rcheck","")
-originalWorkingDir <- getwd()
+# originalWorkingDir <- getwd()
+originalWorkingDir <- "."
 INPUT_DATA_DIR_BASELINE  <- file.path(originalWorkingDir,'data/input/baseline')
 INPUT_DATA_DIR_CURRENT   <- file.path(originalWorkingDir,'data/input/current')
 OUTPUT_DATA_DIR          <- file.path(originalWorkingDir,'data/output')
@@ -445,11 +446,6 @@ testthat::test_that("Rpath Unit Tests", {
   fleets  <- c('Trawlers','Midwater','Dredgers')
   species <- c('OtherGroundfish','Megabenthos','Seals')
   originalWorkingDir <- getwd();
-#  originalWorkingDir <- str_replace(originalWorkingDir,".Rcheck","")
-#  REcosystemScript   <- file.path(originalWorkingDir,"..","..","data-raw","REcosystem.R")
-  # source("../../data-raw/REcosystem.R")
-#print(paste0("-----path: ",REcosystemScript))  
-#  source(REcosystemScript)
   modNum <- 1
   runNum <- 0
   
