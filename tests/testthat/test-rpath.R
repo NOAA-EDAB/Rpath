@@ -35,6 +35,13 @@ INPUT_DATA_DIR_BASELINE  <- 'data/input/baseline'
 INPUT_DATA_DIR_CURRENT   <- here::here('data/input/current')
 OUTPUT_DATA_DIR          <- here::here('data/output')
 
+if (! file.exists(INPUT_DATA_DIR_CURRENT)) {
+  dir.create(INPUT_DATA_DIR_CURRENT)
+}
+if (! file.exists(OUTPUT_DATA_DIR)) {
+  dir.create(OUTPUT_DATA_DIR)
+}
+
 #' Stepify Effort
 #' 
 #' This function stepifies a vector of effort data. Stepification consists of modifying (i.e., multiplying) the
