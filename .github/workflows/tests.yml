@@ -58,3 +58,20 @@ jobs:
           source(here::here("data-raw/REcosystem.R"))
           source(here::here("tests/testthat.R"))
         shell: Rscript {0}
+      
+      # Send email with pdf file of differences for diagnostic use  
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+
+          subject: Github Actions job result
+          to: ronald.klasky@noaa.gov
+          from: Rpath Unit Tests
+          
+          body: file://${{github.workspace}}/tests/testthat/Rplots.pdf
