@@ -756,12 +756,12 @@ testthat::test_that("Rpath Unit Tests", {
   
   # 
   # Save current Rpath run data
-  REco <- rpath(REco.params, eco.name = 'R Ecosystem')
+  REco <- rpath(REco.params, eco.name = 'R Ecosystem') # an Rpath object
   RpathObjTopLevel <- if (CREATE_BASELINE_FILES) BaselineRpathObjTopLevel else CurrentRpathObjTopLevel
-print(paste0("******* Saving to: ",RpathObjTopLevel))  
-  sink(RpathObjTopLevel)
-    print(REco)
-  sink()
+print(paste0("******* Saving to: ",RpathObjTopLevel))
+  # sink(RpathObjTopLevel)
+    capture.output(print(REco),file=RpathObjTopLevel)
+  # sink()
   
   # Save current Rpath run summary data
   setwd(originalWorkingDir)
