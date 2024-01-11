@@ -25,7 +25,7 @@ RUN_QUIET <- TRUE
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
 PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
 PLOT_SHOW <- 1 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
-INPUT_DATA_DIR_BASELINE  <- here::here('tests/testthat/data/input/baseline')
+INPUT_DATA_DIR_BASELINE  <- 'data/input/baseline'
 INPUT_DATA_DIR_CURRENT   <- here::here('tests/testthat/data/input/current')
 OUTPUT_DATA_DIR          <- here::here('tests/testthat/data/output')
 
