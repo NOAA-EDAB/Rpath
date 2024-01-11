@@ -6,7 +6,9 @@ library(distillery)
 library(ggplot2)
 library(ggpubr)
 library(rlist)
- 
+# library(plotly)
+# library(htmlwidgets)
+
 data(package="Rpath")
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
@@ -23,9 +25,9 @@ RUN_QUIET <- TRUE
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
 PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
 PLOT_SHOW <- 1 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
-INPUT_DATA_DIR_BASELINE  <- 'data/input/baseline'
-INPUT_DATA_DIR_CURRENT   <- here::here('data/input/current')
-OUTPUT_DATA_DIR          <- here::here('data/output')
+INPUT_DATA_DIR_BASELINE  <- here::here('tests/testthat/data/input/baseline')
+INPUT_DATA_DIR_CURRENT   <- here::here('tests/testthat/data/input/current')
+OUTPUT_DATA_DIR          <- here::here('tests/testthat/data/output')
 
 # Create the current and output directories if they don't already exist.
 if (! dir.exists(INPUT_DATA_DIR_CURRENT)) {
@@ -235,8 +237,12 @@ plotResultsSuperimposed <- function(BaseData,CurrData,baseAlg,currAlg,tableName,
            title=paste0('Sim Run using ',forcedData,' with ',forcedType,' Noise - ',member),
            subtitle=paste0("Dataset: ",tableName)) +
       scale_color_manual(name="Legend:",values=c('red','darkblue')) +
-      theme( plot.title = element_text(hjust=0.5),
-             plot.subtitle = element_text(hjust=0.5),
+      theme( plot.title = element_text(hjust=0.5,size=7),
+             plot.subtitle = element_text(hjust=0.5,size=7),
+             axis.text = element_text(size=8),
+             axis.title = element_text(size=8),
+             legend.text = element_text(size=8),
+             legend.title = element_text(size=10),
              legend.position='bottom',
              legend.spacing.y = unit(0.0,'cm'),
              legend.background = element_rect(fill='#f7f7f7'),
@@ -244,10 +250,13 @@ plotResultsSuperimposed <- function(BaseData,CurrData,baseAlg,currAlg,tableName,
              plot.background = element_rect(color='black',fill=NA,linewidth=1)
            )
     plots <- list.append(plots,aPlot)
+    
   }
-  combinedPlot <- ggarrange(plotlist=plots,ncol=1)
+  combinedPlot <- ggarrange(plotlist=plots,nrow=3,ncol=2)
   # annotate_figure(combinedPlot, top = text_grob("Sample main title here", color = "red", face = "bold", size = 14))
-  print(combinedPlot)
+   # saveWidget(ggplotly(combinedPlot), file = "Rplots.html");
+   # print(ggplotly(combinedPlot))
+   print(combinedPlot)
 }
 
 #' Plot the difference of the two runs
@@ -446,7 +455,7 @@ testthat::test_that("Rpath Unit Tests", {
   BaselineSteppedFiles  <- list()
   CurrentSteppedFiles   <- list()
   fleets  <- c('Trawlers','Midwater','Dredgers')
-  species <- c('OtherGroundfish','Megabenthos','Seals')
+  species <- c('OtherGroundfish','Megabenthos','Seals','JuvRoundfish1','AduRoundfish1')
   originalWorkingDir <- getwd();
   modNum <- 1
   runNum <- 0
