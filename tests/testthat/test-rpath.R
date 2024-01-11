@@ -802,7 +802,8 @@ testthat::test_that("Rpath Unit Tests", {
     cwd <- getwd()
     files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='test_*')
     file.remove(file.path(OUTPUT_DATA_DIR,files))
-    
+print(paste0("OUTPUT_DATA_DIR: ",OUTPUT_DATA_DIR))
+
     # Test 1 - Test if Balanced (i.e., "Status: Balanced" is the 2nd line of the Summary file)
     headerSummaryLines <- readLines(CurrentRpathObjSummary,n=2)
     parts <- unlist(strsplit(str_trim(headerSummaryLines[2]),split=" "))
