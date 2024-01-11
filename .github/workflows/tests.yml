@@ -63,7 +63,7 @@ jobs:
         run: |
           git config user.name  github-actions
           git config user.email github-actions@github.com
-          file.copy('Rpath.Rcheck/tests/testthat/Rplots.pdf', to='inst/extdata/Rplots.pdf')
+          file.copy('here::here("tests/testthat/Rplots.pdf")",to=here::here("inst/extdata/Rplots.pdf"))
           git add inst/extdata/Rplots.pdf
           git commit -m "automated commit from testthat yml"
           git push
