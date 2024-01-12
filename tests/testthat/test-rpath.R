@@ -234,10 +234,10 @@ plotResultsSuperimposed <- function(BaseData,CurrData,baseAlg,currAlg,tableName,
       geom_line(data=baseDf, aes(x=xvalues, y=baseYvalues, color=Legend)) +
       geom_line(data=currDf, aes(x=xvalues, y=currYvalues, color=Legend)) +
       labs(x="Months",y=yLabel,
-           title=paste0('Sim Run using ',forcedData,' with ',forcedType,' Noise - ',member),
+           title=paste0('Sim Run (',forcedData,' w/ ',forcedType,' Noise) - ',member),
            subtitle=paste0("Dataset: ",tableName)) +
       scale_color_manual(name="Legend:",values=c('red','darkblue')) +
-      theme( plot.title = element_text(hjust=0.5,size=7),
+      theme( plot.title = element_text(hjust=0.5,size=7,face="bold"),
              plot.subtitle = element_text(hjust=0.5,size=7),
              axis.text = element_text(size=8),
              axis.title = element_text(size=8),
@@ -295,8 +295,12 @@ plotResultsDifference <- function(BaseData,CurrData,baseAlg,currAlg,tableName,fo
            subtitle=paste0("Dataset: ",tableName)) +
       scale_color_manual(name="Legend:",values=c('darkblue')) +
       coord_cartesian(ylim = c(-YLIMIT_DIFFERENCE_PLOTS, YLIMIT_DIFFERENCE_PLOTS)) + # RSK
-      theme( plot.title = element_text(hjust=0.5),
-             plot.subtitle = element_text(hjust=0.5),
+      theme( plot.title = element_text(hjust=0.5,size=7,face="bold"),
+             plot.subtitle = element_text(hjust=0.5,size=7),
+             axis.text = element_text(size=8),
+             axis.title = element_text(size=8),
+             legend.text = element_text(size=8),
+             legend.title = element_text(size=10),
              legend.position='bottom',
              legend.spacing.y = unit(0.0,'cm'),
              legend.background = element_rect(fill='#f7f7f7'),
@@ -802,7 +806,10 @@ testthat::test_that("Rpath Unit Tests", {
     cwd <- getwd()
     files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='test_*')
     file.remove(file.path(OUTPUT_DATA_DIR,files))
-print(paste0("OUTPUT_DATA_DIR: ",OUTPUT_DATA_DIR))
+print(paste0("OUTPUT_DATA_DIR: ",OUTPUT_DATA_DIR)) #RSK
+print(paste0("INPUT_DATA_DIR_BASELINE: ",INPUT_DATA_DIR_BASELINE)) #RSK
+print(paste0("INPUT_DATA_DIR_CURRENT: ",INPUT_DATA_DIR_CURRENT)) #RSK
+
 
     # Test 1 - Test if Balanced (i.e., "Status: Balanced" is the 2nd line of the Summary file)
     headerSummaryLines <- readLines(CurrentRpathObjSummary,n=2)
