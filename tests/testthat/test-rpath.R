@@ -30,6 +30,10 @@ INPUT_DATA_DIR_CURRENT   <- here::here('tests/testthat/data/input/current')
 INPUT_DATA_DIR_BASELINE  <- INPUT_DATA_DIR_CURRENT # RSK
 OUTPUT_DATA_DIR          <- here::here('tests/testthat/data/output')
 
+print(paste0("OUTPUT_DATA_DIR: ",         OUTPUT_DATA_DIR)) #RSK
+print(paste0("INPUT_DATA_DIR_BASELINE: ", INPUT_DATA_DIR_BASELINE)) #RSK
+print(paste0("INPUT_DATA_DIR_CURRENT: ",  INPUT_DATA_DIR_CURRENT)) #RSK
+
 # Create the current and output directories if they don't already exist.
 if (! dir.exists(INPUT_DATA_DIR_CURRENT)) {
   dir.create(INPUT_DATA_DIR_CURRENT,recursive=TRUE)
@@ -807,9 +811,6 @@ testthat::test_that("Rpath Unit Tests", {
     cwd <- getwd()
     files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='test_*')
     file.remove(file.path(OUTPUT_DATA_DIR,files))
-print(paste0("OUTPUT_DATA_DIR: ",OUTPUT_DATA_DIR)) #RSK
-print(paste0("INPUT_DATA_DIR_BASELINE: ",INPUT_DATA_DIR_BASELINE)) #RSK
-print(paste0("INPUT_DATA_DIR_CURRENT: ",INPUT_DATA_DIR_CURRENT)) #RSK
 
     # Test 1 - Test if Balanced (i.e., "Status: Balanced" is the 2nd line of the Summary file)
     headerSummaryLines <- readLines(CurrentRpathObjSummary,n=2)
