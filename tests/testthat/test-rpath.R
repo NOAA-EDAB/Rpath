@@ -807,9 +807,11 @@ testthat::test_that("Rpath Unit Tests", {
     files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='test_*')
     file.remove(file.path(OUTPUT_DATA_DIR,files))
 print(paste0("OUTPUT_DATA_DIR: ",OUTPUT_DATA_DIR)) #RSK
+list.files(path=OUTPUT_DATA_DIR, pattern=NULL, all.files=FALSE, full.names=FALSE)
 print(paste0("INPUT_DATA_DIR_BASELINE: ",INPUT_DATA_DIR_BASELINE)) #RSK
-print(paste0("INPUT_DATA_DIR_CURRENT: ",INPUT_DATA_DIR_CURRENT)) #RSK
 list.files(path=INPUT_DATA_DIR_BASELINE, pattern=NULL, all.files=FALSE, full.names=FALSE)
+print(paste0("INPUT_DATA_DIR_CURRENT: ",INPUT_DATA_DIR_CURRENT)) #RSK
+list.files(path=INPUT_DATA_DIR_CURRENT, pattern=NULL, all.files=FALSE, full.names=FALSE)
 
     # Test 1 - Test if Balanced (i.e., "Status: Balanced" is the 2nd line of the Summary file)
     headerSummaryLines <- readLines(CurrentRpathObjSummary,n=2)
