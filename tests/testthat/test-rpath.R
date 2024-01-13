@@ -18,7 +18,7 @@ CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
-SEED   <- 1
+SEED   <- 1 
 SEED_OFFSET <- 1000
 TOLERANCE <- 1e-5
 RUN_QUIET <- TRUE
