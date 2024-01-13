@@ -201,7 +201,8 @@ has been modified with random noise. Both the baseline and current model runs us
 <br><br>
 
 ```{r figs1, echo=FALSE, out.width="85%:", out.height="85%", fig.cap="Figure 1. No Difference in Baseline vs Current Models"}
-knitr::include_graphics(here::here("vignettes/img/plot_01_no_difference.png"))
+print(paste0("*** working dir: ", getwd()))
+knitr::include_graphics("img/plot_01_no_difference.png")
 ```
 <br><br>
 Figure 2 depicts the same information as Figure 1 with the difference being that the randomization factor was slightly changed in the current model from what was used in the baseline model. This was done to only to highlight how the plot would appear if the current model deviated from the baseline. Notice that the underlying baseline plot (in red) is now clearly visible.
