@@ -8,7 +8,7 @@ library(ggpubr)
 library(rlist)
 # library(plotly)
 # library(htmlwidgets)
- 
+
 data(package="Rpath")
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
@@ -464,7 +464,7 @@ testthat::test_that("Rpath Unit Tests", {
   BaselineSteppedFiles  <- list()
   CurrentSteppedFiles   <- list()
   fleets  <- c('Trawlers','Midwater','Dredgers')
-  species <- c('OtherGroundfish','Megabenthos','Seals') #,'JuvRoundfish1','AduRoundfish1')
+  species <- c('OtherGroundfish','Megabenthos','Seals','JuvRoundfish1','AduRoundfish1')
   originalWorkingDir <- getwd();
   modNum <- 1
   runNum <- 0
