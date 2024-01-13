@@ -18,8 +18,8 @@ src/*.o
 src/*.dll
 tests/testthat/data/output/*
 tests/testthat/data/bkup/*
-tests/testthat/data/input/current/REcosystem_Current_*.dat
-tests/testthat/data/input/current/REcosystem_Current_*.csv
+tests/testthat/data/input/REcosystem_Current_*.dat
+tests/testthat/data/input/REcosystem_Current_*.csv
 tests/testthat/old/*
 tests/testthat/bkup/*
 tests/testthat/old dat files/*
