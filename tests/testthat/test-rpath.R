@@ -380,7 +380,7 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
     }
   }
 
-  write.table(outputTable, file=outputFile)
+  write.table(outputTable, file=outputFile) 
   inputTable <- read.table(outputFile, fill = TRUE,sep = " ")
   retv <- testthat::expect_equal(baselineTable,inputTable,tolerance=TOLERANCE)
 
