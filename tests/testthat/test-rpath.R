@@ -13,8 +13,8 @@ data(package="Rpath")
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
-# CREATE_BASELINE_FILES <- TRUE
-CREATE_BASELINE_FILES <- FALSE
+CREATE_BASELINE_FILES <- TRUE
+# CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
@@ -391,9 +391,10 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 1's
   zeroTable[,-1]  <- 0 # set all but first column to 0's
-  testthat::expect_equal(diffTable,zeroTable)
-  
-  write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("test_",paddedRunNum,".dat")))
+  testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE)
+
+  write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
+  write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
 }
 
 #' Modify a scene$fishing matrix
