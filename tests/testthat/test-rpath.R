@@ -386,10 +386,10 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
 
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
-  diffTable[diffTable <= TOLERANCE] <- NA
+  diffTable[diffTable <= TOLERANCE] <- 1
   
   zeroTable <- diffTable
-  zeroTable[TRUE] <- NA # set to all NA's
+  zeroTable[TRUE] <- 1 # set to all 1's
   testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
   #testthat::expect_equal(diffTable,diffTable,tolerance=TOLERANCE)
   
