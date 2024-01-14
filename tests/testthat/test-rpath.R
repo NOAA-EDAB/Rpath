@@ -387,8 +387,10 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
   diffTable[diffTable <= TOLERANCE] <- 0.0
+  
   zeroTable <- diffTable
-  zeroTable[TRUE] <- 0.0
+  zeroTable[TRUE] <- 0 # set to all 1's
+  zeroTable[,-1]  <- 0 # set all but first column to 0's
   testthat::expect_equal(diffTable,zeroTable)
   
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("test_",paddedRunNum,".dat")))
