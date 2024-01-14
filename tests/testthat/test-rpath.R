@@ -6,6 +6,7 @@ library(distillery)
 library(ggplot2)
 library(ggpubr)
 library(rlist)
+library(dplyr)
 # library(plotly)
 # library(htmlwidgets)
  
@@ -381,18 +382,19 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   }
 
   #write.table(outputTable, file=outputFile) 
-  inputTable <- read.table(outputFile, fill = TRUE,sep = " ")
+  inputTable <- read.table(outputFile, fill = TRUE, sep = " ")
   #retv <- testthat::expect_equal(baselineTable,inputTable,tolerance=TOLERANCE)
 
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
-  diffTable[diffTable <= TOLERANCE] <- 1
+  diffTable[diffTable <= TOLERANCE] <- 0
+  diffTable <- diffTable %>% mutate_at(1,as.numeric)
   
   zeroTable <- diffTable
-  zeroTable[TRUE] <- 1 # set to all 1's
+  zeroTable[TRUE] <- 0 # set to all 0's
+  zeroTable <- zeroTable %>% mutate_at(1,as.numeric)
   testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
-  #testthat::expect_equal(diffTable,diffTable,tolerance=TOLERANCE)
-  
+
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
 }
