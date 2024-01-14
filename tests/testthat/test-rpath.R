@@ -386,12 +386,12 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
 
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
-  diffTable[diffTable <= TOLERANCE] <- 0.0
+  diffTable[diffTable <= TOLERANCE] <- NA
   
   zeroTable <- diffTable
-  zeroTable[TRUE] <- 0 # set to all 0's
-  #testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
-  testthat::expect_equal(diffTable,diffTable,tolerance=TOLERANCE)
+  zeroTable[TRUE] <- NA # set to all NA's
+  testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
+  #testthat::expect_equal(diffTable,diffTable,tolerance=TOLERANCE)
   
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
@@ -817,9 +817,11 @@ testthat::test_that("Rpath Unit Tests", {
   if (! CREATE_BASELINE_FILES) {
     # Remove existing output data files
     cwd <- getwd()
-    files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='test_*')
+    files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='diff_*')
     file.remove(file.path(OUTPUT_DATA_DIR,files))
-
+    files <- dir(path=file.path(cwd,OUTPUT_DATA_DIR),pattern='zero_*')
+    file.remove(file.path(OUTPUT_DATA_DIR,files))
+    
     # Test 1 - Test if Balanced (i.e., "Status: Balanced" is the 2nd line of the Summary file)
     headerSummaryLines <- readLines(CurrentRpathObjSummary,n=2)
     parts <- unlist(strsplit(str_trim(headerSummaryLines[2]),split=" "))
