@@ -446,7 +446,6 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
       aSpecies <- species[[i]]
       speciesBiomass <- scene$start_state$Biomass[aSpecies]
       if (modifyType == 'Jittered') {
-print(paste0("seed val: ",modNum*i*SEED_OFFSET))        
         ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(speciesBiomass,numMonths,modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
       } else {
         stepType <- ((i-1)%%3)+1 # Only current step types are 1, 2, or 3
