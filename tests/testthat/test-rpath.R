@@ -13,8 +13,8 @@ data(package="Rpath")
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
-CREATE_BASELINE_FILES <- TRUE
-# CREATE_BASELINE_FILES <- FALSE
+# CREATE_BASELINE_FILES <- TRUE
+CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
@@ -197,8 +197,7 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
   jitterVector <- c()
   for (i in 1:numElements) {
-#    jitterVector <- append(jitterVector,addJitter(value,seedOffset+i,'','',''))
-    jitterVector <- append(jitterVector,addJitter(value,1,'','','')) # RSKRSK
+   jitterVector <- append(jitterVector,addJitter(value,seedOffset+i,'','',''))
     # currentSeed  <- seedOffset*SEED + i
   }
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
@@ -383,10 +382,15 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
 
   #write.table(outputTable, file=outputFile) 
   inputTable <- read.table(outputFile, fill = TRUE,sep = " ")
-  retv <- testthat::expect_equal(baselineTable,inputTable,tolerance=TOLERANCE)
+  #retv <- testthat::expect_equal(baselineTable,inputTable,tolerance=TOLERANCE)
 
   # Write out the difference table (current-baseline)
-  diffTable <- (outputTable-baselineTable)
+  diffTable <- abs(inputTable-baselineTable)
+  diffTable[diffTable <= TOLERANCE] <- 0.0
+  zeroTable <- diffTable
+  zeroTable[TRUE] <- 0.0
+  testthat::expect_equal(diffTable,zeroTable)
+  
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("test_",paddedRunNum,".dat")))
 }
 
@@ -913,19 +917,12 @@ testthat::test_that("Rpath Unit Tests", {
       write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFiles[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFiles[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFiles[[6]])
-print(paste0("1run is: ",runNum))      
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFiles[[1]], species)
-print(paste0("2run is: ",runNum))
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
-print(paste0("3run is: ",runNum))
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFiles[[3]], species)
-print(paste0("4run is: ",runNum))
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFiles[[4]], species)
-print(paste0("5run is: ",runNum))
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFiles[[5]], species)
-print(paste0("6run is: ",runNum))
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFiles[[6]], species)
-print(paste0("7run is: ",runNum))
     }
   }
 
