@@ -382,19 +382,19 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   }
 
   #write.table(outputTable, file=outputFile) 
-  inputTable <- read.table(outputFile, fill = TRUE, sep = " ")
+  inputTable <- read.table(outputFile) # , fill = TRUE, sep = " ")
   #retv <- testthat::expect_equal(baselineTable,inputTable,tolerance=TOLERANCE)
 
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
   diffTable[diffTable <= TOLERANCE] <- 0
-  names(diffTable) <- NULL
+  # names(diffTable) <- NULL
   # diffTable <- diffTable %>% mutate_at(1,as.numeric)
 print(diffTable)
 print("=========")
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
-  names(zeroTable) <- NULL
+  # names(zeroTable) <- NULL
   # zeroTable <- zeroTable %>% mutate_at(1,as.numeric)
 print(zeroTable)  
   testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
