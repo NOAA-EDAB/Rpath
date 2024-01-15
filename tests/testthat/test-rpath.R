@@ -388,12 +388,14 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
   diffTable[diffTable <= TOLERANCE] <- 0
-  diffTable <- diffTable %>% mutate_at(1,as.numeric)
+  names(diffTable) <- NULL
+  # diffTable <- diffTable %>% mutate_at(1,as.numeric)
 print(diffTable)
 print("=========")
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
-  zeroTable <- zeroTable %>% mutate_at(1,as.numeric)
+  names(zeroTable) <- NULL
+  # zeroTable <- zeroTable %>% mutate_at(1,as.numeric)
 print(zeroTable)  
   testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
 
