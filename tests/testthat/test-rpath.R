@@ -397,7 +397,7 @@ print("=========")
   # names(zeroTable) <- NULL
   # zeroTable <- zeroTable %>% mutate_at(1,as.numeric)
 print(zeroTable)  
-  testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
+  testthat::expect_identical(diffTable,zeroTable) #,tolerance=TOLERANCE) # RSKRSK
 
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
