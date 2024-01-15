@@ -385,20 +385,29 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   inputTable <- read.table(outputFile, fill = TRUE, sep = " ",strip.white=TRUE)
   #retv <- testthat::expect_equal(baselineTable,inputTable,tolerance=TOLERANCE)
 
-  
-# print(paste0("******* ncol baseline table: ", ncol(baselineTable)))
-# print(head(baselineTable,2))
-# print(paste0("******* ncol input table: ", ncol(inputTable)))
-# print(head(inputTable,2))
+
 
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
   diffTable[diffTable <= TOLERANCE] <- 0
-
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
 
-  testthat::expect_equal(diffTable,zeroTable,tolerance=TOLERANCE) # RSKRSK
+  
+  print(paste0("******* runNum: ",runNum))
+  print(paste0("******* dim diffTable: ", dim(diffTable)))
+  # print(head(diffTable,1))
+  # print(tail(diffTable,1))
+  print(paste0("******* dim zeroTable: ", dim(zeroTable)))
+  # print(head(zeroTable,1))
+  # print(tail(zeroTable,1))
+  
+  
+  
+  
+  testthat::expect_equal(as.data.frame(diffTable),
+                         as.data.frame(zeroTable),
+                         tolerance=TOLERANCE) # RSKRSK
 
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
