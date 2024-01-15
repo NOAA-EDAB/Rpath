@@ -7,6 +7,8 @@ library(ggplot2)
 library(ggpubr)
 library(rlist)
 library(dplyr)
+library(generics)
+# library(arsenal)
 # library(plotly)
 # library(htmlwidgets)
  
@@ -393,14 +395,18 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
 
-  
+  print(generics::setdiff(diffTable,zeroTable))
   print(paste0("******* runNum: ",runNum))
   print(paste0("******* dim diffTable: ", dim(diffTable)))
-  # print(head(diffTable,1))
-  # print(tail(diffTable,1))
   print(paste0("******* dim zeroTable: ", dim(zeroTable)))
-  # print(head(zeroTable,1))
-  # print(tail(zeroTable,1))
+  print("heads --------------------------------")
+  print(head(diffTable,1))
+  print("heads ~~~~~")
+  print(head(zeroTable,1))
+  print("tails --------------------------------")
+  print(tail(zeroTable,1))
+  print("tails ~~~~~")
+  print(tail(diffTable,1))
   
   
   
