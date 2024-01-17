@@ -383,16 +383,21 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
     }
   }
 
+  # 
   inputTable <- read.table(outputFile, fill = TRUE, sep = " ",strip.white=TRUE)
-
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
+
+  # Set all values <= TOLERANCE to 0 becauses we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE] <- 0
+  # Create the zero table
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
-
+  # test if the diff and zero tables are identical
+print(paste0("col sums diffTable: ",colSums(diffTable[,-1])))  
+print(paste0("col sums zeroTable: ",colSums(zeroTable[,-1])))  
   areIdentical <- identical(diffTable,zeroTable)
-
+print(paste0("areIdentical: ",areIdentical))  
   testthat::expect_true(areIdentical)
   # testthat::expect_equal(as.data.frame(diffTable),
   #                        as.data.frame(zeroTable),
