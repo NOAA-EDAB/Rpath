@@ -383,7 +383,7 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
     }
   }
 
-  # 
+  # RSK - inputTable is not the same when running on gitaction and when running in RStudio
   inputTable <- read.table(outputFile, fill = TRUE, sep = " ",strip.white=TRUE)
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
@@ -486,6 +486,8 @@ testthat::test_that("Rpath Unit Tests", {
   originalWorkingDir <- getwd();
   modNum <- 1
   runNum <- 0
+  
+  set.seed(1)
   
   # ---------- Set up initial file paths ----------
   # N.B. The Baseline and Current AB and RK4 files are .csv files since they were produce by
