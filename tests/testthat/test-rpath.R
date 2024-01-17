@@ -384,7 +384,7 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   }
 
   # RSK - inputTable is not the same when running on gitaction and when running in RStudio
-  inputTable <- read.table(outputFile, fill = TRUE, sep = " ",strip.white=TRUE)
+  inputTable <- read.table(outputFile, header=TRUE,fill=TRUE,sep=" ",strip.white=TRUE)
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
 
