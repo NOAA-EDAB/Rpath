@@ -383,8 +383,8 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
     }
   }
 
-  # RSK - inputTable is not the same when running on gitaction and when running in RStudio
-  inputTable <- read.table(outputFile) #,fill=TRUE,sep=" ",strip.white=TRUE)
+  # RSK - inputTable is not the same when running in a git action and when running in RStudio
+  inputTable <- read.table(outputFile,fill=TRUE,sep=" ",strip.white=TRUE)
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
 
@@ -394,9 +394,9 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
   # test if the diff and zero tables are identical
-# print(paste0("col sums inputTable: ",colSums(inputTable[,-1])))  
-# print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))  
-print(paste0("row sums inputTable: ",head(rowSums(inputTable),100)))
+# print(paste0("col sums inputTable: ",   colSums(inputTable[,-1])))
+# print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))
+# print(paste0("row sums inputTable: ",head(rowSums(inputTable),100)))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
   testthat::expect_true(areIdentical)
@@ -934,6 +934,8 @@ testthat::test_that("Rpath Unit Tests", {
       write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFiles[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFiles[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFiles[[6]])
+
+print(paste0("col sums REcosystem_RK4_Current_Jitter: ",colSums(REcosystem_RK4_Current_Jitter$out_Biomass[,-1])))
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFiles[[1]], species)
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFiles[[3]], species)
