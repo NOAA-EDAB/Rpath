@@ -394,8 +394,9 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
   # test if the diff and zero tables are identical
-print(paste0("col sums inputTable: ",colSums(inputTable[,-1])))  
-print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))  
+# print(paste0("col sums inputTable: ",colSums(inputTable[,-1])))  
+# print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))  
+print(paste0("row sums inputTable: ",head(rowSums(inputTable),100)))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
   testthat::expect_true(areIdentical)
