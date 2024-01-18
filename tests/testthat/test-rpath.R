@@ -458,6 +458,7 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
   if (typeData == "Forced Bio" || typeData == "Forced Migrate") {
     for (i in 1:length(species)) {
       aSpecies <- species[[i]]
+print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
       speciesBiomass <- scene$start_state$Biomass[aSpecies]
       if (modifyType == 'Jittered') {
         ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(speciesBiomass,numMonths,modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
@@ -896,6 +897,7 @@ testthat::test_that("Rpath Unit Tests", {
   for (i in 1:length(forcingOriginalData)) {
     theTypeData  <- typeData[[i]]
     ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,forcingOriginalData[[i]],REcosystem_scene_jitter)
+    print(paste0("num cols: ",ncol(ForcedMatrix)))
 print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
