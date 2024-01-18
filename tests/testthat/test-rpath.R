@@ -200,7 +200,11 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
   jitterVector <- c()
   for (i in 1:numElements) {
-   jitterVector <- append(jitterVector,addJitter(value,seedOffset+i,'','',''))
+    jitteredValue = addJitter(value,seedOffset+i,'','','')
+if (i < 101) {    
+print(paste0("jittered value[",i,"]: ",jitteredValue))    
+}
+   jitterVector <- append(jitterVector,jitteredValue)
     # currentSeed  <- seedOffset*SEED + i
   }
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
@@ -487,9 +491,7 @@ testthat::test_that("Rpath Unit Tests", {
   originalWorkingDir <- getwd();
   modNum <- 1
   runNum <- 0
-  
-  set.seed(1)
-  
+
   # ---------- Set up initial file paths ----------
   # N.B. The Baseline and Current AB and RK4 files are .csv files since they were produce by
   # the write.rsim() function and not the more generic write.table() function.
@@ -935,7 +937,7 @@ testthat::test_that("Rpath Unit Tests", {
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFiles[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFiles[[6]])
 
-print(paste0("col sums REcosystem_RK4_Current_Jitter: ",colSums(REcosystem_RK4_Current_Jitter$out_Biomass[,-1])))
+# print(paste0("col sums REcosystem_RK4_Current_Jitter:  ",colSums(REcosystem_RK4_Current_Jitter$out_Biomass[,-1])))
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFiles[[1]], species)
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFiles[[3]], species)
