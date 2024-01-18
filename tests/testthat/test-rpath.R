@@ -200,11 +200,7 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
   jitterVector <- c()
   for (i in 1:numElements) {
-    jitteredValue = addJitter(value,seedOffset+i,'','','')
-if (i < 101) {    
-print(paste0("jittered value[",i,"]: ",jitteredValue))    
-}
-   jitterVector <- append(jitterVector,jitteredValue)
+    jitterVector <- append(jitterVector,addJitter(value,seedOffset+i,'','',''))
     # currentSeed  <- seedOffset*SEED + i
   }
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
@@ -471,7 +467,6 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
       }
     }
   }
-
   return(ForcedMatrix)
 }
 
@@ -901,6 +896,7 @@ testthat::test_that("Rpath Unit Tests", {
   for (i in 1:length(forcingOriginalData)) {
     theTypeData  <- typeData[[i]]
     ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,forcingOriginalData[[i]],REcosystem_scene_jitter)
+print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
       REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
