@@ -177,7 +177,7 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
   # From jitter() doc: If amount == 0, jitter returns factor * z/50, where
   # z = max(x0) - min(x), aka the range. So if factor=5 and amount=0, jitter()
   # returns a random value within a tenth of the range.
-  jitteredMatrix <- jitter(matrix,factor=FACTOR,amount=0)
+  jitteredMatrix <- jitter(matrix,factor=FACTOR,amount=NULL)
   if (xlabel != '' && ylabel != '' & title != '') {
     # plot(jitteredMatrix,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)    
   } 
