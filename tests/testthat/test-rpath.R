@@ -16,8 +16,8 @@ data(package="Rpath")
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
-# CREATE_BASELINE_FILES <- TRUE
-CREATE_BASELINE_FILES <- FALSE
+CREATE_BASELINE_FILES <- TRUE
+# CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
@@ -210,13 +210,13 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
   for (i in 1:numElements) {
 #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
     if ((i<100) || (i>500)) {
-print(seedOffset+i)
+# print(seedOffset+i)
     }
     jitteredValue <- value + value*randomNumber(seedOffset+i)
     jitterVector <- append(jitterVector,jitteredValue)
     # currentSeed  <- seedOffset*SEED + i
   }
-print(paste0("tot vec: ",sum(jitterVector)))
+# print(paste0("tot vec: ",sum(jitterVector)))
   
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
   return(jitterVector)
@@ -448,17 +448,14 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
 
   for (i in 1:length(speciesOrFleets)) {
     item <- speciesOrFleets[i]
-    matrixData           <- ForcedMatrix[,item]
+    vectorData           <- ForcedMatrix[,item] 
     # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
-    
-    newValues <- c()
-    for (value in matrixData) {
+    newVectorWithJitter <- c()
+    for (value in vectorData) {
       jitteredValue <- value + value*randomNumber(modNum*SEED_OFFSET*SEED+i)
-      newValue.append(jitteredValue)
+      newVectorWithJitter <- append(newVectorWithJitter,jitteredValue)
     }
-    matrixDataWithJitter <- newValues
-    
-    ForcedMatrix[,item]  <- matrixDataWithJitter
+    ForcedMatrix[,item]  <- newVectorWithJitter
   }
   return(ForcedMatrix)
 }
@@ -920,8 +917,8 @@ testthat::test_that("Rpath Unit Tests", {
   for (i in 1:length(forcingOriginalData)) {
     theTypeData  <- typeData[[i]]
     ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,forcingOriginalData[[i]],REcosystem_scene_jitter)
-    print(paste0("num cols: ",ncol(ForcedMatrix)))
-print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
+# print(paste0("num cols: ",ncol(ForcedMatrix)))
+# print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
       REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
@@ -963,7 +960,7 @@ print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFiles[[3]], species)
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFiles[[4]], species)
-return()
+# return()
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFiles[[5]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFiles[[6]], species)
     }
