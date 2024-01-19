@@ -209,6 +209,9 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
   jitterVector <- c()
   for (i in 1:numElements) {
 #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
+    if ((i<100) || (i>500)) {
+print(seedOffset+i)
+    }
     jitteredValue <- value + value*randomNumber(seedOffset+i)
     jitterVector <- append(jitterVector,jitteredValue)
     # currentSeed  <- seedOffset*SEED + i
