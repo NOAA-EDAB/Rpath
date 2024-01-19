@@ -212,7 +212,9 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
     # if ((i<100) || (i>500)) {
 # print(seedOffset+i)
     # }
-    jitteredValue <- value * (1.0 + randomNumber(seedOffset+i))
+    randVal <- randomNumber(seedOffset+i)
+print(paste0("randVal[",seedOffset+i,"]: ",randVal))    
+    jitteredValue <- value * (1.0 + randVal)
     jitterVector <- append(jitterVector,jitteredValue)
   }
 print(paste0("tot vec: ",sum(jitterVector)))
