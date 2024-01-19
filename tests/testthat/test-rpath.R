@@ -177,6 +177,7 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
   # From jitter() doc: If amount == 0, jitter returns factor * z/50, where
   # z = max(x0) - min(x), aka the range. So if factor=5 and amount=0, jitter()
   # returns a random value within a tenth of the range.
+  
   jitteredMatrix <- jitter(matrix,factor=FACTOR,amount=NULL)
   if (xlabel != '' && ylabel != '' & title != '') {
     # plot(jitteredMatrix,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)    
@@ -203,6 +204,8 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
     jitterVector <- append(jitterVector,addJitter(value,seedOffset+i,'','',''))
     # currentSeed  <- seedOffset*SEED + i
   }
+print(paste0("tot vec: ",sum(jitterVector)))
+  
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
   return(jitterVector)
 }
@@ -458,7 +461,7 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
   if (typeData == "Forced Bio" || typeData == "Forced Migrate") {
     for (i in 1:length(species)) {
       aSpecies <- species[[i]]
-print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
+# print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
       speciesBiomass <- scene$start_state$Biomass[aSpecies]
       if (modifyType == 'Jittered') {
         ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(speciesBiomass,numMonths,modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
