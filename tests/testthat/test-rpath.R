@@ -25,6 +25,7 @@ SEED   <- 1
 SEED_OFFSET <- 1000
 TOLERANCE <- 1e-5
 RUN_QUIET <- TRUE
+JITTER_AMOUNT_PCT <- 1 # This is 1% jitter
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
 PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
 PLOT_SHOW <- 1 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
@@ -185,6 +186,12 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
   return(jitteredMatrix)
 }
 
+randomNumber <- function(seed) {
+  set.seed(seed)
+  rval <- runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1]
+  return(rval)
+}
+
 #' Create a jittered vector
 #' 
 #' Used for jittering a matrix column. Can't use replicate because need to pass a different seed for every value for reproducibility.
@@ -200,10 +207,9 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 #' 
 createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
   jitterVector <- c()
-  JITTER_AMOUNT_PCT <- 1 # This is 1% jitter
   for (i in 1:numElements) {
 #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
-    jitteredValue <- value + value*runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1]
+    jitteredValue <- value + value*randomNumber(seedOffset+i)
     jitterVector <- append(jitterVector,jitteredValue)
     # currentSeed  <- seedOffset*SEED + i
   }
@@ -444,7 +450,8 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
     
     newValues <- c()
     for (value in matrixData) {
-      newValue.append(value*runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1])
+      jitteredValue <- value + value*randomNumber(modNum*SEED_OFFSET*SEED+i)
+      newValue.append(jitteredValue)
     }
     matrixDataWithJitter <- newValues
     
