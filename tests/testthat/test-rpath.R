@@ -457,7 +457,7 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
     }
     ForcedMatrix[,item]  <- newVectorWithJitter
   }
-  return(ForcedMatrix)
+  return(ForcedMatrix) 
 }
 
 #' Modify a scene$forcing matrix
