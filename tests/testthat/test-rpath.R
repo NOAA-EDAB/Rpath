@@ -208,14 +208,16 @@ randomNumber <- function(seed) {
 createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
   jitterVector <- c()
   totRandVal <- 0
+  totValue <- 0
   for (i in 1:numElements) {
 #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
     randVal <- randomNumber(seedOffset+i)
     totRandVal <- totRandVal + randVal
+    totValue <- totValue + value
     jitteredValue <- value * (1.0 + randVal)
     jitterVector <- append(jitterVector,jitteredValue)
   }
-print(paste0("tot rand val: ", totRandVal, ", tot vec: ",sum(jitterVector)))
+print(paste0("tot rand val: ", totRandVal, "tot value: ", totValue, ", tot vec: ", sum(jitterVector)))
   
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
   return(jitterVector)
