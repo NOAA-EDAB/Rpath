@@ -209,14 +209,13 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
   jitterVector <- c()
   for (i in 1:numElements) {
 #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
-    if ((i<100) || (i>500)) {
+    # if ((i<100) || (i>500)) {
 # print(seedOffset+i)
-    }
-    jitteredValue <- value + value*randomNumber(seedOffset+i)
+    # }
+    jitteredValue <- value * (1.0 + randomNumber(seedOffset+i))
     jitterVector <- append(jitterVector,jitteredValue)
-    # currentSeed  <- seedOffset*SEED + i
   }
-# print(paste0("tot vec: ",sum(jitterVector)))
+print(paste0("tot vec: ",sum(jitterVector)))
   
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
   return(jitterVector)
@@ -960,7 +959,7 @@ testthat::test_that("Rpath Unit Tests", {
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFiles[[3]], species)
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFiles[[4]], species)
-# return()
+return()
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFiles[[5]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFiles[[6]], species)
     }
