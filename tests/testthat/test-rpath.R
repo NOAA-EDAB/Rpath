@@ -12,7 +12,7 @@ library(generics)
 # library(plotly)
 # library(htmlwidgets)
  
-data(package="Rpath")
+# data(package="Rpath")
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
@@ -217,7 +217,7 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
     jitteredValue <- value * (1.0 + randVal)
     jitterVector <- append(jitterVector,jitteredValue)
   }
-print(paste0("tot rand val: ", totRandVal, "tot value: ", totValue, ", tot vec: ", sum(jitterVector)))
+print(paste0("tot rand val: ", totRandVal, ", tot value: ", totValue, ", tot vec: ", sum(jitterVector)))
   
 # plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
   return(jitterVector)
@@ -379,6 +379,8 @@ runTestSilent <- function(runNum,desc,params,name) {
 #' 
 runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineTable,outputTable,outputFile,species) {
  
+  options(digits=22)
+  
   # N.B. Remove this if statement once missing column headings issue is fixed
   if (tableName == 'out_Gear_Catch') {
     if (! RUN_QUIET) {
