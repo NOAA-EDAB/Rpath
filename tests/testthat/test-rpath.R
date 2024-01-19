@@ -200,8 +200,11 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 #' 
 createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
   jitterVector <- c()
+  JITTER_AMOUNT_PCT <- 1 # This is 1% jitter
   for (i in 1:numElements) {
-    jitterVector <- append(jitterVector,addJitter(value,seedOffset+i,'','',''))
+#   jitteredValue <- addJitter(value,seedOffset+i,'','','')
+    jitteredValue <- value + value*runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1]
+    jitterVector <- append(jitterVector,jitteredValue)
     # currentSeed  <- seedOffset*SEED + i
   }
 print(paste0("tot vec: ",sum(jitterVector)))
