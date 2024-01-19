@@ -427,20 +427,27 @@ print(paste0("areIdentical: ",areIdentical))
 #' 
 modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
   ForcedMatrix <- forcingData
-  items <- c()
+  speciesOrFleets <- c()
   if (typeData == "Forced Effort") {
-    items <- fleets
+    speciesOrFleets <- fleets
   } else if (typeData == "Forced FRate" || typeData == "Forced Catch") {
-    items <- species 
+    speciesOrFleets <- species 
   } else {
     print(paste0("Error: Found invalid typeData of: ",typeData))
     return(ForcedMatrix)
   }
 
-  for (i in 1:length(items)) {
-    item <- items[i]
+  for (i in 1:length(speciesOrFleets)) {
+    item <- speciesOrFleets[i]
     matrixData           <- ForcedMatrix[,item]
-    matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
+    # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
+    
+    newValues <- c()
+    for (value in matrixData) {
+      newValue.append(value*runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1])
+    }
+    matrixDataWithJitter <- newValues
+    
     ForcedMatrix[,item]  <- matrixDataWithJitter
   }
   return(ForcedMatrix)
