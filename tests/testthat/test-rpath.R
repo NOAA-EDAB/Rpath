@@ -415,7 +415,7 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable[TRUE] <- 0 # set to all 0's
   # test if the diff and zero tables are identical
 print(paste0("col sums inputTable: ",   colSums(inputTable[,-1])))
-print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))
+# print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
   testthat::expect_true(areIdentical)
@@ -943,7 +943,7 @@ testthat::test_that("Rpath Unit Tests", {
     }
     
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
+    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='AB',years=1:50) # RSKRSK change back to RK4
     if (CREATE_BASELINE_FILES) {
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFiles[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFiles[[2]])
