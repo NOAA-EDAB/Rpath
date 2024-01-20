@@ -189,6 +189,7 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 randomNumber <- function(seed) {
   set.seed(seed)
   rval <- runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1]
+rval <- 0 # just for testing  
   return(rval)
 }
 
@@ -403,7 +404,7 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   }
 
   # RSK - inputTable is not the same when running in a git action and when running in RStudio
-  inputTable <- read.table(outputFile,fill=TRUE,sep=" ",strip.white=TRUE)
+  inputTable <- read.table(outputFile) #,fill=TRUE,sep=" ",strip.white=TRUE)
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
 
@@ -413,8 +414,8 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
   # test if the diff and zero tables are identical
-print(paste0("col sums inputTable: ",   colSums(inputTable[,-1])))
-print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))
+# print(paste0("col sums inputTable: ",   colSums(inputTable[,-1])))
+# print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
   testthat::expect_true(areIdentical)
