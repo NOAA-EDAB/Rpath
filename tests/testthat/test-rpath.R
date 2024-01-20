@@ -189,7 +189,6 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
 randomNumber <- function(seed) {
   set.seed(seed)
   rval <- runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1]
-rval <- 0 # just for testing  
   return(rval)
 }
 
