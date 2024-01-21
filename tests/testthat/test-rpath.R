@@ -912,12 +912,13 @@ testthat::test_that("Rpath Unit Tests", {
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
   REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
   setwd(originalWorkingDir)
-  forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
   typeData             <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
-  for (i in 1:length(forcingOriginalData)) {
+  for (i in 1:length(typeData)) {
+    REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
     REcosystem_scene_jitter <- REcosystem_scene
     theTypeData  <- typeData[[i]]
+    forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
     ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,forcingOriginalData[[i]],REcosystem_scene_jitter)
 # print(paste0("num cols: ",ncol(ForcedMatrix)))
 # print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
@@ -950,10 +951,18 @@ testthat::test_that("Rpath Unit Tests", {
                                    REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter,
                                    REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter,
                                    REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
-      BaselineJitterFiles  <- list(BaselineABForcedMigOutBiomassJitter,  BaselineABForcedMigOutCatchJitter,  BaselineABForcedMigOutGearCatchJitter,
-                                   BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
-      CurrentJitterFiles   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter,
-                                   CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
+      BaselineJitterFiles  <- list(BaselineABForcedMigOutBiomassJitter,
+                                   BaselineABForcedMigOutCatchJitter,
+                                   BaselineABForcedMigOutGearCatchJitter,
+                                   BaselineRK4ForcedMigOutBiomassJitter,
+                                   BaselineRK4ForcedMigOutCatchJitter,
+                                   BaselineRK4ForcedMigOutGearCatchJitter)
+      CurrentJitterFiles   <- list(CurrentABForcedMigOutBiomassJitter,
+                                   CurrentABForcedMigOutCatchJitter,
+                                   CurrentABForcedMigOutGearCatchJitter,
+                                   CurrentRK4ForcedMigOutBiomassJitter,
+                                   CurrentRK4ForcedMigOutCatchJitter,
+                                   CurrentRK4ForcedMigOutGearCatchJitter)
     }
     
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
