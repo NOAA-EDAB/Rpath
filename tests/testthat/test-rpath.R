@@ -913,9 +913,8 @@ testthat::test_that("Rpath Unit Tests", {
   setwd(originalWorkingDir)
   typeData             <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
+  REcosystem_scene_jitter <- REcosystem_scene
   for (i in 1:length(typeData)) {
-    #REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50) #RSKRSK
-    REcosystem_scene_jitter <- REcosystem_scene
     theTypeData  <- typeData[[i]]
     forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
     ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,forcingOriginalData[[i]],REcosystem_scene_jitter)
