@@ -915,8 +915,8 @@ testthat::test_that("Rpath Unit Tests", {
   forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
   typeData             <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
-  REcosystem_scene_jitter <- REcosystem_scene
   for (i in 1:length(forcingOriginalData)) {
+    REcosystem_scene_jitter <- REcosystem_scene
     theTypeData  <- typeData[[i]]
     ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,forcingOriginalData[[i]],REcosystem_scene_jitter)
 # print(paste0("num cols: ",ncol(ForcedMatrix)))
