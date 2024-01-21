@@ -910,12 +910,11 @@ testthat::test_that("Rpath Unit Tests", {
   }
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
-  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
   setwd(originalWorkingDir)
   typeData             <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
   for (i in 1:length(typeData)) {
-    REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
+    #REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50) #RSKRSK
     REcosystem_scene_jitter <- REcosystem_scene
     theTypeData  <- typeData[[i]]
     forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
