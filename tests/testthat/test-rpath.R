@@ -908,7 +908,6 @@ testthat::test_that("Rpath Unit Tests", {
     runTestEqual(inc(runNum),"out_Catch",     "Compare baseline AB to Current RK4 for OutCatch",      REcosystem_Baseline_AB_OutCatch,     REcosystem_Current_RK4_OutCatch)
     runTestEqual(inc(runNum),"out_Gear_Catch","Compare baseline AB to Current RK4 for OutGearCatch",  REcosystem_Baseline_AB_OutGearCatch, REcosystem_Current_RK4_OutGearCatch)
   }
-return()
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
   setwd(originalWorkingDir)
@@ -923,7 +922,7 @@ return()
 # print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
-      REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
+      # REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix # RSKRSK
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,
                                    REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,
                                    REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
@@ -943,7 +942,7 @@ return()
                                    CurrentRK4ForcedBioOutCatchJitter,
                                    CurrentRK4ForcedBioOutGearCatchJitter)
     } else if (theTypeData == 'Forced Migrate') {
-      REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix
+      # REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix # RSKRSK
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,
                                    REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,
                                    REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
@@ -972,7 +971,6 @@ return()
       write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFiles[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFiles[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFiles[[6]])
-
 # print(paste0("col sums REcosystem_RK4_Current_Jitter:  ",colSums(REcosystem_RK4_Current_Jitter$out_Biomass[,-1])))
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFiles[[1]], species)
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
@@ -982,7 +980,8 @@ return()
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFiles[[6]], species)
     }
   }
-
+return()
+  
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
   setwd(originalWorkingDir)
   REcosystem_scene_stepped <- REcosystem_scene
