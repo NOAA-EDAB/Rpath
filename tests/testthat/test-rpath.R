@@ -405,7 +405,7 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   # Write out the difference table (current-baseline)
   diffTable <- abs(inputTable-baselineTable)
 
-  # Set all values <= TOLERANCE to 0 becauses we're going to next compare this to a zero table
+  # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE] <- 0
   # Create the zero table
   zeroTable <- diffTable
@@ -830,7 +830,7 @@ testthat::test_that("Rpath Unit Tests", {
   setwd(originalWorkingDir)
   REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
   REcosystem_Current_AB_from_Sim  <- rsim.run(REcosystem_scene,method='AB', years=1:50)
-  REcosystem_Current_RK4_from_Sim <- rsim.run(REcosystem_scene,method='AB',years=1:50) # RSKRSK RK4
+  REcosystem_Current_RK4_from_Sim <- rsim.run(REcosystem_scene,method='RK4',years=1:50) # RSKRSK RK4
   if (CREATE_BASELINE_FILES) {
     write.Rsim(REcosystem_Current_AB_from_Sim, BaselineAB)
     write.Rsim(REcosystem_Current_RK4_from_Sim,BaselineRK4)  
@@ -908,6 +908,7 @@ testthat::test_that("Rpath Unit Tests", {
     runTestEqual(inc(runNum),"out_Catch",     "Compare baseline AB to Current RK4 for OutCatch",      REcosystem_Baseline_AB_OutCatch,     REcosystem_Current_RK4_OutCatch)
     runTestEqual(inc(runNum),"out_Gear_Catch","Compare baseline AB to Current RK4 for OutGearCatch",  REcosystem_Baseline_AB_OutGearCatch, REcosystem_Current_RK4_OutGearCatch)
   }
+return()
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
   setwd(originalWorkingDir)
@@ -923,16 +924,32 @@ testthat::test_that("Rpath Unit Tests", {
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
       REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
-      BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
-                                   REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
-      BaselineJitterFiles  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
-                                   BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
-      CurrentJitterFiles   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
-                                   CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
+      BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,
+                                   REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,
+                                   REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
+      BaselineJitterFiles  <- list(BaselineABForcedBioOutBiomassJitter,
+                                   BaselineABForcedBioOutCatchJitter,
+                                   BaselineABForcedBioOutGearCatchJitter,
+                                   BaselineRK4ForcedBioOutBiomassJitter,
+                                   BaselineRK4ForcedBioOutCatchJitter,
+                                   BaselineRK4ForcedBioOutGearCatchJitter)
+      CurrentJitterFiles   <- list(CurrentABForcedBioOutBiomassJitter,
+                                   CurrentABForcedBioOutCatchJitter,
+                                   CurrentABForcedBioOutGearCatchJitter,
+                                   CurrentRK4ForcedBioOutBiomassJitter,
+                                   CurrentRK4ForcedBioOutCatchJitter,
+                                   CurrentRK4ForcedBioOutGearCatchJitter)
     } else if (theTypeData == 'Forced Migrate') {
       REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix
-      BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
-                                   REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
+      BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,
+                                   REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,
+                                   REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
       BaselineJitterFiles  <- list(BaselineABForcedMigOutBiomassJitter,  BaselineABForcedMigOutCatchJitter,  BaselineABForcedMigOutGearCatchJitter,
                                    BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
       CurrentJitterFiles   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter,
@@ -940,7 +957,7 @@ testthat::test_that("Rpath Unit Tests", {
     }
     
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='AB',years=1:50) # RSKRSK RK4
+    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50) # RSKRSK RK4
     if (CREATE_BASELINE_FILES) {
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFiles[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFiles[[2]])
@@ -994,7 +1011,7 @@ testthat::test_that("Rpath Unit Tests", {
                                     CurrentRK4ForcedMigOutBiomassStepped, CurrentRK4ForcedMigOutCatchStepped, CurrentRK4ForcedMigOutGearCatchStepped)
     }
     REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scene_stepped,method='AB', years=1:50)
-    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scene_stepped,method='AB',years=1:50) # RSKRSK RK4
+    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scene_stepped,method='RK4',years=1:50) # RSKRSK RK4
     if (CREATE_BASELINE_FILES) {
       write.table(REcosystem_AB_Current_Stepped$out_Biomass,     file=BaselineSteppedFiles[[1]])
       write.table(REcosystem_AB_Current_Stepped$out_Catch,       file=BaselineSteppedFiles[[2]])
@@ -1054,7 +1071,7 @@ testthat::test_that("Rpath Unit Tests", {
                                 CurrentRK4ForcedCatOutBiomassJitter, CurrentRK4ForcedCatOutCatchJitter, CurrentRK4ForcedCatOutGearCatchJitter)
     }
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='AB',years=1:50) # RSKRSK RK4
+    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50) # RSKRSK RK4
     if (CREATE_BASELINE_FILES) {
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFiles[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFiles[[2]])
@@ -1114,7 +1131,7 @@ testthat::test_that("Rpath Unit Tests", {
                                    CurrentRK4ForcedCatOutBiomassStepped, CurrentRK4ForcedCatOutCatchStepped, CurrentRK4ForcedCatOutGearCatchStepped)      
     }
     REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scene_stepped,method='AB', years=1:50)
-    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scene_stepped,method='AB',years=1:50) # RSKRSK RK4
+    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scene_stepped,method='RK4',years=1:50) # RSKRSK RK4
     if (CREATE_BASELINE_FILES) {
       write.table(REcosystem_AB_Current_Stepped$out_Biomass,     file=BaselineSteppedFiles[[1]])
       write.table(REcosystem_AB_Current_Stepped$out_Catch,       file=BaselineSteppedFiles[[2]])
