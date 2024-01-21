@@ -209,7 +209,7 @@ createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylab
   jitterVector <- c()
   totRandVal <- 0
   totValue <- 0
-  value <- round(value,10) # RSK rounding to 10th decimal place
+  # value <- round(value,10) # RSK rounding to 10th decimal place
   for (i in 1:numElements) {
 #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
     randVal <- randomNumber(seedOffset+i)
