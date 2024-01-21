@@ -910,6 +910,7 @@ testthat::test_that("Rpath Unit Tests", {
   }
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
+  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
   setwd(originalWorkingDir)
   forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
   typeData             <- list('Forced Bio','Forced Migrate')
@@ -922,7 +923,7 @@ testthat::test_that("Rpath Unit Tests", {
 # print(paste0("*** Sums: ",names(ForcedMatrix),colSums(ForcedMatrix)))    
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
-      # REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix # RSKRSK
+      REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,
                                    REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,
                                    REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
@@ -942,7 +943,7 @@ testthat::test_that("Rpath Unit Tests", {
                                    CurrentRK4ForcedBioOutCatchJitter,
                                    CurrentRK4ForcedBioOutGearCatchJitter)
     } else if (theTypeData == 'Forced Migrate') {
-      # REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix # RSKRSK
+      REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,
                                    REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,
                                    REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
