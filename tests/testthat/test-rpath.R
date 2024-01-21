@@ -917,19 +917,19 @@ testthat::test_that("Rpath Unit Tests", {
     REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
     REcosystem_scene_jitter <- copy(REcosystem_scene)
     theTypeData  <- typeData[[i]]
-    forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
-    ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,
-                                        forcingOriginalData[[i]],REcosystem_scene_jitter)
+    # forcingOriginalData  <- list(REcosystem_scene$forcing$ForcedBio, REcosystem_scene$forcing$ForcedMigrate)
+    # ForcedMatrix <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,
+    #                                     forcingOriginalData[[i]],REcosystem_scene_jitter)
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
-      # REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
+    # REcosystem_scene_jitter$forcing$ForcedBio <- ForcedMatrix
       REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,
                                                                        REcosystem_scene$forcing$ForcedBio,REcosystem_scene_jitter)
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
       BaselineJitterFiles  <- list(BaselineABForcedBioOutBiomassJitter, BaselineABForcedBioOutCatchJitter, BaselineABForcedBioOutGearCatchJitter, BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
       CurrentJitterFiles   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter, CurrentABForcedBioOutGearCatchJitter,CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
     } else if (theTypeData == 'Forced Migrate') {
-      # REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix
+    # REcosystem_scene_jitter$forcing$ForcedMigrate <- ForcedMatrix
       REcosystem_scene_jitter$forcing$ForcedMigrate <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,
                                                                            REcosystem_scene$forcing$ForcedMigrate,REcosystem_scene_jitter)
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
