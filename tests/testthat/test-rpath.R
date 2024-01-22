@@ -923,9 +923,9 @@ testthat::test_that("Rpath Unit Tests", {
                                      REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
   REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
   REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
-  runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
-  runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
-  runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
+  runTest(inc(runNum),"out_Biomass",    'Forced Bio', "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
+  runTest(inc(runNum),"out_Catch",      'Forced Bio', "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
+  runTest(inc(runNum),"out_Gear_Catch", 'Forced Bio', "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
 return() 
   
   # --- end test
