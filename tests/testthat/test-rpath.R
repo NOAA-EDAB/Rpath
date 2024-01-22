@@ -935,8 +935,10 @@ testthat::test_that("Rpath Unit Tests", {
       CurrentJitterFiles   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter, CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
     }
     
-    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
+    REcosystem_scene_jitter_save  <- copy(REcosystem_scene_jitter)
+    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter_save, method='AB', years=1:50)
+    REcosystem_scene_jitter_save  <- copy(REcosystem_scene_jitter)
+    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter_save, method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFiles[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFiles[[2]])
