@@ -474,7 +474,7 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
 #' @return Returns a matrix that's been updated withe the forced data
 #' 
 modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,scene) {
-  ForcedMatrix <- forcingData
+  ForcedMatrix <- copy(forcingData)
   numMonths <- nrow(ForcedMatrix)
   if (typeData == "Forced Bio" || typeData == "Forced Migrate") {
     for (i in 1:length(species)) {
