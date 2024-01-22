@@ -925,8 +925,8 @@ testthat::test_that("Rpath Unit Tests", {
                                        BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
       CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
                                        CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
-      # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
-      # REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
+      modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
+      REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
