@@ -920,7 +920,7 @@ testthat::test_that("Rpath Unit Tests", {
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
       modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
-      REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
+      REcosystem_scene_jitter$forcing$ForcedBio <- round(modifiedBio,10)
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
                                    REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
       BaselineJitterFiles  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
