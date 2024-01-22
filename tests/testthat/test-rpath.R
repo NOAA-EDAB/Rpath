@@ -910,15 +910,16 @@ testthat::test_that("Rpath Unit Tests", {
   }
   
   # Test RK4 Forced Bio - begin test
-  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
-  REcosystem_scene_jitter <- copy(REcosystem_scene)
-  modNum <- modNum + 1
+
   BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
                                    REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
   BaselineJitterFilenames  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
                                    BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
   CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
                                    CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
+  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
+  REcosystem_scene_jitter <- copy(REcosystem_scene)
+  modNum <- modNum + 1
   modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered','Forced Bio',
                                      REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
   REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
