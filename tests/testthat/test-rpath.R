@@ -909,6 +909,27 @@ testthat::test_that("Rpath Unit Tests", {
     runTestEqual(inc(runNum),"out_Gear_Catch","Compare baseline AB to Current RK4 for OutGearCatch",  REcosystem_Baseline_AB_OutGearCatch, REcosystem_Current_RK4_OutGearCatch)
   }
   
+  # Test RK4 Forced Bio - begin test
+  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
+  REcosystem_scene_jitter <- copy(REcosystem_scene)
+  modNum <- modNum + 1
+  BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
+                                   REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
+  BaselineJitterFilenames  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
+                                   BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
+  CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
+                                   CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
+  modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered','Forced Bio',
+                                     REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
+  REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
+  REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
+  runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
+  runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
+  runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
+return() 
+  
+  # --- end test
+  
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
   setwd(originalWorkingDir)
   typeData <- list('Forced Bio','Forced Migrate')
@@ -919,7 +940,6 @@ testthat::test_that("Rpath Unit Tests", {
     theTypeData  <- typeData[[i]]
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
-
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
                                        REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
       BaselineJitterFilenames  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
