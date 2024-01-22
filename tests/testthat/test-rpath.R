@@ -372,13 +372,13 @@ runTestSilent <- function(runNum,desc,params,name) {
 #' @param baseAlg : The baseline algorithm used (currently AB or RK4)
 #' @param currAlg : The current algorithm used (currently AB or RK4) 
 #' @param baselineTable : table that represents the baseline run's data
-#' @param outputTable : table that represents the current run's data
-#' @param outputFile : The output file to contain the current run's data
+#' @param currentDataFrame : The data frame that contains the current run's data
+#' @param currentFilename : The name of the file that contains the current run's data
 #' @param species : A vector of fish species
 #'
 #' @return No return value
 #' 
-runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineTable,outputTable,outputFile,species) {
+runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentDataFrame,currentFilename,species) {
  
   # N.B. Remove this if statement once missing column headings issue is fixed
   if (tableName == 'out_Gear_Catch') {
@@ -394,16 +394,16 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   }
   if (tableName == 'out_Biomass' || tableName == 'out_Catch') { # || tableName == 'out_Gear_Catch') {
     if (PLOT_TYPE == 1) {
-      plotResultsSuperimposed(baselineTable, outputTable, baseAlg, currAlg, tableName, forcedData, forcedType, species)
+      plotResultsSuperimposed(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
     } else {
-      plotResultsDifference(baselineTable, outputTable, baseAlg, currAlg, tableName, forcedData, forcedType, species)
+      plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
     }
   }
 
-  # RSK - inputTable is not the same when running in a git action and when running in RStudio
-  inputTable <- read.table(outputFile) #,fill=TRUE,sep=" ",strip.white=TRUE)
+  # RSK - inputDataFrame is not the same when running in a git action and when running in RStudio
+  inputDataFrame <- read.table(currentFilename) #,fill=TRUE,sep=" ",strip.white=TRUE)
   # Write out the difference table (current-baseline)
-  diffTable <- abs(inputTable-baselineTable)
+  diffTable <- abs(inputDataFrame-baselineDataFrame)
 
   # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE] <- 0
@@ -411,8 +411,8 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
   # test if the diff and zero tables are identical
-print(paste0("col sums inputTable: ",   colSums(inputTable[,-1])))
-# print(paste0("col sums baselineTable: ",colSums(baselineTable[,-1])))
+print(paste0("col sums inputDataFrame: ",   colSums(inputDataFrame[,-1])))
+# print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
   testthat::expect_true(areIdentical)
@@ -921,47 +921,50 @@ testthat::test_that("Rpath Unit Tests", {
     if (theTypeData == 'Forced Bio') {
       modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
       REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
-      BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
-                                   REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
-      BaselineJitterFiles  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
-                                   BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
-      CurrentJitterFiles   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
-                                   CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
-    } else if (theTypeData == 'Forced Migrate') {
-      modifiedMigrate <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedMigrate,REcosystem_scene_jitter)
-      REcosystem_scene_jitter$forcing$ForcedMigrate <- modifiedMigrate
-      BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
-      BaselineJitterFiles  <- list(BaselineABForcedMigOutBiomassJitter, BaselineABForcedMigOutCatchJitter, BaselineABForcedMigOutGearCatchJitter, BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
-      CurrentJitterFiles   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter, CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
+      BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
+                                       REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
+      BaselineJitterFilenames  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
+                                       BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
+      CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
+                                       CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
     }
+    # else if (theTypeData == 'Forced Migrate') {
+    #   modifiedMigrate <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData, REcosystem_scene_jitter$forcing$ForcedMigrate, REcosystem_scene_jitter)
+    #   REcosystem_scene_jitter$forcing$ForcedMigrate <- modifiedMigrate
+    #   BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
+    #                                    REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
+    #   BaselineJitterFilenames  <- list(BaselineABForcedMigOutBiomassJitter,  BaselineABForcedMigOutCatchJitter,  BaselineABForcedMigOutGearCatchJitter,
+    #                                    BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
+    #   CurrentJitterFilenames   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter,
+    #                                    CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
+    # }
     
-    # RSKRSK put these lines back in
     # REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
-      # write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFiles[[1]])
-      # write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFiles[[2]])
-      # write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=BaselineJitterFiles[[3]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFiles[[4]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFiles[[5]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFiles[[6]])
+      write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
+      write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
+      write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=BaselineJitterFilenames[[3]])
+      write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFilenames[[4]])
+      write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFilenames[[5]])
+      write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFilenames[[6]])
     } else {
-      # write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFiles[[1]])
-      # write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFiles[[2]])
-      # write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFiles[[3]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFiles[[4]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFiles[[5]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFiles[[6]])
-# print(paste0("col sums REcosystem_RK4_Current_Jitter:  ",colSums(REcosystem_RK4_Current_Jitter$out_Biomass[,-1])))
-      # runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFiles[[1]], species)
-      # runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFiles[[2]], species)
-      # runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFiles[[3]], species)
-      runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFiles[[4]], species)
-      runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFiles[[5]], species)
-      runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterTables[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFiles[[6]], species)
+      # write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
+      # write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
+      # write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
+      write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
+      write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFilenames[[5]])
+      write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
+      # runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFilenames[[1]], species)
+      # runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFilenames[[2]], species)
+      # runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFilenames[[3]], species)
+      runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
+      runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
+      runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
+return()      
     }
   }
-return()
+
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
