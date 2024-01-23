@@ -928,10 +928,40 @@ testthat::test_that("Rpath Unit Tests", {
       
       # Looks like this is causing the error...try re-writing it
       #
-      REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=5)
+      # ForcedBio <- copy(REcosystem_scene_jitter$forcing$ForcedBio)
+      # for (i in 1:length(species)) {
+        # aSpecies <- species[[i]]
+        #numMonths <- nrow(ForcedBio)
+        # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
+        #speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+        # ForcedBio[,aSpecies] <- speciesBiomass + i
+        # ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
+      #}
+      # REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBio)
+    
+      # RSK - this line doesn't error out
+      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
+      
+      for (ii in 1:length(species)) {
+        aSpecies <- species[[ii]]
+        numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+        jitterVector <- c()
+        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+        # value <- round(value,10) # RSK rounding to 10th decimal place
+        for (j in 1:numMonths) {
+          #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
+          randVal <- randomNumber(modNum*i*SEED_OFFSET+j)
+          jitteredValue <- speciesBiomass * (1.0 + randVal)
+          jitterVector <- append(jitterVector,jitteredValue)
+        }
+        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
+      }
+      
       
       # Refactoring these lines
-      # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
+      # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
+      
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
@@ -969,10 +999,10 @@ testthat::test_that("Rpath Unit Tests", {
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
-return()      
     }
   }
-
+return()      
+  
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
