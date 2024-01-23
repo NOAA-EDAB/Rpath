@@ -482,7 +482,7 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
 # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
       speciesBiomass <- scene$start_state$Biomass[aSpecies]
       if (modifyType == 'Jittered') {
-        ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(speciesBiomass,numMonths,modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
+        ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
       } else {
         stepType <- ((i-1)%%3)+1 # Only current step types are 1, 2, or 3
         ForcedMatrix[,aSpecies] <- stepifyBiomass(numMonths,speciesBiomass,stepType,"Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
@@ -925,8 +925,23 @@ testthat::test_that("Rpath Unit Tests", {
                                        BaselineRK4ForcedBioOutBiomassJitter, BaselineRK4ForcedBioOutCatchJitter, BaselineRK4ForcedBioOutGearCatchJitter)
       CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
                                        CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
-      modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
-      REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
+      
+      # Looks like this is causing the error...try re-writing it
+      #
+      ForcedBio <- REcosystem_scene_jitter$forcing$ForcedBio
+      for (i in 1:length(species)) {
+        aSpecies <- species[[i]]
+        numMonths <- nrow(ForcedBio)
+        # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
+        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+        ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
+      }
+      REcosystem_scene_jitter$forcing$ForcedBio <- ForcedBio
+      
+      # Refactoring these lines
+      # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
+      
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
