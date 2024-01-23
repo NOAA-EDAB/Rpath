@@ -913,10 +913,10 @@ testthat::test_that("Rpath Unit Tests", {
   setwd(originalWorkingDir)
   typeData <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
-  for (i in 1:length(typeData)) {
+  for (typeNum in 1:length(typeData)) {
     REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
     REcosystem_scene_jitter <- copy(REcosystem_scene)
-    theTypeData  <- typeData[[i]]
+    theTypeData  <- typeData[[typeNum]]
     modNum <- modNum + 1
     if (theTypeData == 'Forced Bio') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
@@ -926,31 +926,18 @@ testthat::test_that("Rpath Unit Tests", {
       CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
                                        CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
       
-      # Looks like this is causing the error...try re-writing it
-      #
-      # ForcedBio <- copy(REcosystem_scene_jitter$forcing$ForcedBio)
-      # for (i in 1:length(species)) {
-        # aSpecies <- species[[i]]
-        #numMonths <- nrow(ForcedBio)
-        # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
-        #speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        # ForcedBio[,aSpecies] <- speciesBiomass + i
-        # ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
-      #}
-      # REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBio)
     
-      # RSK - this line doesn't error out
+      # RSK - This line does work
       # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
       
-      for (ii in 1:length(species)) {
-        aSpecies <- species[[ii]]
+      # RSK - These lines don't work
+      for (aSpecies in species) {
         numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
         jitterVector <- c()
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        # value <- round(value,10) # RSK rounding to 10th decimal place
-        for (j in 1:numMonths) {
+        for (month in 1:numMonths) {
           #   jitteredValue <- addJitter(value,seedOffset+i,'','','')
-          randVal <- randomNumber(modNum*i*SEED_OFFSET+j)
+          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+month)
           jitteredValue <- speciesBiomass * (1.0 + randVal)
           jitterVector <- append(jitterVector,jitteredValue)
         }
@@ -958,7 +945,7 @@ testthat::test_that("Rpath Unit Tests", {
       }
       
       
-      # Refactoring these lines
+      # RSK - These lines don't work
       # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
       # REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
       
