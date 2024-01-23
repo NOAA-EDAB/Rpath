@@ -928,23 +928,10 @@ testthat::test_that("Rpath Unit Tests", {
       
       # Looks like this is causing the error...try re-writing it
       #
-print(paste0("Forced Bio is of type: ",class(REcosystem_scene_jitter$forcing$ForcedBio)))
-      # ForcedBio <- copy(REcosystem_scene_jitter$forcing$ForcedBio)
-      oldnames <- colnames(REcosystem_scene_jitter$forcing$ForcedBio)
-      ForcedBioMatrix = matrix(,nrow=nrow(REcosystem_scene_jitter$forcing$ForcedBio),
-                                ncol=ncol(REcosystem_scene_jitter$forcing$ForcedBio))
-      colnames(ForcedBioMatrix) <- oldnames
-# print(colnames(ForcedBio))
-      for (i in 1:length(species)) {
-        aSpecies <- species[[i]]
-        ForcedBioMatrix[,aSpecies] <- 10
-      }
-      REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBioMatrix)
+      REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=5)
       
       # Refactoring these lines
-      # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
-      # REcosystem_scene_jitter$forcing$ForcedBio <- modifiedBio
-      
+      # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
