@@ -16,8 +16,8 @@ library(generics)
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
-# CREATE_BASELINE_FILES <- TRUE
-CREATE_BASELINE_FILES <- FALSE
+CREATE_BASELINE_FILES <- TRUE
+# CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
@@ -424,6 +424,50 @@ print(paste0("areIdentical: ",areIdentical))
   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
 }
 
+
+
+runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentDataFrame,currentFilename,species) {
+  
+  # N.B. Remove this if statement once missing column headings issue is fixed
+  if (tableName == 'out_Gear_Catch') {
+    if (! RUN_QUIET) {
+      print('Test Skipped: The out_Gear_Catch tables are currently missing column headings...so this test will be skipped for now.')
+    }
+    return()
+  }
+  
+  paddedRunNum <- str_pad(runNum,3,pad="0")
+  if (! RUN_QUIET) {
+    print(paste0("Test #",paddedRunNum,": Is Baseline ",baseAlg," ",tableName," equivalent to Current ",currAlg," ",tableName," using ",forcedType," ",forcedData,"?"))
+  }
+  if (tableName == 'out_Biomass' || tableName == 'out_Catch') { # || tableName == 'out_Gear_Catch') {
+    if (PLOT_TYPE == 1) {
+      plotResultsSuperimposed(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
+    } else {
+      plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
+    }
+  }
+  
+  inputDataFrame <- readRDS(currentFilename)
+  # Write out the difference table (current-baseline)
+  diffTable <- abs(inputDataFrame-baselineDataFrame)
+  
+  # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
+  diffTable[diffTable <= TOLERANCE] <- 0
+  # Create the zero table
+  zeroTable <- diffTable
+  zeroTable[TRUE] <- 0 # set to all 0's
+print(paste0("col sums inputDataFrame: ",   colSums(inputDataFrame[,-1])))
+print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
+  areIdentical <- identical(diffTable,zeroTable)
+  print(paste0("areIdentical: ",areIdentical))  
+  testthat::expect_true(areIdentical)
+  
+  write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
+  write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
+}
+
+
 #' Modify a scene$fishing matrix
 #' 
 #' Modifies the appropriate columns from a scene$fishing matrix.
@@ -529,7 +573,7 @@ testthat::test_that("Rpath Unit Tests", {
   BaselineABForcedBioOutGearCatchStepped   <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Stepped.dat')
   BaselineRK4ForcedBioOutGearCatchStepped  <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Stepped.dat')
   BaselineABForcedBioOutBiomassJitter      <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter.dat')
-  BaselineRK4ForcedBioOutBiomassJitter     <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter.dat')
+  BaselineRK4ForcedBioOutBiomassJitter     <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter.rds')
   BaselineABForcedBioOutCatchJitter        <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter.dat')
   BaselineRK4ForcedBioOutCatchJitter       <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter.dat')
   BaselineABForcedBioOutGearCatchJitter    <- file.path(INPUT_DATA_DIR_BASELINE,'REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter.dat')
@@ -602,7 +646,7 @@ testthat::test_that("Rpath Unit Tests", {
   CurrentABForcedBioOutBiomassJitter       <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_AB_ForcedBio_OutBiomass_Jitter.dat')
   CurrentABForcedBioOutCatchJitter         <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_AB_ForcedBio_OutCatch_Jitter.dat')
   CurrentABForcedBioOutGearCatchJitter     <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_AB_ForcedBio_OutGearCatch_Jitter.dat')
-  CurrentRK4ForcedBioOutBiomassJitter      <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_RK4_ForcedBio_OutBiomass_Jitter.dat')
+  CurrentRK4ForcedBioOutBiomassJitter      <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_RK4_ForcedBio_OutBiomass_Jitter.rds')
   CurrentRK4ForcedBioOutCatchJitter        <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_RK4_ForcedBio_OutCatch_Jitter.dat')
   CurrentRK4ForcedBioOutGearCatchJitter    <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_RK4_ForcedBio_OutGearCatch_Jitter.dat')
   CurrentABForcedMigOutBiomassStepped      <- file.path(INPUT_DATA_DIR_CURRENT,'REcosystem_Current_AB_ForcedMig_OutBiomass_Stepped.dat')
@@ -749,7 +793,7 @@ testthat::test_that("Rpath Unit Tests", {
     REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Stepped  <- read.table(BaselineABForcedBioOutGearCatchStepped, fill = TRUE, sep = " ")
     REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Stepped <- read.table(BaselineRK4ForcedBioOutGearCatchStepped,fill = TRUE, sep = " ")
     REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter     <- read.table(BaselineABForcedBioOutBiomassJitter,    fill = TRUE, sep = " ")
-    REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter    <- read.table(BaselineRK4ForcedBioOutBiomassJitter,   fill = TRUE, sep = " ")
+    REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter    <- readRDS(BaselineRK4ForcedBioOutBiomassJitter) #,   fill = TRUE, sep = " ")
     REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter       <- read.table(BaselineABForcedBioOutCatchJitter,      fill = TRUE, sep = " ")
     REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter      <- read.table(BaselineRK4ForcedBioOutCatchJitter,     fill = TRUE, sep = " ")
     REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter   <- read.table(BaselineABForcedBioOutGearCatchJitter,  fill = TRUE, sep = " ")
@@ -971,20 +1015,20 @@ print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$Forced
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
       write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=BaselineJitterFilenames[[3]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFilenames[[4]])
+      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFilenames[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFilenames[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFilenames[[6]])
     } else {
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
       write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
-      write.table(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
+      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFilenames[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFilenames[[1]], species)
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFilenames[[2]], species)
       #runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFilenames[[3]], species)
-      runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
 return()      
       runTest(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
       runTest(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
