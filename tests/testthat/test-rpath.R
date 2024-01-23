@@ -934,7 +934,8 @@ testthat::test_that("Rpath Unit Tests", {
         numMonths <- nrow(ForcedBio)
         # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
+        ForcedBio[,aSpecies] <- speciesBiomass + i
+        # ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
       }
       REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBio)
       
