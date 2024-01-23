@@ -16,8 +16,8 @@ library(generics)
 
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
-CREATE_BASELINE_FILES <- TRUE
-# CREATE_BASELINE_FILES <- FALSE
+# CREATE_BASELINE_FILES <- TRUE
+CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR <- 5
@@ -45,7 +45,7 @@ if (! dir.exists(INPUT_DATA_DIR_CURRENT)) {
 if (! dir.exists(OUTPUT_DATA_DIR)) {
   dir.create(OUTPUT_DATA_DIR,recursive=TRUE)
 }
-
+ 
 #' Stepify Effort
 #' 
 #' This function stepifies a vector of effort data. Stepification consists of modifying (i.e., multiplying) the
