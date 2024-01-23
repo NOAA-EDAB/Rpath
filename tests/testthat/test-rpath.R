@@ -928,23 +928,23 @@ testthat::test_that("Rpath Unit Tests", {
       
     
       # RSK - This line doesn't fail in git actions (it's just not the exact logic I need)
-      set.seed(modNum*typeNum*SEED_OFFSET)
-      REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
+      # set.seed(modNum*typeNum*SEED_OFFSET)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
       
       # RSK - These lines don't work
-#       numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
-#       for (aSpecies in species) {
-#         jitterVector <- c()
-#         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-#         for (month in 1:numMonths) {
-#           randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+month)
-#           jitteredValue <- speciesBiomass * (1.0 + randVal)
-#           jitterVector <- append(jitterVector,jitteredValue)
-#         }
-# print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
-#         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
-# print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))        
-#       }
+      numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+      for (aSpecies in species) {
+        jitterVector <- c()
+        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+        for (month in 1:numMonths) {
+          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+month)
+          jitteredValue <- speciesBiomass * (1.0 + randVal)
+          jitterVector <- append(jitterVector,jitteredValue)
+        }
+print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
+        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
+print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
+      }
       
       
       # RSK - These (original) lines don't work in git actions
