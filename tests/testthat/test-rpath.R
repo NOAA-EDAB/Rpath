@@ -928,16 +928,18 @@ testthat::test_that("Rpath Unit Tests", {
       
       # Looks like this is causing the error...try re-writing it
       #
-      ForcedBio <- copy(REcosystem_scene_jitter$forcing$ForcedBio)
+print(paste0("Forced Bio is of type: ",class(REcosystem_scene_jitter$forcing$ForcedBio)))
+      # ForcedBio <- copy(REcosystem_scene_jitter$forcing$ForcedBio)
+      oldnames <- colnames(REcosystem_scene_jitter$forcing$ForcedBio)
+      ForcedBioMatrix = matrix(,nrow=nrow(REcosystem_scene_jitter$forcing$ForcedBio),
+                                ncol=ncol(REcosystem_scene_jitter$forcing$ForcedBio))
+      colnames(ForcedBioMatrix) <- oldnames
+# print(colnames(ForcedBio))
       for (i in 1:length(species)) {
         aSpecies <- species[[i]]
-        numMonths <- nrow(ForcedBio)
-        # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
-        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        ForcedBio[,aSpecies] <- speciesBiomass + i
-        # ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
+        ForcedBioMatrix[,aSpecies] <- 10
       }
-      REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBio)
+      REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBioMatrix)
       
       # Refactoring these lines
       # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
