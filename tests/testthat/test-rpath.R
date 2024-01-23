@@ -928,7 +928,7 @@ testthat::test_that("Rpath Unit Tests", {
       
       # Looks like this is causing the error...try re-writing it
       #
-      ForcedBio <- REcosystem_scene_jitter$forcing$ForcedBio
+      ForcedBio <- copy(REcosystem_scene_jitter$forcing$ForcedBio)
       for (i in 1:length(species)) {
         aSpecies <- species[[i]]
         numMonths <- nrow(ForcedBio)
@@ -936,7 +936,7 @@ testthat::test_that("Rpath Unit Tests", {
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
         ForcedBio[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(theTypeData,' with ','Jittered',' Noise - ',aSpecies))
       }
-      REcosystem_scene_jitter$forcing$ForcedBio <- ForcedBio
+      REcosystem_scene_jitter$forcing$ForcedBio <- copy(ForcedBio)
       
       # Refactoring these lines
       # modifiedBio <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData,REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter)
