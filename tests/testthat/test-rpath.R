@@ -982,10 +982,12 @@ testthat::test_that("Rpath Unit Tests", {
       numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
       numSpecies <- length(species)
       speciesNum <- 0
+      totSpeciesBiomass <- 0
+      totRandVal <- 0
       for (aSpecies in species) {
         jitterVector <- c()
-        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        totRandVal <- 0
+        speciesBiomass <- round(REcosystem_scene_jitter$start_state$Biomass[aSpecies],6) # RKS round here???
+        totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
         for (month in 1:numMonths) {
           randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
           jitteredValue <- speciesBiomass * (1.0 + randVal)
@@ -993,13 +995,13 @@ testthat::test_that("Rpath Unit Tests", {
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-print(paste0("speciesBiomass: [",aSpecies,"]: ",speciesBiomass))        
-print(paste0("tot rand val [",aSpecies,"]: ",totRandVal))        
-print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
+     
+# print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
-print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
+# print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
       }
-
+print(paste0("tot speciesBiomass: ",totSpeciesBiomass))        
+print(paste0("tot rand val: ",totRandVal))   
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
