@@ -980,16 +980,20 @@ testthat::test_that("Rpath Unit Tests", {
       
       # RSK - These lines don't work
       numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+      numSpecies <- length(species)
+      speciesNum <- 0
       for (aSpecies in species) {
         jitterVector <- c()
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
         totRandVal <- 0
         for (month in 1:numMonths) {
-          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+month+3) # remove +3 RSKRSK
+          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
           jitteredValue <- speciesBiomass * (1.0 + randVal)
           totRandVal <- totRandVal + randVal
           jitterVector <- append(jitterVector,jitteredValue)
         }
+        speciesNum <- speciesNum + 1
+print(paste0("speciesBiomass: [",aSpecies,"]: ",speciesBiomass))        
 print(paste0("tot rand val [",aSpecies,"]: ",totRandVal))        
 print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
