@@ -371,53 +371,53 @@ runTestSilent <- function(runNum,desc,params,name) {
 #'
 #' @return No return value
 #' 
-runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentDataFrame,currentFilename,species) {
- 
-  # N.B. Remove this if statement once missing column headings issue is fixed
-  if (tableName == 'out_Gear_Catch') {
-    if (! RUN_QUIET) {
-      print('Test Skipped: The out_Gear_Catch tables are currently missing column headings...so this test will be skipped for now.')
-    }
-    return()
-  }
-
-  paddedRunNum <- str_pad(runNum,3,pad="0")
-  if (! RUN_QUIET) {
-    print(paste0("Test #",paddedRunNum,": Is Baseline ",baseAlg," ",tableName," equivalent to Current ",currAlg," ",tableName," using ",forcedType," ",forcedData,"?"))
-  }
-  if (tableName == 'out_Biomass' || tableName == 'out_Catch') { # || tableName == 'out_Gear_Catch') {
-    if (PLOT_TYPE == 1) {
-      plotResultsSuperimposed(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
-    } else {
-      plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
-    }
-  }
-
-  # RSK - currentDataFrame is not the same when running in a git action and when running in RStudio
-  currentDataFrame <- readRDS(currentFilename) #,fill=TRUE,sep=" ",strip.white=TRUE)
-  # Write out the difference table (current-baseline)
-  diffTable <- abs(currentDataFrame-baselineDataFrame)
-
-  # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
-  diffTable[diffTable <= TOLERANCE] <- 0
-  # Create the zero table
-  zeroTable <- diffTable
-  zeroTable[TRUE] <- 0 # set to all 0's
-  # test if the diff and zero tables are identical
-print(paste0("col sums currentDataFrame: ",   colSums(currentDataFrame[,-1])))
-# print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
-  areIdentical <- identical(diffTable,zeroTable)
-print(paste0("areIdentical: ",areIdentical))  
-print("diffTable:")
-print(head(diffTable))
-  testthat::expect_true(areIdentical)
-  # testthat::expect_equal(as.data.frame(diffTable),
-  #                        as.data.frame(zeroTable),
-  #                        tolerance=TOLERANCE) # RSKRSK
-
-  write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
-  write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
-}
+# runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentDataFrame,currentFilename,species) {
+#  
+#   # N.B. Remove this if statement once missing column headings issue is fixed
+#   if (tableName == 'out_Gear_Catch') {
+#     if (! RUN_QUIET) {
+#       print('Test Skipped: The out_Gear_Catch tables are currently missing column headings...so this test will be skipped for now.')
+#     }
+#     return()
+#   }
+# 
+#   paddedRunNum <- str_pad(runNum,3,pad="0")
+#   if (! RUN_QUIET) {
+#     print(paste0("Test #",paddedRunNum,": Is Baseline ",baseAlg," ",tableName," equivalent to Current ",currAlg," ",tableName," using ",forcedType," ",forcedData,"?"))
+#   }
+#   if (tableName == 'out_Biomass' || tableName == 'out_Catch') { # || tableName == 'out_Gear_Catch') {
+#     if (PLOT_TYPE == 1) {
+#       plotResultsSuperimposed(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
+#     } else {
+#       plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
+#     }
+#   }
+# 
+#   # RSK - currentDataFrame is not the same when running in a git action and when running in RStudio
+#   currentDataFrame <- readRDS(currentFilename) #,fill=TRUE,sep=" ",strip.white=TRUE)
+#   # Write out the difference table (current-baseline)
+#   diffTable <- abs(currentDataFrame-baselineDataFrame)
+# 
+#   # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
+#   diffTable[diffTable <= TOLERANCE] <- 0
+#   # Create the zero table
+#   zeroTable <- diffTable
+#   zeroTable[TRUE] <- 0 # set to all 0's
+#   # test if the diff and zero tables are identical
+# print(paste0("col sums currentDataFrame: ",   colSums(currentDataFrame[,-1])))
+# # print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
+#   areIdentical <- identical(diffTable,zeroTable)
+# print(paste0("areIdentical: ",areIdentical))  
+# print("diffTable:")
+# print(head(diffTable))
+#   testthat::expect_true(areIdentical)
+#   # testthat::expect_equal(as.data.frame(diffTable),
+#   #                        as.data.frame(zeroTable),
+#   #                        tolerance=TOLERANCE) # RSKRSK
+# 
+#   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
+#   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
+# }
 
 
 
@@ -452,9 +452,12 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   # Create the zero table
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
-print(paste0("col sums currentDataFrame:  ",colSums(currentDataFrame[,-1])))
-print("---")
-print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
+# print(paste0("col sums currentDataFrame:  ",colSums(currentDataFrame[,-1])))
+# print("---")
+# print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
+print(paste0("SUM of currentDataFrame: ",sum(currentDataFrame)))
+print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))
+print(paste0("SUM of diffTable: ",sum(diffTable)))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
 print("diffTable:")
@@ -995,11 +998,12 @@ testthat::test_that("Rpath Unit Tests", {
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-     
-# print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
+# print("---")     
+# print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[2:4,aSpecies]))
         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
-# print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[1:2,aSpecies]))
+# print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[2:4,aSpecies]))
       }
+print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))      
 print(paste0("tot speciesBiomass: ",totSpeciesBiomass))        
 print(paste0("tot rand val: ",totRandVal))   
     }
