@@ -400,10 +400,10 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
     }
   }
 
-  # RSK - inputDataFrame is not the same when running in a git action and when running in RStudio
-  inputDataFrame <- read.table(currentFilename) #,fill=TRUE,sep=" ",strip.white=TRUE)
+  # RSK - currentDataFrame is not the same when running in a git action and when running in RStudio
+  currentDataFrame <- read.table(currentFilename) #,fill=TRUE,sep=" ",strip.white=TRUE)
   # Write out the difference table (current-baseline)
-  diffTable <- abs(inputDataFrame-baselineDataFrame)
+  diffTable <- abs(currentDataFrame-baselineDataFrame)
 
   # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE] <- 0
@@ -411,10 +411,12 @@ runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,basel
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
   # test if the diff and zero tables are identical
-print(paste0("col sums inputDataFrame: ",   colSums(inputDataFrame[,-1])))
+print(paste0("col sums currentDataFrame: ",   colSums(currentDataFrame[,-1])))
 # print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
+print("diffTable:")
+print(head(diffTable))
   testthat::expect_true(areIdentical)
   # testthat::expect_equal(as.data.frame(diffTable),
   #                        as.data.frame(zeroTable),
@@ -448,16 +450,16 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
     }
   }
   
-  inputDataFrame <- readRDS(currentFilename)
+  currentDataFrame <- readRDS(currentFilename)
   # Write out the difference table (current-baseline)
-  diffTable <- abs(inputDataFrame-baselineDataFrame)
+  diffTable <- abs(currentDataFrame-baselineDataFrame)
   
   # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE] <- 0
   # Create the zero table
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
-print(paste0("col sums inputDataFrame: ",   colSums(inputDataFrame[,-1])))
+print(paste0("col sums currentDataFrame:  ",colSums(currentDataFrame[,-1])))
 print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
   areIdentical <- identical(diffTable,zeroTable)
   print(paste0("areIdentical: ",areIdentical))  
