@@ -17,10 +17,10 @@ library(generics)
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
 # CREATE_BASELINE_FILES <- TRUE
-CREATE_BASELINE_FILES <- FALSE
+CREATE_BASELINE_FILES <- FALSE 
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
-FACTOR <- 5
+FACTOR <- 6
 SEED   <- 1 
 SEED_OFFSET <- 1000
 TOLERANCE <- 1e-5
@@ -985,7 +985,7 @@ testthat::test_that("Rpath Unit Tests", {
         jitterVector <- c()
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
         for (month in 1:numMonths) {
-          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+month)
+          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+month+3) # remove +3 RSKRSK
           jitteredValue <- speciesBiomass * (1.0 + randVal)
           jitterVector <- append(jitterVector,jitteredValue)
         }
@@ -1015,14 +1015,14 @@ print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$Forced
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
       write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=BaselineJitterFilenames[[3]])
-      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFilenames[[4]])
+      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,        file=BaselineJitterFilenames[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFilenames[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFilenames[[6]])
     } else {
       write.table(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
       write.table(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
       write.table(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
-      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
+      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,        file=CurrentJitterFilenames[[4]])
       write.table(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFilenames[[5]])
       write.table(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
       runTest(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFilenames[[1]], species)
