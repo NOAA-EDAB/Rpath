@@ -989,6 +989,9 @@ testthat::test_that("Rpath Unit Tests", {
       speciesNum <- 0
       totSpeciesBiomass <- 0
       totRandVal <- 0
+      mat <- matrix(nrow=numMonths,ncol=ncol(REcosystem_scene_jitter$forcing$ForcedBio)) # ?
+      colnames(mat) <- colnames(REcosystem_scene_jitter$forcing$ForcedBio)               # ?
+      rownames(mat) <- rownames(REcosystem_scene_jitter$forcing$ForcedBio)               # ?
       for (aSpecies in species) {
         jitterVector <- c()
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
@@ -1000,8 +1003,10 @@ testthat::test_that("Rpath Unit Tests", {
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSKRSK problematic line here
+        # REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSKRSK problematic line here
+        mat[,aSpecies] <- jitterVector # ?
       }
+      REcosystem_scene_jitter$forcing$ForcedBio <- mat # ?
       
 print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
 print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
