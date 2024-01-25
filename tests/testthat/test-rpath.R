@@ -421,7 +421,7 @@ runTestSilent <- function(runNum,desc,params,name) {
 
 
 
-runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,unused,currentFilename,species) {
+runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentFilename,species) {
   
   # N.B. Remove this if statement once missing column headings issue is fixed
   if (tableName == 'out_Gear_Catch') {
@@ -980,31 +980,32 @@ testthat::test_that("Rpath Unit Tests", {
       # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
       
       # RSK - This line doesn't fail in git actions (it's just not the exact logic I need)
-      # set.seed(modNum*typeNum*SEED_OFFSET)
-      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
+      set.seed(modNum*typeNum*SEED_OFFSET)
+      REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
       
       # RSK - These lines don't work
-      numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
-      numSpecies <- length(species)
-      speciesNum <- 0
-      totSpeciesBiomass <- 0
-      totRandVal <- 0
-      for (aSpecies in species) {
-        jitterVector <- c()
-        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
-        for (month in 1:numMonths) {
-          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-          jitteredValue <- speciesBiomass * (1.0 + randVal)
-          totRandVal <- totRandVal + randVal
-          jitterVector <- append(jitterVector,jitteredValue)
-        }
-        speciesNum <- speciesNum + 1
-        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
-      }
-print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))      
-print(paste0("tot speciesBiomass: ",totSpeciesBiomass))        
-print(paste0("tot rand val: ",totRandVal))   
+#       numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+#       numSpecies <- length(species)
+#       speciesNum <- 0
+#       totSpeciesBiomass <- 0
+#       totRandVal <- 0
+#       for (aSpecies in species) {
+# print(paste0("processing species: ",aSpecies))        
+#         jitterVector <- c()
+#         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+#         totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
+#         for (month in 1:numMonths) {
+#           randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+#           jitteredValue <- speciesBiomass * (1.0 + randVal)
+#           totRandVal <- totRandVal + randVal
+#           jitterVector <- append(jitterVector,jitteredValue)
+#         }
+#         speciesNum <- speciesNum + 1
+#         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
+#       }
+# print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))      
+# print(paste0("tot speciesBiomass: ",totSpeciesBiomass))        
+# print(paste0("tot rand val: ",totRandVal))   
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
@@ -1036,12 +1037,12 @@ print(paste0("tot rand val: ",totRandVal))
       saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFilenames[[5]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFilenames[[1]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFilenames[[2]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFilenames[[3]], species)
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
 return()
   }
@@ -1098,12 +1099,12 @@ return()
       saveRDS(REcosystem_RK4_Current_Stepped$out_Biomass,    file=CurrentSteppedFiles[[4]])
       saveRDS(REcosystem_RK4_Current_Stepped$out_Catch,      file=CurrentSteppedFiles[[5]])
       saveRDS(REcosystem_RK4_Current_Stepped$out_Gear_Catch, file=CurrentSteppedFiles[[6]])
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "AB", "AB", BaselineSteppedTables[[1]], REcosystem_AB_Current_Stepped$out_Biomass,    CurrentSteppedFiles[[1]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "AB", "AB", BaselineSteppedTables[[2]], REcosystem_AB_Current_Stepped$out_Catch,      CurrentSteppedFiles[[2]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "AB", "AB", BaselineSteppedTables[[3]], REcosystem_AB_Current_Stepped$out_Gear_Catch, CurrentSteppedFiles[[3]], species)
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "RK4","RK4",BaselineSteppedTables[[4]], REcosystem_RK4_Current_Stepped$out_Biomass,   CurrentSteppedFiles[[4]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "RK4","RK4",BaselineSteppedTables[[5]], REcosystem_RK4_Current_Stepped$out_Catch,     CurrentSteppedFiles[[5]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "RK4","RK4",BaselineSteppedTables[[6]], REcosystem_RK4_Current_Stepped$out_Gear_Catch,CurrentSteppedFiles[[6]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "AB", "AB", BaselineSteppedTables[[1]], CurrentSteppedFiles[[1]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "AB", "AB", BaselineSteppedTables[[2]], CurrentSteppedFiles[[2]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "AB", "AB", BaselineSteppedTables[[3]], CurrentSteppedFiles[[3]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "RK4","RK4",BaselineSteppedTables[[4]], CurrentSteppedFiles[[4]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "RK4","RK4",BaselineSteppedTables[[5]], CurrentSteppedFiles[[5]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "RK4","RK4",BaselineSteppedTables[[6]], CurrentSteppedFiles[[6]], species)
     }
   }
   
@@ -1158,12 +1159,12 @@ return()
       saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFiles[[4]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFiles[[5]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFiles[[6]])
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB", "AB",  BaselineJitterTables[[1]], REcosystem_AB_Current_Jitter$out_Biomass,    CurrentJitterFiles[[1]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB", "AB",  BaselineJitterTables[[2]], REcosystem_AB_Current_Jitter$out_Catch,      CurrentJitterFiles[[2]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB", "AB",  BaselineJitterTables[[3]], REcosystem_AB_Current_Jitter$out_Gear_Catch, CurrentJitterFiles[[3]], species)
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4","RK4", BaselineJitterTables[[4]], REcosystem_RK4_Current_Jitter$out_Biomass,   CurrentJitterFiles[[4]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4","RK4", BaselineJitterTables[[5]], REcosystem_RK4_Current_Jitter$out_Catch,     CurrentJitterFiles[[5]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4","RK4", BaselineJitterTables[[6]], REcosystem_RK4_Current_Jitter$out_Gear_Catch,CurrentJitterFiles[[6]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB", "AB",  BaselineJitterTables[[1]], CurrentJitterFiles[[1]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB", "AB",  BaselineJitterTables[[2]], CurrentJitterFiles[[2]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB", "AB",  BaselineJitterTables[[3]], CurrentJitterFiles[[3]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4","RK4", BaselineJitterTables[[4]], CurrentJitterFiles[[4]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4","RK4", BaselineJitterTables[[5]], CurrentJitterFiles[[5]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4","RK4", BaselineJitterTables[[6]], CurrentJitterFiles[[6]], species)
     }
   }
 
@@ -1218,12 +1219,12 @@ return()
       saveRDS(REcosystem_RK4_Current_Stepped$out_Biomass,    file=CurrentSteppedFiles[[4]])
       saveRDS(REcosystem_RK4_Current_Stepped$out_Catch,      file=CurrentSteppedFiles[[5]])
       saveRDS(REcosystem_RK4_Current_Stepped$out_Gear_Catch, file=CurrentSteppedFiles[[6]])
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "AB",  "AB",  BaselineSteppedTables[[1]], REcosystem_AB_Current_Stepped$out_Biomass,     CurrentSteppedFiles[[1]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "AB",  "AB",  BaselineSteppedTables[[2]], REcosystem_AB_Current_Stepped$out_Catch,       CurrentSteppedFiles[[2]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "AB",  "AB",  BaselineSteppedTables[[3]], REcosystem_AB_Current_Stepped$out_Gear_Catch,  CurrentSteppedFiles[[3]], species)
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "RK4", "RK4", BaselineSteppedTables[[4]], REcosystem_RK4_Current_Stepped$out_Biomass,    CurrentSteppedFiles[[4]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "RK4", "RK4", BaselineSteppedTables[[5]], REcosystem_RK4_Current_Stepped$out_Catch,      CurrentSteppedFiles[[5]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "RK4", "RK4", BaselineSteppedTables[[6]], REcosystem_RK4_Current_Stepped$out_Gear_Catch, CurrentSteppedFiles[[6]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "AB",  "AB",  BaselineSteppedTables[[1]], CurrentSteppedFiles[[1]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "AB",  "AB",  BaselineSteppedTables[[2]], CurrentSteppedFiles[[2]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "AB",  "AB",  BaselineSteppedTables[[3]], CurrentSteppedFiles[[3]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Stepped", "RK4", "RK4", BaselineSteppedTables[[4]], CurrentSteppedFiles[[4]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Stepped", "RK4", "RK4", BaselineSteppedTables[[5]], CurrentSteppedFiles[[5]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Stepped", "RK4", "RK4", BaselineSteppedTables[[6]], CurrentSteppedFiles[[6]], species)
     }
   }
   
