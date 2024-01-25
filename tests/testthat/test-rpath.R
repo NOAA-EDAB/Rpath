@@ -989,7 +989,7 @@ testthat::test_that("Rpath Unit Tests", {
       totRandVal <- 0
       for (aSpecies in species) {
         jitterVector <- c()
-        speciesBiomass <- round(REcosystem_scene_jitter$start_state$Biomass[aSpecies],6) # RKS round here???
+        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
         totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
         for (month in 1:numMonths) {
           randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
@@ -998,10 +998,10 @@ testthat::test_that("Rpath Unit Tests", {
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-# print("---")     
-# print(paste0("before: FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[2:4,aSpecies]))
+
+REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
+REcosystem_scene_jitter <- copy(REcosystem_scene)
         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
-# print(paste0("after : FB[",aSpecies,"]: ",REcosystem_scene_jitter$forcing$ForcedBio[2:4,aSpecies]))
       }
 print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))      
 print(paste0("tot speciesBiomass: ",totSpeciesBiomass))        
