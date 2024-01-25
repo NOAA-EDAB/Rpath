@@ -421,7 +421,7 @@ runTestSilent <- function(runNum,desc,params,name) {
 
 
 
-runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentDataFrame,currentFilename,species) {
+runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,unused,currentFilename,species) {
   
   # N.B. Remove this if statement once missing column headings issue is fixed
   if (tableName == 'out_Gear_Catch') {
@@ -435,6 +435,9 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   if (! RUN_QUIET) {
     print(paste0("Test #",paddedRunNum,": Is Baseline ",baseAlg," ",tableName," equivalent to Current ",currAlg," ",tableName," using ",forcedType," ",forcedData,"?"))
   }
+  
+  currentDataFrame <- readRDS(currentFilename)
+  
   if (tableName == 'out_Biomass' || tableName == 'out_Catch') { # || tableName == 'out_Gear_Catch') {
     if (PLOT_TYPE == 1) {
       plotResultsSuperimposed(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
@@ -443,7 +446,7 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
     }
   }
   
-  currentDataFrame <- readRDS(currentFilename)
+  # currentDataFrame <- readRDS(currentFilename)
   # Write out the difference table (current-baseline)
   diffTable <- abs(currentDataFrame-baselineDataFrame)
   
@@ -974,8 +977,7 @@ testthat::test_that("Rpath Unit Tests", {
       
 
       # RSK - These (original) lines don't work in git actions
-      # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(
-      #   modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
       
       # RSK - This line doesn't fail in git actions (it's just not the exact logic I need)
       # set.seed(modNum*typeNum*SEED_OFFSET)
@@ -998,9 +1000,6 @@ testthat::test_that("Rpath Unit Tests", {
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-
-REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
-REcosystem_scene_jitter <- copy(REcosystem_scene)
         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
       }
 print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))      
