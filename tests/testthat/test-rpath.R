@@ -990,7 +990,6 @@ testthat::test_that("Rpath Unit Tests", {
       totSpeciesBiomass <- 0
       totRandVal <- 0
       for (aSpecies in species) {
-print(paste0("processing species: ",aSpecies))
         jitterVector <- c()
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
         totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
@@ -1001,8 +1000,9 @@ print(paste0("processing species: ",aSpecies))
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-        # REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
+        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSKRSK problematic line here
       }
+      
 print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
 print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
 print(paste0("tot rand val: ",totRandVal))
