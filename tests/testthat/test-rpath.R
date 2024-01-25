@@ -980,32 +980,32 @@ testthat::test_that("Rpath Unit Tests", {
       # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
       
       # RSK - This line doesn't fail in git actions (it's just not the exact logic I need)
-      set.seed(modNum*typeNum*SEED_OFFSET)
-      REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
+      # set.seed(modNum*typeNum*SEED_OFFSET)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
       
       # RSK - These lines don't work
-#       numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
-#       numSpecies <- length(species)
-#       speciesNum <- 0
-#       totSpeciesBiomass <- 0
-#       totRandVal <- 0
-#       for (aSpecies in species) {
-# print(paste0("processing species: ",aSpecies))        
-#         jitterVector <- c()
-#         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-#         totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
-#         for (month in 1:numMonths) {
-#           randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-#           jitteredValue <- speciesBiomass * (1.0 + randVal)
-#           totRandVal <- totRandVal + randVal
-#           jitterVector <- append(jitterVector,jitteredValue)
-#         }
-#         speciesNum <- speciesNum + 1
-#         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
-#       }
-# print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))      
-# print(paste0("tot speciesBiomass: ",totSpeciesBiomass))        
-# print(paste0("tot rand val: ",totRandVal))   
+      numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+      numSpecies <- length(species)
+      speciesNum <- 0
+      totSpeciesBiomass <- 0
+      totRandVal <- 0
+      for (aSpecies in species) {
+print(paste0("processing species: ",aSpecies))
+        jitterVector <- c()
+        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+        totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
+        for (month in 1:numMonths) {
+          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+          jitteredValue <- speciesBiomass * (1.0 + randVal)
+          totRandVal <- totRandVal + randVal
+          jitterVector <- append(jitterVector,jitteredValue)
+        }
+        speciesNum <- speciesNum + 1
+        # REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector
+      }
+print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
+print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
+print(paste0("tot rand val: ",totRandVal))
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
