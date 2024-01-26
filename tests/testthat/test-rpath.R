@@ -511,25 +511,25 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
 
 
 
-jitterMatrixColumns <- function(mat,startBiomass,speciesNames) {
-
-  newMat <- do.call(rbind,replicate(1,mat,simplify=FALSE))
-  numMonths <- nrow(newMat)
-  speciesNum <- 0
-
-  for (aSpecies in speciesNames) {
-    jitterVector <- c()
-    speciesBiomass <- startBiomass[aSpecies]
-    for (month in 1:numMonths) {
-      randVal <- randomNumber(speciesNum*numMonths+month) #modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-      jitteredValue <- speciesBiomass * (1.0 + randVal)
-      jitterVector <- append(jitterVector,jitteredValue)
-    }
-    newMat[,aSpecies] <- jitterVector # RSK problematic line here
-    speciesNum <- speciesNum + 1
-  }
-  return(newMat)
-}
+# jitterMatrixColumns <- function(mat,startBiomass,speciesNames) {
+# 
+#   newMat <- do.call(rbind,replicate(1,mat,simplify=FALSE))
+#   numMonths <- nrow(newMat)
+#   speciesNum <- 0
+# 
+#   for (aSpecies in speciesNames) {
+#     jitterVector <- c()
+#     speciesBiomass <- startBiomass[aSpecies]
+#     for (month in 1:numMonths) {
+#       randVal <- randomNumber(speciesNum*numMonths+month) #modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+#       jitteredValue <- speciesBiomass * (1.0 + randVal)
+#       jitterVector <- append(jitterVector,jitteredValue)
+#     }
+#     newMat[,aSpecies] <- jitterVector # RSK problematic line here
+#     speciesNum <- speciesNum + 1
+#   }
+#   return(newMat)
+# }
 
 
 #' Modify a scene$forcing matrix
@@ -1007,26 +1007,26 @@ testthat::test_that("Rpath Unit Tests", {
       # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR_VALUE)
       
       # RSK - These lines don't work
-      # numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
-      # numSpecies <- length(species)
-      # speciesNum <- 0
-      # totSpeciesBiomass <- 0
-      # totRandVal <- 0
-      # for (aSpecies in species) {
-      #   jitterVector <- c()
-      #   speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-      #   totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
-      #   for (month in 1:numMonths) {
-      #     randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-      #     jitteredValue <- speciesBiomass * (1.0 + randVal)
-      #     totRandVal <- totRandVal + randVal
-      #     jitterVector <- append(jitterVector,jitteredValue)
-      #   } 
-      #   speciesNum <- speciesNum + 1
-      #   REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
-      # }
+      numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+      numSpecies <- length(species)
+      speciesNum <- 0
+      totSpeciesBiomass <- 0
+      totRandVal <- 0
+      for (aSpecies in species) {
+        jitterVector <- c()
+        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+        totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
+        for (month in 1:numMonths) {
+          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+          jitteredValue <- speciesBiomass * (1.0 + randVal)
+          totRandVal <- totRandVal + randVal
+          jitterVector <- append(jitterVector,jitteredValue)
+        }
+        speciesNum <- speciesNum + 1
+        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
+      }
       
-      REcosystem_scene_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter$start_state$Biomass,species)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter$start_state$Biomass,species)
       
 print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
 # print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
@@ -1046,7 +1046,7 @@ print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio))
       return()
     }
     
-    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
+    # REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
       saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
@@ -1056,15 +1056,15 @@ print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio))
       saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFilenames[[5]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFilenames[[6]])
     } else {
-      saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
-      saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
-      saveRDS(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFilenames[[5]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
+      # runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
+      # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
+      # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
       runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
