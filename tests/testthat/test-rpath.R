@@ -998,7 +998,7 @@ testthat::test_that("Rpath Unit Tests", {
           jitteredValue <- speciesBiomass * (1.0 + randVal)
           totRandVal <- totRandVal + randVal
           jitterVector <- append(jitterVector,jitteredValue)
-        }
+        } 
         speciesNum <- speciesNum + 1
         REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSKRSK problematic line here
       }
