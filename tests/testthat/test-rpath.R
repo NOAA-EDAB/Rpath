@@ -509,6 +509,29 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
   return(ForcedMatrix) 
 }
 
+
+
+jitterMatrixColumns <- function(mat,startBiomass,speciesNames) {
+
+  newMat <- do.call(rbind,replicate(1,mat,simplify=FALSE))
+  numMonths <- nrow(newMat)
+  speciesNum <- 0
+
+  for (aSpecies in speciesNames) {
+    jitterVector <- c()
+    speciesBiomass <- startBiomass[aSpecies]
+    for (month in 1:numMonths) {
+      randVal <- randomNumber(speciesNum*numMonths+month) #modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+      jitteredValue <- speciesBiomass * (1.0 + randVal)
+      jitterVector <- append(jitterVector,jitteredValue)
+    }
+    newMat[,aSpecies] <- jitterVector # RSK problematic line here
+    speciesNum <- speciesNum + 1
+  }
+  return(newMat)
+}
+
+
 #' Modify a scene$forcing matrix
 #' 
 #' Modifies the appropriate columns from a scene$forcing matrix.
@@ -984,28 +1007,30 @@ testthat::test_that("Rpath Unit Tests", {
       # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR_VALUE)
       
       # RSK - These lines don't work
-      numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
-      numSpecies <- length(species)
-      speciesNum <- 0
-      totSpeciesBiomass <- 0
-      totRandVal <- 0
-      for (aSpecies in species) {
-        jitterVector <- c()
-        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
-        for (month in 1:numMonths) {
-          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-          jitteredValue <- speciesBiomass * (1.0 + randVal)
-          totRandVal <- totRandVal + randVal
-          jitterVector <- append(jitterVector,jitteredValue)
-        } 
-        speciesNum <- speciesNum + 1
-        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSKRSK problematic line here
-      }
+      # numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
+      # numSpecies <- length(species)
+      # speciesNum <- 0
+      # totSpeciesBiomass <- 0
+      # totRandVal <- 0
+      # for (aSpecies in species) {
+      #   jitterVector <- c()
+      #   speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
+      #   totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
+      #   for (month in 1:numMonths) {
+      #     randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+      #     jitteredValue <- speciesBiomass * (1.0 + randVal)
+      #     totRandVal <- totRandVal + randVal
+      #     jitterVector <- append(jitterVector,jitteredValue)
+      #   } 
+      #   speciesNum <- speciesNum + 1
+      #   REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
+      # }
+      
+      REcosystem_scene_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter$start_state$Biomass,species)
       
 print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
-print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
-print(paste0("tot rand val: ",totRandVal))
+# print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
+# print(paste0("tot rand val: ",totRandVal))
     }
     else if (theTypeData == 'Forced Migrate') {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
