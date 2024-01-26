@@ -13,10 +13,10 @@ library(rlist)
 CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
-FACTOR <- 6
-SEED   <- 1 
+FACTOR_VALUE <- 6
+SEED_VALUE   <- 1 
 SEED_OFFSET <- 1000
-TOLERANCE <- 1e-5
+TOLERANCE_VALUE <- 1e-5
 RUN_QUIET <- TRUE
 JITTER_AMOUNT_PCT <- 1 # This is 1% jitter
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
@@ -167,12 +167,12 @@ stepifyBiomass <- function(numMonths,biomass,type=1,xlabel,ylabel,title) {
 #' @return Returns the jittered matrix
 #' 
 addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
-  set.seed(seedOffset) # *SEED)
+  set.seed(seedOffset) # *SEED_VALUE)
   # From jitter() doc: If amount == 0, jitter returns factor * z/50, where
   # z = max(x0) - min(x), aka the range. So if factor=5 and amount=0, jitter()
   # returns a random value within a tenth of the range.
   
-  jitteredMatrix <- jitter(matrix,factor=FACTOR,amount=NULL)
+  jitteredMatrix <- jitter(matrix,factor=FACTOR_VALUE,amount=NULL)
   if (xlabel != '' && ylabel != '' & title != '') {
     # plot(jitteredMatrix,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)    
   } 
@@ -343,7 +343,7 @@ runTestEqual <- function(runNum,tableName,desc,baselineTable,currentTable) {
   if (! RUN_QUIET) {
     print(paste0("Test #",paddedRunNum,": ",desc))
   }
-  testthat::expect_equal(baselineTable,currentTable,tolerance=TOLERANCE)
+  testthat::expect_equal(baselineTable,currentTable,tolerance=TOLERANCE_VALUE)
 }
 
 runTestSilent <- function(runNum,desc,params,name) {
@@ -398,8 +398,8 @@ runTestSilent <- function(runNum,desc,params,name) {
 #   # Write out the difference table (current-baseline)
 #   diffTable <- abs(currentDataFrame-baselineDataFrame)
 # 
-#   # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
-#   diffTable[diffTable <= TOLERANCE] <- 0
+#   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
+#   diffTable[diffTable <= TOLERANCE_VALUE] <- 0
 #   # Create the zero table
 #   zeroTable <- diffTable
 #   zeroTable[TRUE] <- 0 # set to all 0's
@@ -413,7 +413,7 @@ runTestSilent <- function(runNum,desc,params,name) {
 #   testthat::expect_true(areIdentical)
 #   # testthat::expect_equal(as.data.frame(diffTable),
 #   #                        as.data.frame(zeroTable),
-#   #                        tolerance=TOLERANCE) # RSKRSK
+#   #                        tolerance=TOLERANCE_VALUE) # RSKRSK
 # 
 #   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
 #   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
@@ -450,8 +450,8 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   # Write out the difference table (current-baseline)
   diffTable <- abs(currentDataFrame-baselineDataFrame)
   
-  # Set all values <= TOLERANCE to 0 because we're going to next compare this to a zero table
-  diffTable[diffTable <= TOLERANCE] <- 0
+  # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
+  diffTable[diffTable <= TOLERANCE_VALUE] <- 0
   # Create the zero table
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
@@ -498,10 +498,10 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
   for (i in 1:length(speciesOrFleets)) {
     item <- speciesOrFleets[i]
     vectorData           <- ForcedMatrix[,item] 
-    # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
+    # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED_VALUE+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
     newVectorWithJitter <- c()
     for (value in vectorData) {
-      jitteredValue <- value + value*randomNumber(modNum*SEED_OFFSET*SEED+i)
+      jitteredValue <- value + value*randomNumber(modNum*SEED_OFFSET*SEED_VALUE+i)
       newVectorWithJitter <- append(newVectorWithJitter,jitteredValue)
     }
     ForcedMatrix[,item]  <- newVectorWithJitter
@@ -981,7 +981,7 @@ testthat::test_that("Rpath Unit Tests", {
       
       # RSK - This line doesn't fail in git actions (it's just not the exact logic I need)
       # set.seed(modNum*typeNum*SEED_OFFSET)
-      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR)
+      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR_VALUE)
       
       # RSK - These lines don't work
       numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
