@@ -1014,8 +1014,6 @@ testthat::test_that("Rpath Unit Tests", {
       speciesNum <- 0
       totSpeciesBiomass <- 0
       totRandVal <- 0
-REco <- rpath(REco.params, eco.name = 'R Ecosystem') # an Rpath object
-REcosystem_scene_jitter <- rsim.scenario(REco, REco.params, 1:50)
       for (aSpecies in species) {
         jitterVector <- c()
         speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
@@ -1027,7 +1025,7 @@ REcosystem_scene_jitter <- rsim.scenario(REco, REco.params, 1:50)
           jitterVector <- append(jitterVector,jitteredValue)
         }
         speciesNum <- speciesNum + 1
-        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
+        # RExcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
       }
       }
       # REcosystem_scene_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter$start_state$Biomass,species)
