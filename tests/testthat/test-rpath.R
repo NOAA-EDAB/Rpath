@@ -1034,42 +1034,42 @@ print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio))
 # print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
 # print(paste0("tot rand val: ",totRandVal))
     }
-    else if (theTypeData == 'Forced Migrate') {
-      BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
-                                       REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
-      BaselineJitterFilenames  <- list(BaselineABForcedMigOutBiomassJitter,  BaselineABForcedMigOutCatchJitter,  BaselineABForcedMigOutGearCatchJitter,
-                                       BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
-      CurrentJitterFilenames   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter,
-                                       CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
-      modifiedMigrate <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData, REcosystem_scene_jitter$forcing$ForcedMigrate, REcosystem_scene_jitter)
-      REcosystem_scene_jitter$forcing$ForcedMigrate <- modifiedMigrate
-    } else {
-      print(paste0("Error: Unknown data type: ",theTypeData))
-      return()
-    }
+    # else if (theTypeData == 'Forced Migrate') {
+    #   BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
+    #                                    REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
+    #   BaselineJitterFilenames  <- list(BaselineABForcedMigOutBiomassJitter,  BaselineABForcedMigOutCatchJitter,  BaselineABForcedMigOutGearCatchJitter,
+    #                                    BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
+    #   CurrentJitterFilenames   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter,
+    #                                    CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
+    #   modifiedMigrate <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData, REcosystem_scene_jitter$forcing$ForcedMigrate, REcosystem_scene_jitter)
+    #   REcosystem_scene_jitter$forcing$ForcedMigrate <- modifiedMigrate
+    # } else {
+    #   print(paste0("Error: Unknown data type: ",theTypeData))
+    #   return()
+    # }
     
-    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
+    # REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
-      saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
-      saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
-      saveRDS(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=BaselineJitterFilenames[[3]])
-      saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFilenames[[4]])
-      saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFilenames[[5]])
-      saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFilenames[[6]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=BaselineJitterFilenames[[3]])
+      # saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=BaselineJitterFilenames[[4]])
+      # saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=BaselineJitterFilenames[[5]])
+      # saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=BaselineJitterFilenames[[6]])
     } else {
-      saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
-      saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
-      saveRDS(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=CurrentJitterFilenames[[1]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=CurrentJitterFilenames[[2]])
+      # saveRDS(REcosystem_AB_Current_Jitter$out_Gear_Catch,  file=CurrentJitterFilenames[[3]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Biomass,    file=CurrentJitterFilenames[[4]])
       saveRDS(REcosystem_RK4_Current_Jitter$out_Catch,      file=CurrentJitterFilenames[[5]])
-      saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
-      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
+      # saveRDS(REcosystem_RK4_Current_Jitter$out_Gear_Catch, file=CurrentJitterFilenames[[6]])
+      # runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
+      # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
+      # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
       runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
-      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
+      # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
 if (CREATE_BASELINE_FILES == FALSE) {
 return()
