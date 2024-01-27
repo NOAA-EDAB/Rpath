@@ -1041,10 +1041,13 @@ print(paste0("tot rand val: ",totRandVal))
       return()
     }
 print(paste0("SUM $ForcedBio before AB:  ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
+print(paste0("SUM $ForcedMigrate before AB:  ", sum(REcosystem_scene_jitter$forcing$ForcedMigrate)))
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
 print(paste0("SUM $ForcedBio before RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
+print(paste0("SUM $ForcedMigrate before RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedMigrate)))
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
 print(paste0("SUM $ForcedBio after  RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))    
+print(paste0("SUM $ForcedMigrate after  RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedMigrate)))    
     if (CREATE_BASELINE_FILES) {
       saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
       saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
