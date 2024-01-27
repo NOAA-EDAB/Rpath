@@ -577,7 +577,7 @@ testthat::test_that("Rpath Unit Tests", {
   CurrentSteppedFiles   <- list()
   fleets  <- c('Trawlers','Midwater','Dredgers')
   species <- c('OtherGroundfish','Megabenthos','Seals','JuvRoundfish1','AduRoundfish1')
-  originalWorkingDir <- getwd();
+  # originalWorkingDir <- getwd();
   modNum <- 1
   runNum <- 0
 
@@ -892,7 +892,7 @@ testthat::test_that("Rpath Unit Tests", {
   # sink()
 
   # Save current Rpath run summary data
-  setwd(originalWorkingDir)
+  # setwd(originalWorkingDir)
   RpathObjSummary <- if (CREATE_BASELINE_FILES) BaselineRpathObjSummary else CurrentRpathObjSummary
   # saveRDS(summary(REco),file=RpathObjSummary)
   sink(RpathObjSummary)
@@ -900,7 +900,7 @@ testthat::test_that("Rpath Unit Tests", {
   sink()
 
   # Save current Rpath sim run data for AB and RK4
-  setwd(originalWorkingDir)
+  # setwd(originalWorkingDir)
   REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
   REcosystem_Current_AB_from_Sim  <- rsim.run(REcosystem_scene,method='AB', years=1:50)
   REcosystem_Current_RK4_from_Sim <- rsim.run(REcosystem_scene,method='RK4',years=1:50) # RSKRSK RK4
@@ -984,7 +984,7 @@ testthat::test_that("Rpath Unit Tests", {
   }
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
-  setwd(originalWorkingDir)
+  # setwd(originalWorkingDir)
   typeData <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
   for (typeNum in 1:length(typeData)) {
@@ -1078,7 +1078,7 @@ return()
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
-  setwd(originalWorkingDir)
+  # setwd(originalWorkingDir)
   REcosystem_scene_stepped <- REcosystem_scene
   typeData             <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene_stepped$forcing$ForcedBio)
@@ -1136,7 +1136,7 @@ return()
   }
   
   print("------------------ Forced Effort Tests (Jitter) ------------------")
-  setwd(originalWorkingDir)
+  # setwd(originalWorkingDir)
   numMonths <- nrow(REcosystem_scene$fishing$ForcedEffort)
   REcosystem_scene_jitter <- REcosystem_scene
   fishingOriginalData  <- list(REcosystem_scene$fishing$ForcedEffort, REcosystem_scene$fishing$ForcedFRate, REcosystem_scene$fishing$ForcedCatch)
@@ -1197,7 +1197,7 @@ return()
 
   
   print("------------------ Forced Effort Tests (Stepped) ------------------")
-  setwd(originalWorkingDir)
+  # setwd(originalWorkingDir)
   numMonths <- nrow(REcosystem_scene$fishing$ForcedEffort)
   REcosystem_scene_stepped <- REcosystem_scene
   fishingOriginalData  <- list(REcosystem_scene$fishing$ForcedEffort, REcosystem_scene$fishing$ForcedFRate, REcosystem_scene$fishing$ForcedCatch)
