@@ -568,6 +568,14 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
 inc <- function(value) eval.parent(substitute(value <- value + 1))
 
 
+printSceneStats <- function(msg,scenario) {
+  print("- - -")
+  print(paste0(msg,", forcing$ForcedBio:     ",sum(scenario$forcing$ForcedBio)))
+  print(paste0(msg,", forcing$ForcedMigrate: ",sum(scenario$forcing$ForcedMigrate)))
+  print(paste0(msg,", start_state$Biomass:   ",sum(scenario$start_state$Biomass)))
+}
+
+
 testthat::test_that("Rpath Unit Tests", {
   BaselineJitterTables  <- list()
   BaselineJitterFiles   <- list()
@@ -1040,14 +1048,11 @@ print(paste0("tot rand val: ",totRandVal))
       print(paste0("Error: Unknown data type: ",theTypeData))
       return()
     }
-print(paste0("SUM $ForcedBio before AB:  ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
-print(paste0("SUM $ForcedMigrate before AB:  ", sum(REcosystem_scene_jitter$forcing$ForcedMigrate)))
+printSceneStats("before AB",REcosystem_scene_jitter)
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-print(paste0("SUM $ForcedBio before RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
-print(paste0("SUM $ForcedMigrate before RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedMigrate)))
+printSceneStats("after  AB",REcosystem_scene_jitter)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
-print(paste0("SUM $ForcedBio after  RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))    
-print(paste0("SUM $ForcedMigrate after  RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedMigrate)))    
+printSceneStats("after RK4",REcosystem_scene_jitter)
     if (CREATE_BASELINE_FILES) {
       saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
       saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
