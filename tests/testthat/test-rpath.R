@@ -577,7 +577,6 @@ testthat::test_that("Rpath Unit Tests", {
   CurrentSteppedFiles   <- list()
   fleets  <- c('Trawlers','Midwater','Dredgers')
   species <- c('OtherGroundfish','Megabenthos','Seals','JuvRoundfish1','AduRoundfish1')
-  # originalWorkingDir <- getwd();
   modNum <- 1
   runNum <- 0
 
@@ -892,7 +891,6 @@ testthat::test_that("Rpath Unit Tests", {
   # sink()
 
   # Save current Rpath run summary data
-  # setwd(originalWorkingDir)
   RpathObjSummary <- if (CREATE_BASELINE_FILES) BaselineRpathObjSummary else CurrentRpathObjSummary
   # saveRDS(summary(REco),file=RpathObjSummary)
   sink(RpathObjSummary)
@@ -900,7 +898,6 @@ testthat::test_that("Rpath Unit Tests", {
   sink()
 
   # Save current Rpath sim run data for AB and RK4
-  # setwd(originalWorkingDir)
   REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
   REcosystem_Current_AB_from_Sim  <- rsim.run(REcosystem_scene,method='AB', years=1:50)
   REcosystem_Current_RK4_from_Sim <- rsim.run(REcosystem_scene,method='RK4',years=1:50) # RSKRSK RK4
@@ -984,7 +981,6 @@ testthat::test_that("Rpath Unit Tests", {
   }
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
-  # setwd(originalWorkingDir)
   typeData <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
   for (typeNum in 1:length(typeData)) {
@@ -1028,7 +1024,6 @@ testthat::test_that("Rpath Unit Tests", {
       }
       # REcosystem_scene_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter$start_state$Biomass,species)
       
-print(paste0("SUM $ForcedBio: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
 print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
 print(paste0("tot rand val: ",totRandVal))
     }
@@ -1045,9 +1040,11 @@ print(paste0("tot rand val: ",totRandVal))
       print(paste0("Error: Unknown data type: ",theTypeData))
       return()
     }
-    
+print(paste0("SUM $ForcedBio before AB:  ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
+print(paste0("SUM $ForcedBio before RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
+print(paste0("SUM $ForcedBio after  RK4: ", sum(REcosystem_scene_jitter$forcing$ForcedBio)))    
     if (CREATE_BASELINE_FILES) {
       saveRDS(REcosystem_AB_Current_Jitter$out_Biomass,     file=BaselineJitterFilenames[[1]])
       saveRDS(REcosystem_AB_Current_Jitter$out_Catch,       file=BaselineJitterFilenames[[2]])
@@ -1078,7 +1075,6 @@ return()
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
-  # setwd(originalWorkingDir)
   REcosystem_scene_stepped <- REcosystem_scene
   typeData             <- list('Forced Bio','Forced Migrate')
   numMonths <- nrow(REcosystem_scene_stepped$forcing$ForcedBio)
@@ -1136,7 +1132,6 @@ return()
   }
   
   print("------------------ Forced Effort Tests (Jitter) ------------------")
-  # setwd(originalWorkingDir)
   numMonths <- nrow(REcosystem_scene$fishing$ForcedEffort)
   REcosystem_scene_jitter <- REcosystem_scene
   fishingOriginalData  <- list(REcosystem_scene$fishing$ForcedEffort, REcosystem_scene$fishing$ForcedFRate, REcosystem_scene$fishing$ForcedCatch)
@@ -1197,7 +1192,6 @@ return()
 
   
   print("------------------ Forced Effort Tests (Stepped) ------------------")
-  # setwd(originalWorkingDir)
   numMonths <- nrow(REcosystem_scene$fishing$ForcedEffort)
   REcosystem_scene_stepped <- REcosystem_scene
   fishingOriginalData  <- list(REcosystem_scene$fishing$ForcedEffort, REcosystem_scene$fishing$ForcedFRate, REcosystem_scene$fishing$ForcedCatch)
