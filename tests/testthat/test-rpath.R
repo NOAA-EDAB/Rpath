@@ -13,9 +13,9 @@ library(rlist)
 CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
-FACTOR_VALUE <- 6
+FACTOR_VALUE <- 5
 SEED_VALUE   <- 1 
-SEED_OFFSET <- 1000
+SEED_OFFSET <- 2000
 TOLERANCE_VALUE <- 1e-5
 RUN_QUIET <- TRUE
 JITTER_AMOUNT_PCT <- 1 # This is 1% jitter
