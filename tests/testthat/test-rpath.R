@@ -452,7 +452,8 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   diffTable <- abs(currentDataFrame-baselineDataFrame)
   
   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
-  diffTable[diffTable <= TOLERANCE_VALUE] <- 0
+  # diffTable[diffTable <= TOLERANCE_VALUE] <- 0
+  
   # Create the zero table
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
@@ -466,6 +467,10 @@ print(paste0("SUM of diffTable: ",sum(diffTable)))
 print(paste0("areIdentical: ",areIdentical))  
 print("diffTable:")
 print(head(diffTable))
+print("currentDataFrame:")
+print(head(currentDataFrame))
+print("baselineDataFrame:")
+print(head(baselineDataFrame))
   testthat::expect_true(areIdentical)
   
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
