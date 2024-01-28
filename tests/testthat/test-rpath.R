@@ -449,10 +449,9 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
     }
   }
  
-  print(paste0("SUM of currentDataFrame: ",sum(currentDataFrame)))
+  print(paste0("SUM of currentDataFrame: ", sum(currentDataFrame)))
   print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))
   
-  # currentDataFrame <- readRDS(currentFilename)
   # Write out the difference table (current-baseline)
   diffTable <- abs(currentDataFrame-baselineDataFrame)
   
