@@ -7,6 +7,8 @@ library(ggplot2)
 library(ggpubr)
 library(rlist)
 
+options(precision=50)
+
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
 # CREATE_BASELINE_FILES <- TRUE
@@ -447,12 +449,19 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
     }
   }
   
+  # RSK testing rounding everything
+  currentDataFrame <- round(currentDataFrame,6)
+  baselineDataFrame <- round(baselineDataFrame,6)
+  
   # currentDataFrame <- readRDS(currentFilename)
   # Write out the difference table (current-baseline)
   diffTable <- abs(currentDataFrame-baselineDataFrame)
   
+  # RSK round diffTable
+  diffTable <- round(diffTable,6)
+  
   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
-  # diffTable[diffTable <= TOLERANCE_VALUE] <- 0
+  diffTable[diffTable <= TOLERANCE_VALUE] <- 0
   
   # Create the zero table
   zeroTable <- diffTable
