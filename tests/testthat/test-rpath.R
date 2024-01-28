@@ -407,8 +407,8 @@ runTestSilent <- function(runNum,desc,params,name) {
 #   zeroTable <- diffTable
 #   zeroTable[TRUE] <- 0 # set to all 0's
 #   # test if the diff and zero tables are identical
-# print(paste0("col sums currentDataFrame: ",   colSums(currentDataFrame[,-1])))
-# # print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
+# print(paste0("col sums currentDataFrame: ",   colSums(currentDataFrame)))
+# # print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame)))
 #   areIdentical <- identical(diffTable,zeroTable)
 # print(paste0("areIdentical: ",areIdentical))  
 # print("diffTable:")
@@ -451,15 +451,15 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
  
 print(paste0("SUM of currentDataFrame: ", sum(currentDataFrame)))
 print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))
-  
   # Write out the difference table (current-baseline)
   diffTable <- abs(currentDataFrame-baselineDataFrame)
-print(paste0("Col 1 sums diffTable:  ",colSums(diffTable[,-1])))
+print(paste0("Col 1 sums diffTable:  ",colSums(diffTable)))
 print(paste0("SUM 1 of diffTable: ",sum(diffTable)))
-  
+print(paste0("col names diffTable: ",colnames(diffTable)))
+
   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE_VALUE] <- 0
-print(paste0("Col 2 sums diffTable:  ",colSums(diffTable[,-1])))
+print(paste0("Col 2 sums diffTable:  ",colSums(diffTable)))
 print(paste0("SUM 2 of diffTable: ",sum(diffTable)))
 
   # Create the zero table
@@ -467,9 +467,9 @@ print(paste0("SUM 2 of diffTable: ",sum(diffTable)))
   zeroTable[TRUE] <- 0 # set to all 0's
 print(paste0("SUM 2 of zeroTable: ",sum(zeroTable)))
   
-# print(paste0("col sums currentDataFrame:  ",colSums(currentDataFrame[,-1])))
+# print(paste0("col sums currentDataFrame:  ",colSums(currentDataFrame)))
 # print("---")
-# print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
+# print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame)))
 
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
