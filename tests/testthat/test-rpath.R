@@ -459,9 +459,6 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
       if (diffTable[i,j] <= TOLERANCE_VALUE) {
         diffTable[i,j] <- 0
       }
-      if (j == 13) {
-        print(paste0(i,", ",currentDataFrame[i,j],", ",baselineDataFrame[i,j],", ",diffTable[i,j]))
-      }
     }
   }
 
@@ -479,6 +476,9 @@ print(paste0("SUM of zeroTable:         ",sum(zeroTable)))
 print(paste0("Col sums currentDataFrame:  ",colSums(currentDataFrame)))
 print(paste0("Col sums baselineDataFrame: ",colSums(baselineDataFrame)))
 print(paste0("Col sums diffTable:         ",colSums(diffTable)))
+print(paste0("Sum currentDataFrame col=17: ", sum(currentDataFrame[,17])))
+print(paste0("Sum baselineDataFrame col=17: ", sum(baselineDataFrame[,17])))
+print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))
 
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
