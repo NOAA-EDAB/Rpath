@@ -459,6 +459,9 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
       if (diffTable[i,j] <= TOLERANCE_VALUE) {
         diffTable[i,j] <- 0
       }
+      if (j == 13) {
+        print(paste0(i,", ",currentDataFrame[i,j],", ",baselineDataFrame[i,j],", ",diffTable[i,j]))
+      }
     }
   }
 
@@ -1109,7 +1112,7 @@ printStatsSimulation("1 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
 printStatsSimulation("2 current AB  : ",REcosystem_AB_Current_Jitter)
 printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
-      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
+      # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
 if (CREATE_BASELINE_FILES == FALSE) {
