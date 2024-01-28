@@ -469,6 +469,14 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   zeroTable <- diffTable
   zeroTable[TRUE] <- 0 # set to all 0's
   
+  sumDiffTable <- 0
+  sumColsCurr = colSums(currentDataFrame)
+  sumColsBase = colSums(baselineDataFrame)
+  for (i in 1:ncol(currentDataFrame)) {
+    sumDiffTable <- sumDiffTable + abs(sumColsCurr[i]-sumColsBase[i])
+  }
+  print(paste0("***sumDiffTable: ",sumDiffTable))
+  
 print(paste0("SUM of currentDataFrame: ", sum(currentDataFrame)))
 print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))
 print(paste0("SUM of diffTable:         ",sum(diffTable)))
