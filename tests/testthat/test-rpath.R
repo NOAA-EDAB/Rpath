@@ -448,29 +448,24 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
       plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
     }
   }
-  
-  # RSK testing rounding everything
-  currentDataFrame <- round(currentDataFrame,6)
-  baselineDataFrame <- round(baselineDataFrame,6)
+ 
+  print(paste0("SUM of currentDataFrame: ",sum(currentDataFrame)))
+  print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))
   
   # currentDataFrame <- readRDS(currentFilename)
   # Write out the difference table (current-baseline)
   diffTable <- abs(currentDataFrame-baselineDataFrame)
   
-  # RSK round diffTable
-  diffTable <- round(diffTable,6)
-  
   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
   diffTable[diffTable <= TOLERANCE_VALUE] <- 0
   
   # Create the zero table
-  zeroTable <- diffTable
+  zeroTable <- copy(diffTable)
   zeroTable[TRUE] <- 0 # set to all 0's
 # print(paste0("col sums currentDataFrame:  ",colSums(currentDataFrame[,-1])))
 # print("---")
 # print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame[,-1])))
-print(paste0("SUM of currentDataFrame: ",sum(currentDataFrame)))
-print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))
+
 print(paste0("SUM of diffTable: ",sum(diffTable)))
   areIdentical <- identical(diffTable,zeroTable)
 print(paste0("areIdentical: ",areIdentical))  
@@ -1093,8 +1088,8 @@ printStatsSimulation("1 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter
       # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
-printStatsSimulation("2 current AB  out_Biomass: ",REcosystem_AB_Current_Jitter)
-printStatsSimulation("2 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter)
+printStatsSimulation("2 current AB  : ",REcosystem_AB_Current_Jitter)
+printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
       runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
