@@ -448,12 +448,22 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
       plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
     }
   }
-
+    
   # Write out the difference table (current-baseline)
-  diffTable <- abs(currentDataFrame-baselineDataFrame)
+  # diffTable <- abs(currentDataFrame-baselineDataFrame)
+  diffTable <- currentDataFrame
+  diffTable[TRUE] <- 0
+  for (i in 1:nrow(currentDataFrame)) {
+    for (j in 1:ncol(currentDataFrame)) {
+      diffTable[i,j] <- abs(currentDataFrame[i,j] - baselineDataFrame[i,j])
+      if (diffTable[i,j] <= TOLERANCE_VALUE) {
+        diffTable[i,j] <- 0
+      }
+    }
+  }
 
   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
-  diffTable[diffTable <= TOLERANCE_VALUE] <- 0
+  # diffTable[diffTable <= TOLERANCE_VALUE] <- 0
 
   # Create the zero table
   zeroTable <- diffTable
