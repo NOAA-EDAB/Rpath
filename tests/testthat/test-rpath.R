@@ -461,9 +461,10 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
       diffTable[i,j] <- abs(currentDataFrame[i,j] - baselineDataFrame[i,j])
       if (diffTable[i,j] <= TOLERANCE_VALUE) {
         diffTable[i,j] <- 0
-      } else {
-        print(paste0("-> diffTable[",i,",",j,"]: ",diffTable[i,j]))
-      }
+      } 
+      # else {
+      #   print(paste0("-> diffTable[",i,",",j,"]: ",diffTable[i,j]))
+      # }
     }
   }
 
