@@ -452,8 +452,10 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   # Write out the difference table (current-baseline)
   # diffTable <- abs(currentDataFrame-baselineDataFrame)
   # diffTable <- currentDataFrame
-  diffTable <- matrix(nrow=nrow(currentDataFrame),ncol=ncol(currentDataFrame))
-  diffTable[TRUE] <- 0
+  numRows <- nrow(currentDataFrame)
+  numCols <- ncol(currentDataFrame)
+  diffTable <- matrix(nrow=numRows,ncol=numCols)
+  # diffTable[TRUE] <- 0
   for (i in 1:nrow(currentDataFrame)) {
     for (j in 1:ncol(currentDataFrame)) {
       diffTable[i,j] <- abs(currentDataFrame[i,j] - baselineDataFrame[i,j])
@@ -467,8 +469,7 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   # diffTable[diffTable <= TOLERANCE_VALUE] <- 0
 
   # Create the zero table
-  zeroTable <- diffTable
-  zeroTable[TRUE] <- 0 # set to all 0's
+  zeroTable <- matrix(0,nrow=numRows,ncol=numCols)
   
   sumDiffTable <- 0
   sumColsCurr = colSums(currentDataFrame)
@@ -487,7 +488,7 @@ print(paste0("areIdentical: ",areIdentical))
 # print(paste0("SUM of currentDataFrame: ", sum(currentDataFrame)))            # ok
 # print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))           # ok
 print(paste0("SUM of diffTable:         ",sum(diffTable)))                   # not ok
-# print(paste0("SUM of zeroTable:         ",sum(zeroTable)))                   # ok
+print(paste0("SUM of zeroTable:         ",sum(zeroTable)))                   # ok
 # print(paste0("Col sums currentDataFrame:  ",colSums(currentDataFrame)))      # ok
 # print(paste0("Col sums baselineDataFrame: ",colSums(baselineDataFrame)))     # ok
 print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # not ok
@@ -496,7 +497,7 @@ print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # n
 print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))                 # not ok
 
 # areIdentical <- identical(diffTable,zeroTable)                             # not ok
-print(paste0("2 areIdentical: ",areIdentical))
+print(paste0("*** Are they identical diffTable and zeroTable: ",identical(diffTable,zeroTable)))
 # print("diffTable:")
 # print(head(diffTable))
 # print("currentDataFrame:")
@@ -1130,11 +1131,11 @@ print(paste0("tot rand val: ",totRandVal))
       # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
+if (CREATE_BASELINE_FILES == FALSE) {
+  return()
+}
   }
 
-  # if (CREATE_BASELINE_FILES == FALSE) {
-  #   return()
-  # }
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
