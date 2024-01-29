@@ -451,7 +451,8 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
     
   # Write out the difference table (current-baseline)
   # diffTable <- abs(currentDataFrame-baselineDataFrame)
-  diffTable <- currentDataFrame
+  # diffTable <- currentDataFrame
+  diffTable <- matrix(nrow=nrow(currentDataFrame),ncol=ncol(currentDataFrame))
   diffTable[TRUE] <- 0
   for (i in 1:nrow(currentDataFrame)) {
     for (j in 1:ncol(currentDataFrame)) {
@@ -478,22 +479,24 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
 print(paste0("***sumDiffTable: ",sumDiffTable))
 print(paste0("SUM of currentDataFrame:  ", sum(currentDataFrame)))           # ok
 print(paste0("SUM of baselineDataFrame: ", sum(baselineDataFrame)))          # ok
+print("Comparing if sumDiffTable/sum(currentDataFrame) <= TOLERANCE_VALUE")
+print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
 areIdentical <- (sumDiffTable/ sum(currentDataFrame) <= TOLERANCE_VALUE)
 print(paste0("areIdentical: ",areIdentical))  
                    
 # print(paste0("SUM of currentDataFrame: ", sum(currentDataFrame)))            # ok
 # print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))           # ok
-# print(paste0("SUM of diffTable:         ",sum(diffTable)))                   # not ok
+print(paste0("SUM of diffTable:         ",sum(diffTable)))                   # not ok
 # print(paste0("SUM of zeroTable:         ",sum(zeroTable)))                   # ok
 # print(paste0("Col sums currentDataFrame:  ",colSums(currentDataFrame)))      # ok
 # print(paste0("Col sums baselineDataFrame: ",colSums(baselineDataFrame)))     # ok
-# print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # not ok
+print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # not ok
 # print(paste0("Sum currentDataFrame col=17: ", sum(currentDataFrame[,17])))   # ok
 # print(paste0("Sum baselineDataFrame col=17: ", sum(baselineDataFrame[,17]))) # ok
-# print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))                 # not ok
+print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))                 # not ok
 
-#   areIdentical <- identical(diffTable,zeroTable)
-# print(paste0("areIdentical: ",areIdentical))  
+  areIdentical <- identical(diffTable,zeroTable)
+print(paste0("2 areIdentical: ",areIdentical))
 # print("diffTable:")
 # print(head(diffTable))
 # print("currentDataFrame:")
