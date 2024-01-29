@@ -461,6 +461,8 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
       diffTable[i,j] <- abs(currentDataFrame[i,j] - baselineDataFrame[i,j])
       if (diffTable[i,j] <= TOLERANCE_VALUE) {
         diffTable[i,j] <- 0
+      } else {
+        print(paste0("-> diffTable[",i,",",j,"]: ",diffTable[i,j]))
       }
     }
   }
@@ -1122,14 +1124,14 @@ print(paste0("tot rand val: ",totRandVal))
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]])
-      # runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
-      # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
-      # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
+      runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[1]], CurrentJitterFilenames[[1]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
 # printStatsSimulation("2 current AB  : ",REcosystem_AB_Current_Jitter)
 # printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
-      # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
-      # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
+      runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
+      runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
 if (CREATE_BASELINE_FILES == FALSE) {
   return()
