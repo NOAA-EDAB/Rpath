@@ -495,7 +495,7 @@ print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # n
 # print(paste0("Sum baselineDataFrame col=17: ", sum(baselineDataFrame[,17]))) # ok
 print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))                 # not ok
 
-  areIdentical <- identical(diffTable,zeroTable)
+# areIdentical <- identical(diffTable,zeroTable)                             # not ok
 print(paste0("2 areIdentical: ",areIdentical))
 # print("diffTable:")
 # print(head(diffTable))
@@ -1100,11 +1100,11 @@ print(paste0("tot rand val: ",totRandVal))
       print(paste0("Error: Unknown data type: ",theTypeData))
       return()
     }
-printStatsScenario("before AB",REcosystem_scene_jitter)
+# printStatsScenario("before AB",REcosystem_scene_jitter)
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-printStatsScenario("after  AB",REcosystem_scene_jitter)
+# printStatsScenario("after  AB",REcosystem_scene_jitter)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
-printStatsScenario("after RK4",REcosystem_scene_jitter)
+# printStatsScenario("after RK4",REcosystem_scene_jitter)
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Jitter$out_Biomass,     BaselineJitterFilenames[[1]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Catch,       BaselineJitterFilenames[[2]])
@@ -1113,11 +1113,11 @@ printStatsScenario("after RK4",REcosystem_scene_jitter)
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Catch,      BaselineJitterFilenames[[5]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Gear_Catch, BaselineJitterFilenames[[6]])
     } else {
-printStatsSimulation("1 current AB  out_Biomass: ",REcosystem_AB_Current_Jitter)      
+# printStatsSimulation("1 current AB  out_Biomass: ",REcosystem_AB_Current_Jitter)      
       writeDataFile(REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFilenames[[1]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFilenames[[2]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFilenames[[3]])
-printStatsSimulation("1 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter)
+# printStatsSimulation("1 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter)
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]])
@@ -1125,16 +1125,16 @@ printStatsSimulation("1 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter
       # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
-printStatsSimulation("2 current AB  : ",REcosystem_AB_Current_Jitter)
-printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
+# printStatsSimulation("2 current AB  : ",REcosystem_AB_Current_Jitter)
+# printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
       # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
   }
 
-  if (CREATE_BASELINE_FILES == FALSE) {
-    return()
-  }
+  # if (CREATE_BASELINE_FILES == FALSE) {
+  #   return()
+  # }
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
