@@ -1130,12 +1130,11 @@ printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
       # runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       # runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
-if (CREATE_BASELINE_FILES == FALSE) {
-return()
-}
   }
 
-  
+  if (CREATE_BASELINE_FILES == FALSE) {
+    return()
+  }
 
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
