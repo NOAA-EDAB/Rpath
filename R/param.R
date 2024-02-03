@@ -42,7 +42,7 @@ create.rpath.params <- function(group, type, stgroup = NA){
                       Unassim     = as.numeric(NA),
                       DetInput    = as.numeric(NA))
 
-  #Add detritial groups
+  #Add detrital groups
   for(i in 1:length(det.group)){
     model[Group %in% det.group, DetInput := 0]
     model[, V1 := as.numeric(NA)]
@@ -65,7 +65,7 @@ create.rpath.params <- function(group, type, stgroup = NA){
   #Diet matrix
   diet <- data.table(Group = c(prey.group, 'Import'))
   for(i in 1:length(pred.group)){
-    diet[, V1 := as.numeric(NA)]
+    diet[, V1 := as.numeric(-1)]
     setnames(diet, "V1", pred.group[i])
   }
   Rpath.params$diet <- diet
@@ -374,10 +374,18 @@ check.rpath.params <- function(Rpath.params){
             final row.  All entries can be 0 or NA.')
     w <- w + 1
   }
+  
+  # Check if any diet value is < 0
+  dietDF <- data.frame(Rpath.params$diet)
+  dietDF[is.na(dietDF)] <- 0
+  if (any(dietDF<0)) {
+    warning('Found a negative diet value. Please make sure no diet values are negative.')
+    w <- w + 1
+  }
 
-if(w == 0){
-  cat('Rpath parameter file is functional. \n')
-} else {
+  if (w == 0) {
+    cat('Rpath parameter file is functional. \n')
+  } else {
     cat('Rpath parameter file needs attention! \n')
   }  
 }
@@ -502,3 +510,4 @@ write.rpath.params <- function(Rpath.params, eco.name, path = ''){
     }
   }
 }
+
