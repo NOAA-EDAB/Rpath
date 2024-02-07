@@ -27,7 +27,7 @@ jobs:
   #       run: Rscript -e "source('tests/testthat.R')"
 
   tests:
-    runs-on: ${{matrix.os}}
+    runs-on: ${{matrix.config.os}}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
