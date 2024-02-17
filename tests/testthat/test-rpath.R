@@ -9,25 +9,8 @@ library(rlist)
 
 options(precision=50)
 
-# ---- Modify this toggle to TRUE to generate the baseline files. ----
-# ---- Reset it back to FALSE to run the tests. ----------------------
-# CREATE_BASELINE_FILES <- TRUE
-CREATE_BASELINE_FILES <- FALSE
+source("test-constants.R")
 
-NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
-FACTOR_VALUE <- 5
-SEED_VALUE   <- 1 
-SEED_OFFSET <- 2000
-TOLERANCE_VALUE <- 1e-5
-RUN_QUIET <- TRUE
-JITTER_AMOUNT_PCT <- 1 # This is 1% jitter
-YLIMIT_DIFFERENCE_PLOTS <- 0.05
-PLOT_TYPE <- 1 # 1 = Baseline and Current superimposed, 2 = difference of (Current-Baseline)
-PLOT_SHOW <- 1 # 1 - All Plots, 2 = Only plots reflecting test errors # Not sure if can be implemented
-# INPUT_DATA_DIR_BASELINE  <- 'data/input/baseline'
-INPUT_DATA_DIR_CURRENT   <- here::here('tests/testthat/data/input')
-INPUT_DATA_DIR_BASELINE  <- INPUT_DATA_DIR_CURRENT
-OUTPUT_DATA_DIR          <- here::here('tests/testthat/data/output')
 
 print(paste0("here::here: ",              here::here() ))
 print(paste0("OUTPUT_DATA_DIR: ",         OUTPUT_DATA_DIR)) #RSK
@@ -42,6 +25,9 @@ if (! dir.exists(OUTPUT_DATA_DIR)) {
   dir.create(OUTPUT_DATA_DIR,recursive=TRUE)
 }
  
+source("test-utils.R")
+
+
 #' Stepify Effort
 #' 
 #' This function stepifies a vector of effort data. Stepification consists of modifying (i.e., multiplying) the
@@ -68,6 +54,7 @@ stepifyVector <- function(vectorData,type=1) {
   } 
   return(vectorData)
 }
+
 
 #' Stepify a Matrix
 #' 
@@ -182,11 +169,7 @@ addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
   return(jitteredMatrix)
 }
 
-randomNumber <- function(seed) {
-  set.seed(seed)
-  rval <- runif(1,min=-JITTER_AMOUNT_PCT/100,max=JITTER_AMOUNT_PCT/100)[1]
-  return(rval)
-}
+
 
 #' Create a jittered vector
 #' 
@@ -552,28 +535,6 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
 }
 
 
-
-# jitterMatrixColumns <- function(mat,startBiomass,speciesNames) {
-# 
-#   newMat <- do.call(rbind,replicate(1,mat,simplify=FALSE))
-#   numMonths <- nrow(newMat)
-#   speciesNum <- 0
-# 
-#   for (aSpecies in speciesNames) {
-#     jitterVector <- c()
-#     speciesBiomass <- startBiomass[aSpecies]
-#     for (month in 1:numMonths) {
-#       randVal <- randomNumber(speciesNum*numMonths+month) #modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-#       jitteredValue <- speciesBiomass * (1.0 + randVal)
-#       jitterVector <- append(jitterVector,jitteredValue)
-#     }
-#     newMat[,aSpecies] <- jitterVector # RSK problematic line here
-#     speciesNum <- speciesNum + 1
-#   }
-#   return(newMat)
-# }
-
-
 #' Modify a scene$forcing matrix
 #' 
 #' Modifies the appropriate columns from a scene$forcing matrix.
@@ -605,32 +566,6 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
   return(ForcedMatrix)
 }
 
-# This is an increment function
-inc <- function(value) eval.parent(substitute(value <- value + 1))
-
-readDataFile <- function(filename,fill=TRUE,sep="") {
-  readRDS(filename)
-  # read.table(filename,fill=fill,sep=sep)
-}
-
-writeDataFile <- function(object,filename) {
-  saveRDS(object,file=filename)
-  # write.table(object,file=filename)
-}
-
-printStatsScenario <- function(msg,scenario) {
-  print("- - -")
-  print(paste0(msg,", forcing$ForcedBio:     ",sum(scenario$forcing$ForcedBio)))
-  print(paste0(msg,", forcing$ForcedMigrate: ",sum(scenario$forcing$ForcedMigrate)))
-  print(paste0(msg,", start_state$Biomass:   ",sum(scenario$start_state$Biomass)))
-}
-
-printStatsSimulation <- function(msg,sim) {
-  print("- - -")
-  print(paste0(msg,", sim$out_Biomass:    ",sum(sim$out_Biomass)))
-  print(paste0(msg,", sim$out_Catch:      ",sum(sim$out_Catch)))
-  print(paste0(msg,", sim$out_Gear_Catch: ",sum(sim$out_Gear_Catch)))
-}
 
 testthat::test_that("Rpath Unit Tests", {
   BaselineJitterTables  <- list()
