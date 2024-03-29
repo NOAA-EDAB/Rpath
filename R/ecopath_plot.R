@@ -48,7 +48,7 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
   mtext(2, text = 'Trophic Level', line = 2)
   
   with(connections,
-       segments(x0 = pred.x, y0 = pred.y, x1 = prey.x, y1 = prey.x, col = line.col))
+       segments(x0 = pred.x, y0 = pred.y, x1 = prey.x, y1 = prey.y, col = line.col))
   
   if(!is.null(highlight)){
     if(is.character(highlight)) highlight <- which(Rpath.obj$Group == highlight)
