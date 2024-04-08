@@ -10,7 +10,10 @@ library(rlist)
 options(precision=50)
 
 source("test-constants.R")
-
+source("test-utils.R")
+source("test-utils-stepify.R")
+source("test-utils-jitter.R")
+source("test-utils-plot.R")
 
 print(paste0("here::here: ",              here::here() ))
 print(paste0("OUTPUT_DATA_DIR: ",         OUTPUT_DATA_DIR)) #RSK
@@ -24,300 +27,19 @@ if (! dir.exists(INPUT_DATA_DIR_CURRENT)) {
 if (! dir.exists(OUTPUT_DATA_DIR)) {
   dir.create(OUTPUT_DATA_DIR,recursive=TRUE)
 }
- 
-source("test-utils.R")
 
-
-#' Stepify Effort
+#' This test tests for equality between two objects
 #' 
-#' This function stepifies a vector of effort data. Stepification consists of modifying (i.e., multiplying) the
-#' vector data in question by a series of constant values (i.e., steps). Plotting these steps
-#' shows a stair-stepped function of various forms based upon the passed type. Type 1 = mountain
-#' shape, Type 2 = valley shape, Type 3 = mixed shape.
+#' This function tests to see if the two data tables are equal within a tolerance value
 #'
-#' @param effort : vector effort data
-#' @param type : type of "stepification"
+#' @param runNum : The run number
+#' @param tableName : Temp arg, used to skip over out_Gear_Catch tables as there's currently a bug with their header names
+#' @param desc : The description of the run
+#' @param baselineTable : The baseline table 
+#' @param currentTable : The current generated table
 #'
-#' @return Returns the "stepped" vector data
-#' 
-stepifyVector <- function(vectorData,type=1) {
-  steps     <- getSteps(type)
-  numMonths <- length(vectorData)
-  incMonths <- numMonths/ NUMBER_OF_STEPS;
-  inc <- 0
-  for (i in 1:NUMBER_OF_STEPS) {
-    start <- inc + 1
-    start <- if (start == 0) 1 else start
-    end   <- inc+incMonths
-    vectorData[start:end] <- vectorData[start:end] * steps[i]
-    inc   <- inc + incMonths
-  } 
-  return(vectorData)
-}
-
-
-#' Stepify a Matrix
-#' 
-#' This function sequences through the appropriately named columns and calls stepifyVector
-#' to stepify those columns.
-#' 
-#' @family Rpath functions
+#' @return No return value
 #'
-#' @param forcedEffortMatrix : matrix in which specific columns will be "stepified"
-#' @param memberNames : vector of either species or fleet names
-#'
-#' @return Returns the updated forced effort matrix
-#'
-stepifyMatrix <- function(forcedEffortMatrix,memberNames) {
-  ForcedMatrix <- forcedEffortMatrix
-  for (i in 1:length(memberNames)) {
-    memberName <- memberNames[i]
-    memberCol <- ForcedMatrix[,memberName]
-    memberStepped <- stepifyVector(memberCol,i)
-    ForcedMatrix[,memberName] <- memberStepped
-    # plot(memberStepped,type='l',lwd=5,xlab="Months",ylab="Effort",main=paste0("Forced Effort with Stepped Noise - ",memberName))
-  }
-  return(ForcedMatrix)
-}
-
-#' Get stepification steps
-#' 
-#' This function returns the step offsets in order to give a function a stair-stepped pattern.
-#'
-#' @param type : The type of stair-stepped pattern. There are currently 3 types: 1 (mountain pattern), 2 (valley pattern), and 3 (mix of mountain and valley pattern)
-#'
-#' @return Returns a vector of stair-stepped offsets
-#'
-getSteps <- function(type=1) {
-  STEPS_WIDTH <- 0.1 # approx. +/- 10% of initial value
-  steps = c()
-  tog <- -1
-  min <- 1.0
-# max <- if (type == 2 || type == 3) 0.5 else 2.0
-  max <- if (type == 2 || type == 3) (1.0-STEPS_WIDTH) else (1.0+STEPS_WIDTH)
-  if (is.even(NUMBER_OF_STEPS)) {
-     NUMBER_OF_STEPS <- NUMBER_OF_STEPS + 1
-  }
-  halfway   <- NUMBER_OF_STEPS %/% 2
-  increment <- (max-min)/halfway
-
-  for (i in 1:NUMBER_OF_STEPS) {
-    if (i <= halfway+1) {
-      inc <- increment
-      start <- min
-      ii <- i-1
-    } else {
-      inc <- -increment
-      start <- max-inc
-      ii <- i-halfway
-    }
-    tog <- if (type == 3) -tog else 1.0
-    steps[i] <- abs(start + tog*ii*inc)
-  }
-  return(steps)
-}
-
-#' Stepify Biomass
-#'
-#' Takes as input a biomass value and stepifies the value by dividing the number of months
-#' by the number of steps desired and multiplying each interval by a different step value.
-#'
-#' @param numMonths : number of months in model
-#' @param biomass : biomass value to stepify across months
-#' @param type : type of stepification desired (1, 2, or 3)
-#' @param xlabel : x axis label for plot
-#' @param ylabel : y axis label for plot
-#' @param title : title for plot
-#'
-#' @return Returns the vector of stepified segments
-#' 
-stepifyBiomass <- function(numMonths,biomass,type=1,xlabel,ylabel,title) {
-  steps <- getSteps(type)
-  incMonths <- numMonths / NUMBER_OF_STEPS;
-  parts <- c()
-  for (i in 1:NUMBER_OF_STEPS) {
-    part  <- replicate(incMonths, steps[i]*biomass)
-    parts <- c(parts,part)
-  }
-  # plot(parts,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
-  return(parts)
-}
-
-#' Add Jitter (i.e., random noise)
-#' 
-#' Adds random noise to the specified matrix.
-#'
-#' @param matrix : data matrix to be jittered
-#' @param factor : the R jitter factor (the larger the number the greater the jitter amount)
-#' @param seedOffset : offset to the seed value, useful for getting "groups" of seed values
-#' @param xlabel : x axis label for plot
-#' @param ylabel : y axis label for plot 
-#' @param title : main title for plot
-#'
-#' @return Returns the jittered matrix
-#' 
-addJitter <- function(matrix,seedOffset,xlabel,ylabel,title) {
-  set.seed(seedOffset) # *SEED_VALUE)
-  # From jitter() doc: If amount == 0, jitter returns factor * z/50, where
-  # z = max(x0) - min(x), aka the range. So if factor=5 and amount=0, jitter()
-  # returns a random value within a tenth of the range.
-  
-  jitteredMatrix <- jitter(matrix,factor=FACTOR_VALUE,amount=NULL)
-  if (xlabel != '' && ylabel != '' & title != '') {
-    # plot(jitteredMatrix,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)    
-  } 
-  return(jitteredMatrix)
-}
-
-
-
-#' Create a jittered vector
-#' 
-#' Used for jittering a matrix column. Can't use replicate because need to pass a different seed for every value for reproducibility.
-#'
-#' @param value : value to add jitter to
-#' @param numElements : number of elements in vector
-#' @param seedOffset : offset to the main seed value
-#' @param xlabel : x axis label for plot
-#' @param ylabel : y axis label for plot
-#' @param title : main title for plot
-#'
-#' @return Returns the column-jittered matrix
-#' 
-createJitterVectorFromValue <- function(value,numElements,seedOffset,xlabel,ylabel,title) {
-  jitterVector <- c()
-  totRandVal <- 0
-  totValue <- 0
-  # value <- round(value,10) # RSK rounding to 10th decimal place
-  for (i in 1:numElements) {
-#   jitteredValue <- addJitter(value,seedOffset+i,'','','')
-    randVal <- randomNumber(seedOffset+i)
-    totRandVal <- totRandVal + randVal
-    totValue <- totValue + value
-    jitteredValue <- value * (1.0 + randVal)
-    jitterVector <- append(jitterVector,jitteredValue)
-  }
-print(paste0("tot rand val: ", totRandVal, ", tot value: ", totValue, ", tot vec: ", sum(jitterVector)))
-  
-# plot(jitterVector,type='l',lwd=5,xlab=xlabel,ylab=ylabel,main=title)
-  return(jitterVector)
-}
-
-#' Plot test results superimposed on the same plot
-#' 
-#' Plot specific columns from that passed in matrices and plot them as groups of plots per page.
-#' The plots will be of the baseline run and the current run plot superimposed on the same plot.
-#'
-#' @param BaseData : Baseline data to compare current data to
-#' @param CurrData : Current data to compare against pre-run baseline data
-#' @param baseAlg : The baseline algorithm used (currently AB or RK4)
-#' @param currAlg : The current algorithm used (currently AB or RK4)
-#' @param tableName : Table name used for the plot's title
-#' @param forcedData : The data that's being forced (i.e., Biomass, Catch)
-#' @param forcedType : The type of forcing being done (.e., Random (Jitter) or Stair-Stepped)
-#' @param species : A vector of fish species
-#'
-#' @return Returns the final, combined plot
-#' 
-plotResultsSuperimposed <- function(BaseData,CurrData,baseAlg,currAlg,tableName,forcedData,forcedType,species) {
-  plots  <- list()
-  group  <- species
-  yLabel <- "Biomass (mt/km²)"
-  currDf <- data.frame()
-  baseDf <- data.frame()
-
-  for (member in group) {
-    xvalues     <- c(1:length(CurrData[,member]))
-    numMonths   <- length(CurrData[,member])
-    currYvalues <- CurrData[,member]
-    baseYvalues <- BaseData[,member]
-    currDf    <- data.frame(Legend=replicate(numMonths,paste0('Current ', currAlg)), xvalues,currYvalues)
-    baseDf    <- data.frame(Legend=replicate(numMonths,paste0('Baseline ',baseAlg)), xvalues,baseYvalues)
-
-    aPlot <- ggplot() + 
-      geom_line(data=baseDf, aes(x=xvalues, y=baseYvalues, color=Legend)) +
-      geom_line(data=currDf, aes(x=xvalues, y=currYvalues, color=Legend)) +
-      labs(x="Months",y=yLabel,
-           title=paste0('Sim Run (',forcedData,' w/ ',forcedType,' Noise) - ',member),
-           subtitle=paste0("Dataset: ",tableName)) +
-      scale_color_manual(name="Legend:",values=c('red','darkblue')) +
-      theme( plot.title = element_text(hjust=0.5,size=7,face="bold"),
-             plot.subtitle = element_text(hjust=0.5,size=7),
-             axis.text = element_text(size=8),
-             axis.title = element_text(size=8),
-             legend.text = element_text(size=8),
-             legend.title = element_text(size=10),
-             legend.position='bottom',
-             legend.spacing.y = unit(0.0,'cm'),
-             legend.background = element_rect(fill='#f7f7f7'),
-             # legend.box.background = element_rect(color = 'black'),
-             plot.background = element_rect(color='black',fill=NA,linewidth=1)
-           )
-    plots <- list.append(plots,aPlot)
-    
-  }
-  combinedPlot <- ggarrange(plotlist=plots,nrow=3,ncol=2)
-  # annotate_figure(combinedPlot, top = text_grob("Sample main title here", color = "red", face = "bold", size = 14))
-   # saveWidget(ggplotly(combinedPlot), file = "Rplots.html");
-   # print(ggplotly(combinedPlot))
-   print(combinedPlot)
-}
-
-#' Plot the difference of the two runs
-#' 
-#' Plot specific columns from that passed in matrices and plot them as groups of plots per page.
-#' The plots will be of the current run - baseline run. So if there's a perfect match, the plot should
-#' be all zeros.
-#'
-#' @param BaseData : Baseline data to compare current data to
-#' @param CurrData : Current data to compare against pre-run baseline data
-#' @param baseAlg : The baseline algorithm used (currently AB or RK4)
-#' @param currAlg : The current algorithm used (currently AB or RK4)
-#' @param tableName : Table name used for the plot's title
-#' @param forcedData : The data that's being forced (i.e., Biomass, Catch)
-#' @param forcedType : The type of forcing being done (.e., Random (Jitter) or Stair-Stepped)
-#' @param species : A vector of fish species
-#'
-#' @return Returns the final, combined plot
-#' 
-plotResultsDifference <- function(BaseData,CurrData,baseAlg,currAlg,tableName,forcedData,forcedType,species) {
-  plots  <- list()
-  group  <- species
-  yLabel <- "Biomass (mt/km²)"
-  diffDf <- data.frame()
-  
-  for (member in group) {
-    xvalues     <- c(1:length(CurrData[,member]))
-    numMonths   <- length(CurrData[,member])
-    currYvalues <- CurrData[,member]
-    baseYvalues <- BaseData[,member]
-    diffDf <- data.frame(Legend=replicate(numMonths,paste0('Current(',currAlg,')-Baseline(',baseAlg,') ')), xvalues,currYvalues-baseYvalues)
-    aPlot  <- ggplot() + 
-      geom_line(data=diffDf, aes(x=xvalues, y=currYvalues-baseYvalues, color=Legend)) +
-      labs(x="Months",y=yLabel,
-           title=paste0('Sim Run using ',forcedData,' with ',forcedType,' Noise - ',member),
-           subtitle=paste0("Dataset: ",tableName)) +
-      scale_color_manual(name="Legend:",values=c('darkblue')) +
-      coord_cartesian(ylim = c(-YLIMIT_DIFFERENCE_PLOTS, YLIMIT_DIFFERENCE_PLOTS)) + # RSK
-      theme( plot.title = element_text(hjust=0.5,size=7,face="bold"),
-             plot.subtitle = element_text(hjust=0.5,size=7),
-             axis.text = element_text(size=8),
-             axis.title = element_text(size=8),
-             legend.text = element_text(size=8),
-             legend.title = element_text(size=10),
-             legend.position='bottom',
-             legend.spacing.y = unit(0.0,'cm'),
-             legend.background = element_rect(fill='#f7f7f7'),
-             # legend.box.background = element_rect(color = 'black'),
-             plot.background = element_rect(color='black',fill=NA,linewidth=1)
-      )
-    plots <- list.append(plots,aPlot)
-  }
-  combinedPlot <- ggarrange(plotlist=plots,ncol=1)
-  # annotate_figure(combinedPlot, top = text_grob("Sample main title here", color = "red", face = "bold", size = 14))
-  print(combinedPlot)
-} 
-
 runTestEqual <- function(runNum,tableName,desc,baselineTable,currentTable) {
   if (tableName == 'out_Gear_Catch') {
     if (! RUN_QUIET) {
@@ -332,6 +54,17 @@ runTestEqual <- function(runNum,tableName,desc,baselineTable,currentTable) {
   testthat::expect_equal(baselineTable,currentTable,tolerance=TOLERANCE_VALUE)
 }
 
+#' The test for running silent test function
+#' 
+#' This function tests to see if the current Rpath run runs silently 
+#'
+#' @param runNum : The run number
+#' @param desc : The description of the run
+#' @param params : Parameters associated with, and passed to, the Rpath run 
+#' @param name : The ecosystem name of the run that's passed to Rpath
+#'
+#' @return No return value
+#'
 runTestSilent <- function(runNum,desc,params,name) {
   paddedRunNum <- str_pad(runNum,3,pad="0")
   if (! RUN_QUIET) {
@@ -339,7 +72,6 @@ runTestSilent <- function(runNum,desc,params,name) {
   }
   testthat::expect_silent(rpath(params,eco.name=name))
 }
-
 
 #' The main test run function
 #' 
@@ -356,57 +88,7 @@ runTestSilent <- function(runNum,desc,params,name) {
 #' @param species : A vector of fish species
 #'
 #' @return No return value
-#' 
-# runTest <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentDataFrame,currentFilename,species) {
-#  
-#   # N.B. Remove this if statement once missing column headings issue is fixed
-#   if (tableName == 'out_Gear_Catch') {
-#     if (! RUN_QUIET) {
-#       print('Test Skipped: The out_Gear_Catch tables are currently missing column headings...so this test will be skipped for now.')
-#     }
-#     return()
-#   }
-# 
-#   paddedRunNum <- str_pad(runNum,3,pad="0")
-#   if (! RUN_QUIET) {
-#     print(paste0("Test #",paddedRunNum,": Is Baseline ",baseAlg," ",tableName," equivalent to Current ",currAlg," ",tableName," using ",forcedType," ",forcedData,"?"))
-#   }
-#   if (tableName == 'out_Biomass' || tableName == 'out_Catch') { # || tableName == 'out_Gear_Catch') {
-#     if (PLOT_TYPE == 1) {
-#       plotResultsSuperimposed(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
-#     } else {
-#       plotResultsDifference(baselineDataFrame, currentDataFrame, baseAlg, currAlg, tableName, forcedData, forcedType, species)
-#     }
-#   }
-# 
-#   # RSK - currentDataFrame is not the same when running in a git action and when running in RStudio
-#   currentDataFrame <- readDataFile(currentFilename) #,fill=TRUE,sep=" ",strip.white=TRUE)
-#   # Write out the difference table (current-baseline)
-#   diffTable <- abs(currentDataFrame-baselineDataFrame)
-# 
-#   # Set all values <= TOLERANCE_VALUE to 0 because we're going to next compare this to a zero table
-#   diffTable[diffTable <= TOLERANCE_VALUE] <- 0
-#   # Create the zero table
-#   zeroTable <- diffTable
-#   zeroTable[TRUE] <- 0 # set to all 0's
-#   # test if the diff and zero tables are identical
-# print(paste0("col sums currentDataFrame: ",   colSums(currentDataFrame)))
-# # print(paste0("col sums baselineDataFrame: ",colSums(baselineDataFrame)))
-#   areIdentical <- identical(diffTable,zeroTable)
-# print(paste0("areIdentical: ",areIdentical))  
-# print("diffTable:")
-# print(head(diffTable))
-#   testthat::expect_true(areIdentical)
-#   # testthat::expect_equal(as.data.frame(diffTable),
-#   #                        as.data.frame(zeroTable),
-#   #                        tolerance=TOLERANCE_VALUE) # RSKRSK
-# 
-#   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
-#   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
-# }
-
-
-
+#'
 runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,baselineDataFrame,currentFilename,species) {
   
   # N.B. Remove this if statement once missing column headings issue is fixed
@@ -463,108 +145,33 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
   for (i in 1:ncol(currentDataFrame)) {
     sumDiffTable <- sumDiffTable + abs(sumColsCurr[i]-sumColsBase[i])
   }
-print(paste0("***sumDiffTable: ",sumDiffTable))
-print(paste0("SUM of currentDataFrame:  ", sum(currentDataFrame)))           # ok
-print(paste0("SUM of baselineDataFrame: ", sum(baselineDataFrame)))          # ok
-print("Comparing if sumDiffTable/sum(currentDataFrame) <= TOLERANCE_VALUE")
-print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
+#print(paste0("***sumDiffTable: ",sumDiffTable))
+#print(paste0("SUM of currentDataFrame:  ", sum(currentDataFrame)))           # ok
+#print(paste0("SUM of baselineDataFrame: ", sum(baselineDataFrame)))          # ok
+#print("Comparing if sumDiffTable/sum(currentDataFrame) <= TOLERANCE_VALUE")
+#print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
 areIdentical <- (sumDiffTable/ sum(currentDataFrame) <= TOLERANCE_VALUE)
-print(paste0("areIdentical: ",areIdentical))  
+#print(paste0("areIdentical: ",areIdentical))  
                    
 # print(paste0("SUM of currentDataFrame: ", sum(currentDataFrame)))            # ok
 # print(paste0("SUM of baselineDataFrame: ",sum(baselineDataFrame)))           # ok
-print(paste0("SUM of diffTable:         ",sum(diffTable)))                   # not ok
-print(paste0("SUM of zeroTable:         ",sum(zeroTable)))                   # ok
+#print(paste0("SUM of diffTable:         ",sum(diffTable)))                   # not ok
+#print(paste0("SUM of zeroTable:         ",sum(zeroTable)))                   # ok
 # print(paste0("Col sums currentDataFrame:  ",colSums(currentDataFrame)))      # ok
 # print(paste0("Col sums baselineDataFrame: ",colSums(baselineDataFrame)))     # ok
-print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # not ok
+#print(paste0("Col sums diffTable:         ",colSums(diffTable)))             # not ok
 # print(paste0("Sum currentDataFrame col=17: ", sum(currentDataFrame[,17])))   # ok
 # print(paste0("Sum baselineDataFrame col=17: ", sum(baselineDataFrame[,17]))) # ok
-print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))                 # not ok
-
+#print(paste0("Sum diffTable col=17: ", sum(diffTable[,17])))                 # not ok
 # areIdentical <- identical(diffTable,zeroTable)                             # not ok
-print(paste0("*** Are they identical diffTable and zeroTable: ",identical(diffTable,zeroTable)))
-# print("diffTable:")
-# print(head(diffTable))
-# print("currentDataFrame:")
-# print(head(currentDataFrame))
-# print("baselineDataFrame:")
-# print(head(baselineDataFrame))
+#print(paste0("*** Are they identical diffTable and zeroTable: ",identical(diffTable,zeroTable)))
+
   testthat::expect_true(areIdentical)
   
   write.table(diffTable, file=file.path(OUTPUT_DATA_DIR,paste0("diff_",paddedRunNum,".dat")))
   write.table(zeroTable, file=file.path(OUTPUT_DATA_DIR,paste0("zero_",paddedRunNum,".dat")))
 }
 
-
-#' Modify a scene$fishing matrix
-#' 
-#' Modifies the appropriate columns from a scene$fishing matrix.
-#'
-#' @param species : A vector of fish species
-#' @param fleets : A vector of fleets
-#' @param typeData : The type of forced data (i.e., Forced Effort, Forced FRate, Forced Catch)
-#' @param forcingData : The forced data matrix
-#'
-#' @return Returns a matrix that's been updated withe the forced data
-#' 
-modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData) {
-  ForcedMatrix <- forcingData
-  speciesOrFleets <- c()
-  if (typeData == "Forced Effort") {
-    speciesOrFleets <- fleets
-  } else if (typeData == "Forced FRate" || typeData == "Forced Catch") {
-    speciesOrFleets <- species 
-  } else {
-    print(paste0("Error: Found invalid typeData of: ",typeData))
-    return(ForcedMatrix)
-  }
-
-  for (i in 1:length(speciesOrFleets)) {
-    item <- speciesOrFleets[i]
-    vectorData           <- ForcedMatrix[,item] 
-    # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED_VALUE+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
-    newVectorWithJitter <- c()
-    for (value in vectorData) {
-      jitteredValue <- value + value*randomNumber(modNum*SEED_OFFSET*SEED_VALUE+i)
-      newVectorWithJitter <- append(newVectorWithJitter,jitteredValue)
-    }
-    ForcedMatrix[,item]  <- newVectorWithJitter
-  }
-  return(ForcedMatrix) 
-}
-
-
-#' Modify a scene$forcing matrix
-#' 
-#' Modifies the appropriate columns from a scene$forcing matrix.
-#'
-#' @param species : A vector of fish species
-#' @param modifyType : The type of modification (i.e., Jittered or Stepped)
-#' @param typeData : The type of forced data (i.e., Forced Bio, Forced Migrate)
-#' @param forcingData : The forced data matrix
-#' @param scene : The REcosystem_scene object 
-#'
-#' @return Returns a matrix that's been updated withe the forced data
-#' 
-modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,scene) {
-  ForcedMatrix <- forcingData
-  numMonths <- nrow(ForcedMatrix)
-  if (typeData == "Forced Bio" || typeData == "Forced Migrate") {
-    for (i in 1:length(species)) {
-      aSpecies <- species[[i]]
-# print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))      
-      speciesBiomass <- scene$start_state$Biomass[aSpecies]
-      if (modifyType == 'Jittered') {
-        ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(speciesBiomass, numMonths, modNum*i*SEED_OFFSET, "Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
-      } else {
-        stepType <- ((i-1)%%3)+1 # Only current step types are 1, 2, or 3
-        ForcedMatrix[,aSpecies] <- stepifyBiomass(numMonths,speciesBiomass,stepType,"Months","Biomass (mt/km²)",paste0(typeData,' with ',modifyType,' Noise - ',aSpecies))
-      }
-    }
-  }
-  return(ForcedMatrix)
-}
 
 
 testthat::test_that("Rpath Unit Tests", {
@@ -897,9 +504,9 @@ testthat::test_that("Rpath Unit Tests", {
   sink()
 
   # Save current Rpath sim run data for AB and RK4
-  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
-  REcosystem_Current_AB_from_Sim  <- rsim.run(REcosystem_scene,method='AB', years=1:50)
-  REcosystem_Current_RK4_from_Sim <- rsim.run(REcosystem_scene,method='RK4',years=1:50) # RSKRSK RK4
+  REcosystem_scenario <- rsim.scenario(REco, REco.params, 1:50)
+  REcosystem_Current_AB_from_Sim  <- rsim.run(REcosystem_scenario,method='AB', years=1:50)
+  REcosystem_Current_RK4_from_Sim <- rsim.run(REcosystem_scenario,method='RK4',years=1:50)
   if (CREATE_BASELINE_FILES) {
     write.Rsim(REcosystem_Current_AB_from_Sim, BaselineAB)
     write.Rsim(REcosystem_Current_RK4_from_Sim,BaselineRK4)
@@ -939,11 +546,11 @@ testthat::test_that("Rpath Unit Tests", {
     REcosystemSummaryCurrent <- read.table(CurrentRpathObjSummary,fill = TRUE)
     runTestEqual(inc(runNum),"","Is the baseline Rpath run Summary the same as the current Rpath Summary?",REcosystemBaselineSummary,REcosystemSummaryCurrent)
 
-    # Tests 5-16 - Test that REcosystem AB object is same as RK4 object with no perturbations
     REcosystem_Current_AB  <- read.csv(CurrentAB)
     REcosystem_Current_RK4 <- read.csv(CurrentRK4)
   }
 
+  # Tests 5-16 - Test that REcosystem AB object is same as RK4 object with no perturbations
   if (CREATE_BASELINE_FILES) {
     writeDataFile(REcosystem_Current_AB_from_Sim$out_Biomass,    BaselineABOutBiomass)
     writeDataFile(REcosystem_Current_RK4_from_Sim$out_Biomass,   BaselineRK4OutBiomass)
@@ -980,15 +587,15 @@ testthat::test_that("Rpath Unit Tests", {
   }
   
   print("------------------ Forced Biomass Tests (Jitter) ------------------")
-  typeData <- list('Forced Bio','Forced Migrate')
-  numMonths <- nrow(REcosystem_scene$forcing$ForcedBio)
+  typeData <- list(FORCED_BIOMASS,FORCED_MIGRATION)
+  numMonths <- nrow(REcosystem_scenario$forcing$ForcedBio)
   for (typeNum in 1:length(typeData)) {
     REco <- rpath(REco.params, eco.name = 'R Ecosystem') # an Rpath object
-    REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
-    REcosystem_scene_jitter <- copy(REcosystem_scene)
+    REcosystem_scenario <- rsim.scenario(REco, REco.params, 1:50)
+    REcosystem_scenario_jitter <- REcosystem_scenario
     theTypeData  <- typeData[[typeNum]]
     modNum <- modNum + 1
-    if (theTypeData == 'Forced Bio') {
+    if (theTypeData == FORCED_BIOMASS) {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Jitter,
                                        REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Jitter)
       BaselineJitterFilenames  <- list(BaselineABForcedBioOutBiomassJitter,  BaselineABForcedBioOutCatchJitter,  BaselineABForcedBioOutGearCatchJitter,
@@ -996,54 +603,57 @@ testthat::test_that("Rpath Unit Tests", {
       CurrentJitterFilenames   <- list(CurrentABForcedBioOutBiomassJitter,  CurrentABForcedBioOutCatchJitter,  CurrentABForcedBioOutGearCatchJitter,
                                        CurrentRK4ForcedBioOutBiomassJitter, CurrentRK4ForcedBioOutCatchJitter, CurrentRK4ForcedBioOutGearCatchJitter)
       # RSK - These (original) lines don't work in git actions
-      # REcosystem_scene_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, 'Jittered', theTypeData, REcosystem_scene_jitter$forcing$ForcedBio, REcosystem_scene_jitter)
+      REcosystem_scenario_jitter$forcing$ForcedBio <- modifyForcingMatrix(modNum, species, JITTERED, theTypeData, 
+                                                                          REcosystem_scenario_jitter$forcing$ForcedBio,
+                                                                          REcosystem_scenario_jitter,
+                                                                          POSITIVE_ONLY)
       
-      # RSK - This line doesn't fail in git actions (it's just not the exact logic I need)
+      # A couple different ways to jitter. Trying to determine why some tests fail in git actions when run
+      # in the tests.yml file but don't fail when run via R-CMD-Check.yml.
+      #
+      # This line doesn't fail in git actions (it's just not the exact logic I need)
       # set.seed(modNum*typeNum*SEED_OFFSET)
-      # REcosystem_scene_jitter$forcing$ForcedBio <- jitter(REcosystem_scene_jitter$forcing$ForcedBio,factor=FACTOR_VALUE)
-      
-      # RSK - These lines don't work
-      numMonths <- nrow(REcosystem_scene_jitter$forcing$ForcedBio)
-      numSpecies <- length(species)
-      speciesNum <- 0
-      totSpeciesBiomass <- 0
-      totRandVal <- 0
-      for (aSpecies in species) {
-        jitterVector <- c()
-        speciesBiomass <- REcosystem_scene_jitter$start_state$Biomass[aSpecies]
-        totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
-        for (month in 1:numMonths) {
-          randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
-          jitteredValue <- speciesBiomass * (1.0 + randVal)
-          totRandVal <- totRandVal + randVal
-          jitterVector <- append(jitterVector,jitteredValue)
-        }
-        speciesNum <- speciesNum + 1
-        REcosystem_scene_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
-      }
-      # REcosystem_scene_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scene_jitter$forcing$ForcedBio,REcosystem_scene_jitter$start_state$Biomass,species)
-      
-print(paste0("tot speciesBiomass: ",totSpeciesBiomass))
-print(paste0("tot rand val: ",totRandVal))
+      # REcosystem_scenario_jitter$forcing$ForcedBio <- jitter(REcosystem_scenario_jitter$forcing$ForcedBio,factor=FACTOR_VALUE)
+      #
+      # Another way to jitter
+      #numMonths <- nrow(REcosystem_scenario_jitter$forcing$ForcedBio)
+      #numSpecies <- length(species)
+      #speciesNum <- 0
+      #totSpeciesBiomass <- 0
+      #totRandVal <- 0
+      #for (aSpecies in species) {
+      #  jitterVector <- c()
+      #  speciesBiomass <- REcosystem_scenario_jitter$start_state$Biomass[aSpecies]
+      #  totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
+      #  for (month in 1:numMonths) {
+      #    randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+      #    jitteredValue <- speciesBiomass * (1.0 + randVal)
+      #    totRandVal <- totRandVal + randVal
+      #    jitterVector <- append(jitterVector,jitteredValue)
+      #  }
+      #  speciesNum <- speciesNum + 1
+      #  REcosystem_scenario_jitter$forcing$ForcedBio[,aSpecies] <- jitterVector # RSK problematic line here
+      #}
+      # REcosystem_scenario_jitter$forcing$ForcedBio <- jitterMatrixColumns(REcosystem_scenario_jitter$forcing$ForcedBio,REcosystem_scenario_jitter$start_state$Biomass,species)
     }
-    else if (theTypeData == 'Forced Migrate') {
+    else if (theTypeData == FORCED_MIGRATION) {
       BaselineJitterDataFrames <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Jitter,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Jitter,
                                        REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Jitter, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Jitter)
       BaselineJitterFilenames  <- list(BaselineABForcedMigOutBiomassJitter,  BaselineABForcedMigOutCatchJitter,  BaselineABForcedMigOutGearCatchJitter,
                                        BaselineRK4ForcedMigOutBiomassJitter, BaselineRK4ForcedMigOutCatchJitter, BaselineRK4ForcedMigOutGearCatchJitter)
       CurrentJitterFilenames   <- list(CurrentABForcedMigOutBiomassJitter,  CurrentABForcedMigOutCatchJitter,  CurrentABForcedMigOutGearCatchJitter,
                                        CurrentRK4ForcedMigOutBiomassJitter, CurrentRK4ForcedMigOutCatchJitter, CurrentRK4ForcedMigOutGearCatchJitter)
-      modifiedMigrate <- modifyForcingMatrix(modNum,species,'Jittered',theTypeData, REcosystem_scene_jitter$forcing$ForcedMigrate, REcosystem_scene_jitter)
-      REcosystem_scene_jitter$forcing$ForcedMigrate <- modifiedMigrate
+      REcosystem_scenario_jitter$forcing$ForcedMigrate <- modifyForcingMatrix(modNum,species,JITTERED,theTypeData,
+                                                                              REcosystem_scenario_jitter$forcing$ForcedMigrate,
+                                                                              REcosystem_scenario_jitter,
+                                                                              POSITIVE_ONLY)
     } else {
       print(paste0("Error: Unknown data type: ",theTypeData))
       return()
     }
-# printStatsScenario("before AB",REcosystem_scene_jitter)
-    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-# printStatsScenario("after  AB",REcosystem_scene_jitter)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50)
-# printStatsScenario("after RK4",REcosystem_scene_jitter)
+
+    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter,method='AB', years=1:50)
+    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Jitter$out_Biomass,     BaselineJitterFilenames[[1]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Catch,       BaselineJitterFilenames[[2]])
@@ -1052,11 +662,9 @@ print(paste0("tot rand val: ",totRandVal))
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Catch,      BaselineJitterFilenames[[5]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Gear_Catch, BaselineJitterFilenames[[6]])
     } else {
-# printStatsSimulation("1 current AB  out_Biomass: ",REcosystem_AB_Current_Jitter)      
       writeDataFile(REcosystem_AB_Current_Jitter$out_Biomass,     CurrentJitterFilenames[[1]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Catch,       CurrentJitterFilenames[[2]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Gear_Catch,  CurrentJitterFilenames[[3]])
-# printStatsSimulation("1 current RK4 out_Biomass: ",REcosystem_RK4_Current_Jitter)
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Biomass,    CurrentJitterFilenames[[4]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Catch,      CurrentJitterFilenames[[5]])
       writeDataFile(REcosystem_RK4_Current_Jitter$out_Gear_Catch, CurrentJitterFilenames[[6]])
@@ -1064,43 +672,40 @@ print(paste0("tot rand val: ",totRandVal))
       runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[2]], CurrentJitterFilenames[[2]], species)
       runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "AB",  "AB",  BaselineJitterDataFrames[[3]], CurrentJitterFilenames[[3]], species)
       runTestRDS(inc(runNum),"out_Biomass",    theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[4]], CurrentJitterFilenames[[4]], species)
-# printStatsSimulation("2 current AB  : ",REcosystem_AB_Current_Jitter)
-# printStatsSimulation("2 current RK4 : ",REcosystem_RK4_Current_Jitter)
       runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
-if (CREATE_BASELINE_FILES == FALSE) {
-  return()
-}
   }
 
-
+# if (CREATE_BASELINE_FILES == FALSE) {
+#   return()
+# }
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
-  REcosystem_scene_stepped <- REcosystem_scene
-  typeData             <- list('Forced Bio','Forced Migrate')
-  numMonths <- nrow(REcosystem_scene_stepped$forcing$ForcedBio)
+  REcosystem_scenario_stepped <- REcosystem_scenario
+  typeData             <- list(FORCED_BIOMASS,FORCED_MIGRATION)
+  numMonths <- nrow(REcosystem_scenario_stepped$forcing$ForcedBio)
   for (i in 1:length(typeData)) {
-    REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
-    REcosystem_scene_stepped <- copy(REcosystem_scene)
+    REcosystem_scenario <- rsim.scenario(REco, REco.params, 1:50)
+    REcosystem_scenario_stepped <- copy(REcosystem_scenario)
     theTypeData  <- typeData[[i]]
     modNum <- modNum + 1
-    if (theTypeData == 'Forced Bio') {
-      # ForcedMatrix <- modifyForcingMatrix(modNum,species,'Stepped',theTypeData,REcosystem_scene_stepped$forcing$ForcedBio,REcosystem_scene_stepped)
-      # REcosystem_scene_stepped$forcing$ForcedBio <- ForcedMatrix
-      REcosystem_scene_stepped$forcing$ForcedBio <- modifyForcingMatrix(modNum,species,'Stepped',theTypeData,
-                         REcosystem_scene_stepped$forcing$ForcedBio,REcosystem_scene_stepped)
+    if (theTypeData == FORCED_BIOMASS) {
+      REcosystem_scenario_stepped$forcing$ForcedBio <- modifyForcingMatrix(modNum,species,STEPPED,theTypeData,
+                         REcosystem_scenario_stepped$forcing$ForcedBio,
+                         REcosystem_scenario_stepped,
+                         POSITIVE_ONLY)
       BaselineSteppedTables <- list(REcosystem_Baseline_AB_ForcedBio_OutBiomass_Stepped,  REcosystem_Baseline_AB_ForcedBio_OutCatch_Stepped,  REcosystem_Baseline_AB_ForcedBio_OutGearCatch_Stepped,
                                     REcosystem_Baseline_RK4_ForcedBio_OutBiomass_Stepped, REcosystem_Baseline_RK4_ForcedBio_OutCatch_Stepped, REcosystem_Baseline_RK4_ForcedBio_OutGearCatch_Stepped)
       BaselineSteppedFiles  <- list(BaselineABForcedBioOutBiomassStepped,  BaselineABForcedBioOutCatchStepped,  BaselineABForcedBioOutGearCatchStepped,
                                     BaselineRK4ForcedBioOutBiomassStepped, BaselineRK4ForcedBioOutCatchStepped, BaselineRK4ForcedBioOutGearCatchStepped)
       CurrentSteppedFiles   <- list(CurrentABForcedBioOutBiomassStepped,  CurrentABForcedBioOutCatchStepped,  CurrentABForcedBioOutGearCatchStepped,
                                     CurrentRK4ForcedBioOutBiomassStepped, CurrentRK4ForcedBioOutCatchStepped, CurrentRK4ForcedBioOutGearCatchStepped)
-    } else if (theTypeData == 'Forced Migrate') {
-      # ForcedMatrix <- modifyForcingMatrix(modNum,species,'Stepped',theTypeData,REcosystem_scene_stepped$forcing$ForcedMigrate,REcosystem_scene_stepped)
-      # REcosystem_scene_stepped$forcing$ForcedMigrate <- ForcedMatrix
-      REcosystem_scene_stepped$forcing$ForcedMigrate <- modifyForcingMatrix(modNum,species,'Stepped',theTypeData,
-                         REcosystem_scene_stepped$forcing$ForcedMigrate,REcosystem_scene_stepped)
+    } else if (theTypeData == FORCED_MIGRATION) {
+      REcosystem_scenario_stepped$forcing$ForcedMigrate <- modifyForcingMatrix(modNum,species,STEPPED,theTypeData,
+                         REcosystem_scenario_stepped$forcing$ForcedMigrate,
+                         REcosystem_scenario_stepped,
+                         POSITIVE_ONLY)
       BaselineSteppedTables <- list(REcosystem_Baseline_AB_ForcedMig_OutBiomass_Stepped,  REcosystem_Baseline_AB_ForcedMig_OutCatch_Stepped,  REcosystem_Baseline_AB_ForcedMig_OutGearCatch_Stepped,
                                     REcosystem_Baseline_RK4_ForcedMig_OutBiomass_Stepped, REcosystem_Baseline_RK4_ForcedMig_OutCatch_Stepped, REcosystem_Baseline_RK4_ForcedMig_OutGearCatch_Stepped)
       BaselineSteppedFiles  <- list(BaselineABForcedMigOutBiomassStepped,  BaselineABForcedMigOutCatchStepped,  BaselineABForcedMigOutGearCatchStepped,
@@ -1108,8 +713,8 @@ if (CREATE_BASELINE_FILES == FALSE) {
       CurrentSteppedFiles   <- list(CurrentABForcedMigOutBiomassStepped,  CurrentABForcedMigOutCatchStepped,  CurrentABForcedMigOutGearCatchStepped,
                                     CurrentRK4ForcedMigOutBiomassStepped, CurrentRK4ForcedMigOutCatchStepped, CurrentRK4ForcedMigOutGearCatchStepped)
     }
-    REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scene_stepped,method='AB', years=1:50)
-    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scene_stepped,method='RK4',years=1:50) # RSKRSK RK4
+    REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scenario_stepped,method='AB', years=1:50)
+    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scenario_stepped,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Stepped$out_Biomass,     BaselineSteppedFiles[[1]])
       writeDataFile(REcosystem_AB_Current_Stepped$out_Catch,       BaselineSteppedFiles[[2]])
@@ -1134,32 +739,35 @@ if (CREATE_BASELINE_FILES == FALSE) {
   }
   
   print("------------------ Forced Effort Tests (Jitter) ------------------")
-  numMonths <- nrow(REcosystem_scene$fishing$ForcedEffort)
-  REcosystem_scene_jitter <- REcosystem_scene
-  fishingOriginalData  <- list(REcosystem_scene$fishing$ForcedEffort, REcosystem_scene$fishing$ForcedFRate, REcosystem_scene$fishing$ForcedCatch)
-  typeData             <- list('Forced Effort','Forced FRate','Forced Catch')
+  numMonths <- nrow(REcosystem_scenario$fishing$ForcedEffort)
+  REcosystem_scenario_jitter <- REcosystem_scenario
+  fishingOriginalData  <- list(REcosystem_scenario$fishing$ForcedEffort, REcosystem_scenario$fishing$ForcedFRate, REcosystem_scenario$fishing$ForcedCatch)
+  typeData             <- list(FORCED_EFFORT,FORCED_FRATE,FORCED_CATCH)
   for (i in 1:length(fishingOriginalData)) {
     theTypeData  <- typeData[[i]]
-    ForcedMatrix <- modifyFishingMatrix(modNum,species,fleets,theTypeData,fishingOriginalData[[i]])
     modNum <- modNum + 1
-    if (theTypeData == 'Forced Effort') {
-      REcosystem_scene_jitter$fishing$ForcedEffort <- ForcedMatrix
+    if (theTypeData == FORCED_EFFORT) {
+      ForcedMatrix <- modifyFishingMatrix(modNum,species,fleets,theTypeData,fishingOriginalData[[i]],
+                                          REco.params$model,POSITIVE_AND_NEGATIVE)
+      REcosystem_scenario_jitter$fishing$ForcedEffort <- ForcedMatrix
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedEff_OutBiomass_Jitter, REcosystem_Baseline_AB_ForcedEff_OutCatch_Jitter, REcosystem_Baseline_AB_ForcedEff_OutGearCatch_Jitter,
                                    REcosystem_Baseline_RK4_ForcedEff_OutBiomass_Jitter,REcosystem_Baseline_RK4_ForcedEff_OutCatch_Jitter,REcosystem_Baseline_RK4_ForcedEff_OutGearCatch_Jitter) 
       BaselineJitterFiles  <- list(BaselineABForcedEffOutBiomassJitter, BaselineABForcedEffOutCatchJitter, BaselineABForcedEffOutGearCatchJitter,
                                    BaselineRK4ForcedEffOutBiomassJitter,BaselineRK4ForcedEffOutCatchJitter,BaselineRK4ForcedEffOutGearCatchJitter)
       CurrentJitterFiles   <- list(CurrentABForcedEffOutBiomassJitter,  CurrentABForcedEffOutCatchJitter,  CurrentABForcedEffOutGearCatchJitter,
                                    CurrentRK4ForcedEffOutBiomassJitter, CurrentRK4ForcedEffOutCatchJitter, CurrentRK4ForcedEffOutGearCatchJitter)
-    } else if (theTypeData == 'Forced FRate') {
-      REcosystem_scene_jitter$fishing$ForcedFRate  <- ForcedMatrix
+    } else if (theTypeData == FORCED_FRATE) {
+      ForcedMatrix <- modifyFishingMatrix(modNum,species,fleets,theTypeData,fishingOriginalData[[i]],
+                                          REco.params$model,POSITIVE_ONLY)
+      REcosystem_scenario_jitter$fishing$ForcedFRate  <- ForcedMatrix
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedFRa_OutBiomass_Jitter, REcosystem_Baseline_AB_ForcedFRa_OutCatch_Jitter, REcosystem_Baseline_AB_ForcedFRa_OutGearCatch_Jitter,
                                    REcosystem_Baseline_RK4_ForcedFRa_OutBiomass_Jitter,REcosystem_Baseline_RK4_ForcedFRa_OutCatch_Jitter,REcosystem_Baseline_RK4_ForcedFRa_OutGearCatch_Jitter) 
       BaselineJitterFiles  <- list(BaselineABForcedFRaOutBiomassJitter, BaselineABForcedFRaOutCatchJitter, BaselineABForcedFRaOutGearCatchJitter,
                                    BaselineRK4ForcedFRaOutBiomassJitter,BaselineRK4ForcedFRaOutCatchJitter,BaselineRK4ForcedFRaOutGearCatchJitter)
       CurrentJitterFiles   <- list(CurrentABForcedFRaOutBiomassJitter,  CurrentABForcedFRaOutCatchJitter,  CurrentABForcedFRaOutGearCatchJitter,
                                    CurrentRK4ForcedFRaOutBiomassJitter, CurrentRK4ForcedFRaOutCatchJitter, CurrentRK4ForcedFRaOutGearCatchJitter)
-    } else if (theTypeData == 'Forced Catch') {
-      REcosystem_scene_jitter$fishing$ForcedCatch  <- ForcedMatrix
+    } else if (theTypeData == FORCED_CATCH) {
+      REcosystem_scenario_jitter$fishing$ForcedCatch  <- ForcedMatrix
       BaselineJitterTables <- list(REcosystem_Baseline_AB_ForcedCat_OutBiomass_Jitter, REcosystem_Baseline_AB_ForcedCat_OutCatch_Jitter, REcosystem_Baseline_AB_ForcedCat_OutGearCatch_Jitter,
                                 REcosystem_Baseline_RK4_ForcedCat_OutBiomass_Jitter,REcosystem_Baseline_RK4_ForcedCat_OutCatch_Jitter,REcosystem_Baseline_RK4_ForcedCat_OutGearCatch_Jitter) 
       BaselineJitterFiles  <- list(BaselineABForcedCatOutBiomassJitter, BaselineABForcedCatOutCatchJitter, BaselineABForcedCatOutGearCatchJitter,
@@ -1167,8 +775,8 @@ if (CREATE_BASELINE_FILES == FALSE) {
       CurrentJitterFiles   <- list(CurrentABForcedCatOutBiomassJitter,  CurrentABForcedCatOutCatchJitter,  CurrentABForcedCatOutGearCatchJitter,
                                 CurrentRK4ForcedCatOutBiomassJitter, CurrentRK4ForcedCatOutCatchJitter, CurrentRK4ForcedCatOutGearCatchJitter)
     }
-    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scene_jitter,method='AB', years=1:50)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scene_jitter,method='RK4',years=1:50) # RSKRSK RK4
+    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter,method='AB', years=1:50)
+    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Jitter$out_Biomass,     BaselineJitterFiles[[1]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Catch,       BaselineJitterFiles[[2]])
@@ -1194,31 +802,31 @@ if (CREATE_BASELINE_FILES == FALSE) {
 
   
   print("------------------ Forced Effort Tests (Stepped) ------------------")
-  numMonths <- nrow(REcosystem_scene$fishing$ForcedEffort)
-  REcosystem_scene_stepped <- REcosystem_scene
-  fishingOriginalData  <- list(REcosystem_scene$fishing$ForcedEffort, REcosystem_scene$fishing$ForcedFRate, REcosystem_scene$fishing$ForcedCatch)
-  typeData             <- list('Forced Effort','Forced FRate','Forced Catch')
+  numMonths <- nrow(REcosystem_scenario$fishing$ForcedEffort)
+  REcosystem_scenario_stepped <- REcosystem_scenario
+  fishingOriginalData  <- list(REcosystem_scenario$fishing$ForcedEffort, REcosystem_scenario$fishing$ForcedFRate, REcosystem_scenario$fishing$ForcedCatch)
+  typeData             <- list(FORCED_EFFORT,FORCED_FRATE,FORCED_CATCH)
   for (i in 1:length(fishingOriginalData)) {
     theTypeData  <- typeData[[i]]
-    REcosystem_scene_stepped <- REcosystem_scene
-    if (theTypeData == 'Forced Effort') {
-      REcosystem_scene_stepped$fishing$ForcedEffort <- stepifyMatrix(fishingOriginalData[[i]],fleets)
+    REcosystem_scenario_stepped <- REcosystem_scenario
+    if (theTypeData == FORCED_EFFORT) {
+      REcosystem_scenario_stepped$fishing$ForcedEffort <- stepifyMatrix(fishingOriginalData[[i]],fleets,0.1)
       BaselineSteppedTables <- list(REcosystem_Baseline_AB_ForcedEff_OutBiomass_Stepped,  REcosystem_Baseline_AB_ForcedEff_OutCatch_Stepped,  REcosystem_Baseline_AB_ForcedEff_OutGearCatch_Stepped,
                                     REcosystem_Baseline_RK4_ForcedEff_OutBiomass_Stepped, REcosystem_Baseline_RK4_ForcedEff_OutCatch_Stepped, REcosystem_Baseline_RK4_ForcedEff_OutGearCatch_Stepped)
       BaselineSteppedFiles <- list(BaselineABForcedEffOutBiomassStepped, BaselineABForcedEffOutCatchStepped, BaselineABForcedEffOutGearCatchStepped,
                                    BaselineRK4ForcedEffOutBiomassStepped,BaselineRK4ForcedEffOutCatchStepped,BaselineRK4ForcedEffOutGearCatchStepped)
       CurrentSteppedFiles  <- list(CurrentABForcedEffOutBiomassStepped,  CurrentABForcedEffOutCatchStepped,  CurrentABForcedEffOutGearCatchStepped,
                                    CurrentRK4ForcedEffOutBiomassStepped, CurrentRK4ForcedEffOutCatchStepped, CurrentRK4ForcedEffOutGearCatchStepped)
-    } else if (theTypeData == 'Forced FRate') {
-      REcosystem_scene_stepped$fishing$ForcedFRate <- stepifyMatrix(fishingOriginalData[[i]],species)
+    } else if (theTypeData == FORCED_FRATE) {
+      REcosystem_scenario_stepped$fishing$ForcedFRate <- stepifyMatrix(fishingOriginalData[[i]],species,0.01)
       BaselineSteppedTables <- list(REcosystem_Baseline_AB_ForcedFRa_OutBiomass_Stepped,  REcosystem_Baseline_AB_ForcedFRa_OutCatch_Stepped,  REcosystem_Baseline_AB_ForcedFRa_OutGearCatch_Stepped,
                                     REcosystem_Baseline_RK4_ForcedFRa_OutBiomass_Stepped, REcosystem_Baseline_RK4_ForcedFRa_OutCatch_Stepped, REcosystem_Baseline_RK4_ForcedFRa_OutGearCatch_Stepped)
       BaselineSteppedFiles <- list(BaselineABForcedFRaOutBiomassStepped, BaselineABForcedFRaOutCatchStepped, BaselineABForcedFRaOutGearCatchStepped,
                                    BaselineRK4ForcedFRaOutBiomassStepped,BaselineRK4ForcedFRaOutCatchStepped,BaselineRK4ForcedFRaOutGearCatchStepped)
       CurrentSteppedFiles  <- list(CurrentABForcedFRaOutBiomassStepped,  CurrentABForcedFRaOutCatchStepped,  CurrentABForcedFRaOutGearCatchStepped,
                                    CurrentRK4ForcedFRaOutBiomassStepped, CurrentRK4ForcedFRaOutCatchStepped, CurrentRK4ForcedFRaOutGearCatchStepped)      
-    } else if (theTypeData == 'Forced Catch') {
-      REcosystem_scene_stepped$fishing$ForcedCatch <- stepifyMatrix(fishingOriginalData[[i]],species)
+    } else if (theTypeData == FORCED_CATCH) {
+      REcosystem_scenario_stepped$fishing$ForcedCatch <- stepifyMatrix(fishingOriginalData[[i]],species,0.01)
       BaselineSteppedTables <- list(REcosystem_Baseline_AB_ForcedCat_OutBiomass_Stepped,  REcosystem_Baseline_AB_ForcedCat_OutCatch_Stepped,  REcosystem_Baseline_AB_ForcedCat_OutGearCatch_Stepped,
                                     REcosystem_Baseline_RK4_ForcedCat_OutBiomass_Stepped, REcosystem_Baseline_RK4_ForcedCat_OutCatch_Stepped, REcosystem_Baseline_RK4_ForcedCat_OutGearCatch_Stepped)
       BaselineSteppedFiles <- list(BaselineABForcedCatOutBiomassStepped, BaselineABForcedCatOutCatchStepped, BaselineABForcedCatOutGearCatchStepped,
@@ -1226,8 +834,8 @@ if (CREATE_BASELINE_FILES == FALSE) {
       CurrentSteppedFiles  <- list(CurrentABForcedCatOutBiomassStepped,  CurrentABForcedCatOutCatchStepped,  CurrentABForcedCatOutGearCatchStepped,
                                    CurrentRK4ForcedCatOutBiomassStepped, CurrentRK4ForcedCatOutCatchStepped, CurrentRK4ForcedCatOutGearCatchStepped)      
     }
-    REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scene_stepped,method='AB', years=1:50)
-    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scene_stepped,method='RK4',years=1:50) # RSKRSK RK4
+    REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scenario_stepped,method='AB', years=1:50)
+    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scenario_stepped,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Stepped$out_Biomass,     BaselineSteppedFiles[[1]])
       writeDataFile(REcosystem_AB_Current_Stepped$out_Catch,       BaselineSteppedFiles[[2]])
