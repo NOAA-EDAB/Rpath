@@ -147,6 +147,51 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData,model
   return(ForcedMatrix) 
 }
 
+modifyFishingMatrix_constant <- function(modNum,species,fleets,typeData,forcingData,model,randomNumberType) {
+  group <- model$Group
+  pb <- model$PB
+  ForcedMatrix <- forcingData
+  speciesOrFleets <- c()
+  const1 <- 1
+  const2 <- 1
+  upperLimit <- 0.5
+  usePBValue <- FALSE
+  scaleFactorPB <- 0.01 # Needed this to add enough randomness to the plots, else they'd be fairly smooth
+  if (typeData == "Forced Effort") {
+    speciesOrFleets <- fleets
+  } else if (typeData == "Forced FRate" || typeData == "Forced Catch") {
+    speciesOrFleets <- species
+    const1 <- 0
+    usePBValue <- TRUE
+  } else {
+    print(paste0("Error: Found invalid typeData of: ",typeData))
+    return(ForcedMatrix)
+  }
+  index <- match(speciesOrFleets,group)
+  if (usePBValue) {
+    const2 <- scaleFactorPB*pb[index]
+  }
+  
+  j <- 0
+  for (i in 1:length(speciesOrFleets)) {
+    item <- speciesOrFleets[i]
+    vectorData           <- ForcedMatrix[,item]
+    # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED_VALUE+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
+    newVectorWithJitter <- c()
+    for (value in vectorData) {
+      j <- 1 # this should give a constant random value throughout the entire vector
+      # Not sure why I need the [1] index here, this should always be just a single value but sometimes it's a list
+      # Forced Effort: jitteredValue <- (randomNumber(i+j,0.5))[1]
+      # Forced FRate:  pb[species index]*randomNumber(i+j,0.5))[1]
+      jitteredValue <- (const1+const2*randomNumber(i+j,upperLimit,randomNumberType))[1]
+      newVectorWithJitter = append(newVectorWithJitter,jitteredValue)
+    }
+    ForcedMatrix[,item]  <- newVectorWithJitter
+  }
+  return(ForcedMatrix) 
+}
+
+
 #' Modify a scenario$forcing matrix
 #' 
 #' Modifies the appropriate columns from a scenario$forcing matrix.
@@ -173,7 +218,7 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
         # rval <- (randomNumber(i,FORCED_MIGRATION_BIOMASS_PCT)+FORCED_MIGRATION_BIOMASS_PCT)/2.0
         rval <- randomNumber(i,FORCED_MIGRATION_BIOMASS_PCT,randomNumberType)
         startValue <- rval
-        print(paste0("species: ",aSpecies,", biomass: ",speciesBiomass,", randomNum: ",rval,", startValue: ",startValue))
+        #print(paste0("species: ",aSpecies,", biomass: ",speciesBiomass,", randomNum: ",rval,", startValue: ",startValue))
       }
       # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))
       if (modifyType == JITTERED) {
