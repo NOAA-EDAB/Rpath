@@ -60,6 +60,9 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 // Accumulator for monthly catch values
    NumericVector cum_Catch(NUM_BIO+1);
    NumericVector cum_Gear_Catch(NumFishingLinks +1);
+   
+   // RSK - added for force by biomass
+   NumericMatrix force_bybio = as<NumericMatrix>(forcing["ForcedBio"]);
 
 //SML
 // Update sums of split groups to total biomass for derivative calcs
@@ -150,6 +153,10 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
       // Make a copy of the current state for bounds testing
          NumericVector cur_Biomass = as<NumericVector>(state["Biomass"]);
         
+        // RSK added forced biomass logic
+        NumericVector bforce = force_bybio((y-1) * STEPS_PER_YEAR + m, _);
+        cur_Biomass = ifelse(bforce>B_BaseRef * EPSILON, bforce, cur_Biomass);
+
         // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
         // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
         cur_Biomass = ifelse((cur_Biomass<0),NA_REAL,cur_Biomass);
@@ -613,7 +620,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    ActiveRespLoss = FoodGain  * ActiveRespFrac  * force_byactresp(dd,_);  												 
    MzeroLoss      = MzeroMort * state_Biomass;
    
-   
+  
    // Add mortality forcing
    for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
      FoodLoss[i]  *= force_bymort(dd, i);
@@ -701,6 +708,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
     NumericVector FORCE_F = (NumericVector)FORCED_FRATE(y,_);
     //  Special "CLEAN" fisheries assuming q=1, so specified input is Frate
         for (sp=1; sp<=NUM_LIVING+NUM_DEAD; sp++){
+
              caught = FORCED_CATCH(y, sp) + FORCE_F[sp] * state_Biomass[sp];
              // KYA Aug 2011 removed terminal effort option to allow negative fishing pressure 
                 // if (caught <= -EPSILON) {caught = TerminalF[sp] * state_Biomass[sp];}
@@ -743,6 +751,18 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    }
    for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
       MzeroLoss[sp] = 0.0;
+   }
+    
+// Add mortality forcing
+   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+     FoodLoss[i]  *= force_bymort(dd, i);
+     MzeroLoss[i] *= force_bymort(dd, i);
+   }
+   
+// Add migration forcing
+   MigrateLoss = clone(state_Biomass);
+   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+     MigrateLoss[i]  *= force_bymigrate(dd, i);
    }
 
    

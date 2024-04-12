@@ -1,3 +1,33 @@
+
+
+#' AB.params
+#'
+#' A tutorial ecosystem for teaching Rpath
+#'
+#' @format An Rpath balanced model object that contains:
+#' \describe{
+#'   \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
+#'   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
+#'   \item{stanzas}{Parameters for multistanza groups.}
+#'   \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}   
+#'   ...
+#' }
+"AB.params"
+
+#' REco.params
+#'
+#' A sample ecosystem for Rpath - Anchovy Bay.
+#'
+#' @format An Rpath balanced model object that contains:
+#' \describe{
+#'   \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
+#'   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
+#'   \item{stanzas}{Parameters for multistanza groups.}
+#'   \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}   
+#'   ...
+#' }
+"REco.params"
+
 #' Eastern Bering Sea 1990s Ecopath model (53 biological groups and 1 fleet). 
 #'
 #' Rpath inputs (unbalanaced model).
