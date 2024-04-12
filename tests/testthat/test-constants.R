@@ -1,7 +1,7 @@
 # ---- Modify this toggle to TRUE to generate the baseline files. ----
 # ---- Reset it back to FALSE to run the tests. ----------------------
-CREATE_BASELINE_FILES <- TRUE
-# CREATE_BASELINE_FILES <- FALSE
+# CREATE_BASELINE_FILES <- TRUE
+CREATE_BASELINE_FILES <- FALSE
 
 NUMBER_OF_STEPS <- 5 # should be an odd multiple of nrows=600 (i.e., 5,15,30)
 FACTOR_VALUE <- 5
