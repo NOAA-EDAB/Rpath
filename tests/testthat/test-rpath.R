@@ -146,10 +146,9 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
     sumDiffTable <- sumDiffTable + abs(sumColsCurr[i]-sumColsBase[i])
   }
 #print(paste0("***sumDiffTable: ",sumDiffTable))
-#print(paste0("SUM of currentDataFrame:  ", sum(currentDataFrame)))           # ok
-#print(paste0("SUM of baselineDataFrame: ", sum(baselineDataFrame)))          # ok
+print(paste0("SUM of current,baselineDataFrame:  ", sum(currentDataFrame), ", ",sum(baselineDataFrame)))          # ok
 #print("Comparing if sumDiffTable/sum(currentDataFrame) <= TOLERANCE_VALUE")
-print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
+#print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
 areIdentical <- (sumDiffTable/ sum(currentDataFrame) <= TOLERANCE_VALUE)
 #print(paste0("areIdentical: ",areIdentical))  
                    
