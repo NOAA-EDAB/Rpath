@@ -149,7 +149,7 @@ runTestRDS <- function(runNum,tableName,forcedData,forcedType,baseAlg,currAlg,ba
 #print(paste0("SUM of currentDataFrame:  ", sum(currentDataFrame)))           # ok
 #print(paste0("SUM of baselineDataFrame: ", sum(baselineDataFrame)))          # ok
 #print("Comparing if sumDiffTable/sum(currentDataFrame) <= TOLERANCE_VALUE")
-#print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
+print(paste0("Is ",sumDiffTable,"/",sum(currentDataFrame)," <= ",TOLERANCE_VALUE," ?"))
 areIdentical <- (sumDiffTable/ sum(currentDataFrame) <= TOLERANCE_VALUE)
 #print(paste0("areIdentical: ",areIdentical))  
                    
