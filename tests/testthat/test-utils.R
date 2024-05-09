@@ -173,7 +173,7 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
         # rval <- (randomNumber(i,FORCED_MIGRATION_BIOMASS_PCT)+FORCED_MIGRATION_BIOMASS_PCT)/2.0
         rval <- randomNumber(i,FORCED_MIGRATION_BIOMASS_PCT,randomNumberType)
         startValue <- rval
-        print(paste0("species: ",aSpecies,", biomass: ",speciesBiomass,", randomNum: ",rval,", startValue: ",startValue))
+        # print(paste0("species: ",aSpecies,", biomass: ",speciesBiomass,", randomNum: ",rval,", startValue: ",startValue))
       }
       # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))
       if (modifyType == JITTERED) {
