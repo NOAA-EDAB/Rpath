@@ -121,7 +121,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   
   #Special case where B and EE are known then need to solve for BA
   #living[BEE == 1, b := b - (Biomass * PB * EE)]
-  #living[BEE  == 1, diag.a := 0] #Need to wrk on this solution
+  #living[BEE  == 1, diag.a := 0] #Need to work on this solution
   
   A       <- matrix(0, nliving, nliving)
   diag(A) <- living[, diag.a]
@@ -323,20 +323,24 @@ return(path.model)
 rpath.stanzas <- function(Rpath.params){
   #Need to define variables to eliminate check() note about no visible binding
   StGroupNum <- First <- StanzaNum <- VBGF_d <- VBGF_Ksp <- Last <- GroupNum <- NULL
-  WageS <- age <- QageS <- Survive <- Z <- survive_L <- bs.num <- qs.num <- Leading <- NULL
+  WageS <- age <- QageS <- Survive <- Z <- survive_L <- bs.num <- qs.num <- Leading <- Oldest <- NULL
   Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- BAB <- Ex <- NULL
-  
+
   #Determine the total number of groups with multistanzas
   Nsplit     <- Rpath.params$stanza$NStanzaGroups
   groupfile  <- Rpath.params$stanza$stgroups
   stanzafile <- Rpath.params$stanza$stindiv
   
+  # Add Oldest column so age groups will be properly calculated
+  stanzafile[Last == max(Last), Oldest := T, by = StGroupNum]
+  stanzafile[is.na(Oldest), Oldest := F]
+  
   #Need to add vector of stanza number
   lastmonth <- rep(NA,Nsplit)
   for(isp in 1:Nsplit){
     #Put the stanzas in order for each split species
-    stnum <- order(stanzafile[StGroupNum == isp, First])
+    stnum <- order(stanzafile[StGroupNum == isp, First])    
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
 
     #Calculate the last month for the final ("leading") stanza
@@ -350,7 +354,7 @@ rpath.stanzas <- function(Rpath.params){
     #(maybe data table has a better way...)
     stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
     st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
-    
+
     gp <- groupfile[isp,]
     #Max age class in months should be one less than a multiple of 12
     #(trying 5999 - probably overkill but for safety)
@@ -370,8 +374,9 @@ rpath.stanzas <- function(Rpath.params){
   groupfile[, last := lastmonth]
   
   for(isp in 1:Nsplit){
-    nstanzas <- groupfile[StGroupNum == isp, nstanzas]
-    stanzafile[StGroupNum == isp & Leading, Last := lastmonth[isp]]
+    nstanzas <- groupfile[
+      StGroupNum == isp, nstanzas]
+    stanzafile[StGroupNum == isp & Oldest, Last := lastmonth[isp]]
     
     #Grab ecopath group codes
     group.codes <- stanzafile[StGroupNum == isp, GroupNum]
@@ -379,7 +384,7 @@ rpath.stanzas <- function(Rpath.params){
     #Grab index for first and last months for stanzas
     first   <- stanzafile[StGroupNum == isp, First]
     second  <- stanzafile[StGroupNum == isp, Last]
-        
+
     #Calculate weight and consumption at age    
     StGroup <- data.table(age = stanzafile[StGroupNum == isp & StanzaNum == 1, First]:
                             lastmonth[isp])
