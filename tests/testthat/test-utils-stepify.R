@@ -88,7 +88,6 @@ stepifyMatrix <- function(forcedEffortMatrix,memberNames,stepFactor) {
   return(ForcedMatrix)
 }
 
-
 #' Stepify Biomass
 #'
 #' Takes as input a biomass value and stepifies the value by dividing the number of months
