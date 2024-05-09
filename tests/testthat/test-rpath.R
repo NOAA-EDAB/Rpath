@@ -675,7 +675,7 @@ testthat::test_that("Rpath Unit Tests", {
       runTestRDS(inc(runNum),"out_Catch",      theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[5]], CurrentJitterFilenames[[5]], species)
       runTestRDS(inc(runNum),"out_Gear_Catch", theTypeData, "Random", "RK4", "RK4", BaselineJitterDataFrames[[6]], CurrentJitterFilenames[[6]], species)
     }
-  }
+  } 
 
 # if (CREATE_BASELINE_FILES == FALSE) {
 #   return()
