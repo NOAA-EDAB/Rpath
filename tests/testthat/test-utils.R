@@ -2,15 +2,15 @@ source("test-constants.R")
 
 #' Random number generator
 #' 
-#' This function returns a seeded random number from a uniform distribution between
+#' This function returns a random number from a uniform distribution between
 #' a min and max value.
 #'
-#' @param seed : the random "seed" value to make the function deterministic
+#' @param pctToJitter : the percent to jitter (value=0.5 means 50%)
+#' @param positiveOnly : boolean that signifies random number returned is limited to non-negative numbers
 #'
 #' @return Returns the random value
 #' 
-randomNumber <- function(seed,pctToJitter,positiveOnly) {
-  set.seed(seed)
+randomNumber <- function(pctToJitter,positiveOnly) {
   minJitter <- -pctToJitter
   maxJitter <- pctToJitter
   if (positiveOnly) {
@@ -112,7 +112,7 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData,model
   const2 <- 1
   upperLimit <- 0.5
   usePBValue <- FALSE
-  scaleFactorPB <- 0.01 # Needed this to add enough randomness to the plots, else they'd be fairly smooth
+  scaleFactorPB <- 0.0001 # Needed this to add enough randomness to the plots, else they'd be fairly smooth
   if (typeData == "Forced Effort") {
     speciesOrFleets <- fleets
   } else if (typeData == "Forced FRate" || typeData == "Forced Catch") {
@@ -132,14 +132,11 @@ modifyFishingMatrix <- function(modNum,species,fleets,typeData,forcingData,model
   for (i in 1:length(speciesOrFleets)) {
     item <- speciesOrFleets[i]
     vectorData           <- ForcedMatrix[,item]
-    # matrixDataWithJitter <- addJitter(matrixData,modNum*SEED_OFFSET*SEED_VALUE+i,"Months","Effort",paste0(typeData," with Random Noise - ",item))
     newVectorWithJitter <- c()
     for (value in vectorData) {
       j <- j + 1
       # Not sure why I need the [1] index here, this should always be just a single value but sometimes it's a list
-      # Forced Effort: jitteredValue <- (randomNumber(i+j,0.5))[1]
-      # Forced FRate:  pb[species index]*randomNumber(i+j,0.5))[1]
-      jitteredValue <- (const1+const2*randomNumber(i+j,upperLimit,randomNumberType))[1]
+      jitteredValue <- (const1+const2*randomNumber(upperLimit,randomNumberType))[1]
       newVectorWithJitter = append(newVectorWithJitter,jitteredValue)
     }
     ForcedMatrix[,item]  <- newVectorWithJitter
@@ -170,21 +167,20 @@ modifyForcingMatrix <- function (modNum,species,modifyType,typeData,forcingData,
       speciesBiomass <- scenario$start_state$Biomass[aSpecies]
       startValue <- speciesBiomass
       if (typeData == FORCED_MIGRATION) {
-        # rval <- (randomNumber(i,FORCED_MIGRATION_BIOMASS_PCT)+FORCED_MIGRATION_BIOMASS_PCT)/2.0
-        rval <- randomNumber(i,FORCED_MIGRATION_BIOMASS_PCT,randomNumberType)
+        # rval <- (randomNumber(FORCED_MIGRATION_BIOMASS_PCT)+FORCED_MIGRATION_BIOMASS_PCT)/2.0
+        rval <- randomNumber(FORCED_MIGRATION_BIOMASS_PCT,randomNumberType)
         startValue <- rval
         # print(paste0("species: ",aSpecies,", biomass: ",speciesBiomass,", randomNum: ",rval,", startValue: ",startValue))
       }
-      # print(paste0(modNum," ",i," ",SEED_OFFSET," ",aSpecies))
       if (modifyType == JITTERED) {
         # print(paste0("start value: ",i,", ",startValue))
-        ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(typeData, startValue, numMonths, modNum*i*SEED_OFFSET, 
-                                                               "Months","Biomass (mt/km²)",
+        ForcedMatrix[,aSpecies] <- createJitterVectorFromValue(typeData, startValue, numMonths, 
+                                                               "Months","Biomass (mt/km\U00B2)",
                                                                paste0(typeData,' with ',modifyType,' Noise - ',aSpecies),
                                                                POSITIVE_AND_NEGATIVE)
       } else {
         stepType <- ((i-1)%%3)+1 # Only current step types are 1, 2, or 3
-        ForcedMatrix[,aSpecies] <- stepifyBiomass(typeData, startValue, numMonths, stepType, "Months","Biomass (mt/km²)",
+        ForcedMatrix[,aSpecies] <- stepifyBiomass(typeData, startValue, numMonths, stepType, "Months","Biomass (mt/km\U00B2)",
                                                   paste0(typeData,' with ',modifyType,' Noise - ',aSpecies), scaleFactors[i])
       }
     }

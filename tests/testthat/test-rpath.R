@@ -20,6 +20,9 @@ print(paste0("OUTPUT_DATA_DIR: ",         OUTPUT_DATA_DIR)) #RSK
 print(paste0("INPUT_DATA_DIR_BASELINE: ", INPUT_DATA_DIR_BASELINE)) #RSK
 print(paste0("INPUT_DATA_DIR_CURRENT: ",  INPUT_DATA_DIR_CURRENT)) #RSK
 
+# Set the seed here so that all runs will be deterministic.
+set.seed(SEED_VALUE)
+
 # Create the current and output directories if they don't already exist.
 if (! dir.exists(INPUT_DATA_DIR_CURRENT)) {
   dir.create(INPUT_DATA_DIR_CURRENT,recursive=TRUE)
@@ -612,7 +615,6 @@ testthat::test_that("Rpath Unit Tests", {
       # in the tests.yml file but don't fail when run via R-CMD-Check.yml.
       #
       # This line doesn't fail in git actions (it's just not the exact logic I need)
-      # set.seed(modNum*typeNum*SEED_OFFSET)
       # REcosystem_scenario_jitter$forcing$ForcedBio <- jitter(REcosystem_scenario_jitter$forcing$ForcedBio,factor=FACTOR_VALUE)
       #
       # Another way to jitter
@@ -626,7 +628,7 @@ testthat::test_that("Rpath Unit Tests", {
       #  speciesBiomass <- REcosystem_scenario_jitter$start_state$Biomass[aSpecies]
       #  totSpeciesBiomass <- totSpeciesBiomass + speciesBiomass
       #  for (month in 1:numMonths) {
-      #    randVal <- randomNumber(modNum*typeNum*SEED_OFFSET+speciesNum*numMonths+month)
+      #    randVal <- ...
       #    jitteredValue <- speciesBiomass * (1.0 + randVal)
       #    totRandVal <- totRandVal + randVal
       #    jitterVector <- append(jitterVector,jitteredValue)
@@ -742,7 +744,7 @@ testthat::test_that("Rpath Unit Tests", {
   numMonths <- nrow(REcosystem_scenario$fishing$ForcedEffort)
   REcosystem_scenario_jitter <- REcosystem_scenario
   fishingOriginalData  <- list(REcosystem_scenario$fishing$ForcedEffort, REcosystem_scenario$fishing$ForcedFRate, REcosystem_scenario$fishing$ForcedCatch)
-  typeData             <- list(FORCED_EFFORT,FORCED_FRATE,FORCED_CATCH)
+  typeData             <- list(FORCED_EFFORT, FORCED_FRATE, FORCED_CATCH)
   for (i in 1:length(fishingOriginalData)) {
     theTypeData  <- typeData[[i]]
     modNum <- modNum + 1
