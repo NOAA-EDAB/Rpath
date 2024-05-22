@@ -176,7 +176,6 @@ areIdentical <- (sumDiffTable/ sum(currentDataFrame) <= TOLERANCE_VALUE)
 }
 
 
-
 testthat::test_that("Rpath Unit Tests", {
   BaselineJitterTables  <- list()
   BaselineJitterFiles   <- list()
