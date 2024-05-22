@@ -56,7 +56,7 @@ readDataFile <- function(filename,fill=TRUE,sep="") {
 #' @return None
 #' 
 writeDataFile <- function(object,filename) {
-  saveRDS(object,file=filename)
+  saveRDS(object,file=filename,version=2)
   # write.table(object,file=filename)
 }
 
