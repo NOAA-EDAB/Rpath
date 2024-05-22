@@ -171,7 +171,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
         
         // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
         // should still write the NA or INF values back to the output.
-        if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
+        if (bool(any(is_na(cur_Biomass))) || bool(any(is_infinite(cur_Biomass))) || bool(any(is_nan(cur_Biomass))))  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
         }
         
@@ -382,7 +382,7 @@ int y, m, dd;
     // should still write the NA or INF values back to the output.
     //NOJUV make sure crash tests work for juveniles.
    
-           if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
+           if (bool(any(is_na(cur_Biomass))) || bool(any(is_infinite(cur_Biomass))) || bool(any(is_nan(cur_Biomass))))  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
   
