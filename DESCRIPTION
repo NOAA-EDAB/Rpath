@@ -46,3 +46,4 @@ Depends:
     R (>= 2.10)
 Config/testthat/edition: 3
 LazyData: true
+
