@@ -1,3 +1,12 @@
+# Rpath 0.9.0
+
+## Major Changes
+- Added Ecosense routines and vignettes
+- Added example ecosystems
+- Added Unit Tests
+- Fixed bug in stanza month calculations that affected some species
+- Changed versioning to reflect near-release status.
+
 # Rpath 0.0.1.2
 
 ## Major Changes
