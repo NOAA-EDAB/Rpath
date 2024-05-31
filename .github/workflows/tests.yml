@@ -1,0 +1,94 @@
+
+on:
+  push:
+    paths:
+    - '.github/workflows/tests.yml'
+    - 'R/*'
+    - 'tests/testthat/*'
+    - 'README.md'
+    - 'DESCRIPTION'
+  pull_request:
+    paths:
+    - '.github/workflows/tests.yml'
+    - 'R/*'
+    - 'tests/testthat/*'
+
+name: Unit-Tests
+
+jobs:
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: r-lib/actions/setup-r@v2
+  #     - uses: r-lib/actions/setup-pandoc@v2
+  #     - name: Install dependencies
+  #       run: Rscript -e "install.packages(c('testthat', 'tidyverse', 'here'))"
+  #     - name: Run tests
+  #       run: Rscript -e "source('tests/testthat.R')"
+
+  Unit-Tests:
+    runs-on: ${{matrix.config.os}}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        #os: [macos-latest, ubuntu-latest, windows-latest]
+        #os: [ubuntu-latest]
+        config:
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest,  r: 'oldrel-1'}
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+#      R_REMOTES_NO_ERRORS_FROM_WARNINGS: false
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+#          r-version: '4.3.1'
+          
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Install command line packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt-get install libcurl4-openssl-dev libgit2-dev
+
+      - name: Install dependencies
+        #run: Rscript -e "install.packages(c('remotes','testthat', 'tidyverse', 'here'))"
+        run: |
+          install.packages(c('usethis','remotes','testthat','tidyverse','here','rmarkdown','qpdf','distillery','ggpubr','rlist'))
+          remotes::install_github("NOAA-EDAB/Rpath")
+        shell: Rscript {0}
+
+      - name: Run tests
+        #run: Rscript -e "source('tests/testthat.R')"
+        run: |
+          source(here::here("data-raw/REcosystem.R"))
+          source(here::here("tests/testthat.R"))
+        shell: Rscript {0}
+        
+      # - name: commit data files
+      #   run: |
+      #     git config user.name  github-actions
+      #     git config user.email github-actions@github.com
+      #     file.copy('here::here("tests/testthat/Rplots.pdf")",to=here::here("inst/extdata/Rplots.pdf"))
+      #     git add inst/extdata/Rplots.pdf
+      #     git commit -m "automated commit from testthat yml"
+      #     git push

@@ -1,5 +1,5 @@
 ---
-title: "Rsim using R Ecosystem"
+title: "Run a dynamic food web simulation in Rsim"
 author: "Sean M. Lucey"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -8,18 +8,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-Rpath is an implementation of the ecosystem model Ecopath with Ecosim (EwE; 
-Christensen and Pauly 1992^[Christensen and Pauly. 1992. ECOPATH II - a software
-for balancing steady-state models and calculating network characteristics. 
-Ecological Modelling 61:169-85], Walters et al. 1997^[Walters et al. 1997. 
-Structuring dynamic models of exploited ecosystems from trophic mass-balance 
-assessments. Reviews of Fish Biology and Fisheries 7:1-34]).  This vignette 
-describes some of the basic functionality of the package using a fictional 
-ecosystem, R Ecosystem.  Any resemblance to an actual ecosystem is purely 
-coincidental.  To see the underlying mathematics please refer to Lucey et al. 
-(in prep^[Lucey et al. in prep. Improving the EBFM toolbox with an alternative 
-open source version of Ecopath with Ecosim]).  
 
 ```{r rpath load, echo = F}
 knitr::opts_chunk$set(
@@ -30,8 +18,8 @@ library(Rpath); library(data.table)
 
 ## Running rsim
 
-Rsim is the ecosim implementation of the EwE code in R.  In order to procede you
-must have a valid Rpath object.  The steps for setting this up are discribed in 
+Rsim is the ecosim implementation of the EwE code in R.  In order to proceed you
+must have a valid Rpath object.  The steps for setting this up are described in 
 the vignette "Rpath using R Ecosystem".
 
 ```{r creating Rpath object, echo = F}
