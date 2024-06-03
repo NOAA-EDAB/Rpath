@@ -142,7 +142,7 @@ print(REco, morts = T)
 summary(REco)
 REco$TL
 
-## ----Food Web Plots, fig.align = 'center', fig.height = 7, fig.width = 7------
+## ----FoodWebPlots, fig.align = 'center', fig.height = 7, fig.width = 7--------
 webplot(REco)
 webplot(REco, labels = T)
 webplot(REco, fleets = T, highlight = 'AduRoundfish1')

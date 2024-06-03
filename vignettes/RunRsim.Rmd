@@ -4,7 +4,7 @@ author: "Sean M. Lucey"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Rsim using R Ecosystem}
+  %\VignetteIndexEntry{Run a dynamic food web simulation in Rsim}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -194,7 +194,7 @@ In addition, there is a quick graphical routine for plotting
 biomass trajectories over time.  Other plots similar to the group plots are possible
 but at this time we do not have a built-in function.
 
-```{r ecosim equilibrium plot, fig.height = 7, fig.width = 9}
+```{r ecosimEquilibriumPlot, fig.height = 7, fig.width = 9}
 rsim.plot(REco.run1, groups[1:22])
 ```
 

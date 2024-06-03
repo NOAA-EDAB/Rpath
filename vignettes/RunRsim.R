@@ -140,6 +140,6 @@ REco.sim <- adjust.fishing(REco.sim, 'ForcedEffort', group = 'Trawlers', sim.yea
 ## ----rsim.run-----------------------------------------------------------------
 REco.run1 <- rsim.run(REco.sim, method = 'RK4', years = 1:100)
 
-## ----ecosim equilibrium plot, fig.height = 7, fig.width = 9-------------------
+## ----ecosimEquilibriumPlot, fig.height = 7, fig.width = 9---------------------
 rsim.plot(REco.run1, groups[1:22])
 
