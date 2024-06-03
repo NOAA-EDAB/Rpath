@@ -7,6 +7,7 @@ reference:
   - read.rpath.params
   - rpath
   - rpath.stanzas
+  - starts_with("rpath")
 - title: "Rsim"
   desc: "Functions for creating dynamic simulations of the mass balance model"
 - contents:
@@ -16,6 +17,19 @@ reference:
   - rsim.params
   - rsim.fishing
   - rsim.forcing
+  - rsim.deriv
+  - rsim.diet
+  - rsim.mort
+  - rsim.stanzas
+  - rsim.state
+  - starts_with("get.rsim")
+  - starts_with("set.rsim")
+- title: "Models"
+  desc: "Example ecosysem models"
+- contents:
+  - starts_with("Ecosense")
+  - AB.params
+  - REco.params
 - subtitle: "Adjustment Tools"
   desc: "Functions for adjusting Rsim scenarios"
 - contents:
@@ -27,13 +41,16 @@ reference:
 - contents:
   - webplot
   - rsim.plot
+  - stanzaplot
 - title: "Output Tools"
   desc: "Functions for writing and exporting outputs from Rpath"
 - contents:
   - write.rpath.params
   - write.Rpath
   - write.Rsim
+  - frate.table
   - extract.node
+  - Rpath-package
 - title: "Auxiliary Tools"
   desc: "Additional tools"
 - contents:
