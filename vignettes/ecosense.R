@@ -1,13 +1,13 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 library(Rpath); library(data.table); library(viridis)
-knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+#knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 
-## ----load the unbalanced models, balance the models, setup rsim scenario objects----
+## ----loadbalanacemodels-------------------------------------------------------
 # load the unbalanced models
-load("data/Ecosense.EBS.rda")
-load("data/Ecosense.ECS.rda")
-load("data/Ecosense.GOA.rda")
+# load("data/Ecosense.EBS.rda")
+# load("data/Ecosense.ECS.rda")
+# load("data/Ecosense.GOA.rda")
 # balance the models
 EBS_bal <- rpath(Ecosense.EBS)
 ECS_bal <- rpath(Ecosense.ECS)
@@ -16,25 +16,25 @@ GOA_bal <- rpath(Ecosense.GOA)
 EBS_scene <- rsim.scenario(EBS_bal, Ecosense.EBS, years=1:100)
 ECS_scene <- rsim.scenario(ECS_bal, Ecosense.ECS, years=1:100)
 GOA_scene <- rsim.scenario(GOA_bal, Ecosense.GOA, years=1:100)
-# source ecosense.R
-source("R/ecosense.R", local = knitr::knit_global())
-ls()
+# # source ecosense.R
+# source("R/ecosense.R", local = knitr::knit_global())
+# ls()
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----genmod, echo=TRUE--------------------------------------------------------
 # One set of Ecosim parameters for the EBS model
 rsim.sense(EBS_scene,Ecosense.EBS,Vvary = c(0,0), Dvary = c(0,0))
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----init, echo=TRUE----------------------------------------------------------
 # Setting the burn-in period in the EBS scenario object to 50 years.
 EBS_scene$params$BURN_YEARS <- 50
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----ensemble, echo=TRUE------------------------------------------------------
 NUM_RUNS <- 1000 # how many ecosystem parameter sets to generate
 parlist<-as.list(rep(NA,NUM_RUNS)) # create lists to store the generated parameters
 kept<-rep(NA,NUM_RUNS) # object to keep track of kept systems
 set.seed(666) # Optional, set seed so output can be replicated
 
-## ----generator loop, echo=TRUE, results='hide'--------------------------------
+## ----generatorloop, echo=TRUE, results='hide'---------------------------------
 for (i in 1:NUM_RUNS){
   EBSsense <- EBS_scene # scenario object
   # INSERT SENSE ROUTINE BELOW
@@ -52,12 +52,12 @@ for (i in 1:NUM_RUNS){
   parlist[[i]]$BURN_YEARS <- 1
 }
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----status, echo=TRUE--------------------------------------------------------
 KEPT <- which(kept==T); KEPT # the number associated with the kept system
 nkept <- length(KEPT); nkept # how many were kept
 1-(nkept/NUM_RUNS) # rejection rate
 
-## ----echo=TRUE, results='hide'------------------------------------------------
+## ----simstuff, echo=TRUE, results='hide'--------------------------------------
 ecos <- as.list(rep(NA,length(KEPT))) # lists for simulated ecosystems
 k <- 0  # counter for simulated ecosystems
 for (i in KEPT) {
@@ -70,7 +70,7 @@ for (i in KEPT) {
   print(c("Ecosystem no.",k,"out of",nkept)) # progress output to console
 }
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----relbio, echo=TRUE--------------------------------------------------------
 relB_ecos <- as.list(rep(NA,length(KEPT))) # list to output relative biomass
 k <- 0
 for (i in 1:nkept) {
@@ -86,16 +86,16 @@ for (i in 1:nkept) {
   relB_ecos[[k]] <- rel.bio
 }
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----walleye, echo=TRUE-------------------------------------------------------
 this_species <- "Walleye pollock"
 plot_mat <- matrix(nrow=1200, ncol=nkept) # matrix of pollock trajectories from all generated systems
 for (i in 1:nkept) {
   plot_mat[,i] <- relB_ecos[[i]][,this_species]
 }
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----plottraj, echo=TRUE------------------------------------------------------
 plot_col <- viridis(nkept)
-layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
+#layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
 plot(1:1200, relB_ecos[[1]][,this_species], type='n', xlab="Months",
      ylab="Relative biomass", ylim=c(min(plot_mat),max(plot_mat)), main=this_species)
 # one line for pollock in each of the generated systems
@@ -106,7 +106,7 @@ for (i in 1:nkept) {
 boxplot(plot_mat[1200,], ylim=c(min(plot_mat),max(plot_mat)), yaxt='n')
 axis(side=2, at=c(seq(0,150,50)), tick=TRUE, labels=F)
 
-## ----echo=TRUE, results='hide'------------------------------------------------
+## ----run, echo=TRUE, results='hide'-------------------------------------------
 ecos_sp <- as.list(rep(NA,length(KEPT))) # lists for simulated ecosystems
 k <- 0  # counter for simulated ecosystems
 for (i in KEPT) {
@@ -120,7 +120,7 @@ for (i in KEPT) {
   print(c("Ecosystem no.", k, "out of", nkept)) # progress output to console
 }
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----viz, echo=TRUE-----------------------------------------------------------
 relB_ecos_sp <- as.list(rep(NA,length(KEPT)))
 k <- 0
 for (i in 1:nkept) {
@@ -136,12 +136,12 @@ for (i in 1:nkept) {
   relB_ecos_sp[[k]] <- rel.bio
 }
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----walleyeplot, echo=TRUE---------------------------------------------------
 plot_mat_sp <- matrix(nrow=1200, ncol=nkept)
 for (i in 1:nkept) {
   plot_mat_sp[,i] <- relB_ecos_sp[[i]][,this_species]
 }
-layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
+#layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
 plot(601:1200, relB_ecos_sp[[1]][601:1200,this_species], type='n', xlab="Months",
      ylab="Relative biomass", ylim=c(min(plot_mat_sp[601:1200,]),max(plot_mat_sp[601:1200,])), main=this_species)
 for (i in 1:nkept) {
@@ -149,7 +149,7 @@ for (i in 1:nkept) {
 }
 boxplot(plot_mat_sp[1200,], ylim=c(min(plot_mat_sp[601:1200,]),max(plot_mat_sp[601:1200,])))
 
-## ----echo=TRUE----------------------------------------------------------------
+## ----perturb, echo=TRUE-------------------------------------------------------
 sp_perturb_out <- matrix(nrow=nkept, ncol=(EBS_bal$NUM_LIVING+EBS_bal$NUM_DEAD))
 for(i in 1:nkept){
   sp_perturb_out[i,] <- relB_ecos_sp[[i]][1200,]
