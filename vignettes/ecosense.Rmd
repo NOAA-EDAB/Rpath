@@ -2,9 +2,7 @@
 title: "Generating an Rsim ensemble with Ecosense"
 author: "George A. Whitehouse"
 date: "`r Sys.Date()`"
-output: 
-  html_document: default
-  pdf_document: default
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Generating an Rsim ensemble with Ecosense}
   %\VignetteEncoding{UTF-8}
@@ -14,7 +12,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(Rpath); library(data.table); library(viridis)
-knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+#knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
 Rpath is an R implementation of the food web modeling program Ecopath with Ecosim
@@ -45,11 +43,11 @@ producer, two detrital compartments, and there are no stanzas. To use Ecosense y
 need an `rpath.params` object and the corresponding `rsim.scenario` object. First, 
 load the unbalanced models, balance them, and setup the rsim scenario objects.
 
-```{r load the unbalanced models, balance the models, setup rsim scenario objects}
+```{r loadbalanacemodels}
 # load the unbalanced models
-load("data/Ecosense.EBS.rda")
-load("data/Ecosense.ECS.rda")
-load("data/Ecosense.GOA.rda")
+# load("data/Ecosense.EBS.rda")
+# load("data/Ecosense.ECS.rda")
+# load("data/Ecosense.GOA.rda")
 # balance the models
 EBS_bal <- rpath(Ecosense.EBS)
 ECS_bal <- rpath(Ecosense.ECS)
@@ -58,9 +56,9 @@ GOA_bal <- rpath(Ecosense.GOA)
 EBS_scene <- rsim.scenario(EBS_bal, Ecosense.EBS, years=1:100)
 ECS_scene <- rsim.scenario(ECS_bal, Ecosense.ECS, years=1:100)
 GOA_scene <- rsim.scenario(GOA_bal, Ecosense.GOA, years=1:100)
-# source ecosense.R
-source("R/ecosense.R", local = knitr::knit_global())
-ls()
+# # source ecosense.R
+# source("R/ecosense.R", local = knitr::knit_global())
+# ls()
 ```
 ### Setting up Ecosense
 
@@ -76,7 +74,7 @@ A single parameter set can be generated with a call to `rsim.sense`. The object
 returned by `rsim.sense` is equivalent to the list of parameters in an `rsim.scenario` 
 object (e.g., scenario_object$params).
 
-```{r echo=TRUE}
+```{r genmod, echo=TRUE}
 # One set of Ecosim parameters for the EBS model
 rsim.sense(EBS_scene,Ecosense.EBS,Vvary = c(0,0), Dvary = c(0,0))
 ```
@@ -88,7 +86,7 @@ population growth or population crash. Such as predator consumption and producti
 that exceeds the production of prey. The length of the burn-in period can be set
 in the original `rsim.scenario` object.
 
-```{r , echo=TRUE}
+```{r init, echo=TRUE}
 # Setting the burn-in period in the EBS scenario object to 50 years.
 EBS_scene$params$BURN_YEARS <- 50
 ```
@@ -103,7 +101,7 @@ To generate an ensemble of parameter sets you can repeat the call to `rsim.sense
 in a loop. First, determine the number of parameter sets you wish to generate and 
 create lists to store those parameter sets. Set up another vector to keep track 
 of which generated parameter sets were rejected or retained.
-```{r , echo=TRUE}
+```{r ensemble, echo=TRUE}
 NUM_RUNS <- 1000 # how many ecosystem parameter sets to generate
 parlist<-as.list(rep(NA,NUM_RUNS)) # create lists to store the generated parameters
 kept<-rep(NA,NUM_RUNS) # object to keep track of kept systems
@@ -118,7 +116,7 @@ model, assigns the generated base biomass (B_BaseRef) to the starting biomass in
 the `rsim.scenario` object, sets the burn years to 50, runs a simulation with `rsim.run`, 
 and rejects or retains parameter sets based on the boundaries described above.
 
-```{r generator loop, echo=TRUE, results='hide'}
+```{r generatorloop, echo=TRUE, results='hide'}
 for (i in 1:NUM_RUNS){
   EBSsense <- EBS_scene # scenario object
   # INSERT SENSE ROUTINE BELOW
@@ -150,9 +148,8 @@ The 52nd generated parameter set was the first to survive the 50 year burn-in:
 
   52 : success!\
 
-To determine which of the 1,000 generated systems survived burn-in, how many survived 
-burn-in and what the rejection rate was:
-```{r, echo=TRUE}
+To determine which of the 1,000 generated systems survived burn-in, how many survived burn-in and what the rejection rate was:
+```{r status, echo=TRUE}
 KEPT <- which(kept==T); KEPT # the number associated with the kept system
 nkept <- length(KEPT); nkept # how many were kept
 1-(nkept/NUM_RUNS) # rejection rate
@@ -165,7 +162,7 @@ All of the retained Rsim parameter sets can be run through a simulation with ano
 for loop. This loop subjects each of the 43 retained parameter sets in this example 
 to a 100 year simulation without any additional perturbations, the first 50 years 
 of which is the burn-in period.
-```{r, echo=TRUE, results='hide'}
+```{r simstuff, echo=TRUE, results='hide'}
 ecos <- as.list(rep(NA,length(KEPT))) # lists for simulated ecosystems
 k <- 0  # counter for simulated ecosystems
 for (i in KEPT) {
@@ -182,7 +179,7 @@ for (i in KEPT) {
 Because biomass can differ greatly between the generated parameter sets, relative
 biomass can be used for plotting. This loop calculates the relative biomass of each 
 group in each system, relative to their starting biomass, as drawn by Ecosense.
-```{r, echo=TRUE}
+```{r relbio, echo=TRUE}
 relB_ecos <- as.list(rep(NA,length(KEPT))) # list to output relative biomass
 k <- 0
 for (i in 1:nkept) {
@@ -201,7 +198,7 @@ for (i in 1:nkept) {
 Here's an example plot of walleye pollock from all the retained Rsim parameter sets. 
 First setup a matrix to store the pollock trajectories from the simulations with 
 the retained parameter sets.
-```{r, echo=TRUE}
+```{r walleye, echo=TRUE}
 this_species <- "Walleye pollock"
 plot_mat <- matrix(nrow=1200, ncol=nkept) # matrix of pollock trajectories from all generated systems
 for (i in 1:nkept) {
@@ -209,9 +206,9 @@ for (i in 1:nkept) {
 }
 ```
 Then plot all the trajectories:
-```{r, echo=TRUE}
+```{r plottraj, echo=TRUE}
 plot_col <- viridis(nkept)
-layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
+#layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
 plot(1:1200, relB_ecos[[1]][,this_species], type='n', xlab="Months",
      ylab="Relative biomass", ylim=c(min(plot_mat),max(plot_mat)), main=this_species)
 # one line for pollock in each of the generated systems
@@ -233,7 +230,7 @@ In this example, we'll increase the fishing mortality on walleye pollock using t
 `adjust.fishing` function. The first 50 years of the simulation are the burn-in 
 period. So, the perturbation is put in place from year 51 to 100, and in this example
 we increase walleye pollock fishing mortality by 2X.
-```{r, echo=TRUE, results='hide'}
+```{r run, echo=TRUE, results='hide'}
 ecos_sp <- as.list(rep(NA,length(KEPT))) # lists for simulated ecosystems
 k <- 0  # counter for simulated ecosystems
 for (i in KEPT) {
@@ -251,7 +248,7 @@ To visualize the results, we use relative biomass again but this time relative t
 biomass at the end of the burn-in period (year 50). That is the point in time where
 the perturbation began and the point from which we want to measure any response 
 or change.
-```{r, echo=TRUE}
+```{r viz, echo=TRUE}
 relB_ecos_sp <- as.list(rep(NA,length(KEPT)))
 k <- 0
 for (i in 1:nkept) {
@@ -269,12 +266,12 @@ for (i in 1:nkept) {
 ```
 Plot the trajectories for walleye pollock from this perturbation. Note, the x-axis 
 starts at the begining of the perturbation (January of year 51).
-```{r, echo=TRUE}
+```{r walleyeplot, echo=TRUE}
 plot_mat_sp <- matrix(nrow=1200, ncol=nkept)
 for (i in 1:nkept) {
   plot_mat_sp[,i] <- relB_ecos_sp[[i]][,this_species]
 }
-layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
+#layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
 plot(601:1200, relB_ecos_sp[[1]][601:1200,this_species], type='n', xlab="Months",
      ylab="Relative biomass", ylim=c(min(plot_mat_sp[601:1200,]),max(plot_mat_sp[601:1200,])), main=this_species)
 for (i in 1:nkept) {
@@ -289,7 +286,7 @@ a perturbation as in this example might illicit a response from many functional
 groups across the food web. Here is an example boxplot of the distribution 
 of biomass outcomes for all the living functional groups relative to their biomass 
 at the start of the perturbation.
-```{r, echo=TRUE}
+```{r perturb, echo=TRUE}
 sp_perturb_out <- matrix(nrow=nkept, ncol=(EBS_bal$NUM_LIVING+EBS_bal$NUM_DEAD))
 for(i in 1:nkept){
   sp_perturb_out[i,] <- relB_ecos_sp[[i]][1200,]
