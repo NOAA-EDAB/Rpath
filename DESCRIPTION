@@ -33,6 +33,7 @@ Suggests:
     ggpubr,
     rlist,
     stringr,
+    viridis,
     qpdf,
     usethis,
     dplyr,
