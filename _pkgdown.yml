@@ -22,6 +22,8 @@ reference:
   - rsim.mort
   - rsim.stanzas
   - rsim.state
+  - rsim.sense
+  - rsim.sense.path
   - starts_with("get.rsim")
   - starts_with("set.rsim")
 - title: "Models"
