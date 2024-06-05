@@ -2,17 +2,27 @@
 .Rhistory
 .RData
 .Renviron
+
+# Folders
+outputs
+code
+docs
+doc
+Meta
+Ecopath_dev
+
+## File types
+*.xlsx
+*.docx
+*.pdf
 *.jpg
 *.tif
 *.tar
 *.so
-outputs
-code
-*.xlsx
-*.docx
-*.pdf
-Ecopath_dev
+
+# Specific files
 Rpath.Rcheck*
+vignettes/*.html
 src/*.o
 src/*.dll
 tests/testthat/data/output/*
@@ -22,7 +32,5 @@ tests/testthat/data/input/REcosystem_Current_*.csv
 tests/testthat/old/*
 tests/testthat/bkup/*
 tests/testthat/old dat files/*
-docs
-doc
-Meta
+
 Rpath.Rproj

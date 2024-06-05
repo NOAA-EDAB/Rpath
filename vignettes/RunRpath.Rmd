@@ -4,7 +4,7 @@ author: "Vignette Author"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Running Rpath}
+  %\VignetteIndexEntry{Create a static food web model in Rpath}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -185,7 +185,7 @@ their own graphical routines for the Rpath outputs.  However, we have included
 a basic food web plot.  The routine can include fisheries, display group numbers or 
 names, and even highlight a particular group.
 
-```{r Food Web Plots, fig.align = 'center', fig.height = 7, fig.width = 7}
+```{r FoodWebPlots, fig.align = 'center', fig.height = 7, fig.width = 7}
 webplot(REco)
 webplot(REco, labels = T)
 webplot(REco, fleets = T, highlight = 'AduRoundfish1')

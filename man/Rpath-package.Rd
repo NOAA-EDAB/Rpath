@@ -2,8 +2,9 @@
 % Please edit documentation in R/Rpath_pkg.R
 \docType{package}
 \name{Rpath-package}
+\alias{Rpath}
 \alias{Rpath-package}
-\title{Rpath: A package implementating mass balance algorithms designed to work with 
+\title{Rpath: A package implementing mass balance algorithms designed to work with 
 fisheries data sources.}
 \description{
 The Rpath package provides two categories of important functions:
@@ -16,3 +17,21 @@ system.  This is done by solving a series of linear equations for unknown biomas
 or ecotrophic efficiency.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/NOAA-EDAB/Rpath}
+  \item Report bugs at \url{https://github.com/NOAA-EDAB/Rpath/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Sean Lucey \email{Sean.Lucey@NOAA.gov}
+
+Authors:
+\itemize{
+  \item Kerim Aydin \email{Kerim.Aydin@NOAA.gov}
+  \item Sarah Gaichas \email{Sarah.Gaichas@NOAA.gov}
+}
+
+}
