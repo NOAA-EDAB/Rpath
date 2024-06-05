@@ -15,6 +15,7 @@ Ecopath_dev
 Rpath.Rcheck*
 src/*.o
 src/*.dll
+.github/workflows/tests.yaml
 tests/testthat/data/output/*
 tests/testthat/data/bkup/*
 tests/testthat/data/input/REcosystem_Current_*.dat

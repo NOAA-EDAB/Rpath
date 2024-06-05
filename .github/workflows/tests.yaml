@@ -2,16 +2,18 @@
 on:
   push:
     paths:
-    - '.github/workflows/tests.yml'
+    - '.github/workflows/tests.yaml'
     - 'R/*'
-    - 'tests/testthat/*'
-    - 'README.md'
-    - 'DESCRIPTION'
+    - 'src/*'
+    - 'tests/*'
+    - 'data/*'
   pull_request:
     paths:
-    - '.github/workflows/tests.yml'
+    - '.github/workflows/tests.yaml'
     - 'R/*'
-    - 'tests/testthat/*'
+    - 'src/*'
+    - 'tests/*'
+    - 'data/*'
 
 name: Unit-Tests
 
