@@ -4,7 +4,7 @@
 \name{Rpath-package}
 \alias{Rpath}
 \alias{Rpath-package}
-\title{Rpath: A package implementating mass balance algorithms designed to work with 
+\title{Rpath: A package implementing mass balance algorithms designed to work with 
 fisheries data sources.}
 \description{
 The Rpath package provides two categories of important functions:

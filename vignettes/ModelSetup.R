@@ -1,28 +1,13 @@
----
-title: "Run a dynamic food web simulation in Rsim"
-author: "Sean M. Lucey"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Run a dynamic food web simulation in Rsim}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-```{r rpath load, echo = F}
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
-  comment = '#>',
-  collapse = T)
+  collapse = TRUE,
+  comment = "#>"
+)
+
+## ----rpath load---------------------------------------------------------------
 library(Rpath); library(data.table)
-```
 
-## Running rsim
-
-Rsim is the ecosim implementation of the EwE code in R.  In order to proceed you
-must have a valid Rpath object.  The steps for setting this up are described in 
-the vignette "Rpath using R Ecosystem".
-
-```{r creating Rpath object, echo = F}
+## ----groups-------------------------------------------------------------------
 #Groups and types for the R Ecosystem
 
 groups <- c('Seabirds', 'Whales', 'Seals', 'JuvRoundfish1', 'AduRoundfish1', 
@@ -39,6 +24,26 @@ stgroups <- c(rep(NA, 3), rep('Roundfish1', 2), rep('Roundfish2', 2),
 
 REco.params <- create.rpath.params(group = groups, type = types, stgroup = stgroups)
 
+## ----blank modfile table, echo=FALSE, results='asis'--------------------------
+knitr::kable(REco.params$model, caption = 'Example of the model list created using the 
+             `create.rpath.param` function')
+
+## ----How to fill--------------------------------------------------------------
+#Example of filling specific slots
+REco.params$model[Group %in% c('Seals', 'Megabenthos'), EE := 0.8]
+
+#Example of filling an entire column
+biomass <- c(0.0149, 0.454, NA, NA, 1.39, NA, 5.553, NA, 5.766, NA,
+             0.739, 7.4, 5.1, 4.7, 5.1, NA, 7, 17.4, 23, 10, rep(NA, 5))
+REco.params$model[, Biomass := biomass]
+
+
+## ----Model Table partial, echo = F--------------------------------------------
+knitr::kable(REco.params$model[, list(Group, Type, Biomass, EE)], 
+             caption = 'Example of assigning a specific slot or a whole column')
+
+
+## ----Model Table sans stanzas-------------------------------------------------
 #Model
 biomass <- c(0.0149, 0.454, NA, NA, 1.39, NA, 5.553, NA, 5.766, NA,
              0.739, 7.4, 5.1, 4.7, 5.1, NA, 7, 17.4, 23, 10, rep(NA, 5))
@@ -60,7 +65,7 @@ REco.params$model[Group %in% c('Seals', 'Megabenthos'), EE := 0.8]
 REco.params$model[Group %in% c('Shellfish', 'Zooplankton'), ProdCons:= 0.25]
 REco.params$model[Group == 'Macrobenthos', ProdCons := 0.35]
 
-#Biomass accumulation and unassimilated production
+#Biomass accumulation and unassimilated consumption
 REco.params$model[, BioAcc  := c(rep(0, 22), rep(NA, 3))]
 REco.params$model[, Unassim := c(rep(0.2, 18), 0.4, rep(0, 3), rep(NA, 3))]
 
@@ -88,6 +93,12 @@ REco.params$model[, Trawlers.disc := trawl.d]
 REco.params$model[, Midwater.disc := mid.d]
 REco.params$model[, Dredgers.disc := dredge.d]
 
+## ----Model Table final, echo = F----------------------------------------------
+knitr::kable(REco.params$model, 
+             caption = 'Example of completed model list')
+
+
+## ----Stanza parameters--------------------------------------------------------
 #Group parameters
 REco.params$stanzas$stgroups[, VBGF_Ksp := c(0.145, 0.295, 0.0761, 0.112)]
 REco.params$stanzas$stgroups[, Wmat     := c(0.0769, 0.561, 0.117,  0.321)]
@@ -99,103 +110,81 @@ REco.params$stanzas$stindiv[, Z       := c(2.026, 0.42, 2.1, 0.425, 1.5,
                                            0.26, 1.1, 0.18)]
 REco.params$stanzas$stindiv[, Leading := rep(c(F, T), 4)]
 
+
+## ----Stanza Table initial, echo = F-------------------------------------------
+knitr::kable(REco.params$stanzas$stgroups)
+knitr::kable(REco.params$stanzas$stindiv)
+
+## ----rpath.stanzas------------------------------------------------------------
 REco.params <- rpath.stanzas(REco.params)
 
-#Diets
+## ----Stanza Table final, echo = F---------------------------------------------
+knitr::kable(REco.params$stanzas$stanzas, caption = 'Completed stanzas table')
+knitr::kable(head(REco.params$stanzas$StGroup[[1]]), 
+             caption = 'Example of the StGroup data table')
+
+## ----stanzaplot, fig.align = 'center', fig.height = 5, fig.width = 9----------
+stanzaplot(REco.params, StanzaGroup = 1)
+
+## ----how to fill diet 1-------------------------------------------------------
+REco.params$diet[Group == 'OtherGroundfish', Seabirds := 0.1]
+
+## ----how to fill diet 2-------------------------------------------------------
+whale.diet <- c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, NA, 0.01, rep(NA, 4), 0.1,
+                rep(NA, 3), 0.86, rep(NA, 3), NA)
+REco.params$diet[, Whales := whale.diet]
+
+## ----Dietfile table partial, echo = F-----------------------------------------
+knitr::kable(REco.params$diet[, list(Group, Seabirds, Whales)])
+
+## ----diet fill----------------------------------------------------------------
 REco.params$diet[, Seabirds        := c(rep(NA, 11), 0.1, 0.25, 0.2, 0.15, 
-                                         rep(NA, 6), 0.3, NA)]
+                                        rep(NA, 6), 0.3, NA)]
 REco.params$diet[, Whales          := c(rep(NA, 3), 0.01, NA, 0.01, NA, 0.01, 
-                                         NA, 0.01, rep(NA, 4), 0.1, rep(NA, 3), 
-                                         0.86, rep(NA, 4))]
+                                        NA, 0.01, rep(NA, 4), 0.1, rep(NA, 3), 
+                                        0.86, rep(NA, 3), NA)]
 REco.params$diet[, Seals           := c(rep(NA, 3), 0.05, 0.1, 0.05, 0.2, 0.005, 
-                                         0.05, 0.005, 0.01, 0.24, rep(0.05, 4), 
-                                         0.09, rep(NA, 6))]
+                                        0.05, 0.005, 0.01, 0.24, rep(0.05, 4), 
+                                        0.09, rep(NA, 5), NA)]
 REco.params$diet[, JuvRoundfish1   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, 
-                                         rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
-                                         0.1, 0.05, NA, NA)]
+                                        rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
+                                        0.1, 0.05, NA, NA)]
 REco.params$diet[, AduRoundfish1   := c(rep(NA, 5), 1e-3, 0.01, 1e-3, 0.05, 1e-3, 
-                                         0.01, 0.29, 0.1, 0.1, 0.347, 0.03, NA, 
-                                         0.05, 0.01, rep(NA, 4))]
+                                        0.01, 0.29, 0.1, 0.1, 0.347, 0.03, NA, 
+                                        0.05, 0.01, rep(NA, 3), NA)]
 REco.params$diet[, JuvRoundfish2   := c(rep(NA, 3), rep(c(1e-4, NA), 4), 1e-3, 
-                                         rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
-                                         0.1, .05, NA, NA)]
+                                        rep(NA, 2), 0.05, 1e-4, NA, .02, 0.7785, 
+                                        0.1, .05, NA, NA)]
 REco.params$diet[, AduRoundfish2   := c(rep(NA, 3), 1e-4, NA, 1e-4, NA, rep(1e-4, 4), 
-                                         0.1, rep(0.05, 3), 0.2684, 0.01, 0.37, 0.001, 
-                                         NA, 0.1, NA, NA)]
+                                        0.1, rep(0.05, 3), 0.2684, 0.01, 0.37, 0.001, 
+                                        NA, 0.1, NA, NA)]
 REco.params$diet[, JuvFlatfish1    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3), 
-                                         rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
-                                         NA, NA)]
+                                        rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
+                                        NA, NA)]
 REco.params$diet[, AduFlatfish1    := c(rep(NA, 7), rep(1e-4, 5), rep(NA, 2), 0.001, 
-                                         0.05, 0.001, 0.6, 0.2475, NA, 0.1, NA, NA)]
+                                        0.05, 0.001, 0.6, 0.2475, NA, 0.1, NA, NA)]
 REco.params$diet[, JuvFlatfish2    := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 3),
-                                         rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
-                                         NA, NA)]
+                                        rep(1e-4, 2), NA, 0.416, 0.4334, 0.1, 0.05, 
+                                        NA, NA)]
 REco.params$diet[, AduFlatfish2    := c(rep(NA, 7), 1e-4, NA, 1e-4, rep(NA, 4), 
-                                         rep(1e-4, 3), 0.44, 0.3895, NA, 0.17, NA, NA)]
+                                        rep(1e-4, 3), 0.44, 0.3895, NA, 0.17, NA, NA)]
 REco.params$diet[, OtherGroundfish := c(rep(NA, 3), rep(1e-4, 8), 0.05, 0.08, 0.0992, 
-                                         0.3, 0.15, 0.01, 0.3, 0.01, rep(NA, 4))]
+                                        0.3, 0.15, 0.01, 0.3, 0.01, rep(NA, 3), NA)]
 REco.params$diet[, Foragefish1     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
-                                         0.8196, 0.06, 0.12, NA, NA)]
+                                        0.8196, 0.06, 0.12, NA, NA)]
 REco.params$diet[, Foragefish2     := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
-                                         0.8196, 0.06, 0.12, NA, NA)]
+                                        0.8196, 0.06, 0.12, NA, NA)]
 REco.params$diet[, OtherForagefish := c(rep(NA, 3), rep(c(1e-4, NA), 4), rep(NA, 7), 
-                                         0.8196, 0.06, 0.12, NA, NA)]
+                                        0.8196, 0.06, 0.12, NA, NA)]
 REco.params$diet[, Megabenthos     := c(rep(NA, 15), 0.1, 0.03, 0.55, rep(NA, 2), 0.32,
-                                         NA, NA)]
+                                        NA, NA)]
 REco.params$diet[, Shellfish       := c(rep(NA, 18), 0.3, 0.5, 0.2, NA, NA)]
 REco.params$diet[, Macrobenthos    := c(rep(NA, 16), 0.01, rep(0.2, 2), NA, 0.59, NA, NA)]
 REco.params$diet[, Zooplankton     := c(rep(NA, 18), 0.2, 0.6, 0.2, NA, NA)]
 
-REco <- rpath(REco.params, eco.name = 'R Ecosystem')
-```
+## ----Dietfile Table, echo = F-------------------------------------------------
+knitr::kable(REco.params$diet, caption = 'Diet parameters for R Ecosystem')
 
-Running rsim, is a three part process.  First, the function `rsim.scenario` is run
-to convert rpath parameters to rates.  Within `rsim.scenario` are 5 functions that 
-initialize the basic and stanza parameters, creates perturbation matrices for fishing 
-and other forcing functions, and a list of initial states.  Arguments passed to the 
-`rsim.scenario` function are the Rpath object, the rpath parameter object, and a vector 
-of years corresponding to the length of the simulation.
-
-```{r rsim.scenario}
-REco.sim <- rsim.scenario(REco, REco.params, years = 1:100)
-```
-
-The second part of rsim is to add forcing functions or change the fishing behavior.
-This is accomplished by changing the appropriate list within the Rsim.scenario object
-created in the first step.  There are a series of adjust functions that will do this
-without having to know the specific group numbers.  For example, we can double the
-effort of the trawler fleet after 25 years using the `adjust.fishing` function.
-
-```{r Change effort}
-REco.sim <- adjust.fishing(REco.sim, 'ForcedEffort', group = 'Trawlers', sim.year = 25:100, 
-                           value = 2)
-```
-
-The final part is to apply the modified Rsim.scenario function to the `rsim.run`
-function.  The only arguments to the `rsim.run` function are the Rsim.scenario
-object, the method for numerical integration, and the length of the simulation.
-Rpath allows for both Adams-Bashforth and Runge-Kutta 4 numerical integration.
-Older versions of EwE use the Adams-Bashforth method while the latest version (6+)
-uses Runge-Kutta (The default method for Rpath).
-
-```{r rsim.run}
-REco.run1 <- rsim.run(REco.sim, method = 'RK4', years = 1:100)
-```
-
-The output from `rsim.run` is another S3 object class called 'Rsim.output'.  Similar
-to the Rpath object created by `rpath`, the generic function `print` will give
-output similar to the 'Ecosim results' tab in EwE. If you want to save the `print`
-results you need to use the function `write.rpath.sim`.  The function `summary` just
-like for the Rpath object will display what other list items are available.
-
-Add code for rsim print...
-
-In addition, there is a quick graphical routine for plotting
-biomass trajectories over time.  Other plots similar to the group plots are possible
-but at this time we do not have a built-in function.
-
-```{r ecosimEquilibriumPlot, fig.height = 7, fig.width = 9}
-rsim.plot(REco.run1, groups[1:22])
-```
-
+## ----pedigree table, echo = F-------------------------------------------------
+knitr::kable(REco.params$pedigree, caption = 'Pedigree parameters for R Ecosystem')
 

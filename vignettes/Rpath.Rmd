@@ -8,7 +8,7 @@ bibliography: references.bib
 link-citations: yes
 urlcolor: blue
 vignette: >
-  %\VignetteIndexEntry{Getting Started}
+  %\VignetteIndexEntry{Rpath: an open source food web model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

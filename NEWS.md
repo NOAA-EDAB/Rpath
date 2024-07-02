@@ -1,3 +1,22 @@
+# Rpath 0.9.1
+
+- New function documentation added
+
+# Rpath 0.9.0
+
+## Major Changes
+- Added Ecosense routines and vignettes
+- Added example ecosystems
+- Added Unit Tests
+- Fixed bug in stanza month calculations that affected some species
+- Changed versioning to reflect near-release status.
+
+# Rpath 0.0.1.3
+
+## Major Changes
+- Added bioenergetic code
+- adjust functions can now supply values by individual months rather than by years
+
 # Rpath 0.0.1.2
 
 ## Major Changes
