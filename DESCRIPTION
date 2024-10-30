@@ -22,14 +22,15 @@ Imports:
     MASS,
     Rcpp (>= 0.11.3),
     stats,
-    utils
+    utils,
+    ggrepel,
+    ggplot2
 LinkingTo: Rcpp
 Suggests:
     here,
     knitr,
     rmarkdown,
     distillery,
-    ggplot2,
     ggpubr,
     rlist,
     stringr,
