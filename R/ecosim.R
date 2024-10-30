@@ -57,6 +57,15 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   return(rsim)   
 }
 
+#
+# Test function
+#
+rsim.check <- function(Rsim.scenario) {
+  scene <- copy(Rsim.scenario) 
+  scene.years <- list(1900:2000)
+  return (scene.years)
+}
+
 #'Run Rsim
 #'
 #'Carries out the numerical integration of the Rsim alogrithms. 
@@ -73,35 +82,40 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 #'   
 #'@export
 #'
-rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100){
+rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100) {
+
   scene <- copy(Rsim.scenario) 
 
-  # Figure out starting and ending years for run
-  # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
-    #if (length(years)<2){stop("Years should be a vector of year labels")}
+  # Perform argument checks: Check method name and figure out starting and ending years for run
+    if (method != 'RK4' && method != 'AB') {
+      stop("Invalid method name for solving nonlinear equations")
+    }
+
+    # KYA 4/23/18 single year (e.g. 1971:1971) reduces to a scalar so take out length trap
+    #if (length(years) < 2) {stop("Years should be a vector of year labels")}
     scene.years <- row.names(Rsim.scenario$fishing$ForcedFRate)
-    syear <- which(as.character(head(years,1))==scene.years)
-    eyear <- which(as.character(tail(years,1))==scene.years)
-    if (eyear<syear)     {stop("End year cannot be less than start year.")}
-    if (length(syear)!=1){stop("Starting year not found in scenario (or more than once).")}
-    if (length(eyear)!=1){stop("Ending year not found in scenario (or more than once).")}
+    syear       <- which(as.character(head(years,1)) == scene.years)
+    eyear       <- which(as.character(tail(years,1)) == scene.years)
+    if (eyear < syear)      {stop("End year cannot be less than start year.")}
+    if (length(syear) != 1) {stop("Starting year not found in scenario (or more than once).")}
+    if (length(eyear) != 1) {stop("Ending year not found in scenario (or more than once).")}
+
   
-  # KYA adds run date and some random salt to ensure uniquieness  
+  # KYA adds run date and some random salt to ensure uniqueness
     scene$rundate <- paste(Sys.time(),":salt:",runif(1))    
     
-  if(method == 'RK4'){
+  if (method == 'RK4') {
     rout <- rk4_run(scene$params,  scene$start_state, 
                     scene$forcing, scene$fishing,
                     scene$stanzas, syear, eyear)
-  }
-  if(method == 'AB'){
+  } else if (method == 'AB') {
     #Run initial derivative
     derv <- deriv_vector(scene$params, scene$start_state, 
                          scene$forcing, scene$fishing, 
                          scene$stanzas, syear, 0, 0)
     #KYA added for first step bump correction 9/20/17
      
-    #Run Adams Bashforth Alogrithm
+    #Run Adams-Bashforth Algorithm
     rout <- Adams_run(scene$params,  scene$start_state, 
                       scene$forcing, scene$fishing,
                       scene$stanzas, syear, eyear, derv)

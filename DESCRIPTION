@@ -1,8 +1,8 @@
 Package: Rpath
 Type: Package
 Title: R implementation of Ecopath with Ecosim
-Version: 0.0.1.2
-Date: 2016-07-15
+Version: 0.9.1
+Date: 2024-05-31
 Authors@R: c(
     person("Kerim", "Aydin",   email = "Kerim.Aydin@NOAA.gov",   role = "aut"),
     person("Sean", "Lucey",    email = "Sean.Lucey@NOAA.gov",    
@@ -16,6 +16,7 @@ License: file LICENSE
 Encoding: UTF-8
 Imports:
     data.table,
+    methods,
     graphics,
     grDevices,
     MASS,
@@ -24,11 +25,25 @@ Imports:
     utils
 LinkingTo: Rcpp
 Suggests:
+    here,
     knitr,
-    rmarkdown
+    rmarkdown,
+    distillery,
+    ggplot2,
+    ggpubr,
+    rlist,
+    stringr,
+    viridis,
+    qpdf,
+    usethis,
+    dplyr,
+    generics,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.1
 URL: https://github.com/NOAA-EDAB/Rpath
 BugReports: https://github.com/NOAA-EDAB/Rpath/issues
 Depends: 
     R (>= 2.10)
+Config/testthat/edition: 3
+LazyData: true

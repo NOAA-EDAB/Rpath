@@ -15,7 +15,7 @@
 #'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
 #'@import data.table
 #'@export
-rpath <- function(Rpath.params, eco.name = NA, eco.area = 1){
+rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #Need to define variables to eliminate check() note about no visible binding
   Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- NULL
   BEE <- Biomass <- Q <- BioAcc <- BioQB <- diag.a <- EEa <- B <- M0 <- NULL
@@ -340,11 +340,9 @@ rpath.stanzas <- function(Rpath.params){
   lastmonth <- rep(NA,Nsplit)
   for(isp in 1:Nsplit){
     #Put the stanzas in order for each split species
-    stnum <- order(stanzafile[StGroupNum == isp, First])
-    
+    stnum <- order(stanzafile[StGroupNum == isp, First])    
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
 
-    
     #Calculate the last month for the final ("leading") stanza
     #KYA Aug 2021:
     # Formerly used fraction of Winf, but that didn't work for species

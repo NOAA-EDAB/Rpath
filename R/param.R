@@ -375,6 +375,14 @@ check.rpath.params <- function(Rpath.params){
     w <- w + 1
   }
 
+  # Check if any diet value is < 0
+  dietDF <- data.frame(Rpath.params$diet)
+  dietDF[is.na(dietDF)] <- 0
+  if (any(dietDF<0)) {
+    warning('Found a negative diet value. Please make sure no diet values are negative.')
+    w <- w + 1
+  }
+  
 if(w == 0){
   cat('Rpath parameter file is functional. \n')
 } else {
