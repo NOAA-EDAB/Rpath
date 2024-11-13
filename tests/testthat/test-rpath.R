@@ -652,7 +652,8 @@ testthat::test_that("Rpath Unit Tests", {
       print(paste0("Error: Unknown data type: ",theTypeData))
       return()
     }
-
+    # Tests 17-22 Forced Biomass with Jitter
+    # Tests 23-28 Forced Migration with Jitter
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter,method='AB', years=1:50)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
@@ -683,6 +684,8 @@ testthat::test_that("Rpath Unit Tests", {
 # }
     
   print("------------------ Forced Biomass Tests (Stepped) ------------------")
+  # Tests 29-34 Forced BIOMASS with Stepped Noise
+  # Tests 35-40 Forced Migration with Stepped Noise
   REcosystem_scenario_stepped <- REcosystem_scenario
   typeData             <- list(FORCED_BIOMASS,FORCED_MIGRATION)
   numMonths <- nrow(REcosystem_scenario_stepped$forcing$ForcedBio)
@@ -776,6 +779,9 @@ testthat::test_that("Rpath Unit Tests", {
       CurrentJitterFiles   <- list(CurrentABForcedCatOutBiomassJitter,  CurrentABForcedCatOutCatchJitter,  CurrentABForcedCatOutGearCatchJitter,
                                 CurrentRK4ForcedCatOutBiomassJitter, CurrentRK4ForcedCatOutCatchJitter, CurrentRK4ForcedCatOutGearCatchJitter)
     }
+    # Tests 41-46 Forced Effort with Jitter
+    # Tests 47-52 Forced FRate with Jitter
+    # Tests 53-58 Forced Catch with Jitter
     REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter,method='AB', years=1:50)
     REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
@@ -835,6 +841,9 @@ testthat::test_that("Rpath Unit Tests", {
       CurrentSteppedFiles  <- list(CurrentABForcedCatOutBiomassStepped,  CurrentABForcedCatOutCatchStepped,  CurrentABForcedCatOutGearCatchStepped,
                                    CurrentRK4ForcedCatOutBiomassStepped, CurrentRK4ForcedCatOutCatchStepped, CurrentRK4ForcedCatOutGearCatchStepped)      
     }
+    # Tests 59-64 Forced Effort with Stepped Noise
+    # Tests 65-70 Forced FRate with Stepped Noise
+    # Tests 71-76 Forced Catch with Stepped Noise
     REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scenario_stepped,method='AB', years=1:50)
     REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scenario_stepped,method='RK4',years=1:50)
     if (CREATE_BASELINE_FILES) {
