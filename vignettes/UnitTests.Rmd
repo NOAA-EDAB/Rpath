@@ -20,7 +20,7 @@ library(Rpath)
 
 ## Unit Tests
 
-Unit Tests are written using the testthat R package. The tests are stored in the file: **tests/tests_rpath.R**. They may be run explicitly by the user clicking the Test or Check buttons under the Build tab in RStudio. They also run automatically via git actions when the user does a push or pull request. The output of the unit tests is a pdf file with a variety of comparison plots, examples of which are given below in Figures 1-3.
+Unit Tests are written using the testthat R package. The tests are stored in the file: **tests/tests_rpath.R**. They may be run explicitly by the user clicking the Test or Check buttons under the Build tab in RStudio. They also run automatically via git actions when the user does a push or pull request. The output of the unit tests is a pdf file with a variety of comparison plots, examples of which are given below in [Figures 1-3.](#figures)
 
 ## Details
 
@@ -380,7 +380,7 @@ The following unit tests have been developed. Note that some tests consist of ad
 
 \*The out_Gear_Catch tests are currently awaiting issue #74 to be resolved.
 
-## Figures
+## Figures 
 
 The Unit Tests compare current runs with baseline runs and produce plots in a pdf file. These plots may be useful for diagnostic purposes. The plots depict the output of a current run in blue and of the baseline run in red. If there are no errors, then there should be no red visible on the plots. There are two types of plots available, also set by a variable in tests/tests_rpath.R:
 
