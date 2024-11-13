@@ -416,4 +416,7 @@ knitr::include_graphics("img/plot_02_superimposed_with_difference.png")
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
 ```
 
-\`\`\`{r figs3, echo=FALSE, out.width="85%:", out.height="85%", fig.cap="Figure 3. Current-Baseline Result"} knitr::include_graphics("img/plot_03_current-baseline.png")
+```{r figs3, echo=FALSE, out.width="85%:", out.height="85%", fig.cap="Figure 3. Current-Baseline Result"}
+knitr::include_graphics("img/plot_03_current-baseline.png")
+```
+

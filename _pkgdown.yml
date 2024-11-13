@@ -42,8 +42,10 @@ reference:
   desc: "Functions for visualizing rpath and rsim outputs" 
 - contents:
   - webplot
+  - ggwebplot
   - rsim.plot
   - stanzaplot
+  - summarize.for.webplot
 - title: "Output Tools"
   desc: "Functions for writing and exporting outputs from Rpath"
 - contents:
