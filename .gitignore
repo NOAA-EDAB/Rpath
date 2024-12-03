@@ -1,18 +1,36 @@
 .Rproj.user
 .Rhistory
 .RData
-*.png
-*.jpg
-*.tif
-data
+.Renviron
+
+# Folders
 outputs
 code
+docs
+doc
+Meta
+Ecopath_dev
+
+## File types
 *.xlsx
 *.docx
-Ecopath_dev
+*.pdf
+*.jpg
+*.tif
+*.tar
+*.so
+
+# Specific files
 Rpath.Rcheck*
+vignettes/*.html
 src/*.o
 src/*.dll
-NAMESPACE
+tests/testthat/data/output/*
+tests/testthat/data/bkup/*
+tests/testthat/data/input/REcosystem_Current_*.dat
+tests/testthat/data/input/REcosystem_Current_*.csv
+tests/testthat/old/*
+tests/testthat/bkup/*
+tests/testthat/old dat files/*
 
-docs
+Rpath.Rproj

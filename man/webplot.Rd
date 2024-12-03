@@ -16,8 +16,7 @@ webplot(
   label.cex = 1,
   fleets = FALSE,
   type.col = "black",
-  box.order = NULL,
-  ...
+  box.order = NULL
 )
 }
 \arguments{
@@ -60,21 +59,15 @@ Plots the food web associated with an Rpath object.
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.fishing}()},
 \code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
 \code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
+\code{\link{rpath}()},
 \code{\link{rpath.groups}()},
 \code{\link{rpath.stanzas}()},
-\code{\link{rpath}()},
-\code{\link{rsim.params}()},
-\code{\link{rsim.plot}()},
-\code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()},
 \code{\link{stanzaplot}()},
 \code{\link{write.Rpath}()},
 \code{\link{write.Rsim}()},

@@ -1,0 +1,13 @@
+Rpath model: R Ecosystem 
+     Status: Balanced
+
+Summary Statistics:
+  NumGroups NumLiving NumDetritus NumFleets TotBiomass TotLandings
+1        25        20           2         3   104.9365        1.74
+
+Rpath model also includes:
+ [1] "NUM_GROUPS" "NUM_LIVING" "NUM_DEAD"   "NUM_GEARS"  "Group"     
+ [6] "type"       "TL"         "Biomass"    "PB"         "QB"        
+[11] "EE"         "BA"         "Unassim"    "GE"         "DC"        
+[16] "DetFate"    "Landings"   "Discards"  
+NUM_GROUPS NUM_LIVING NUM_DEAD NUM_GEARS Group type TL Biomass PB QB EE BA Unassim GE DC DetFate Landings Discards
