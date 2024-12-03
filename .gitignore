@@ -25,12 +25,19 @@ Rpath.Rcheck*
 vignettes/*.html
 src/*.o
 src/*.dll
+.github/workflows/tests.yaml
 tests/testthat/data/output/*
 tests/testthat/data/bkup/*
 tests/testthat/data/input/REcosystem_Current_*.dat
+tests/testthat/data/input/REcosystem_Current_*.rds
 tests/testthat/data/input/REcosystem_Current_*.csv
 tests/testthat/old/*
 tests/testthat/bkup/*
 tests/testthat/old dat files/*
 
+docs
+doc
+Meta
 Rpath.Rproj
+
+inst/doc
