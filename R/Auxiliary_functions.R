@@ -1,5 +1,7 @@
 #'Quantify mixed trophic impacts
 #'
+#'Uses a static \code{Rpath} model and creates a matrix of mixed trophic impacts.
+#'
 #'@family Rpath functions
 #'
 #'@param Rpath Rpath R object containing a static \code{Rpath} model.
