@@ -1,171 +1,59 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/articles/ModelSetup.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Rpath.html</loc>
-  </url>
-  <url>
-    <loc>/articles/RunRpath.html</loc>
-  </url>
-  <url>
-    <loc>/articles/RunRsim.html</loc>
-  </url>
-  <url>
-    <loc>/articles/UnitTests.html</loc>
-  </url>
-  <url>
-    <loc>/articles/ecosense.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/AB.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Ecosense.EBS.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Ecosense.ECS.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Ecosense.GOA.html</loc>
-  </url>
-  <url>
-    <loc>/reference/MTI.html</loc>
-  </url>
-  <url>
-    <loc>/reference/REco.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Rpath-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/adjust.fishing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/adjust.forcing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/adjust.scenario.html</loc>
-  </url>
-  <url>
-    <loc>/reference/check.rpath.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create.rpath.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/extract.node.html</loc>
-  </url>
-  <url>
-    <loc>/reference/frate.table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.rsim.fishing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.rsim.forcing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.rsim.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.rsim.stanzas.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.rsim.start_state.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read.rpath.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rpath.groups.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rpath.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rpath.stanzas.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.deriv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.diet.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.fishing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.forcing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.mort.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.plot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.run.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.scenario.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.sense.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.sense.path.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.stanzas.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.state.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rsim.step.html</loc>
-  </url>
-  <url>
-    <loc>/reference/set.rsim.scene.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stanzaplot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/webplot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write.Rpath.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write.Rsim.html</loc>
-  </url>
-  <url>
-    <loc>/reference/write.rpath.params.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://noaa-edab.github.io/Rpath/404.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/LICENSE-text.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/ModelSetup.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/Rpath.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/RunRpath.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/RunRsim.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/UnitTests.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/ecosense.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/index.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/authors.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/index.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/news/index.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/AB.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/Ecosense.EBS.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/Ecosense.ECS.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/Ecosense.GOA.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/MTI.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/REco.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/Rpath-package.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/adjust.fishing.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/adjust.forcing.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/adjust.scenario.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/check.rpath.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/create.rpath.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/extract.node.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/frate.table.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.fishing.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.forcing.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.stanzas.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.start_state.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/index.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/read.rpath.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rpath.groups.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rpath.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rpath.stanzas.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.deriv.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.diet.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.fishing.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.forcing.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.mort.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.plot.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.run.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.scenario.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.sense.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.sense.path.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.stanzas.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.state.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/rsim.step.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/set.rsim.scene.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/stanzaplot.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/webplot.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/write.Rpath.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/write.Rsim.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/write.rpath.params.html</loc></url>
 </urlset>
+

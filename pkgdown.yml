@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   ecosense: ecosense.html
@@ -8,5 +8,7 @@ articles:
   RunRpath: RunRpath.html
   RunRsim: RunRsim.html
   UnitTests: UnitTests.html
-last_built: 2024-06-05T16:35Z
-
+last_built: 2025-01-31T19:29Z
+urls:
+  reference: https://noaa-edab.github.io/Rpath/reference
+  article: https://noaa-edab.github.io/Rpath/articles
