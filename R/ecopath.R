@@ -1,18 +1,20 @@
 #'Ecopath module of Rpath
 #'
-#'Performs initial mass balance using a model parameter file and diet
+#'Performs initial mass balance using a \code{\link{Rpath.params}()} file and diet
 #'matrix file.
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.params R object containing the Rpath parameters.  This is generated
-#'  either by the create.rpath.params or read.rpath.params functions.
-#'@param eco.name Optional name of the ecosystem which becomes an attribute of
-#'    rpath object.
+#'@param Rpath.params R object containing the parameters needed to create a
+#' \code{Rpath} model.  This is generated either by the \code{\link{create.rpath.params}()}
+#'  or \code{\link{read.rpath.params}()} functions.
+#'@param eco.name Optional name of the ecosystem which becomes an attribute of the
+#'    \code{Rpath} model.
 #'@param eco.area Optional area of the ecosystem which becomes an attribute of the
-#'    rpath object.
+#'    \code{Rpath} model.
 #'
-#'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
+#'@return Returns a static \code{Rpath} model that can be supplied to the
+#' \code{rsim.scenario} function.
 #'@import data.table
 #'@export
 rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
@@ -72,8 +74,6 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   discardmat  <- model[, (10 + ndead + 1 + ngear):(10 + ndead + (2 * ngear)), with = F]
   totcatchmat <- landmat + discardmat
     
-  # KYA 1/16/14 Need if statement here because rowSums fail if only one 
-  # fishery (catch is vector instead of matrix)     ##FIX PROPAGATION HERE
   if (is.data.frame(totcatchmat)){
     totcatch <- rowSums(totcatchmat)
     landings <- rowSums(landmat)    
@@ -161,11 +161,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   detoutputs <- rowSums(detcons, na.rm = T)
   EE         <- c(living[, EE], as.vector(detoutputs / detinputs))
 
-  # added by kya
-  # if a detritus biomass is put into the spreadsheet, use that and 
-  # calculate PB.  If no biomass, but a PB, use that pb with inflow to 
-  # calculate biomass.  If neither, use default PB=0.5, Bio = inflow/PB  
-  # This is done because Ecosim requires a detrital biomass.
+  # Detrital B and PB
   Default_Detrital_PB <- 0.5 
   inDetPB <- model[(nliving + 1):(nliving + ndead), PB] 
   inDetB  <- model[(nliving + 1):(nliving + ndead), Biomass]
@@ -183,13 +179,6 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
 
-  #Adjust for mixotrophs (partial primary producers) - #Moved this code up so that
-  #it also impacted the EE calculation
-  # mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
-  # mix.Q <- 1 - model[mixotrophs, Type]
-  # for(i in seq_along(mixotrophs)){
-  #   dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
-  # }
   #Adjust for diet import (Consumption outside model)
   import <- which(dietplus[nrow(diet), ] > 0)
   for(i in seq_along(import)){
@@ -202,8 +191,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   TLcoeffA <- TLcoeff - dietplus
   TL       <- solve(t(TLcoeffA), b)     
 
-  #kya changed these following four lines for detritus, and removing NAs
-  #to match header file format (replacing NAs with 0.0s)
+  # Replace NAs with 0.0
   Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
   
   PBplus <- model[, PB] 
@@ -231,7 +219,6 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
 
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
   gearF   <- as.matrix(totcatchmat) / living[, Biomass][row(as.matrix(totcatchmat))]
-  #newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
   newcons <- as.matrix(nodetrdiet)  * BQB[col(as.matrix(nodetrdiet))]
   predM   <- as.matrix(newcons) / living[, Biomass][row(as.matrix(newcons))]
   predM   <- rbind(predM, detcons)
@@ -265,7 +252,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   dimnames(detfatem)                  <- list(gnames, gnames[(nliving+1):(nliving+ndead)])
   detfatem[is.na(detfatem)]           <- 0
 
-  # KYA April 2020 - added names for output list
+  # Add names for output list
     out.Group   <- gnames;           names(out.Group) <- gnames
     out.type    <- model[, Type];    names(out.type) <- gnames
     out.TL      <- TL;               names(out.TL) <- gnames
@@ -344,20 +331,12 @@ rpath.stanzas <- function(Rpath.params){
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
 
     #Calculate the last month for the final ("leading") stanza
-    #KYA Aug 2021:
-    # Formerly used fraction of Winf, but that didn't work for species
-    # with rapid growth but low mortality (e.g. marine mammals).
-    # So instead, calculate biomass out for a very long time and
-    # taking 0.99999 of cumulative biomass as a cutoff.
-    
-    #this selects all of the stanza lines, then picks the last one
-    #(maybe data table has a better way...)
+
     stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
     st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
 
     gp <- groupfile[isp,]
-    #Max age class in months should be one less than a multiple of 12
-    #(trying 5999 - probably overkill but for safety)
+
     AGE <- st$First:5999
     mz <- (st$Z + gp$BAB)/12
     k  <- gp$VBGF_Ksp
