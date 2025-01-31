@@ -281,11 +281,26 @@ rsim.forcing <- function(params, years){
   return (forcing)
 }
 
-#'Initialize state matrix for Rsim scenario
+#'Initialize starting state matrix for Rsim scenario
 #'
-#'Creates a matrix of state variables used by Rsim.
+#'Creates a matrix of starting state variables used by Rsim, including initial 
+#'biomass and numbers by group, as well as feeding and age structured population 
+#'vectors and matrices. Default initial values: N = 0, Ftime = 1
 #'
 #'@inheritParams rsim.fishing
+#'
+#'@return S3 object class \code{Rsim.state}, a list of 9 objects:
+#'\itemize{
+#'  \item{\code{Biomass}, numeric vector of initial biomass by biomass group}
+#'  \item{\code{N}, numeric vector of  by biomass group}
+#'  \item{\code{Ftime}, numeric vector of initial feeding time parameter by biomass group}
+#'  \item{\code{SpawnBio}, numeric vector}
+#'  \item{\code{StanzaPred}, numeric vector}
+#'  \item{\code{EggsStanza}, numeric vector}
+#'  \item{\code{NageS}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+#'  \item{\code{WageS}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+#'  \item{\code{QageS}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+#'}
 #'
 #'@export
 #'
@@ -297,7 +312,7 @@ rsim.state <- function(params){
   return(state)
 }
 
-#'Output consumption by a group
+#'Output consumption by a group from Rsim run
 #'
 #'Creates a matrix of consumption of prey by a particular predator.
 #'
@@ -312,7 +327,7 @@ rsim.diet <- function(Rsim.output, group){
   return(pmat)
 }  
 
-#'Output mortality on a group
+#'Output mortality on a group from Rsim run
 #'
 #'Creates a matrix of mortality by predators on a particular prey.
 #'
