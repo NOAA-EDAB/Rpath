@@ -18,8 +18,8 @@ Returns a list object with monthly node specific data
 \item{AnnualBiomass}{Vector of annual Biomass}
 \item{TotalCatch}{Vector of monthly Catch values}
 \item{AnnualTotalCatch}{Vector of annual Catch values}
-\item{Landings}{Dataframe (n x 2) of monthly Landings. (Total, Fishery/Subsistence) }
-\item{Discards}{Dataframe (n x 3) of monthly Discards (Total, Fishery/Subsistence, Fishery/Subsistence)}
+\item{Landings}{Dataframe (n x l) of monthly Landings. (Each column is a fishery that Lands the `group`) }
+\item{Discards}{Dataframe (n x d) of monthly Discards (Each column is a fishery that Discards the `group`)}
 }
 \description{
 Extracts group/node specific information from a scenario run using \code{rsim.run()}
