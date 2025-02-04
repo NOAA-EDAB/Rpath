@@ -2,7 +2,7 @@
 % Please edit documentation in R/Extract.R
 \name{extract.node}
 \alias{extract.node}
-\title{Extract node/group data from an Rpath run}
+\title{Extract node/group data from an Rsim run}
 \usage{
 extract.node(Rsim.output, group)
 }
@@ -37,20 +37,11 @@ group <- extract.node(Rsim.output,Rpath$Group['Squids'])
 
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
-\code{\link{check.rpath.params}()},
-\code{\link{create.rpath.params}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
-\code{\link{write.rpath.params}()}
+Other Rsim functions: 
+\code{\link{rsim.params}()},
+\code{\link{rsim.plot}()},
+\code{\link{rsim.run}()},
+\code{\link{rsim.scenario}()},
+\code{\link{rsim.step}()}
 }
-\concept{Rpath functions}
+\concept{Rsim functions}
