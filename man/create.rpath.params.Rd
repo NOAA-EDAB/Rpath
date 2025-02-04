@@ -15,15 +15,15 @@ Fleet = 3.}
 \item{stgroup}{Vector of multistanza group names.  Include NA for non-stanza groups.}
 }
 \value{
-Outputs a list object of Rpath parameters which are populated with values 
+Outputs a list object of \code{Rpath.params} which are populated with values
  of NA or logical default values.  Values can then be filled in using
- R.  Use check.rpath.params() to ensure parameter files are filled out
- correctly (NOTE: This does not ensure data is correct just that it is 
+ R.  Use \code{\link{check.rpath.params}()} to ensure parameter files are filled out
+ correctly (NOTE: This does not ensure data is correct just that it is
  in the right places).
 }
 \description{
-Creates a shell of the Rpath.params list object which contains the model, diet,
-multistanza, and pedigree parameters.
+Creates a shell of the \code{Rpath.params} list object which contains the \emph{model}, \emph{diet},
+\emph{multistanza}, and \emph{pedigree} parameters.
 }
 \seealso{
 Other Rpath functions: 
