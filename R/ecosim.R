@@ -29,6 +29,13 @@
 #'@import data.table
 #'@useDynLib Rpath
 #'@importFrom Rcpp sourceCpp
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#'
 #'@export
 rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
   # KYA 11/1/17 modifying so years can take a vector of actual years
@@ -101,7 +108,13 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 #'  \item{\code{params}, list of 4; 3 dimensioning parameters and 1 biomass group and fleet name vector}
 #' } 
 #' 
-#'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Run the Rsim simulation
+#' Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
 #'   
 #'@export
 #'
@@ -205,6 +218,15 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100) {
 #'  \item{\code{ForcedEffort}, numeric matrix of annual (rows) total catch removal by biomass group (columns)}
 #'}
 #'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create dynamic parameters from Rpath model
+#' Rsim.params <- rsim.params(Rpath)
+#' # Create fishing matrix with default values
+#' Rsim.fishing <- rsim.fishing(Rsim.params, years = 1:50)
+#' 
+#'
 #'@export
 #'
 rsim.fishing <- function(params, years){
@@ -255,6 +277,14 @@ rsim.fishing <- function(params, years){
 #'  \item{\code{ForcedBio}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
 #'}
 #'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create dynamic parameters from Rpath model
+#' Rsim.params <- rsim.params(Rpath)
+#' # Create forcing matrix with default values
+#' Rsim.forcing <- rsim.forcing(Rsim.params, years = 1:50)
+#'
 #'@export
 #'
 rsim.forcing <- function(params, years){
@@ -296,6 +326,14 @@ rsim.forcing <- function(params, years){
 #'  \item{\code{Ftime}, numeric vector of initial feeding time parameter by biomass group}
 #'}
 #'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create dynamic parameters from Rpath model
+#' Rsim.params <- rsim.params(Rpath)
+#' # Create forcing matrix with default values
+#' Rsim.state <- rsim.state(Rsim.params)
+
 #'@export
 #'
 rsim.state <- function(params){
@@ -306,12 +344,25 @@ rsim.state <- function(params){
   return(state)
 }
 
-#'Output consumption by a group from Rsim run
+#'Output consumption of each prey by an individual predator group from Rsim run
 #'
-#'Creates a matrix of consumption of prey by a particular predator.
+#'Extracts a matrix of consumption (in model biomass units) of each prey over time 
+#'by a particular predator from the Rsim model output of \code{\link{rsim.run}()}.
 #'
 #'@param Rsim.output R object containing the output from \code{rsim.run}.
-#'@param group Group from the \code{Rpath} model that is of interest
+#'@param group Predator group from the \code{Rpath} model that is of interest
+#'
+#'@return a numeric matrix of annual (rows) consumption of each prey group (columns)
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Run the Rsim simulation
+#' Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
+#' # Extract a preadator's consumption of each prey over the model run
+#' Rsim.diet.whales <- rsim.diet(Rsim.output, group = "whales")
 #'
 #'@export
 #'
@@ -321,11 +372,24 @@ rsim.diet <- function(Rsim.output, group){
   return(pmat)
 }  
 
-#'Output mortality on a group from Rsim run
+#'Output biomass removed by each predator for an individual prey group from Rsim run
 #'
-#'Creates a matrix of mortality by predators on a particular prey.
+#'Extracts a matrix of biomass removed (in model biomass units) for a particular 
+#'prey by each of its predators from the Rsim model output of \code{\link{rsim.run}()}.
 #'
 #'@inheritParams rsim.diet 
+#'
+#'@return a numeric matrix of annual (rows) biomass removed by each predator group (columns)
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Run the Rsim simulation
+#' Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
+#' # Extract a prey's biomass loss from each predator over the model run
+#' Rsim.mort.anchovy <- rsim.mort(Rsim.output, group = "anchovy")
 #'
 #'@export
 #'
@@ -378,6 +442,12 @@ rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
 #'
 #'@return Returns an \code{Rsim.params} object that is passed to the \code{rsim.run} 
 #'    function via the \code{rsim.scenario} function.
+#'    
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create default dynamic parameters from Rpath model
+#' Rsim.params <- rsim.params(Rpath)
 #'
 #'@export
 #'
