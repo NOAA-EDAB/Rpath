@@ -2,7 +2,7 @@
 
 #' AB.params
 #'
-#' A tutorial ecosystem for teaching Rpath
+#' A sample ecosystem for Rpath - Anchovy Bay.
 #'
 #' @format An Rpath balanced model object that contains:
 #' \describe{
@@ -16,7 +16,7 @@
 
 #' REco.params
 #'
-#' A sample ecosystem for Rpath - Anchovy Bay.
+#' A tutorial ecosystem for teaching Rpath
 #'
 #' @format An Rpath balanced model object that contains:
 #' \describe{
