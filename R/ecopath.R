@@ -1,7 +1,6 @@
 #'Ecopath module of Rpath
 #'
-#'Performs initial mass balance using a \code{\link{Rpath.params}()} file and diet
-#'matrix file.
+#'Performs initial mass balance using a \code{\link{Rpath.params}()} file
 #'
 #'@family Rpath functions
 #'
