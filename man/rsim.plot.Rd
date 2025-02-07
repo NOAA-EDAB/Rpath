@@ -20,6 +20,17 @@ Creates a figure of relative biomass.
 \description{
 Plots the relative biomass of each group from an \code{Rsim.output} object.
 }
+\examples{
+{
+# Build the balanced Rpath model and parameter file by calling \code{rpath()}
+Rpath <- rpath(Ecosense.EBS)
+# Run the groups command
+mixotrophGroups = rpath.mixotrophs(Rpath)
+# Print out the first few mixotroph group names
+head(mixotrophGroups)
+}
+
+}
 \seealso{
 Other Rsim functions: 
 \code{\link{rsim.params}()},

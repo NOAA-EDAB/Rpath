@@ -15,6 +15,10 @@
 #'
 #'@export
 #'
+#' @examples
+#' # Example rsim.plot functionality can be found in this vignette \code{vignettes\RunRsim.R}
+#'
+#'
 rsim.plot <- function(Rsim.output, spname="all", indplot = F){
   opar <- par(no.readonly = T)
   if(indplot == F){
