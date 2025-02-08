@@ -3,9 +3,9 @@
 \docType{data}
 \name{Ecosense.EBS}
 \alias{Ecosense.EBS}
-\title{Eastern Bering Sea 1990s Ecopath model (53 biological groups and 1 fleet).}
+\title{Eastern Bering Sea 1990s Ecopath model}
 \format{
-An Rpath unbalanced model object that contains:
+An unbalanced Rpath model object that contains:
 \describe{
   \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
@@ -21,6 +21,18 @@ Whitehouse and Aydin 2020.  Assessing the sensitivity of three Alaska marine foo
 Ecosense.EBS
 }
 \description{
-Rpath inputs (unbalanaced model).
+Rpath inputs for the eastern Bering Sea 1990s Ecopath model (53 biological 
+groups and 1 fleet).
+}
+\note{
+This is an aggregated version of the 1990s eastern Bering Sea Ecopath model of Aydin et al. (2007) and does not include stanzas.
+}
+\examples{
+# Balance the model
+ebs_bal <- rpath(Ecosense.EBS)
+
+}
+\references{
+Aydin KY, Gaichas S, Ortiz I, Kinzey D, Friday N (2007) A comparison of the Bering Sea, Gulf of Alaska, and Aleutian Islands large marine ecosystems through food web modeling. U.S. Dep. Commer., NOAA Tech. Memo. NMFS-AFSC-178.
 }
 \keyword{datasets}

@@ -5,12 +5,12 @@
 \alias{REco.params}
 \title{REco.params}
 \format{
-An Rpath balanced model object that contains:
+An unbalanced Rpath model object that contains:
 \describe{
   \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
   \item{stanzas}{Parameters for multistanza groups.}
-  \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}   
+  \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}
   ...
 }
 }
@@ -18,6 +18,15 @@ An Rpath balanced model object that contains:
 REco.params
 }
 \description{
-A sample ecosystem for Rpath - Anchovy Bay.
+Rpath inputs for a tutorial Rpath ecosystem.
+}
+\examples{
+# Balance the model
+REco_bal <- rpath(REco.params)
+
+}
+\seealso{
+\code{vignette("ModelSetup", package = "Rpath")} for an example
+of how to build this tutorial ecosystem.
 }
 \keyword{datasets}
