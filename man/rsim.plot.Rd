@@ -7,7 +7,7 @@
 rsim.plot(Rsim.output, spname = "all", indplot = F)
 }
 \arguments{
-\item{Rsim.output}{R object containing the output from \code{rsim.run}.}
+\item{Rsim.output}{R object containing the output from \code{rsim.run()}.}
 
 \item{spname}{Vector of species names to be displayed.  The default "all" will
 display all group names}

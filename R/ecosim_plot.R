@@ -4,7 +4,7 @@
 #'
 #'@family Rsim functions
 #'
-#'@param Rsim.output R object containing the output from \code{rsim.run}.
+#'@param Rsim.output R object containing the output from \code{rsim.run()}.
 #'@param spname Vector of species names to be displayed.  The default "all" will
 #'     display all group names
 #'@param indplot Logical value of whether to plot a single group or multiple groups
