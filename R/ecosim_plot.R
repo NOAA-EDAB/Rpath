@@ -15,8 +15,9 @@
 #'
 #'@importFrom grDevices rainbow
 #'
-#'@section Details
-#'For a detailed example of how to use this plot command please see vignette("RunRsim.R")
+#'@section Details:
+#'
+#'For a detailed example of how to use this plot command please see `vignette("RunRsim")`
 #'
 #'@export
 #'

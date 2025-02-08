@@ -1,5 +1,3 @@
-library(methods)
-
 ########################################################################################
 # Set of functions for returning functional group names (character vector)
 # using the type input column
@@ -19,7 +17,7 @@ library(methods)
 #' \item{group}{Vector of character string group names}
 #'
 #'#' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the command
 #' gt <- grouptype(Rpath)
@@ -61,7 +59,7 @@ grouptype <- function(Rpath) {
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the groups command
 #' groups = rpath.groups(Rpath)
@@ -88,7 +86,7 @@ rpath.groups <- function(Rpath){
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the rpath.living command
 #' livingGroups = rpath.living(Rpath)
@@ -114,7 +112,7 @@ rpath.living <- function(Rpath){
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the rpath.detrital command
 #' detritalGroups = rpath.detrital(Rpath)
@@ -140,7 +138,7 @@ rpath.detrital <- function(Rpath){
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the groups command
 #' gearGroups = rpath.gears(Rpath)
@@ -166,7 +164,7 @@ rpath.gears <- function(Rpath){
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the groups command
 #' producerGroups = rpath.producers(Rpath)
@@ -192,7 +190,7 @@ rpath.producers <- function(Rpath){
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the consumers command
 #' consumerGroups = rpath.consumers(Rpath)
@@ -218,7 +216,7 @@ rpath.consumers <- function(Rpath){
 #' @export
 #'
 #' @examples
-#' # Build the balanced Rpath model and parameter file by calling rpath()
+#' # Build the balanced Rpath model and parameter file by calling `rpath`
 #' Rpath <- rpath(Ecosense.EBS)
 #' # Run the groups command
 #' mixotrophGroups = rpath.mixotrophs(Rpath)
