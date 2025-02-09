@@ -17,7 +17,7 @@
 #'
 #'@section Details:
 #'
-#'For a detailed example of how to use this plot command please see `vignette("RunRsim")`
+#'For a detailed example of how to use this plot command please see \code{vignette("RunRsim")}
 #'
 #'@export
 #'
