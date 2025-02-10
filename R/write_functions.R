@@ -10,6 +10,23 @@
 #'
 #'
 #'@return Writes a list object or file with the basic parameters or mortalities from an Rpath object.
+#' # If morts = F, output reflects the basic parameters of the mass-balanced model, namely:
+#'\item{Group}{Vector of group names}
+#'\item{type}{Vector of group types: 0 = consumer, 1 = producer, 2 = detritus, 3 = fishery}
+#'\item{TL}{Vector of trophic level for each group, calculated based on mass balance}
+#'\item{Biomass}{Vector of biomass values for each modeled group}
+#'\item{PB}{Vector of production:biomass ratios for each modeled group}
+#'\item{QB}{Vector of consumption:biomass ratios for each modeled group}
+#'\item{EE}{Vector of ecotrophic efficiency values for each modeled group}
+#'\item{GE}{Vector of gross efficiency values (production:comsumption ratios) for each modeled group}
+#'\item{Removals}{Vector of total fishery removals for each modeled group}
+#'
+#'# If morts = T, output reflects calculated mortality values for each group. 
+#'# The number of columns will vary based on how many predators are in the model.
+#'\item{Group}{Vector of group names}
+#'\item{M0}{Vector of natural mortality for each group. Natural mortality = PB * (1-EE)}
+#'\item{Fmort}{Vector of fishing mortality for each group}
+#'\item{M2.XX}{Vector of predation mortality, where XX is the name of a predator group}
 #'
 #'
 #'@examples
