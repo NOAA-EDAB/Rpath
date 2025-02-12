@@ -2,15 +2,30 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.mort}
 \alias{rsim.mort}
-\title{Output mortality on a group}
+\title{Output biomass removed by each predator for an individual prey group from Rsim run}
 \usage{
 rsim.mort(Rsim.output, group)
 }
 \arguments{
 \item{Rsim.output}{R object containing the output from \code{rsim.run}.}
 
-\item{group}{Group from the \code{Rpath} model that is of interest}
+\item{group}{Predator group from the \code{Rpath} model that is of interest}
+}
+\value{
+a numeric matrix of annual (rows) biomass removed by each predator group (columns)
 }
 \description{
-Creates a matrix of mortality by predators on a particular prey.
+Extracts a matrix of biomass removed (in model biomass units) for a particular 
+prey by each of its predators from the Rsim model output of \code{\link{rsim.run}()}.
+}
+\examples{
+# Read in Rpath parameter file and generate model object
+Rpath <- rpath(AB.params)
+# Create a 50 yr Rsim scenario
+Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+# Run the Rsim simulation
+Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
+# Extract a prey's biomass loss from each predator over the model run
+Rsim.mort.anchovy <- rsim.mort(Rsim.output, group = "anchovy")
+
 }

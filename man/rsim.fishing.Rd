@@ -2,7 +2,7 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.fishing}
 \alias{rsim.fishing}
-\title{Generate Rsim fishing matrix}
+\title{Initialize fishing matrix for Rsim scenario}
 \usage{
 rsim.fishing(params, years)
 }
@@ -11,7 +11,27 @@ rsim.fishing(params, years)
 
 \item{years}{A vector of each year of the simulation.}
 }
+\value{
+S3 object class \code{Rsim.fishing}, a list of 3 objects:
+\itemize{
+ \item{\code{ForcedEffort}, numeric matrix of monthly (rows) effort multiplier by fleet (columns)}
+ \item{\code{ForcedFRate}, numeric matrix of annual (rows) fishing mortality rate by biomass group (columns)}
+ \item{\code{ForcedEffort}, numeric matrix of annual (rows) total catch removal by biomass group (columns)}
+}
+}
 \description{
-Creates a matrix for forcing functions related to fishing (\emph{ForcedEffort}, 
-\emph{ForcedFRate}, \emph{ForcedCatch})
+Creates a matrix for forcing functions related to fishing: (\emph{ForcedEffort}, 
+\emph{ForcedFRate}, and \emph{ForcedCatch}). Default values are set to 1 for 
+\emph{ForcedEffort}, and to 0 \emph{ForcedFRate}, and \emph{ForcedCatch} for all 
+timesteps and groups.
+}
+\examples{
+# Read in Rpath parameter file and generate model object
+Rpath <- rpath(AB.params)
+# Create dynamic parameters from Rpath model
+Rsim.params <- rsim.params(Rpath)
+# Create fishing matrix with default values
+Rsim.fishing <- rsim.fishing(Rsim.params, years = 1:50)
+
+
 }
