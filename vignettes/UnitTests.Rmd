@@ -20,7 +20,7 @@ library(Rpath)
 
 ## Unit Tests
 
-Unit Tests are written using the testthat R package. The tests are stored in the file: **tests/tests_rpath.R**. They may be run explicitly by the user clicking the Test or Check buttons under the Build tab in RStudio. They also run automatically via git actions when the user does a push or pull request. The output of the unit tests is a pdf file with a variety of comparison plots, examples of which are given below in [Figures 1-3.](#figures)
+Unit Tests are written using the testthat R package. The tests are stored in the file: **tests/testthat/tests-rpath.R**. They may be run explicitly by the user clicking the Test or Check buttons under the Build tab in RStudio. They also run automatically via git actions when the user does a push or pull request. The output of the unit tests is a pdf file with a variety of comparison plots, examples of which are given below in [Figures 1-3.](#figures)
 
 ## Details
 
