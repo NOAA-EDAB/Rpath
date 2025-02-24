@@ -244,19 +244,25 @@
 #'@family Rpath functions
 #'
 #' rsim.sense.path is depreciated and included for testing only, the preferred
-#' function is rsim.sense().
-#' Whitehouse and Aydin (Submitted) Assessing the sensitivity of three Alaska marine
-#' food webs to perturbations: an example of Ecosim simulations using Rpath
+#' function is rsim.sense(). Whitehouse and Aydin (Submitted) Assessing the
+#' sensitivity of three Alaska marine food webs to perturbations: an example of
+#' Ecosim simulations using Rpath
 #'
 #' This function generates random parameters around the Ecopath baseline,
 #' not the scenario.  
 #'
-#'@return Returns an Rsim.scenario object that can be supplied to the rsim.run function.
+#'@return Returns an Rsim.scenario object that can be supplied to the rsim.run
+#'  function.
 #'@useDynLib Rpath
 #' @export
+#' @noRd
 rsim.sense.path <- function(Rsim.scenario, Rpath, Rpath.params,
                             steps_yr = 12, steps_m = 1){
    
+  .Deprecated(new = "rsim.sense()", 
+              package = "Rpath", 
+              msg = "Warning: `rsim.sense.path()` was deprecated. Please use `rsim.sense()` instead.",
+              old = "rsim.sense.path()")
   sense.params <- Rsim.scenario$params
 
   nliving <- Rpath$NUM_LIVING
