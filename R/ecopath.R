@@ -160,7 +160,12 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   detoutputs <- rowSums(detcons, na.rm = T)
   EE         <- c(living[, EE], as.vector(detoutputs / detinputs))
 
-  # Detrital B and PB
+  # added by kya
+  # if a detritus biomass is put into the spreadsheet, use that and 
+  # calculate PB.  If no biomass, but a PB, use that pb with inflow to 
+  # calculate biomass.  If neither, use default PB=0.5, Bio = inflow/PB  
+  # This is done because Ecosim requires a detrital biomass.
+  
   Default_Detrital_PB <- 0.5 
   inDetPB <- model[(nliving + 1):(nliving + ndead), PB] 
   inDetB  <- model[(nliving + 1):(nliving + ndead), Biomass]
@@ -178,6 +183,13 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
 
+  #Adjust for mixotrophs (partial primary producers) - #Moved this code up so that
+  #it also impacted the EE calculation
+  # mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
+  # mix.Q <- 1 - model[mixotrophs, Type]
+  # for(i in seq_along(mixotrophs)){
+  #   dietplus[, mixotrophs[i]] <- dietplus[, mixotrophs[i]] * mix.Q[i]
+  # }
   #Adjust for diet import (Consumption outside model)
   import <- which(dietplus[nrow(diet), ] > 0)
   for(i in seq_along(import)){
@@ -190,7 +202,8 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   TLcoeffA <- TLcoeff - dietplus
   TL       <- solve(t(TLcoeffA), b)     
 
-  # Replace NAs with 0.0
+  #kya changed these following four lines for detritus, and removing NAs
+  #to match header file format (replacing NAs with 0.0s)
   Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
   
   PBplus <- model[, PB] 
@@ -330,12 +343,21 @@ rpath.stanzas <- function(Rpath.params){
     stanzafile[StGroupNum == isp, StanzaNum := stnum]
 
     #Calculate the last month for the final ("leading") stanza
-
+    #KYA Aug 2021:
+    # Formerly used fraction of Winf, but that didn't work for species
+    # with rapid growth but low mortality (e.g. marine mammals).
+    # So instead, calculate biomass out for a very long time and
+    # taking 0.99999 of cumulative biomass as a cutoff.
+    
+    #this selects all of the stanza lines, then picks the last one
+    #(maybe data table has a better way...)
+    
     stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
     st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
 
     gp <- groupfile[isp,]
-
+    #Max age class in months should be one less than a multiple of 12
+    #(trying 5999 - probably overkill but for safety)
     AGE <- st$First:5999
     mz <- (st$Z + gp$BAB)/12
     k  <- gp$VBGF_Ksp
