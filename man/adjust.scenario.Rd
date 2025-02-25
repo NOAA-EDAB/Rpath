@@ -47,6 +47,7 @@ Rsim.scenario.adjusted <- adjust.scenario(Rsim.scenario, parameter="PBopt",group
 \seealso{
 Other Adjust functions: 
 \code{\link{adjust.fishing}()},
-\code{\link{adjust.forcing}()}
+\code{\link{adjust.forcing}()},
+\code{\link{set.rsim.scene}()}
 }
 \concept{Adjust functions}

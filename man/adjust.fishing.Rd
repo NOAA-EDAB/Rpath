@@ -52,6 +52,7 @@ Rsim.scenario.adjusted.fishing <- adjust.fishing(Rsim.scenario,parameter="Forced
 \seealso{
 Other Adjust functions: 
 \code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()}
+\code{\link{adjust.scenario}()},
+\code{\link{set.rsim.scene}()}
 }
 \concept{Adjust functions}
