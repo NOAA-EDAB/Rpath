@@ -20,7 +20,8 @@ HandleSelf, ScrambleSelf, QQ, DD, VV, HandleSwitch, PredPredWeight, PreyPreyWeig
 from running \code{rpath()}}
 
 \item{groupto}{The corresponding group who's parameter is affecting the group
-variable.}
+variable. Required for parameters \code{QQ}, \code{DD}, \code{VV}, \code{HandleSwitch},\code{PredPredWeight},
+\code{PreyPreyWeight}}
 
 \item{value}{New value for the parameter.}
 }
@@ -38,8 +39,8 @@ Modifies the various parameters of the \code{rsim.scenario()} object. Parameters
 Rpath <- rpath(AB.params)
 # Create a 50 yr Rpath scenario
 Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
-# Adjust the PBopt parameter. 
-Rsim.scenario.adjusted <- adjust.scenario(Rsim.scenario, parameter="PBopt",group = "Squids", groupto = "Sponge", value = 2)   
+# Adjust the PBopt parameter for cod. Set to value = 2
+Rsim.scenario.adjusted <- adjust.scenario(Rsim.scenario, parameter="PBopt",group = "cod", groupto = "all", value = 2)   
 
 
 }
