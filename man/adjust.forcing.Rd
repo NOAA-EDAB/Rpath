@@ -39,6 +39,7 @@ Returns an Rsim.scenario object with the new parameter.
 \description{
 Modifies the various forcing parameters of the rsim scenario object.
 }
+
 \examples{
 # Read in Rpath parameter file and balance model
 Rpath <- rpath(AB.params)
@@ -47,8 +48,6 @@ Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 # Adjust the ForcedPrey parameter for cod in year 1 for all months. Change the value to 10
 Rsim.scenario.adjusted <- adjust.forcing(Rsim.scenario, parameter="ForcedPrey",group = "cod", sim.year = 1, sim.month=0,value=10)   
 head(Rsim.scenario.adjusted$forcing$ForcedPrey)
-
-
 
 }
 \seealso{

@@ -7,19 +7,25 @@
 rsim.plot(Rsim.output, spname = "all", indplot = F)
 }
 \arguments{
-\item{Rsim.output}{R object containing the output from \code{rsim.run}.}
+\item{Rsim.output}{R object containing the output from \code{rsim.run()}.}
 
 \item{spname}{Vector of species names to be displayed.  The default "all" will
-display all group names.}
+display all group names}
 
 \item{indplot}{Logical value of whether to plot a single group or multiple groups}
 }
 \value{
-Creates a figure of relative biomass.
+Creates a figure of relative biomass
 }
 \description{
 Plots the relative biomass of each group from an \code{Rsim.output} object.
 }
+\section{Details}{
+
+
+For a detailed example of how to use this plot command please see \code{vignette("RunRsim")}
+}
+
 \seealso{
 Other Rsim functions: 
 \code{\link{rsim.params}()},
