@@ -30,7 +30,6 @@ Other Rpath functions:
 \code{\link{MTI}()},
 \code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
-\code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
 \code{\link{rpath}()},
@@ -45,7 +44,6 @@ Other Rpath functions:
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},
 \code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
 \code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}

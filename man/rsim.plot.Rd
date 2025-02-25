@@ -28,9 +28,11 @@ For a detailed example of how to use this plot command please see \code{vignette
 
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.params}()},
 \code{\link{rsim.run}()},
 \code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()}
+\code{\link{rsim.step}()},
+\code{\link{write.Rsim}()}
 }
 \concept{Rsim functions}

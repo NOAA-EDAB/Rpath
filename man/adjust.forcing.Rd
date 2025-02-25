@@ -55,5 +55,6 @@ head(Rsim.scenario.adjusted$forcing$ForcedPrey)
 Other Adjust functions: 
 \code{\link{adjust.fishing}()},
 \code{\link{adjust.scenario}()}
+
 }
 \concept{Adjust functions}

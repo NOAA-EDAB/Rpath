@@ -23,6 +23,7 @@ and predator and prey group numbers (\code{id}).
 }
 \description{
 Prepare and summarize food web model for plotting by generating x-values for node 
-locations and creating a data frame of all trophic connections. This function could
-be useful for building custom plotting functions.
+locations and creating a data frame of all trophic connections. This function could also
+be used to build custom plotting functions.
 }
+\keyword{internal}

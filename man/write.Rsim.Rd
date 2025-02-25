@@ -39,12 +39,11 @@ write.Rsim(Rsim.output, file = "output.csv")
 }
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.params}()},
 \code{\link{rsim.plot}()},
 \code{\link{rsim.run}()},
 \code{\link{rsim.scenario}()},
 \code{\link{rsim.step}()}
-
-
 }
 \concept{Rsim functions}
