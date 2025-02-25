@@ -41,3 +41,5 @@ Meta
 Rpath.Rproj
 
 inst/doc
+/doc/
+/Meta/

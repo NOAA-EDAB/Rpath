@@ -4,14 +4,20 @@
 #'
 #'@family Rsim functions
 #'
-#'@param Rsim.output R object containing the output from \code{rsim.run}.
+#'@param Rsim.output R object containing the output from \code{rsim.run()}.
 #'@param spname Vector of species names to be displayed.  The default "all" will
-#'     display all group names.
+#'     display all group names
 #'@param indplot Logical value of whether to plot a single group or multiple groups
 #'
-#'@return Creates a figure of relative biomass.
+#'@returns Creates a figure of relative biomass
+#'
 #'@import data.table
+#'
 #'@importFrom grDevices rainbow
+#'
+#'@section Details:
+#'
+#'For a detailed example of how to use this plot command please see \code{vignette("RunRsim")}
 #'
 #'@export
 #'
@@ -73,5 +79,4 @@ rsim.plot <- function(Rsim.output, spname="all", indplot = F){
          spname, fill = line.col, cex = 0.6)
   
   par(opar)
-
 }
