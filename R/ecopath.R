@@ -1,18 +1,19 @@
 #'Ecopath module of Rpath
 #'
-#'Performs initial mass balance using a model parameter file and diet
-#'matrix file.
+#'Performs initial mass balance using a \code{\link{Rpath.params}()} file
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.params R object containing the Rpath parameters.  This is generated
-#'  either by the create.rpath.params or read.rpath.params functions.
-#'@param eco.name Optional name of the ecosystem which becomes an attribute of
-#'    rpath object.
+#'@param Rpath.params R object containing the parameters needed to create a
+#' \code{Rpath} model.  This is generated either by the \code{\link{create.rpath.params}()}
+#'  or \code{\link{read.rpath.params}()} functions.
+#'@param eco.name Optional name of the ecosystem which becomes an attribute of the
+#'    \code{Rpath} model.
 #'@param eco.area Optional area of the ecosystem which becomes an attribute of the
-#'    rpath object.
+#'    \code{Rpath} model.
 #'
-#'@return Returns an Rpath object that can be supplied to the rsim.scenario function.
+#'@return Returns a static \code{Rpath} model that can be supplied to the
+#' \code{rsim.scenario} function.
 #'@import data.table
 #'@export
 rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
@@ -72,8 +73,6 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   discardmat  <- model[, (10 + ndead + 1 + ngear):(10 + ndead + (2 * ngear)), with = F]
   totcatchmat <- landmat + discardmat
     
-  # KYA 1/16/14 Need if statement here because rowSums fail if only one 
-  # fishery (catch is vector instead of matrix)     ##FIX PROPAGATION HERE
   if (is.data.frame(totcatchmat)){
     totcatch <- rowSums(totcatchmat)
     landings <- rowSums(landmat)    
@@ -166,6 +165,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   # calculate PB.  If no biomass, but a PB, use that pb with inflow to 
   # calculate biomass.  If neither, use default PB=0.5, Bio = inflow/PB  
   # This is done because Ecosim requires a detrital biomass.
+  
   Default_Detrital_PB <- 0.5 
   inDetPB <- model[(nliving + 1):(nliving + ndead), PB] 
   inDetB  <- model[(nliving + 1):(nliving + ndead), Biomass]
@@ -231,7 +231,6 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
 
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
   gearF   <- as.matrix(totcatchmat) / living[, Biomass][row(as.matrix(totcatchmat))]
-  #newcons <- as.matrix(nodetrdiet)  * living[, BQB][col(as.matrix(nodetrdiet))]
   newcons <- as.matrix(nodetrdiet)  * BQB[col(as.matrix(nodetrdiet))]
   predM   <- as.matrix(newcons) / living[, Biomass][row(as.matrix(newcons))]
   predM   <- rbind(predM, detcons)
@@ -265,7 +264,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   dimnames(detfatem)                  <- list(gnames, gnames[(nliving+1):(nliving+ndead)])
   detfatem[is.na(detfatem)]           <- 0
 
-  # KYA April 2020 - added names for output list
+  # Add names for output list
     out.Group   <- gnames;           names(out.Group) <- gnames
     out.type    <- model[, Type];    names(out.type) <- gnames
     out.TL      <- TL;               names(out.TL) <- gnames
@@ -352,6 +351,7 @@ rpath.stanzas <- function(Rpath.params){
     
     #this selects all of the stanza lines, then picks the last one
     #(maybe data table has a better way...)
+    
     stmax <- max(stanzafile[StGroupNum == isp, StanzaNum])
     st <- stanzafile[StGroupNum == isp & StanzaNum==stmax,]
 
