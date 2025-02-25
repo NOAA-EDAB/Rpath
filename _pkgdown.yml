@@ -1,3 +1,12 @@
+url: https://noaa-edab.github.io/Rpath/
+
+template:
+ bootstrap: 5
+
+#needed for package to be linked by other locally installed packages
+deploy:
+  install_metadata: true
+
 reference:
 - title: "Rpath"
   desc: "Functions for creating a mass balance food web"
@@ -32,7 +41,7 @@ reference:
   - starts_with("Ecosense")
   - AB.params
   - REco.params
-- subtitle: "Adjustment Tools"
+- title: "Adjustment Tools"
   desc: "Functions for adjusting Rsim scenarios"
 - contents:
   - adjust.scenario
