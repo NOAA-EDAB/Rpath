@@ -14,10 +14,11 @@ stanzaplot(
 \item{Rpath.params}{R object containing the Rpath parameters.  This is generated
 either by the create.rpath.params or read.rpath.params functions.}
 
-\item{StanzaGroup}{The Stanza group's name to be plotted.}
+\item{StanzaGroup}{The Stanza group's name to be plotted.Valid values are found in the 
+`stanzas` field of the Rpath parameter file.}
 
 \item{line.cols}{A vector of four colors used to represent the population biomass,
-relative number, indvidual weights, and stanza separation lines.}
+relative number, individual weights, and stanza separation lines.}
 }
 \value{
 Creates a figure showing the break down of biomass and number per stanza.
@@ -25,13 +26,19 @@ Creates a figure showing the break down of biomass and number per stanza.
 \description{
 Plots the biomass composition of multistanza groups from an Rpath.stanzas object.
 }
+\examples{
+# Choose group with multiple stanzas
+params <- REco.params
+stanzaplot(params, StanzaGroup = "Roundfish1")
+
+
+}
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
 \code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
-\code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
 \code{\link{rpath}()},
@@ -45,7 +52,6 @@ Other Rpath functions:
 \code{\link{rpath.stanzas}()},
 \code{\link{webplot}()},
 \code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
 \code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}

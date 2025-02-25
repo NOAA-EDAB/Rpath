@@ -25,9 +25,11 @@ Uses a balanced \code{Rpath} model and creates a scenario consisting of 5 list o
 }
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.params}()},
 \code{\link{rsim.plot}()},
 \code{\link{rsim.run}()},
-\code{\link{rsim.step}()}
+\code{\link{rsim.step}()},
+\code{\link{write.Rsim}()}
 }
 \concept{Rsim functions}

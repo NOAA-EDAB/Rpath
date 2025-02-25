@@ -20,9 +20,11 @@ Carries out the numerical integration of the Rsim alogrithms.
 }
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.params}()},
 \code{\link{rsim.plot}()},
 \code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()}
+\code{\link{rsim.step}()},
+\code{\link{write.Rsim}()}
 }
 \concept{Rsim functions}
