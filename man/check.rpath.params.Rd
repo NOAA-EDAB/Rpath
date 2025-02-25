@@ -12,7 +12,8 @@ either by the create.rpath.params or read.rpath.params functions.}
 }
 \value{
 Checks Rpath parameter files for consistency.  An error message will be produced if one of
- the logical checks fails.  Checks include: 
+ the logical checks fails. Checks include: verification that all types are represented (e.g. consumer, producer, detrital, and fleet);
+ check if input parameters were entered correctly; check if Diet columns sum to 1. 
  (NOTE: This does not ensure data is correct just that it is in the right places).
 }
 \description{
@@ -28,7 +29,13 @@ Other Rpath functions:
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
 \code{\link{rpath}()},
+\code{\link{rpath.consumers}()},
+\code{\link{rpath.detrital}()},
+\code{\link{rpath.gears}()},
 \code{\link{rpath.groups}()},
+\code{\link{rpath.living}()},
+\code{\link{rpath.mixotrophs}()},
+\code{\link{rpath.producers}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},

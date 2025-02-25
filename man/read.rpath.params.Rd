@@ -13,27 +13,27 @@ read.rpath.params(
 )
 }
 \arguments{
-\item{modfile}{file location of the flat file containing the model parameters.}
+\item{modfile}{file location of the flat file containing the \emph{model} parameters.}
 
-\item{dietfile}{file location of the flat file containing the diet parameters.}
+\item{dietfile}{file location of the flat file containing the \emph{diet} parameters.}
 
-\item{pedfile}{file location of the flat file containg the pedgigree parameters.}
+\item{pedfile}{file location of the flat file containing the \emph{pedgigree} parameters.}
 
-\item{stanzagroupfile}{file location of the flat file containing the group parameters
-for multistanza groups.  If not specified a blank stanza list will be created.}
+\item{stanzagroupfile}{file location of the flat file containing the \emph{group} parameters
+for multistanza groups. If not specified a blank stanza list will be created.}
 
-\item{stanzafile}{file location of the flat file containing the individual stanza 
-parameters for multistanza groups.  If not specified a blank stanza list will 
+\item{stanzafile}{file location of the flat file containing the individual stanza
+parameters for multistanza groups. If not specified a blank stanza list will
 be created.}
 }
 \value{
-Outputs an Rpath.param object that can be used for Rpath and subsequently
- Rsim.  (NOTE: This does function does not ensure data is correct or in the 
- correct locations...run check.rpath.param to ensure the appropriate columns are
+Outputs an \code{Rpath.param} object that can be used for Rpath and subsequently
+ Rsim.  (NOTE: This does function does not ensure data is correct or in the
+ correct locations.Run \code{\link{check.rpath.param}()} to ensure the appropriate columns are
  present).
 }
 \description{
-Creates an Rpath.param object from a series of .csv files.
+Creates an \code{Rpath.param} object from a series of .csv files.
 }
 \seealso{
 Other Rpath functions: 
@@ -44,7 +44,13 @@ Other Rpath functions:
 \code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{rpath}()},
+\code{\link{rpath.consumers}()},
+\code{\link{rpath.detrital}()},
+\code{\link{rpath.gears}()},
 \code{\link{rpath.groups}()},
+\code{\link{rpath.living}()},
+\code{\link{rpath.mixotrophs}()},
+\code{\link{rpath.producers}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},
