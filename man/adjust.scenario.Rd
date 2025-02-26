@@ -35,9 +35,9 @@ Modifies the various parameters of the \code{rsim.scenario()} object. Parameters
 \emph{DD}, \emph{VV}, \emph{HandleSwitch}, \emph{PredPredWeight}, \emph{PreyPreyWeight}
 }
 \examples{
-# Read in Rpath parameter file and balance model
+# Read in Rpath parameter file and generate balanced model
 Rpath <- rpath(AB.params)
-# Create a 50 yr Rpath scenario
+# Create a 50 yr Rsim scenario
 Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 # Adjust the PBopt parameter for cod. Set to value = 2
 Rsim.scenario.adjusted <- adjust.scenario(Rsim.scenario, parameter="PBopt",group = "cod", groupto = "all", value = 2)   

@@ -18,9 +18,9 @@ Helper function that will retrieve the forcing parameters that were used in an
 Rsim scenario
 }
 \examples{
-# Read in Rpath parameter file and balance model
+# Read in Rpath parameter file and generate balanced model
 Rpath <- rpath(AB.params)
-# Create a 50 yr Rpath scenario
+# Create a 50 yr Rsim scenario
 Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 params <- get.rsim.forcing(Rsim.scenario)
 names(params)

@@ -14,9 +14,9 @@
 #'
 #'
 #'@examples
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' rates <- frate.table(Rsim.scenario)
 #' # display the head of the data frame
@@ -76,9 +76,9 @@ frate.table <- function(Rsim.scenario){
 #'    values.
 #'    
 #'@examples
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' # Change value of forcedFRate for Squids in years 3 through 5 to the value of 2 (for all months)
 #' Rsim.scenario.adjusted.fishing <- adjust.fishing(Rsim.scenario,parameter="ForcedFRate",group="Squids",sim.year=3:5,value = 2)
@@ -155,9 +155,9 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1,
 #'@return Returns an \code{rsim.scenario()} object with the new parameter.
 #'
 #'@examples
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' # Adjust the PBopt parameter for cod. Set to value = 2
 #' Rsim.scenario.adjusted <- adjust.scenario(Rsim.scenario, parameter="PBopt",group = "cod", groupto = "all", value = 2)   
@@ -212,9 +212,9 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
 #'
 #'
 #'@examples
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' # Adjust the ForcedPrey parameter for cod in year 1 for all months. Change the value to 10
 #' Rsim.scenario.adjusted <- adjust.forcing(Rsim.scenario, parameter="ForcedPrey",group = "cod", sim.year = 1, sim.month=0,value=10)   
@@ -294,9 +294,9 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
 #'@return Returns an \code{Rsim.scenario} object with the new parameter.
 #'
 #'@examples 
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' stanzas <- rsim.stanzas(AB.params)
 #' Rsim.scenario.new <- set.rsim.scene(Rsim.scenario,stanzas=stanzas)
@@ -331,9 +331,9 @@ set.rsim.scene<-function(Rsim.scenario,params=NULL,start_state=NULL,forcing=NULL
 #'@return Returns a `params` object.
 #'
 #'@examples
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' params <- get.rsim.params(Rsim.scenario)
 #' names(params)
@@ -359,9 +359,9 @@ get.rsim.params<-function(Rsim.scenario){
 #'@return Returns an `start_state` object.
 #'
 #'@examples
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' params <- get.rsim.start_state(Rsim.scenario)
 #' names(params) 
@@ -386,9 +386,9 @@ get.rsim.start_state<-function(Rsim.scenario){
 #'@return Returns a `forcing` object.
 #'
 #'@examples 
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' params <- get.rsim.forcing(Rsim.scenario)
 #' names(params)
@@ -412,9 +412,9 @@ get.rsim.forcing<-function(Rsim.scenario){
 #'@return Returns a `fishing` object.
 #'
 #'@examples 
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' params <- get.rsim.fishing(Rsim.scenario)
 #' names(params)
@@ -439,9 +439,9 @@ get.rsim.fishing<-function(Rsim.scenario){
 #'@return Returns a `stanzas` object.
 #'
 #'@examples 
-#' # Read in Rpath parameter file and balance model
+#' # Read in Rpath parameter file and generate balanced model
 #' Rpath <- rpath(AB.params)
-#' # Create a 50 yr Rpath scenario
+#' # Create a 50 yr Rsim scenario
 #' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 #' params <- get.rsim.stanzas(Rsim.scenario)
 #' names(params)

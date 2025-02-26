@@ -36,9 +36,9 @@ that can be adjusted using this function are: \code{params},\code{start_state},
 \code{forcing},\code{fishing},\code{stanzas}
 }
 \examples{
-# Read in Rpath parameter file and balance model
+# Read in Rpath parameter file and generate balanced model
 Rpath <- rpath(AB.params)
-# Create a 50 yr Rpath scenario
+# Create a 50 yr Rsim scenario
 Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 stanzas <- rsim.stanzas(AB.params)
 Rsim.scenario.new <- set.rsim.scene(Rsim.scenario,stanzas=stanzas)

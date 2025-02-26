@@ -39,9 +39,9 @@ Parameters that can be adjusted using this function are: \emph{ForcedEffort},
 \emph{ForcedFRate}, or \emph{ForcedCatch}.
 }
 \examples{
-# Read in Rpath parameter file and balance model
+# Read in Rpath parameter file and generate balanced model
 Rpath <- rpath(AB.params)
-# Create a 50 yr Rpath scenario
+# Create a 50 yr Rsim scenario
 Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 # Change value of forcedFRate for Squids in years 3 through 5 to the value of 2 (for all months)
 Rsim.scenario.adjusted.fishing <- adjust.fishing(Rsim.scenario,parameter="ForcedFRate",group="Squids",sim.year=3:5,value = 2)
