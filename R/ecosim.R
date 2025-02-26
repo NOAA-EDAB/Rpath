@@ -658,12 +658,28 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #'
 #'@return a list of 21 objects:
 #'\itemize{
-#'  \item{\code{SpawnBio}, numeric vector of initial age structured stanza }
+#'  \item{\code{Nsplit}, number of model groups with stanzas}
+#'  \item{\code{Nstanzas}, numeric vector}
+#'  \item{\code{EcopathCode}, numeric matrix}
+#'  \item{\code{Age1}, numeric matrix}
+#'  \item{\code{Age2}, numeric matrix}
+#'  \item{\code{baseWageS}, numeric matrix}
+#'  \item{\code{baseNageS}, numeric matrix}
+#'  \item{\code{baseQageS}, numeric matrix}
+#'  \item{\code{Wmat}, numeric vector}
+#'  \item{\code{RecPower}, numeric vector}
+#'  \item{\code{recruits}, numeric vector}
+#'  \item{\code{VBGFd}, numeric vector}
+#'  \item{\code{RzeroS}, numeric vector}
+#'  \item{\code{vBM}, numeric vector}
+#'  \item{\code{baseEggsStanza}, numeric vector}
+#'  \item{\code{SplitAlpha}, numeric matrix}
+#'  \item{\code{SpawnX}, numeric vector}
+#'  \item{\code{SpawnEnergy}, numeric vector}
+#'  \item{\code{baseSpawnBio}, numeric vector of initial age structured stanza }
 #'  \item{\code{StanzaPred}, numeric vector}
-#'  \item{\code{EggsStanza}, numeric vector}
-#'  \item{\code{NageS}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
-#'  \item{\code{WageS}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
-#'  \item{\code{QageS}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+#'  \item{\code{RscaleSplit}, numeric vector}
+#'  \item{\code{baseStanzaPred}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
 #'}
 #'
 #'@examples
@@ -674,7 +690,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #' # Create state vectors with default values
 #' Rsim.state <- rsim.state(Rsim.params)
 #' # Create stanza object
-#' Rsim.stanzas <- rsim.stanzas(REco.params, Rsim.params, Rsim.state)
+#' Rsim.stanzas <- rsim.stanzas(REco.params, Rsim.state, Rsim.params)
 #'
 #'@export
 #'
