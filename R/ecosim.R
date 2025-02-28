@@ -648,9 +648,9 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   return(simpar)
 }
 
-#'Generate Rsim stanza matrix
+#'Initialize list of age structured group (stanza) parameters
 #'
-#'Creates a matrix of stanza variables to be used by \code{rsim.run}.
+#'Creates a list of stanza indices and parameters to be used by \code{rsim.run}.
 #'
 #'@inheritParams rsim.scenario
 #'@inheritParams rsim.fishing
@@ -659,10 +659,10 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #'@return a list of 21 objects:
 #'\itemize{
 #'  \item{\code{Nsplit}, number of model groups with stanzas}
-#'  \item{\code{Nstanzas}, numeric vector}
-#'  \item{\code{EcopathCode}, numeric matrix}
-#'  \item{\code{Age1}, numeric matrix}
-#'  \item{\code{Age2}, numeric matrix}
+#'  \item{\code{Nstanzas}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by the number of age groups for each model group with stanzas}
+#'  \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1} age group columns, first column and row empty for indexing}
+#'  \item{\code{Age1}, numeric matrix of age in months of first age group}
+#'  \item{\code{Age2}, numeric matrix of age in months of second age group}
 #'  \item{\code{baseWageS}, numeric matrix}
 #'  \item{\code{baseNageS}, numeric matrix}
 #'  \item{\code{baseQageS}, numeric matrix}
