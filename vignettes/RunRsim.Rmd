@@ -22,8 +22,7 @@ Rsim is the ecosim implementation of the EwE code in R.  In order to proceed you
 REco <- rpath(REco.params, eco.name = 'R Ecosystem')
 ```
 
-Running rsim, is a three part process.  First, the function `rsim.scenario()` is run to convert rpath parameters to rates.  Within `rsim.scenario()` are 5 functions that initialize the basic and stanza parameters, creates perturbation matrices for fishing 
-and other forcing functions, and a list of initial states.  Arguments passed to the `rsim.scenario()` function are the Rpath object, the rpath parameter object, and a vector of years corresponding to the length of the simulation.
+Running rsim, is a three part process.  First, the function `rsim.scenario()` is run to convert rpath parameters to rates.  Within `rsim.scenario()` are 5 functions that initialize the basic and stanza parameters, creates perturbation matrices for fishing and other forcing functions, and a list of initial states.  Arguments passed to the `rsim.scenario()` function are the Rpath object, the rpath parameter object, and a vector of years corresponding to the length of the simulation.
 
 ```{r rsim.scenario, echo = TRUE, eval = TRUE}
 REco.sim <- rsim.scenario(REco, REco.params, years = 1:100)
@@ -60,8 +59,7 @@ write.Rsim(REco.run1,file = here::here("run1Output.csv"))
 summary(REco.run1)
 ```
 
-In addition, there is a quick graphical routine for plotting
-biomass trajectories over time.  Other plots similar to the group plots are possible but at this time there isn't a built-in function.
+In addition, there is a quick graphical routine for plotting biomass trajectories over time.  Other plots similar to the group plots are possible but at this time there isn't a built-in function.
 
 ```{r ecosimEquilibriumPlot, fig.height = 7, fig.width = 9,fig.alt="Biomass Trajectories of all species in model"}
 rsim.plot(REco.run1, spname="all")
