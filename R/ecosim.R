@@ -661,8 +661,8 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #'  \item{\code{Nsplit}, number of model groups with stanzas}
 #'  \item{\code{Nstanzas}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by the number of age groups for each model group with stanzas}
 #'  \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1} age group columns, first column and row empty for indexing}
-#'  \item{\code{Age1}, numeric matrix of age in months of first age group}
-#'  \item{\code{Age2}, numeric matrix of age in months of second age group}
+#'  \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months
+#'  \item{\code{Age2}, numeric matrix of age in months of last age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months, third column max age in months}
 #'  \item{\code{baseWageS}, numeric matrix}
 #'  \item{\code{baseNageS}, numeric matrix}
 #'  \item{\code{baseQageS}, numeric matrix}
