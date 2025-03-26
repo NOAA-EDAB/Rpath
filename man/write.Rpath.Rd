@@ -38,6 +38,7 @@ The number of columns will vary based on how many predators are in the model.
 Outputs basic parameters or mortalities from a \code{rpath()} object to a .csv or .RData file.
 }
 \examples{
+\dontrun{
 # Read in Rpath parameter file, generate model object
 x <- rpath(AB.params)
 # Saves basic model parameters for all groups to the root directory of users project
@@ -45,7 +46,7 @@ write.Rpath(x, file = "output.csv", morts = F)
 # Calculates natural mortality (M0), fishing mortality by fleet, and predation mortality by predator (M2) on each group
 # Writes output to an Rdata file in the root directory of users project
 write.Rpath(x, file = here::here("output.RData"), morts = T)
-
+}
 
 }
 \seealso{
