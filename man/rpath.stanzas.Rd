@@ -7,8 +7,9 @@
 rpath.stanzas(Rpath.params)
 }
 \arguments{
-\item{Rpath.params}{R object containing the Rpath parameters.  This is generated
-either by the create.rpath.params or read.rpath.params functions.}
+\item{Rpath.params}{R object containing the parameters needed to create a
+\code{Rpath} model.  This is generated either by the \code{\link{create.rpath.params}()}
+ or \code{\link{read.rpath.params}()} functions.}
 }
 \value{
 Calculates and adds biomass and consumption for trailing stanza groups.  
@@ -21,7 +22,6 @@ necessary to support the leading stanza.
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
 \code{\link{frate.table}()},

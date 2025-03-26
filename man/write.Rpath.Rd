@@ -51,7 +51,6 @@ write.Rpath(x, file = here::here("output.RData"), morts = T)
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
 \code{\link{frate.table}()},
