@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Setting up a food web model
 
-First, install Rpath as instructed in [Getting Started](https://noaa-edab.github.io/Rpath/articles/Rpath.html). R package `data.table` is also required to run the code in this article.
+First, install Rpath as instructed in [Getting Started](Rpath.html). R package `{data.table}` is also required to run the code in this article.
 
 ```{r rpath load}
 library(Rpath); library(data.table)
@@ -33,7 +33,7 @@ stanzas, and pedigree.  Parameter files can be created outside of R and read in 
 the `read.rpath.params()` function.  This function will merge several different flat
 files into an R object of the list type.  A preferred alternative is to generate 
 the list file and populate it completely within R.  The function 
-`create.rpath.params()` will generate an `Rpath.param`.  This ensures that all 
+`create.rpath.params()` will generate an `Rpath.params` list object.  This ensures that all 
 of the correct columns are present in the parameter file.
 
 The parameter file contains all of the information you would normally enter in the
@@ -93,7 +93,7 @@ REco.params$model[, Biomass := biomass]
 
 ```
 
-Note the use of the operator ':=' to assign values.  This is unique to data tables.
+Note the use of the operator ':=' to assign values.  This is unique to data tables from `{data.table}`.
 
 ```{r Model Table partial, echo = F}
 knitr::kable(REco.params$model[, list(Group, Type, Biomass, EE)], 
