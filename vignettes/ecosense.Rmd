@@ -11,6 +11,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width = 7, fig.height = 5)
 library(Rpath); library(data.table); library(viridis)
 #knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
@@ -18,20 +19,20 @@ library(Rpath); library(data.table); library(viridis)
 Rpath is an R implementation of the food web modeling program Ecopath with Ecosim
 (EwE; Christensen and Pauly 1992^[Christensen V, Pauly D (1992) Ecopath II-a software 
 for balancing steady-state ecosystem models and calculating network characteristics. 
-Ecol Model 61:169-185. doi:10.1016/0304-3800(92)90016-8], Walters et al. 1997^[Walters 
+Ecol Model 61:169-185. doi:10.1016/0304-3800(92)90016-8], Walters *et al.* 1997^[Walters 
 C, Christensen V, Pauly D (1997) Structuring dynamic models of exploited ecosystems 
 from trophic mass-balance assessments. Rev Fish Biol Fish 7:139-172. 
 doi:10.1023/a:1018479526149]). For full documentation of the Rpath package see Lucey 
-et al. (2020^[Lucey SM, Gaichas SK, Aydin KY (2020) Conducting reproducible ecosystem 
+*et al.* (2020^[Lucey SM, Gaichas SK, Aydin KY (2020) Conducting reproducible ecosystem 
 modeling using the open source mass balance model Rpath. Ecol Model 427:11. 
 doi:10.1016/j.ecolmodel.2020.109057]). Ecosense is a Monte Carlo approach to generating 
 an ensemble of plausible ecosystem parameter sets from a single Rpath model for 
-use with `rsim.run`, the time-dynamic counterpart to Rpath. For complete documentation
+use with `rsim.run()`, the time-dynamic counterpart to Rpath. For complete documentation
 of Ecosense see Whitehouse and Aydin (2020^[Whitehouse GA, Aydin KY (2020) 
 Assessing the sensitivity of three Alaska marine food webs to perturbations: an 
 example of Ecosim simulations using Rpath. Ecol Model 429:16. 
-doi:10.1016/j.ecolmodel.2020.109074]). To use this vignette it is recommended you
-are familiar with Rpath and its basic operations.
+doi:10.1016/j.ecolmodel.2020.109074]). This vignette requires an understanding of the 
+Rpath package and its basic operations.
 
 ## Ecosense
 
@@ -70,8 +71,8 @@ Additionally, vulnerability and handling time from the predator prey functional
 response can be drawn over a specified range (lower/upper bounds in log space-1) 
 for each individual predator-prey interaction.
 
-A single parameter set can be generated with a call to `rsim.sense`. The object 
-returned by `rsim.sense` is equivalent to the list of parameters in an `rsim.scenario` 
+A single parameter set can be generated with a call to `rsim.sense()`. The object 
+returned by `rsim.sense()` is equivalent to the list of parameters in an `rsim.scenario()` 
 object (e.g., scenario_object$params).
 
 ```{r genmod, echo=TRUE}
@@ -90,30 +91,30 @@ in the original `rsim.scenario` object.
 # Setting the burn-in period in the EBS scenario object to 50 years.
 EBS_scene$params$BURN_YEARS <- 50
 ```
-During burn-in, if the biomass of a functional group exceeds 1,000x its starting
+During the burn-in, if the biomass of a functional group exceeds 1,000x its starting
 biomass or decreases to less than 1/1,000 its starting biomass, the ecosystem parameter
 set is rejected and not retained for further analysis. A 50 year burn-in period 
 is generally sufficient to eliminate most of the unstable configurations.
 
 ### Generating an ensemble of Ecosim parameter sets
 
-To generate an ensemble of parameter sets you can repeat the call to `rsim.sense` 
+To generate an ensemble of parameter sets you can repeat the call to `rsim.sense()` 
 in a loop. First, determine the number of parameter sets you wish to generate and 
 create lists to store those parameter sets. Set up another vector to keep track 
 of which generated parameter sets were rejected or retained.
 ```{r ensemble, echo=TRUE}
 NUM_RUNS <- 1000 # how many ecosystem parameter sets to generate
-parlist<-as.list(rep(NA,NUM_RUNS)) # create lists to store the generated parameters
+parlist<-as.list(rep(NA,NUM_RUNS)) # creates lists to store the generated parameters
 kept<-rep(NA,NUM_RUNS) # object to keep track of kept systems
 set.seed(666) # Optional, set seed so output can be replicated
 ```
 In this example we will generate 1,000 parameter sets (NUM_RUNS) for the eastern 
-Bering Sea food web model. parlist[[i]] is the object that will store the ith 
-generated parameter set. Optionally, you can use `set.seed` to replicate these results.
+Bering Sea food web model. `parlist[[i]]` is the object that will store the ith 
+generated parameter set. Optionally, you can use `set.seed()` to replicate these results.
 
 The following loop generates an ensemble of Ecosim parameters for the EBS food web 
 model, assigns the generated base biomass (B_BaseRef) to the starting biomass in 
-the `rsim.scenario` object, sets the burn years to 50, runs a simulation with `rsim.run`, 
+the `rsim.scenario` object, sets the burn years to 50, runs a simulation with `rsim.run()`, 
 and rejects or retains parameter sets based on the boundaries described above.
 
 ```{r generatorloop, echo=TRUE, results='hide'}
@@ -154,7 +155,7 @@ KEPT <- which(kept==T); KEPT # the number associated with the kept system
 nkept <- length(KEPT); nkept # how many were kept
 1-(nkept/NUM_RUNS) # rejection rate
 ```
-The numbers in KEPT can be used to access the retained parameter sets in parlist[[i]].
+The numbers in KEPT can be used to access the retained parameter sets in `parlist[[i]]`.
 In this example, 43 parameter sets were retained and the rejection rate for generated
 parameter sets was 95.7%.
 
@@ -219,7 +220,8 @@ for (i in 1:nkept) {
 boxplot(plot_mat[1200,], ylim=c(min(plot_mat),max(plot_mat)), yaxt='n')
 axis(side=2, at=c(seq(0,150,50)), tick=TRUE, labels=F)
 ```
-Each line in the left panel is the relative biomass trajectory of walleye pollock
+
+Each line represents the relative biomass trajectory of walleye pollock
 over the 100 year simulation with the retained Rsim parameter sets.
 
 ### Run the kept systems with a perturbation
@@ -227,9 +229,9 @@ over the 100 year simulation with the retained Rsim parameter sets.
 When working with an ensemble such as this, we are often interested in doing the 
 same perturbation across all ensemble members to describe a range of potential outcomes.
 In this example, we'll increase the fishing mortality on walleye pollock using the 
-`adjust.fishing` function. The first 50 years of the simulation are the burn-in 
+`adjust.fishing()` function. The first 50 years of the simulation are the burn-in 
 period. So, the perturbation is put in place from year 51 to 100, and in this example
-we increase walleye pollock fishing mortality by 2X.
+we increase walleye pollock fishing mortality by 2x.
 ```{r run, echo=TRUE, results='hide'}
 ecos_sp <- as.list(rep(NA,length(KEPT))) # lists for simulated ecosystems
 k <- 0  # counter for simulated ecosystems
@@ -265,7 +267,7 @@ for (i in 1:nkept) {
 }
 ```
 Plot the trajectories for walleye pollock from this perturbation. Note, the x-axis 
-starts at the begining of the perturbation (January of year 51).
+starts at the beginning of the perturbation (January of year 51).
 ```{r walleyeplot, echo=TRUE}
 plot_mat_sp <- matrix(nrow=1200, ncol=nkept)
 for (i in 1:nkept) {
@@ -279,6 +281,7 @@ for (i in 1:nkept) {
 }
 boxplot(plot_mat_sp[1200,], ylim=c(min(plot_mat_sp[601:1200,]),max(plot_mat_sp[601:1200,])))
 ```
+
 Biomass for walleye pollock decreased in all 43 ecosystems in response to the perturbation.
 
 Walleye pollock are a nodal species in the eastern Bering Sea food web and such 
