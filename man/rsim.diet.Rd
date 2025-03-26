@@ -2,15 +2,30 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.diet}
 \alias{rsim.diet}
-\title{Output consumption by a group}
+\title{Output consumption of each prey by an individual predator group from Rsim run}
 \usage{
 rsim.diet(Rsim.output, group)
 }
 \arguments{
 \item{Rsim.output}{R object containing the output from \code{rsim.run}.}
 
-\item{group}{Group from the \code{Rpath} model that is of interest}
+\item{group}{Predator group from the \code{Rpath} model that is of interest}
+}
+\value{
+a numeric matrix of annual (rows) consumption of each prey group (columns)
 }
 \description{
-Creates a matrix of consumption of prey by a particular predator.
+Extracts a matrix of consumption (in model biomass units) of each prey over time 
+by a particular predator from the Rsim model output of \code{\link{rsim.run}()}.
+}
+\examples{
+# Read in Rpath parameter file and generate model object
+Rpath <- rpath(AB.params)
+# Create a 50 yr Rsim scenario
+Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+# Run the Rsim simulation
+Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
+# Extract a preadator's consumption of each prey over the model run
+Rsim.diet.whales <- rsim.diet(Rsim.output, group = "whales")
+
 }

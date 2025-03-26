@@ -16,7 +16,7 @@ rsim.params(
 )
 }
 \arguments{
-\item{Rpath}{R object containing a balanced \code{Rpath} model.}
+\item{Rpath}{R object containing a static \code{Rpath} model.}
 
 \item{mscramble}{WILL REMOVE}
 
@@ -38,6 +38,13 @@ Returns an \code{Rsim.params} object that is passed to the \code{rsim.run}
 }
 \description{
 Converts the outputs from Rpath into rates for use in Rsim.
+}
+\examples{
+# Read in Rpath parameter file and generate model object
+Rpath <- rpath(AB.params)
+# Create default dynamic parameters from Rpath model
+Rsim.params <- rsim.params(Rpath)
+
 }
 \seealso{
 Other Rsim functions: 
