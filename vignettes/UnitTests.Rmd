@@ -20,7 +20,7 @@ library(Rpath)
 
 ## Unit Tests
 
-Unit Tests are written using the testthat R package. The tests are stored in the file: **tests/testthat/tests-rpath.R**. They may be run explicitly by the user clicking the Test or Check buttons under the Build tab in RStudio. They also run automatically via git actions when the user does a push or pull request. The output of the unit tests is a pdf file with a variety of comparison plots, examples of which are given below in [Figures 1-3.](#figures)
+Unit Tests are written using the testthat R package. The tests are stored in the file: **tests/testthat/test-rpath.R**. They may be run explicitly by the user clicking the Test or Check buttons under the Build tab in RStudio. They also run automatically via git actions when the user does a push or pull request. The output of the unit tests is a pdf file with a variety of comparison plots, examples of which are given below in [Figures 1-3.](#figures)
 
 ## Details
 
@@ -382,7 +382,7 @@ The following unit tests have been developed. Note that some tests consist of ad
 
 ## Figures 
 
-The Unit Tests compare current runs with baseline runs and produce plots in a pdf file. These plots may be useful for diagnostic purposes. The plots depict the output of a current run in blue and of the baseline run in red. If there are no errors, then there should be no red visible on the plots. There are two types of plots available, also set by a variable in tests/tests_rpath.R:
+The Unit Tests compare current runs with baseline runs and produce plots in a pdf file. These plots may be useful for diagnostic purposes. The plots depict the output of a current run in blue and of the baseline run in red. If there are no errors, then there should be no red visible on the plots. There are two types of plots available, also set by a variable in tests/testthat/test-rpath.R:
 
 ```{r Plot Type 1}
 PLOT_TYPE <- 1 
@@ -410,7 +410,7 @@ knitr::include_graphics("img/plot_01_no_difference.png")
 knitr::include_graphics("img/plot_02_superimposed_with_difference.png")
 ```
 
-<br><br> Figure 3 shows the difference of the current and baseline models. If the models were identical, the difference would be 0, and the plots should be completely flat lines. This plot shows the current-baseline plots for the data shown in Figure 2. Notice that the plot lines are not completely flat, denoting that the difference is not 0. The scale of the y-axis may be modified by changing the following line in **tests/tests_rpath.R**:
+<br><br> Figure 3 shows the difference of the current and baseline models. If the models were identical, the difference would be 0, and the plots should be completely flat lines. This plot shows the current-baseline plots for the data shown in Figure 2. Notice that the plot lines are not completely flat, denoting that the difference is not 0. The scale of the y-axis may be modified by changing the following line in **tests/testthat/test-rpath.R**:
 
 ```{r scale}
 YLIMIT_DIFFERENCE_PLOTS <- 0.05
