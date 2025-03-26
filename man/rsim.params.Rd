@@ -48,9 +48,11 @@ Rsim.params <- rsim.params(Rpath)
 }
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.plot}()},
 \code{\link{rsim.run}()},
 \code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()}
+\code{\link{rsim.step}()},
+\code{\link{write.Rsim}()}
 }
 \concept{Rsim functions}

@@ -40,9 +40,11 @@ Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 }
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.params}()},
 \code{\link{rsim.plot}()},
 \code{\link{rsim.run}()},
-\code{\link{rsim.step}()}
+\code{\link{rsim.step}()},
+\code{\link{write.Rsim}()}
 }
 \concept{Rsim functions}

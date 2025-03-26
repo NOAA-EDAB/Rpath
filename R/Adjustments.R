@@ -1,16 +1,31 @@
 #'Fishing Mortality Table
 #'
 #'Creates a table of fishing mortalities by species group and gear for an 
-#'\code{Rsim.scenario} object.
+#'\code{rsim.scenario()} object.
 #'
 #'@family Rpath functions
 #'
 #'@inheritParams rsim.run
 #'
 #'@return Returns a data table of F values for each species/gear combination.
+#'\item{Group}{Group/node}
+#'\item{Fishery/gearType}{Gear type for the fishery} ...
+#'\item{Total}{Sum over all gear types}
+#'
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' rates <- frate.table(Rsim.scenario)
+#' # display the head of the data frame
+#' head(rates)
 #'
 #'@export
-#' 
+
+
+
 frate.table <- function(Rsim.scenario){
   #Need to define variables to eliminate check() note about no visible binding
   Group <- Gear <- Q <- NULL
@@ -49,15 +64,29 @@ frate.table <- function(Rsim.scenario){
 #'@family Adjust functions
 #'
 #'@inheritParams rsim.run
-#'@param parameter Parameters to be modified (See Description)
-#'@param group Name of the group whose parameter is being changed.
+#'@param parameter Parameters to be modified (\code{ForcedEffort},\code{ForcedCatch},\code{ForcedFRate})
+#'@param group Name of the group whose parameter is being changed. Valid values are found in the `Group` field of the object
+#' created from running \code{rpath()}
 #'@param sim.year Year of the simulation that should be modified.  Can be a range of years.
 #'@param sim.month Month of the year that should be modified.  If set to 0, all months of
 #'             the year are modified.
 #'@param value New value for the parameter.
-#'@return Returns an \code{Rsim.scenario} object with the new fishing parameter 
+#'
+#'@return Returns an \code{Rsim.scenario()} object with the new fishing parameter 
 #'    values.
-#'@export 
+#'    
+#'@examples
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Change value of forcedFRate for Squids in years 3 through 5 to the value of 2 (for all months)
+#' Rsim.scenario.adjusted.fishing <- adjust.fishing(Rsim.scenario,parameter="ForcedFRate",group="cod",sim.year=3:5,value = 2)
+#' head(Rsim.scenario.adjusted.fishing$fishing$ForcedFRate)    
+#'    
+#'    
+#'@export
+
 adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1, 
                            sim.month = 0, value){
   #Check that parameter and group exist
@@ -104,19 +133,38 @@ adjust.fishing <- function(Rsim.scenario, parameter, group = NA, sim.year = 1,
   
 #'Adjust Rsim.scenario parameters
 #'
-#'Modifies the various parameters of the \code{rsim.scenario} object. Parameters 
-#'that can be adjusted using this function are:
+#'Modifies the various parameters of the \code{rsim.scenario()} object. Parameters that can be adjusted using this function are: 
+#'\emph{B_BaseRef}, \emph{MzeroMort},\emph{UnassimRespFrac}, \emph{ActiveRespFrac}, \emph{FtimeAdj},
+#'\emph{FtimeQBOpt}, \emph{PBopt}, \emph{NoIntegrate},\emph{HandleSelf}, \emph{ScrambleSelf}, \emph{QQ},
+#' \emph{DD}, \emph{VV}, \emph{HandleSwitch}, \emph{PredPredWeight}, \emph{PreyPreyWeight}
 #'
 #'@family Adjust functions
 #'
 #'@inheritParams adjust.fishing
+#'
+#'@param parameter Parameters to be modified (Choose from: \code{B_BaseRef, MzeroMort, 
+#' UnassimRespFrac, ActiveRespFrac, FtimeAdj, FtimeQBOpt, PBopt, NoIntegrate,
+#' HandleSelf, ScrambleSelf, QQ, DD, VV, HandleSwitch, PredPredWeight, PreyPreyWeight})
 #'@param group The model group that the parameter change will affect.  Note that 
-#'       a value of \emph{'all'} will affect all groups associate with the groupto
-#'       variable.
+#'       a value of \emph{'all'} will affect all groups associated with the `groupto`
+#'       variable. Valid values are found in the `Group` field of the object created
+#'      from running \code{rpath()}
 #'@param groupto The corresponding group who's parameter is affecting the group
-#'       variable.
-#'@return Returns an \code{Rsim.scenario} object with the new parameter.
+#'       variable. Required for parameters \code{QQ}, \code{DD}, \code{VV}, \code{HandleSwitch},\code{PredPredWeight},
+#'       \code{PreyPreyWeight}
+#'@return Returns an \code{rsim.scenario()} object with the new parameter.
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Adjust the PBopt parameter for cod. Set to value = 2
+#' Rsim.scenario.adjusted <- adjust.scenario(Rsim.scenario, parameter="PBopt",group = "cod", groupto = "all", value = 2)   
+#'
+#'
 #'@export 
+
 adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value){
   #Lookup group numbers
   if(group[1] == 'all'){
@@ -153,18 +201,27 @@ adjust.scenario <- function(Rsim.scenario, parameter, group, groupto = NA, value
 #'
 #'Modifies the various forcing parameters of the rsim scenario object.
 #'
-#'@family Rpath functions
+#'@family Adjust functions
 #'
-#'@param Rsim.scenario Object generated by rsim.scenario.
-#'@param parameter The Rsim.scenario forcing parameter to be modified. 
-#'@param group The model group that the parameter change will affect.
-#'@param sim.year Year of the simulation that should be modified.  Can be a range of years.
-#'@param sim.month Month of the year that should be modified.  If set to 0, all months of
-#'             the year are modified.
+#'@inheritParams adjust.fishing
+#'
 #'@param bymonth Boolean value that denotes whether to use sim.year/sim.month combo
 #'               or just sim.month as a sequential vector starting at 1.
-#'@param value The new value for the parameter.
+#'               
 #'@return Returns an Rsim.scenario object with the new parameter.
+#'
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Adjust the ForcedPrey parameter for cod in year 1 for all months. Change the value to 10
+#' Rsim.scenario.adjusted <- adjust.forcing(Rsim.scenario, parameter="ForcedPrey",group = "cod", sim.year = 1, sim.month=0,value=10)   
+#' head(Rsim.scenario.adjusted$forcing$ForcedPrey)
+#'
+#'
+#'
 #'@export 
 adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.month = 0, 
                            bymonth = F, value){
@@ -221,19 +278,31 @@ adjust.forcing <- function(Rsim.scenario, parameter, group, sim.year = 1, sim.mo
 
 #'Set Rsim.scenario parameters
 #'
-#'Modifies the various parameters of the \code{rsim.scenario} object. Parameters 
-#'that can be adjusted using this function are: 
+#'Modifies the various parameters of the \code{rsim.scenario()} object. Parameters 
+#'that can be adjusted using this function are: \code{params},\code{start_state},
+#'\code{forcing},\code{fishing},\code{stanzas}
 #'
-#'@family Set functions
+#'@family Adjust functions
 #'
 #'@inheritParams rsim.run
 #'@inheritParams rsim.fishing
-#'@param start_state Rsim starting values object generated by \code{rsim.state}
-#'@param forcing Rsim forcing matrix object generated by \code{rsim.forcing} 
-#'@param fishing Rsim fishing matrix object generated by \code{rsim.fishing}
-#'@param stanzas Rsim stanza parameters object generated by \code{rsim.stanzas}
+#'@param start_state Rsim starting values object generated by \code{rsim.state()}
+#'@param forcing Rsim forcing matrix object generated by \code{rsim.forcing()} 
+#'@param fishing Rsim fishing matrix object generated by \code{rsim.fishing()}
+#'@param stanzas Rsim stanza parameters object generated by \code{rsim.stanzas()}
 #'
 #'@return Returns an \code{Rsim.scenario} object with the new parameter.
+#'
+#'@examples 
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' stanzas <- rsim.stanzas(AB.params)
+#' Rsim.scenario.new <- set.rsim.scene(Rsim.scenario,stanzas=stanzas)
+#'
+#'
+#'
 #'
 #'@export
 #'  
@@ -250,15 +319,27 @@ set.rsim.scene<-function(Rsim.scenario,params=NULL,start_state=NULL,forcing=NULL
   return(rsim)
 }
 
-#'Retrieve Rsim scenario parameters
+#'Retrieve parameters from an Rsim scenario
 #'
-#'Helper function that will retrieve parameters that were used in an Rsim scenario 
+#'Helper function that will retrieve the parameters that were used 
+#'in an Rsim scenario 
 #'
 #'@family Get functions
 #'
 #'@inheritParams rsim.run
 #'
-#'@return Returns an \code{Rsim.params} object.
+#'@return Returns a `params` object.
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' params <- get.rsim.params(Rsim.scenario)
+#' names(params)
+#' 
+
+#'
 #'
 #'@export
 #'    
@@ -266,7 +347,7 @@ get.rsim.params<-function(Rsim.scenario){
   return(Rsim.scenario$params)
 }
 
-#'Retrieve Rsim starting state values
+#'Retrieve starting state values from an Rsim scenario
 #'
 #'Helper function that will retrieve the starting state values that were used 
 #'in an Rsim scenario 
@@ -275,7 +356,17 @@ get.rsim.params<-function(Rsim.scenario){
 #'
 #'@inheritParams rsim.run
 #'
-#'@return Returns an \code{Rsim.state} object.
+#'@return Returns an `start_state` object.
+#'
+#'@examples
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' params <- get.rsim.start_state(Rsim.scenario)
+#' names(params) 
+#'
+#'
 #'
 #'@export
 #'   
@@ -283,7 +374,7 @@ get.rsim.start_state<-function(Rsim.scenario){
   return(Rsim.scenario$start_state)
 }
 
-#'Retrieve Rsim forcing parameters
+#'Retrieve forcing parameters from an Rsim scenario
 #'
 #'Helper function that will retrieve the forcing parameters that were used in an 
 #'Rsim scenario 
@@ -292,7 +383,16 @@ get.rsim.start_state<-function(Rsim.scenario){
 #'
 #'@inheritParams rsim.run
 #'
-#'@return Returns an \code{Rsim.forcing} object.
+#'@return Returns a `forcing` object.
+#'
+#'@examples 
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' params <- get.rsim.forcing(Rsim.scenario)
+#' names(params)
+#'
 #'
 #'@export
 #'   
@@ -300,7 +400,7 @@ get.rsim.forcing<-function(Rsim.scenario){
   return(Rsim.scenario$forcing)
 }
 
-#'Retrieve Rsim fishing forcing parameters
+#'Retrieve fishing forcing parameters from an Rsim scenario
 #'
 #'Helper function that will retrieve the fishing forcing parameters that were used in an 
 #'Rsim scenario 
@@ -309,7 +409,17 @@ get.rsim.forcing<-function(Rsim.scenario){
 #'
 #'@inheritParams rsim.run
 #'
-#'@return Returns an \code{Rsim.fishing} object.
+#'@return Returns a `fishing` object.
+#'
+#'@examples 
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' params <- get.rsim.fishing(Rsim.scenario)
+#' names(params)
+#'
+#'
 #'
 #'@export
 #'  
@@ -317,7 +427,7 @@ get.rsim.fishing<-function(Rsim.scenario){
   return(Rsim.scenario$fishing)
 }
 
-#'Retrieve Rsim stanza parameters
+#'Retrieve stanza parameters from an Rsim scenario
 #'
 #'Helper function that will retrieve the stanza parameters that were used in an 
 #'Rsim scenario 
@@ -326,7 +436,17 @@ get.rsim.fishing<-function(Rsim.scenario){
 #'
 #'@inheritParams rsim.run
 #'
-#'@return Returns an \code{Rsim.stanzas} object.
+#'@return Returns a `stanzas` object.
+#'
+#'@examples 
+#' # Read in Rpath parameter file and generate balanced model
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' params <- get.rsim.stanzas(Rsim.scenario)
+#' names(params)
+#'
+#'
 #'
 #'@export
 #' 

@@ -7,20 +7,20 @@
 write.rpath.params(Rpath.params, eco.name, path = "")
 }
 \arguments{
-\item{Rpath.params}{R object containing the Rpath parameters.  Most likely this
-was created using create.rpath.params or read.rpath.params.}
+\item{Rpath.params}{R object containing the Rpath parameters. Most likely this
+was created using \code{\link{create.rpath.params}()} or \code{\link{read.rpath.params}()}.}
 
 \item{eco.name}{ecosystem name that will be included in all the file names.}
 
 \item{path}{location for the output files.}
 }
 \value{
-Outputs a series of .csv files named by the provided eco.name and the 
- parameters they represent.  For example the model parameters will be named 
+Outputs a series of .csv files named by the provided eco.name and the
+ parameters they represent.  For example the model parameters will be named
  "eco.name_model.csv".
 }
 \description{
-Creates a series of .csv files from an Rpath.params object.
+Creates a series of .csv files from an \code{Rpath.params} object.
 }
 \seealso{
 Other Rpath functions: 
@@ -28,15 +28,19 @@ Other Rpath functions:
 \code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
-\code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
 \code{\link{rpath}()},
+\code{\link{rpath.consumers}()},
+\code{\link{rpath.detrital}()},
+\code{\link{rpath.gears}()},
 \code{\link{rpath.groups}()},
+\code{\link{rpath.living}()},
+\code{\link{rpath.mixotrophs}()},
+\code{\link{rpath.producers}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()}
+\code{\link{write.Rpath}()}
 }
 \concept{Rpath functions}

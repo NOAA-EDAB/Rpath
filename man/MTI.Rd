@@ -25,16 +25,20 @@ Other Rpath functions:
 \code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
-\code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
 \code{\link{rpath}()},
+\code{\link{rpath.consumers}()},
+\code{\link{rpath.detrital}()},
+\code{\link{rpath.gears}()},
 \code{\link{rpath.groups}()},
+\code{\link{rpath.living}()},
+\code{\link{rpath.mixotrophs}()},
+\code{\link{rpath.producers}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},
 \code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
 \code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}

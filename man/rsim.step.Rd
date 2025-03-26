@@ -26,9 +26,11 @@ Currently only works with the Adams-Bashforth numerical integration method (AB).
 }
 \seealso{
 Other Rsim functions: 
+\code{\link{extract.node}()},
 \code{\link{rsim.params}()},
 \code{\link{rsim.plot}()},
 \code{\link{rsim.run}()},
-\code{\link{rsim.scenario}()}
+\code{\link{rsim.scenario}()},
+\code{\link{write.Rsim}()}
 }
 \concept{Rsim functions}

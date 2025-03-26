@@ -17,7 +17,7 @@ ggwebplot(
   type.col = "grey50",
   box.order = NULL,
   line.alpha = 0.5,
-  point.size = 0.5,
+  point.size = 1,
   text.size = 5,
   max.overlaps = 10
 )
@@ -25,25 +25,27 @@ ggwebplot(
 \arguments{
 \item{Rpath.obj}{Rpath model created by the \code{rpath()} function.}
 
-\item{eco.name}{Optional name of the ecosystem. Default is the \code{eco.name} 
+\item{eco.name}{Optional name of the ecosystem. Default is the `eco.name` 
 attribute from the rpath object.}
 
 \item{line.col}{The color of the lines between nodes of the food web.}
 
-\item{highlight}{Set to the group number or name to highlight the connections of that group.}
+\item{highlight}{Set to the group number or name to highlight the connections of that group.
+Valid values are found in the `Group` field of the object created from running \code{rpath()}.}
 
-\item{highlight.col}{Color of the connections to the highlighted group, vector of length 3}
+\item{highlight.col}{Color of the connections to the highlighted group, vector of length 3.
+Defaults to black = predator, red = prey, orange = fleet.}
 
 \item{labels}{Logical whether or not to display group names.}
 
 \item{label.num}{Logical whether or not to display group numbers instead of points at nodes. 
 If \code{TRUE}, \code{type.col} must be length 1, not 4.}
 
-\item{label.cex}{}
+\item{label.cex}{Numeric value of the relative size of the labels within the plot.}
 
 \item{fleets}{Logical value indicating whether or not to include fishing fleets in the food web.}
 
-\item{type.col}{The color of the points cooresponding to the types of the group.  Can either be 
+\item{type.col}{The color of the points corresponding to the types of the group.  Can either be 
 of length 1 or 4. Color order will be living, primary producers, detrital, and fleet groups.}
 
 \item{box.order}{Vector of box numbers to change the default plot order. Must include all box numbers. 
@@ -62,4 +64,13 @@ Returns a ggplot object visualizing the food web
 }
 \description{
 Plots the food web associated with an Rpath object using ggplot functions
+}
+\examples{
+# Read in Rpath parameter file, generate and name model object
+Rpath.obj <- rpath(AB.params, eco.name = "Anchovy Bay")
+# Plot food web diagram with all groups labeled, including fleets, using ggplot
+ggwebplot(Rpath.obj, labels = T, fleets = T)
+# Plot food web diagram without labels, highlighting connections of cod group
+ggwebplot(Rpath.obj, highlight = "cod",fleets = T)
+
 }
