@@ -440,8 +440,49 @@ rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
 #'@param steps_yr Number of time steps per year.
 #'@param steps_m Number of time steps per month.
 #'
-#'@return Returns an \code{Rsim.params} object that is passed to the \code{rsim.run} 
+#'@return Returns an object of class \code{Rsim.params}, a list of 39 objects that is passed to the \code{rsim.run} 
 #'    function via the \code{rsim.scenario} function.
+#'\itemize{
+#'  \item{\code{NUM_GROUPS}, number of total model groups}
+#'  \item{\code{NUM_LIVING}, number of living model groups}
+#'  \item{\code{NUM_DEAD}, number of detritus model groups}
+#'  \item{\code{NUM_GEARS}, number of fishery model groups}
+#'  \item{\code{NUM_BIO}, number of model groups}
+#'  \item{\code{spname}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing names of all model groups}
+#'  \item{\code{spnum}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing numbers of all model groups}
+#'  \item{\code{B_BaseRef}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing Rpath base biomass of all model groups}
+#'  \item{\code{MzeroMort}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{UnassimRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{ActiveRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{FtimeAdj}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{FtimeQBOpt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{PBopt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{NoIntegrate}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{Handleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{Scrambleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{PreyFrom}, numeric vector length \code{NumPredPreyLinks}+1, }
+#'  \item{\code{PreyTo}, numeric vector length \code{NumPredPreyLinks}+1, }
+#'  \item{\code{QQ}, numeric vector length \code{NumPredPreyLinks}+1,}
+#'  \item{\code{DD}, numeric vector length \code{NumPredPreyLinks}+1,}
+#'  \item{\code{VV}, numeric vector length \code{NumPredPreyLinks}+1,}
+#'  \item{\code{HandleSwitch}, numeric vector length \code{NumPredPreyLinks}+1, }
+#'  \item{\code{PredPreyWeight}, numeric vector length \code{NumPredPreyLinks}+1,}
+#'  \item{\code{PreyPreyWeight}, numeric vector length \code{NumPredPreyLinks}+1,}
+#'  \item{\code{NumPredPreyLinks}, number of predator to prey linkages over all groups in the model}
+#'  \item{\code{FishFrom}, numeric vector}
+#'  \item{\code{FishThrough}, numeric vector}
+#'  \item{\code{FishQ}, numeric vector}
+#'  \item{\code{FishTo}, numeric vector}
+#'  \item{\code{NumFishingLinks}, number}
+#'  \item{\code{DetFrac}, numeric vector}
+#'  \item{\code{DetFrom}, numeric vector}    
+#'  \item{\code{DetTo}, numeric vector}
+#'  \item{\code{NumDetLinks}, number}
+#'  \item{\code{BURN_YEARS}, number}
+#'  \item{\code{COUPLED}, number}
+#'  \item{\code{RK4_STEPS}, number}
+#'  \item{\code{SENSE_LIMIT}, number}
+#'}    
 #'    
 #'@examples
 #' # Read in Rpath parameter file and generate model object
@@ -661,24 +702,24 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #'  \item{\code{Nsplit}, number of model groups with stanzas}
 #'  \item{\code{Nstanzas}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by the number of age groups for each model group with stanzas}
 #'  \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1} age group columns, first column and row empty for indexing}
-#'  \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months
+#'  \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months}
 #'  \item{\code{Age2}, numeric matrix of age in months of last age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months, third column max age in months}
-#'  \item{\code{baseWageS}, numeric matrix}
-#'  \item{\code{baseNageS}, numeric matrix}
-#'  \item{\code{baseQageS}, numeric matrix}
-#'  \item{\code{Wmat}, numeric vector}
-#'  \item{\code{RecPower}, numeric vector}
-#'  \item{\code{recruits}, numeric vector}
-#'  \item{\code{VBGFd}, numeric vector}
-#'  \item{\code{RzeroS}, numeric vector}
-#'  \item{\code{vBM}, numeric vector}
-#'  \item{\code{baseEggsStanza}, numeric vector}
+#'  \item{\code{baseWageS}, numeric matrix of biomass relative to max biomass at last month, calculated in \code{rpath.stanzas}}
+#'  \item{\code{baseNageS}, numeric matrix of numbers relative to max numbers at last month, calculated in \code{rpath.stanzas}}
+#'  \item{\code{baseQageS}, numeric matrix of consumption relative to max consumption at last month, calculated in \code{rpath.stanzas}}
+#'  \item{\code{Wmat}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by weight at maturity for each model group}
+#'  \item{\code{RecPower}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{recruits}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{VBGFd}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{RzeroS}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{vBM}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{baseEggsStanza}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
 #'  \item{\code{SplitAlpha}, numeric matrix}
-#'  \item{\code{SpawnX}, numeric vector}
-#'  \item{\code{SpawnEnergy}, numeric vector}
+#'  \item{\code{SpawnX}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{SpawnEnergy}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
 #'  \item{\code{baseSpawnBio}, numeric vector of initial age structured stanza }
-#'  \item{\code{StanzaPred}, numeric vector}
-#'  \item{\code{RscaleSplit}, numeric vector}
+#'  \item{\code{StanzaPred}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
+#'  \item{\code{RscaleSplit}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by}
 #'  \item{\code{baseStanzaPred}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
 #'}
 #'
