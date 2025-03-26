@@ -7,10 +7,12 @@
 \format{
 An unbalanced Rpath model object that contains:
 \describe{
-  \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
+  \item{model}{A data.table containing Ecopath unbalanced ecosystem
+  parameters (base parameters and fisheries).}
   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
   \item{stanzas}{Parameters for multistanza groups.}
-  \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}
+  \item{pedigree}{A data.table containing the data quality (pedigree) for the
+  Ecopath model.}
   ...
 }
 }
@@ -24,6 +26,11 @@ Rpath inputs for a tutorial Rpath ecosystem.
 # Balance the model
 REco_bal <- rpath(REco.params)
 
+}
+\references{
+Lucey SM, Gaichas SK, Aydin KY (2020) Conducting reproducible
+  ecosystem modeling using the open source mass balance model Rpath. Ecol
+  Model 427:11. doi:10.1016/j.ecolmodel.2020.109057
 }
 \seealso{
 \code{vignette("ModelSetup", package = "Rpath")} for an example

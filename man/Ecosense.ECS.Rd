@@ -7,15 +7,19 @@
 \format{
 An unbalanced Rpath model object that contains:
 \describe{
-  \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
+  \item{model}{A data.table containing Ecopath unbalanced ecosystem
+  parameters (base parameters and fisheries).}
   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
   \item{stanzas}{Parameters for multistanza groups.}
-  \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}   
+  \item{pedigree}{A data.table containing the data quality (pedigree) for the
+  Ecopath model.}
   ...   
 }
 }
 \source{
-Whitehouse and Aydin 2020.  Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath. https://doi.org/10.1016/j.ecolmodel.2020.109074
+Whitehouse and Aydin 2020.  Assessing the sensitivity of three Alaska
+  marine food webs to perturbations: an example of Ecosim simulations using
+  Rpath. https://doi.org/10.1016/j.ecolmodel.2020.109074
 }
 \usage{
 Ecosense.ECS
@@ -25,7 +29,8 @@ Rpath inputs for the eastern Chukchi Sea Ecopath model (52 biological groups
 and 1 fleet).
 }
 \note{
-This is an aggregated version of the eastern Chukchi Sea Ecopath model of Whitehouse and Aydin (2016).
+This is an aggregated version of the eastern Chukchi Sea Ecopath model
+  of Whitehouse and Aydin (2016).
 }
 \examples{
 # Balance the model
@@ -33,6 +38,8 @@ ecs_bal <- rpath(Ecosense.ECS)
 
 }
 \references{
-Whitehouse GA, Aydin KY (2016) Trophic structure of the eastern Chukchi Sea: An updated mass balance food web model. U.S. Dep Commer, NOAA Tech. Memo. NMFS-AFSC-318. doi:10.7289/V5/TM-AFSC-318
+Whitehouse GA, Aydin KY (2016) Trophic structure of the eastern
+  Chukchi Sea: An updated mass balance food web model. U.S. Dep Commer, NOAA
+  Tech. Memo. NMFS-AFSC-318. doi:10.7289/V5/TM-AFSC-318
 }
 \keyword{datasets}
