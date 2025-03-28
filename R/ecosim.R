@@ -451,15 +451,15 @@ rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
 #'  \item{\code{spname}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing names of all model groups}
 #'  \item{\code{spnum}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" numbered 0, containing numbers of all model groups}
 #'  \item{\code{B_BaseRef}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing Rpath base biomass of all model groups}
-#'  \item{\code{MzeroMort}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{UnassimRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{ActiveRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{FtimeAdj}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{FtimeQBOpt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{PBopt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{NoIntegrate}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{Handleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
-#'  \item{\code{Scrambleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing}
+#'  \item{\code{MzeroMort}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing unaccounted mortality, calculated as PB * (1.0 - EE), of all model groups}
+#'  \item{\code{UnassimRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing the proportion of consumption that goes to detritus of all model groups}
+#'  \item{\code{ActiveRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing the proportion of consumption that is "lost to heat" for all model groups}
+#'  \item{\code{FtimeAdj}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing rate of change of feeding time, currently set to 0 for all model groups} 
+#'  \item{\code{FtimeQBOpt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing base QB for all consumer model groups, or base PB for primary producers}
+#'  \item{\code{PBopt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing base PB for all model groups}
+#'  \item{\code{NoIntegrate}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing flag set to 0 for high turnover model groups and set to \code{spnum} for all others}
+#'  \item{\code{Handleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing flag for handling time influence, set for all model groups with function argument \code{handleselfwt}, default 0 for individual prey handling time}
+#'  \item{\code{Scrambleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing flag for predator density influence, set for all model groups with function argument \code{scrambleselfwt}, default 0 for individual predator density dependent predation}
 #'  \item{\code{PreyFrom}, numeric vector length \code{NumPredPreyLinks}+1, }
 #'  \item{\code{PreyTo}, numeric vector length \code{NumPredPreyLinks}+1, }
 #'  \item{\code{QQ}, numeric vector length \code{NumPredPreyLinks}+1,}
