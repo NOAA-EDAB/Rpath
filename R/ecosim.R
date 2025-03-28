@@ -408,6 +408,32 @@ rsim.mort <- function(Rsim.output, group){
 #'@param sim.month Will inherit from apply functions
 #'@param tstep Sub-monthly time step usually set to 0. 
 #'
+#'@return a data.frame object of model group (rows) values for 12 derivatives (columns):
+#'\itemize{
+#'  \item{\code{Species}, character names of model groups}
+#'  \item{\code{DerivT}, numeric net flow; Total Gain - Total Loss at the timestep}
+#'  \item{\code{TotGain}, numeric Total Gain, all flows into the group at the timestep}
+#'  \item{\code{TotLoss}, numeric Total Loss, all flows out of the group at the timestep}
+#'  \item{\code{FoodGain}, numeric flows into the group from consuming prey at the timestep}
+#'  \item{\code{DetritalGain}, numeric flows into the group from detritus at the timestep}
+#'  \item{\code{FishingGain}, numeric flows into the group from fishing at the timestep}
+#'  \item{\code{UnAssimLoss}, numeric flows out of the group due to unassimilated consumption at the timestep}
+#'  \item{\code{ActiveRespLoss}, numeric flows out of the group due to "heat loss" at the timtestep} 
+#'  \item{\code{FoodLoss}, numeric flows out of the group from being consumed by predators at the timestep}
+#'  \item{\code{MzeroLoss}, numeric flows out of the group due to unaccounted mortality at the timestep}
+#'  \item{\code{FishingLoss}, numeric flows out of the group due to fishing at the timestep}
+#'  \item{\code{DetritalLoss}, numeric flows out of the group to detritus at the timestep}
+#'}
+#'  
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Calculate derivatives for year 2, month 6, first timestep
+#' Rsim.deriv <- rsim.deriv(Rsim.scenario, sim.year=2, sim.month = 6, tstep = 0)
+#' 
+#'
 #'@export
 #'
 rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
