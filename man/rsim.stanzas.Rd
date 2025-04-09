@@ -2,7 +2,7 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.stanzas}
 \alias{rsim.stanzas}
-\title{Initialize list of age structured group (stanza) parameters}
+\title{Initialize list of age structured group (stanza) parameters for dynamic simulation}
 \usage{
 rsim.stanzas(Rpath.params, state, params)
 }
@@ -20,26 +20,25 @@ a list of 21 objects:
 \itemize{
  \item{\code{Nsplit}, number of model groups with stanzas}
  \item{\code{Nstanzas}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by the number of age groups for each model group with stanzas}
- \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1} age group columns, first column and row empty for indexing}
- \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months
+ \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1 age group columns, first column and row empty for indexing}
+ \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months}
  \item{\code{Age2}, numeric matrix of age in months of last age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months, third column max age in months}
- \item{\code{baseWageS}, numeric matrix}
- \item{\code{baseNageS}, numeric matrix}
- \item{\code{baseQageS}, numeric matrix}
- \item{\code{Wmat}, numeric vector}
- \item{\code{RecPower}, numeric vector}
- \item{\code{recruits}, numeric vector}
- \item{\code{VBGFd}, numeric vector}
- \item{\code{RzeroS}, numeric vector}
- \item{\code{vBM}, numeric vector}
- \item{\code{baseEggsStanza}, numeric vector}
- \item{\code{SplitAlpha}, numeric matrix}
- \item{\code{SpawnX}, numeric vector}
- \item{\code{SpawnEnergy}, numeric vector}
- \item{\code{baseSpawnBio}, numeric vector of initial age structured stanza }
- \item{\code{StanzaPred}, numeric vector}
- \item{\code{RscaleSplit}, numeric vector}
- \item{\code{baseStanzaPred}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+ \item{\code{baseWageS}, numeric matrix with rows of monthly weight relative to weight at infinity (Winf) calculated in \code{rpath.stanzas} with \code{Nsplit}+1 species columns}
+ \item{\code{baseNageS}, numeric matrix with rows of monthly numbers surviving, calculated in \code{rpath.stanzas} with \code{Nsplit}+1 species columns}
+ \item{\code{baseQageS}, numeric matrix with rows of monthly consumption, calculated as WageS^VBGFd in \code{rpath.stanzas} with \code{Nsplit}+1 species columns}
+ \item{\code{Wmat}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by weight at 50\% maturity relative to Winf for each model group with stanzas}
+ \item{\code{RecPower}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by recruitment power parameter for each model group with stanzas}
+ \item{\code{recruits}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by recruits per spawner entered as input to \code{rpath.stanzas}}
+ \item{\code{VBGFd}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by von Bertalanffy d (default = 2/3) for each model group with stanzas}
+ \item{\code{RzeroS}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by recruits per spawner entered as input to \code{rpath.stanzas}}
+ \item{\code{vBM}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by von Bertalanffy growth coefficient for each model group with stanzas}
+ \item{\code{SplitAlpha}, numeric matrix of initial monthly (rows) growth coefficients for each model group with stanzas (\code{Nsplit}+1 species columns)}
+ \item{\code{SpawnX}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by relative strength of spawner-recruit relationship for each model group with stanzas, currently set to 10000, no relationship}
+ \item{\code{SpawnEnergy}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by relative energy going to recruitment rather than growth for each model group with stanzas, currently set to 1}
+ \item{\code{baseEggsStanza}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by initial estimate of egg output for each model group with stanzas}
+ \item{\code{baseSpawnBio}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by initial estimate of spawning biomass (=egg output) for each model group with stanzas}
+ \item{\code{RscaleSplit}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by adult to juvenile metric scaling parameter for each model group with stanzas, currently set to 1}
+ \item{\code{baseStanzaPred}, numeric vector length \code{NUM_GROUPS}+1, base consumption (sum of QageS*NageS) for each model group with stanzas in full model group order; 0s entered for non-stanza groups}
 }
 }
 \description{

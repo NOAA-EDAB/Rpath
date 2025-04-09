@@ -13,7 +13,7 @@ rsim.state(params)
 S3 object class \code{Rsim.state}, a list of 3 objects:
 \itemize{
  \item{\code{Biomass}, numeric vector of initial biomass by biomass group}
- \item{\code{N}, numeric vector of  by biomass group}
+ \item{\code{N}, numeric vector of initial numbers by biomass group}
  \item{\code{Ftime}, numeric vector of initial feeding time parameter by biomass group}
 }
 }

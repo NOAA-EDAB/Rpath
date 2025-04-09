@@ -322,7 +322,7 @@ rsim.forcing <- function(params, years){
 #'@return S3 object class \code{Rsim.state}, a list of 3 objects:
 #'\itemize{
 #'  \item{\code{Biomass}, numeric vector of initial biomass by biomass group}
-#'  \item{\code{N}, numeric vector of  by biomass group}
+#'  \item{\code{N}, numeric vector of initial numbers by biomass group}
 #'  \item{\code{Ftime}, numeric vector of initial feeding time parameter by biomass group}
 #'}
 #'
@@ -408,6 +408,32 @@ rsim.mort <- function(Rsim.output, group){
 #'@param sim.month Will inherit from apply functions
 #'@param tstep Sub-monthly time step usually set to 0. 
 #'
+#'@return a data.frame object of model group (rows) values for 12 derivatives (columns):
+#'\itemize{
+#'  \item{\code{Species}, character names of model groups}
+#'  \item{\code{DerivT}, numeric net flow; Total Gain - Total Loss at the timestep}
+#'  \item{\code{TotGain}, numeric Total Gain, all flows into the group at the timestep}
+#'  \item{\code{TotLoss}, numeric Total Loss, all flows out of the group at the timestep}
+#'  \item{\code{FoodGain}, numeric flows into the group from consuming prey at the timestep}
+#'  \item{\code{DetritalGain}, numeric flows into the group from detritus at the timestep}
+#'  \item{\code{FishingGain}, numeric flows into the group from fishing at the timestep}
+#'  \item{\code{UnAssimLoss}, numeric flows out of the group due to unassimilated consumption at the timestep}
+#'  \item{\code{ActiveRespLoss}, numeric flows out of the group due to "heat loss" at the timtestep} 
+#'  \item{\code{FoodLoss}, numeric flows out of the group from being consumed by predators at the timestep}
+#'  \item{\code{MzeroLoss}, numeric flows out of the group due to unaccounted mortality at the timestep}
+#'  \item{\code{FishingLoss}, numeric flows out of the group due to fishing at the timestep}
+#'  \item{\code{DetritalLoss}, numeric flows out of the group to detritus at the timestep}
+#'}
+#'  
+#'@examples
+#' # Read in Rpath parameter file and generate model object
+#' Rpath <- rpath(AB.params)
+#' # Create a 50 yr Rsim scenario
+#' Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+#' # Calculate derivatives for year 2, month 6, first timestep
+#' Rsim.deriv <- rsim.deriv(Rsim.scenario, sim.year=2, sim.month = 6, tstep = 0)
+#' 
+#'
 #'@export
 #'
 rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
@@ -425,29 +451,70 @@ rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
   return(rtab)
 }
 
-#'Initial set up for Rsim module of Rpath
+#'Initial set up for Rsim dynamic simulation
 #'
 #'Converts the outputs from Rpath into rates for use in Rsim.
 #'
 #'@family Rsim functions
 #'
 #'@inheritParams rsim.scenario
-#'@param mscramble WILL REMOVE
-#'@param mhandle WILL REMOVE
-#'@param preyswitch WILL REMOVE - Adjust with adjust.scenario
-#'@param scrambleselfwt Value of 1 indicates no overlap while 0 indicates complete overlap.
-#'@param handleselfwt Value of 1 indicates no overlap while 0 indicates complete overlap.
-#'@param steps_yr Number of time steps per year.
-#'@param steps_m Number of time steps per month.
+#'@param mscramble Base value for vulnerability in functional response; default = 2 (mixed response).
+#'@param mhandle Base value for handling time in functional response; default = 1000 (off).
+#'@param preyswitch Exponent for prey switching in functional response; default = 1 (off).
+#'@param scrambleselfwt Value of 1 indicates all predators overlap in the foraging arena while 0 treats predators individually.
+#'@param handleselfwt Value of 1 indicates all prey overlap in the arena and contribute to saturation while 0 treats prey individually.
+#'@param steps_yr Number of time steps per year; default = 12.
+#'@param steps_m Number of time steps per month; default = 1.
 #'
-#'@return Returns an \code{Rsim.params} object that is passed to the \code{rsim.run} 
+#'@return Returns an object of class \code{Rsim.params}, a list of 39 objects that is passed to the \code{rsim.run} 
 #'    function via the \code{rsim.scenario} function.
+#'\itemize{
+#'  \item{\code{NUM_GROUPS}, number of total model groups}
+#'  \item{\code{NUM_LIVING}, number of living model groups}
+#'  \item{\code{NUM_DEAD}, number of detritus model groups}
+#'  \item{\code{NUM_GEARS}, number of fishery model groups}
+#'  \item{\code{NUM_BIO}, number of living + detritus model groups}
+#'  \item{\code{spname}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing names of all model groups}
+#'  \item{\code{spnum}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" numbered 0, containing numbers of all model groups}
+#'  \item{\code{B_BaseRef}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing Rpath base biomass of all model groups}
+#'  \item{\code{MzeroMort}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing unaccounted mortality, calculated as PB * (1.0 - EE), of all model groups}
+#'  \item{\code{UnassimRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing the proportion of consumption that goes to detritus of all model groups}
+#'  \item{\code{ActiveRespFrac}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing the proportion of consumption that is "lost to heat" for all model groups}
+#'  \item{\code{FtimeAdj}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing rate of change of feeding time, currently set to 0 for all model groups} 
+#'  \item{\code{FtimeQBOpt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing base QB for all consumer model groups, or base PB for primary producers}
+#'  \item{\code{PBopt}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing base PB for all model groups}
+#'  \item{\code{NoIntegrate}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing flag set to 0 for high turnover model groups and set to \code{spnum} for all others}
+#'  \item{\code{Handleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing flag for handling time influence, set for all model groups with function argument \code{handleselfwt}, default 0 for individual prey handling time}
+#'  \item{\code{Scrambleself}, named \code{NUM_GROUPS}+1 length character vector beginning with "Outside" containing flag for predator density influence, set for all model groups with function argument \code{scrambleselfwt}, default 0 for individual predator density dependent predation}
+#'  \item{\code{PreyFrom}, numeric vector length \code{NumPredPreyLinks}+1, spnum of prey for each predator prey interaction pair in the model}
+#'  \item{\code{PreyTo}, numeric vector length \code{NumPredPreyLinks}+1, spnum of predator for each predator prey interaction pair in the model}
+#'  \item{\code{QQ}, numeric vector length \code{NumPredPreyLinks}+1, base consumption rate for each predator prey interaction pair in the model}
+#'  \item{\code{DD}, numeric vector length \code{NumPredPreyLinks}+1, handling time effect on functional response for each predator prey pair, set for all model groups with function argument \code{mhandle}, default = 1000}
+#'  \item{\code{VV}, numeric vector length \code{NumPredPreyLinks}+1, vulnerability effect on functional response for each predator prey pair, set for all model groups with function argument \code{mscramble}, default = 2}
+#'  \item{\code{HandleSwitch}, numeric vector length \code{NumPredPreyLinks}+1, prey density dependence effect on functional response for each predator prey pair, set for all model groups with function argument \code{preyswitch}, default = 1}
+#'  \item{\code{PredPreyWeight}, numeric vector length \code{NumPredPreyLinks}+1, relative weight of individual predator to total predators for each predator prey pair, used if \code{scrambleselfwt}>0} 
+#'  \item{\code{PreyPreyWeight}, numeric vector length \code{NumPredPreyLinks}+1, relative weight of individual prey to total prey for each predator prey pair, used if \code{handleselfwt}>0}
+#'  \item{\code{NumPredPreyLinks}, number of predator to prey linkages over all groups in the model}
+#'  \item{\code{FishFrom}, numeric vector length \code{NumFishingLinks}+1, spnum of landing and discard for each fishery interaction in the model}
+#'  \item{\code{FishThrough}, numeric vector length \code{NumFishingLinks}+1, spnum of gear type for each fishery interaction in the model}
+#'  \item{\code{FishQ}, numeric vector length \code{NumFishingLinks}+1, landings or discards relative to base fished group biomass for each fishery interaction in the model}
+#'  \item{\code{FishTo}, numeric vector length \code{NumFishingLinks}+1, spnum of sink for each fishery interaction in the model ("Outside" for landings or detritus group for discards)}
+#'  \item{\code{NumFishingLinks}, number of model group landings and discards to fishery links over all groups in the model}
+#'  \item{\code{DetFrac}, numeric vector length \code{NumDetLinks}+1, fraction of detritus going to DetTo for each living and detritus group in the model}
+#'  \item{\code{DetFrom}, numeric vector length \code{NumDetLinks}+1, spnum flowing to detritus for each living and detritus group in the model}    
+#'  \item{\code{DetTo}, numeric vector length \code{NumDetLinks}+1, spnum of detritus sink for each living and detritus group in the model}
+#'  \item{\code{NumDetLinks}, number of model group links to detritus over all groups in the model}
+#'  \item{\code{BURN_YEARS}, number of model run burn-in (spin up) years, default value -1}
+#'  \item{\code{COUPLED}, number to control species interactions, value of 0 allows density dependent non-interacting species, default value 1}
+#'  \item{\code{RK4_STEPS}, number of RK4 integration steps per month, default value 4}
+#'  \item{\code{SENSE_LIMIT}, numeric vector of multipliers on biomass determining acceptable range for continuing a model run within \code{BURN_YEARS} }
+#'}    
 #'    
 #'@examples
 #' # Read in Rpath parameter file and generate model object
 #' Rpath <- rpath(AB.params)
 #' # Create default dynamic parameters from Rpath model
-#' Rsim.params <- rsim.params(Rpath)
+#' Rsim.params <- rsim.params(Rpath) 
 #'
 #'@export
 #'
@@ -648,7 +715,7 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
   return(simpar)
 }
 
-#'Initialize list of age structured group (stanza) parameters
+#'Initialize list of age structured group (stanza) parameters for dynamic simulation
 #'
 #'Creates a list of stanza indices and parameters to be used by \code{rsim.run}.
 #'
@@ -660,26 +727,25 @@ rsim.params <- function(Rpath, mscramble = 2, mhandle = 1000, preyswitch = 1,
 #'\itemize{
 #'  \item{\code{Nsplit}, number of model groups with stanzas}
 #'  \item{\code{Nstanzas}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by the number of age groups for each model group with stanzas}
-#'  \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1} age group columns, first column and row empty for indexing}
-#'  \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months
+#'  \item{\code{EcopathCode}, numeric matrix of Rpath group numbers with \code{Nsplit}+1 species rows and \code{Nstanzas}+1 age group columns, first column and row empty for indexing}
+#'  \item{\code{Age1}, numeric matrix of age in months of first age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months (0), third column max age in months}
 #'  \item{\code{Age2}, numeric matrix of age in months of last age group with \code{Nsplit}+1 species rows, first column and row empty for indexing, second column earliest age in months, third column max age in months}
-#'  \item{\code{baseWageS}, numeric matrix}
-#'  \item{\code{baseNageS}, numeric matrix}
-#'  \item{\code{baseQageS}, numeric matrix}
-#'  \item{\code{Wmat}, numeric vector}
-#'  \item{\code{RecPower}, numeric vector}
-#'  \item{\code{recruits}, numeric vector}
-#'  \item{\code{VBGFd}, numeric vector}
-#'  \item{\code{RzeroS}, numeric vector}
-#'  \item{\code{vBM}, numeric vector}
-#'  \item{\code{baseEggsStanza}, numeric vector}
-#'  \item{\code{SplitAlpha}, numeric matrix}
-#'  \item{\code{SpawnX}, numeric vector}
-#'  \item{\code{SpawnEnergy}, numeric vector}
-#'  \item{\code{baseSpawnBio}, numeric vector of initial age structured stanza }
-#'  \item{\code{StanzaPred}, numeric vector}
-#'  \item{\code{RscaleSplit}, numeric vector}
-#'  \item{\code{baseStanzaPred}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+#'  \item{\code{baseWageS}, numeric matrix with rows of monthly weight relative to weight at infinity (Winf) calculated in \code{rpath.stanzas} with \code{Nsplit}+1 species columns}
+#'  \item{\code{baseNageS}, numeric matrix with rows of monthly numbers surviving, calculated in \code{rpath.stanzas} with \code{Nsplit}+1 species columns}
+#'  \item{\code{baseQageS}, numeric matrix with rows of monthly consumption, calculated as WageS^VBGFd in \code{rpath.stanzas} with \code{Nsplit}+1 species columns}
+#'  \item{\code{Wmat}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by weight at 50\% maturity relative to Winf for each model group with stanzas}
+#'  \item{\code{RecPower}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by recruitment power parameter for each model group with stanzas}
+#'  \item{\code{recruits}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by recruits per spawner entered as input to \code{rpath.stanzas}}
+#'  \item{\code{VBGFd}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by von Bertalanffy d (default = 2/3) for each model group with stanzas}
+#'  \item{\code{RzeroS}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by recruits per spawner entered as input to \code{rpath.stanzas}}
+#'  \item{\code{vBM}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by von Bertalanffy growth coefficient for each model group with stanzas}
+#'  \item{\code{SplitAlpha}, numeric matrix of initial monthly (rows) growth coefficients for each model group with stanzas (\code{Nsplit}+1 species columns)}
+#'  \item{\code{SpawnX}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by relative strength of spawner-recruit relationship for each model group with stanzas, currently set to 10000, no relationship}
+#'  \item{\code{SpawnEnergy}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by relative energy going to recruitment rather than growth for each model group with stanzas, currently set to 1}
+#'  \item{\code{baseEggsStanza}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by initial estimate of egg output for each model group with stanzas}
+#'  \item{\code{baseSpawnBio}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by initial estimate of spawning biomass (=egg output) for each model group with stanzas}
+#'  \item{\code{RscaleSplit}, numeric vector length \code{Nsplit}+1, leading 0 for indexing followed by adult to juvenile metric scaling parameter for each model group with stanzas, currently set to 1}
+#'  \item{\code{baseStanzaPred}, numeric vector length \code{NUM_GROUPS}+1, base consumption (sum of QageS*NageS) for each model group with stanzas in full model group order; 0s entered for non-stanza groups}
 #'}
 #'
 #'@examples
