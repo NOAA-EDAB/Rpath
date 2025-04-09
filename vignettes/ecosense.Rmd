@@ -207,7 +207,7 @@ for (i in 1:nkept) {
 }
 ```
 Then plot all the trajectories:
-```{r plottraj, echo=TRUE}
+```{r plottraj, echo=TRUE, fig.alt="Walleye pollock relative biomass trajectories" }
 plot_col <- viridis(nkept)
 #layout(matrix(c(1,1,1,1,1,1,2,2), nrow = 1, ncol = 8, byrow = TRUE))
 plot(1:1200, relB_ecos[[1]][,this_species], type='n', xlab="Months",
@@ -268,7 +268,7 @@ for (i in 1:nkept) {
 ```
 Plot the trajectories for walleye pollock from this perturbation. Note, the x-axis 
 starts at the beginning of the perturbation (January of year 51).
-```{r walleyeplot, echo=TRUE}
+```{r walleyeplot, echo=TRUE, fig.alt="Walleye pollock relative biomass trajectories with perturbation"}
 plot_mat_sp <- matrix(nrow=1200, ncol=nkept)
 for (i in 1:nkept) {
   plot_mat_sp[,i] <- relB_ecos_sp[[i]][,this_species]
@@ -289,7 +289,7 @@ a perturbation as in this example might illicit a response from many functional
 groups across the food web. Here is an example boxplot of the distribution 
 of biomass outcomes for all the living functional groups relative to their biomass 
 at the start of the perturbation.
-```{r perturb, echo=TRUE}
+```{r perturb, echo=TRUE,fig.alt="Boxplot of biomass of all living functional groups relative to initial biomass"}
 sp_perturb_out <- matrix(nrow=nkept, ncol=(EBS_bal$NUM_LIVING+EBS_bal$NUM_DEAD))
 for(i in 1:nkept){
   sp_perturb_out[i,] <- relB_ecos_sp[[i]][1200,]

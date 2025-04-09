@@ -67,3 +67,21 @@ reference:
   desc: "Additional tools"
 - contents:
   - MTI
+
+
+navbar:
+ components:
+  articles:
+   text: Help
+   menu:
+   - text: Model setup
+     href: articles/ModelSetup.html
+   - text: Create food web model
+     href: articles/RunRpath.html
+   - text: Run food web simulation
+     href: articles/RunRsim.html
+   - text: Create an ensemble
+     href: articles/ecosense.html
+   - text: Unit testing
+     href: articles/UnitTests.html
+     

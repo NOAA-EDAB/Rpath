@@ -9,8 +9,9 @@ rsim.scenario(Rpath, Rpath.params, years = 1:100)
 \arguments{
 \item{Rpath}{R object containing a static \code{Rpath} model.}
 
-\item{Rpath.params}{R object containing the Rpath parameters.  This is generated
-either by the create.rpath.params or read.rpath.params functions.}
+\item{Rpath.params}{R object containing the parameters needed to create a
+\code{Rpath} model.  This is generated either by the \code{\link{create.rpath.params}()}
+ or \code{\link{read.rpath.params}()} functions.}
 
 \item{years}{A vector of each year of the simulation.}
 }

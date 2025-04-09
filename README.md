@@ -18,7 +18,6 @@ the Rpath manuscript [Lucey et al. 2020](https://www.sciencedirect.com/science/a
 
 Rpath was developed and is maintained through a collaboration between the Alaska Fisheries Science Center and the Northeast Fisheries Science Center.  
 
-To view release notes please visit the [wiki](https://github.com/NOAA-EDAB/Rpath/wiki/Release-Notes).
 
 
 
