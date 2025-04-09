@@ -45,6 +45,6 @@ RoxygenNote: 7.3.2
 URL: https://noaa-edab.github.io/Rpath/,https://github.com/NOAA-EDAB/Rpath/
 BugReports: https://github.com/NOAA-EDAB/Rpath/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.6.0)
 Config/testthat/edition: 3
 LazyData: true
