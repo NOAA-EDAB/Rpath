@@ -1,7 +1,5 @@
 ---
 title: "Set up a food web model"
-author: "Sean Lucey"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Set up a food web model}

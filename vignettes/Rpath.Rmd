@@ -1,7 +1,5 @@
 ---
 title: "Rpath: an open source food web model"
-author: "Sean M. Lucey"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 csl: "ices-journal-of-marine-science.csl"
 bibliography: references.bib

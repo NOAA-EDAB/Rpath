@@ -1,7 +1,5 @@
 ---
 title: "Run a dynamic food web simulation in Rsim"
-author: "Sean M. Lucey"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Run a dynamic food web simulation in Rsim}
