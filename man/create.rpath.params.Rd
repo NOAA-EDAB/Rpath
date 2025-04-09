@@ -28,7 +28,6 @@ Creates a shell of the \code{Rpath.params} list object which contains the \emph{
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},

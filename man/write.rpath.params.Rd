@@ -25,7 +25,6 @@ Creates a series of .csv files from an \code{Rpath.params} object.
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
 \code{\link{frate.table}()},

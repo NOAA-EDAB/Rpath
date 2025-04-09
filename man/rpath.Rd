@@ -7,26 +7,26 @@
 rpath(Rpath.params, eco.name = NA, eco.area = 1)
 }
 \arguments{
-\item{Rpath.params}{R object containing the Rpath parameters.  This is generated
-either by the create.rpath.params or read.rpath.params functions.}
+\item{Rpath.params}{R object containing the parameters needed to create a
+\code{Rpath} model.  This is generated either by the \code{\link{create.rpath.params}()}
+ or \code{\link{read.rpath.params}()} functions.}
 
-\item{eco.name}{Optional name of the ecosystem which becomes an attribute of
-rpath object.}
+\item{eco.name}{Optional name of the ecosystem which becomes an attribute of the
+\code{Rpath} model.}
 
 \item{eco.area}{Optional area of the ecosystem which becomes an attribute of the
-rpath object.}
+\code{Rpath} model.}
 }
 \value{
-Returns an Rpath object that can be supplied to the rsim.scenario function.
+Returns a static \code{Rpath} model that can be supplied to the
+\code{rsim.scenario} function.
 }
 \description{
-Performs initial mass balance using a model parameter file and diet
-matrix file.
+Performs initial mass balance using a \code{\link{Rpath.params}()} file
 }
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
 \code{\link{create.rpath.params}()},
 \code{\link{frate.table}()},

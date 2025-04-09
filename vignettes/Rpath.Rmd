@@ -21,9 +21,19 @@ To see the underlying mathematics please refer to @lucey_conducting_2020. For ad
 
 # Installation
 
-If necessary, first install the `remotes` package: `install.packages("remotes")` 
+If necessary, first install the `remotes()` package: `install.packages("remotes")` 
 
-Use the command `remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)` to install Rpath.
+```
+remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)` to install Rpath and the vignettes.
+```
+
+If you experience issues installing the package, please use this alternative
+
+```
+pak::pak("noaa-edab/Rpath")
+```
+
+
 
 
 
