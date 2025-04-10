@@ -5,6 +5,8 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 csl: "ices-journal-of-marine-science.csl"
 bibliography: bibliography/rpath.bib
+link-citations: yes
+urlcolor: blue
 vignette: >
   %\VignetteIndexEntry{Generating an Rsim ensemble with Ecosense}
   %\VignetteEncoding{UTF-8}
@@ -19,15 +21,14 @@ library(Rpath); library(data.table); library(viridis)
 ```
 
 Rpath is an R implementation of the food web modeling program Ecopath with Ecosim - EwE
-[@christensen_ecopath_1992; @walters_structuring_1997]. For full documentation of the Rpath package see @lucey_conducting_2020. Ecosense is a Monte Carlo approach to generating an ensemble of plausible ecosystem parameter sets from a single Rpath model for 
+(@christensen_ecopath_1992; @walters_structuring_1997). For full documentation of the Rpath package see @lucey_conducting_2020. Ecosense is a Monte Carlo approach to generating an ensemble of plausible ecosystem parameter sets from a single Rpath model for 
 use with `rsim.run()`, the time-dynamic counterpart to Rpath. For complete documentation
 of Ecosense see @whitehouse_assessing_2020. This vignette requires an understanding of the 
 Rpath package and its basic operations.
 
 ## Ecosense
 
-This vignette includes the example Rpath models from Whitehouse and 
-Aydin (2020) for the eastern Bering Sea (EBS), eastern Chukchi Sea (ECS), and Gulf 
+This vignette includes the example Rpath models from @whitehouse_assessing_2020. for the eastern Bering Sea (EBS), eastern Chukchi Sea (ECS), and Gulf 
 of Alaska (GOA) marine food webs, and uses the EBS model in an example. Each of 
 these models has 50–54 functional groups, including one fishery, one primary 
 producer, two detrital compartments, and there are no stanzas. To use Ecosense you 
