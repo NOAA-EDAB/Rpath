@@ -1,7 +1,6 @@
 
+# Rpath <img src="man/figures/logo.png" align="right" width="120" /> 
 
-Rpath
-=====
 
 <!-- badges: start -->
 [![gitleaks](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml)
