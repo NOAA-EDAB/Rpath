@@ -1,7 +1,5 @@
 ---
 title: "Create a static food web model in Rpath"
-author: "Vignette Author"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Create a static food web model in Rpath}
