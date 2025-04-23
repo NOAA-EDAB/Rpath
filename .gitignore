@@ -34,12 +34,11 @@ tests/testthat/data/input/REcosystem_Current_*.csv
 tests/testthat/old/*
 tests/testthat/bkup/*
 tests/testthat/old dat files/*
-
 docs
 doc
 Meta
 Rpath.Rproj
-
 inst/doc
 /doc/
 /Meta/
+output.RData

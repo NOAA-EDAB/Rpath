@@ -1,6 +1,10 @@
 ---
 title: "Generating an Rsim ensemble with Ecosense"
 output: rmarkdown::html_vignette
+csl: "ices-journal-of-marine-science.csl"
+bibliography: bibliography/rpath.bib
+link-citations: yes
+urlcolor: blue
 vignette: >
   %\VignetteIndexEntry{Generating an Rsim ensemble with Ecosense}
   %\VignetteEncoding{UTF-8}
@@ -14,28 +18,15 @@ library(Rpath); library(data.table); library(viridis)
 #knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-Rpath is an R implementation of the food web modeling program Ecopath with Ecosim
-(EwE; Christensen and Pauly 1992^[Christensen V, Pauly D (1992) Ecopath II-a software 
-for balancing steady-state ecosystem models and calculating network characteristics. 
-Ecol Model 61:169-185. doi:10.1016/0304-3800(92)90016-8], Walters *et al.* 1997^[Walters 
-C, Christensen V, Pauly D (1997) Structuring dynamic models of exploited ecosystems 
-from trophic mass-balance assessments. Rev Fish Biol Fish 7:139-172. 
-doi:10.1023/a:1018479526149]). For full documentation of the Rpath package see Lucey 
-*et al.* (2020^[Lucey SM, Gaichas SK, Aydin KY (2020) Conducting reproducible ecosystem 
-modeling using the open source mass balance model Rpath. Ecol Model 427:11. 
-doi:10.1016/j.ecolmodel.2020.109057]). Ecosense is a Monte Carlo approach to generating 
-an ensemble of plausible ecosystem parameter sets from a single Rpath model for 
+Rpath is an R implementation of the food web modeling program Ecopath with Ecosim - EwE
+(@christensen_ecopath_1992; @walters_structuring_1997). For full documentation of the Rpath package see @lucey_conducting_2020. Ecosense is a Monte Carlo approach to generating an ensemble of plausible ecosystem parameter sets from a single Rpath model for 
 use with `rsim.run()`, the time-dynamic counterpart to Rpath. For complete documentation
-of Ecosense see Whitehouse and Aydin (2020^[Whitehouse GA, Aydin KY (2020) 
-Assessing the sensitivity of three Alaska marine food webs to perturbations: an 
-example of Ecosim simulations using Rpath. Ecol Model 429:16. 
-doi:10.1016/j.ecolmodel.2020.109074]). This vignette requires an understanding of the 
+of Ecosense see @whitehouse_assessing_2020. This vignette requires an understanding of the 
 Rpath package and its basic operations.
 
 ## Ecosense
 
-This vignette includes the example Rpath models from Whitehouse and 
-Aydin (2020) for the eastern Bering Sea (EBS), eastern Chukchi Sea (ECS), and Gulf 
+This vignette includes the example Rpath models from @whitehouse_assessing_2020. for the eastern Bering Sea (EBS), eastern Chukchi Sea (ECS), and Gulf 
 of Alaska (GOA) marine food webs, and uses the EBS model in an example. Each of 
 these models has 50–54 functional groups, including one fishery, one primary 
 producer, two detrital compartments, and there are no stanzas. To use Ecosense you 
@@ -43,10 +34,6 @@ need an `rpath.params` object and the corresponding `rsim.scenario` object. Firs
 load the unbalanced models, balance them, and setup the rsim scenario objects.
 
 ```{r loadbalanacemodels}
-# load the unbalanced models
-# load("data/Ecosense.EBS.rda")
-# load("data/Ecosense.ECS.rda")
-# load("data/Ecosense.GOA.rda")
 # balance the models
 EBS_bal <- rpath(Ecosense.EBS)
 ECS_bal <- rpath(Ecosense.ECS)
@@ -55,9 +42,6 @@ GOA_bal <- rpath(Ecosense.GOA)
 EBS_scene <- rsim.scenario(EBS_bal, Ecosense.EBS, years=1:100)
 ECS_scene <- rsim.scenario(ECS_bal, Ecosense.ECS, years=1:100)
 GOA_scene <- rsim.scenario(GOA_bal, Ecosense.GOA, years=1:100)
-# # source ecosense.R
-# source("R/ecosense.R", local = knitr::knit_global())
-# ls()
 ```
 ### Setting up Ecosense
 
@@ -101,9 +85,9 @@ in a loop. First, determine the number of parameter sets you wish to generate an
 create lists to store those parameter sets. Set up another vector to keep track 
 of which generated parameter sets were rejected or retained.
 ```{r ensemble, echo=TRUE}
-NUM_RUNS <- 1000 # how many ecosystem parameter sets to generate
-parlist<-as.list(rep(NA,NUM_RUNS)) # creates lists to store the generated parameters
-kept<-rep(NA,NUM_RUNS) # object to keep track of kept systems
+NUM_RUNS <- 1000 # This is how many ecosystem parameter sets to generate
+parlist<-as.list(rep(NA,NUM_RUNS)) # Creates lists to store the generated parameters
+kept<-rep(NA,NUM_RUNS) # Object to keep track of kept systems
 set.seed(666) # Optional, set seed so output can be replicated
 ```
 In this example we will generate 1,000 parameter sets (NUM_RUNS) for the eastern 
@@ -149,7 +133,7 @@ The 52nd generated parameter set was the first to survive the 50 year burn-in:
 
 To determine which of the 1,000 generated systems survived burn-in, how many survived burn-in and what the rejection rate was:
 ```{r status, echo=TRUE}
-KEPT <- which(kept==T); KEPT # the number associated with the kept system
+KEPT <- which(kept==TRUE); KEPT # the number associated with the kept system
 nkept <- length(KEPT); nkept # how many were kept
 1-(nkept/NUM_RUNS) # rejection rate
 ```

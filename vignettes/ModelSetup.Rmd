@@ -1,6 +1,10 @@
 ---
 title: "Set up a food web model"
 output: rmarkdown::html_vignette
+csl: "ices-journal-of-marine-science.csl"
+bibliography: bibliography/rpath.bib
+link-citations: yes
+urlcolor: blue
 vignette: >
   %\VignetteIndexEntry{Set up a food web model}
   %\VignetteEngine{knitr::rmarkdown}
@@ -160,9 +164,7 @@ knitr::kable(REco.params$model,
 ### Stanza Parameters
 You may have noticed that the biomass and consumption to biomass parameters are
 missing from some of the multistanza groups.  Similar to EwE, Rpath calculates those
-parameters to ensure that stanza groups support one another (Christensen and Walters
-2004^[Christensen and Walters. 2004. Ecopath with Ecosim: methods, capabilities and 
-limitations. Ecological Modelling 172:109-139]).  In order to do this, you need to
+parameters to ensure that stanza groups support one another (@christensen_ecopath_2004).  In order to do this, you need to
 populate the stanza list.  As mentioned earlier, this is actually a list itself 
 containing 3 things: the number of stanza groups, stanza group parameters, and 
 individual stanza parameters.  The number of stanzas is automatically populated.  For 
