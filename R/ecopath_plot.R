@@ -4,27 +4,37 @@
 #'
 #'@family Rpath functions
 #'
-#'@param Rpath.obj Rpath model created by the rpath() function.
-#'@param highlight Box number to highlight connections.
-#'@param eco.name Optional name of the ecosystem.  Default is the eco.name attribute from the
-#'    rpath object.
-#'@param highlight Set to the group number or name to highlight the connections of that group.
-#'@param highlight.col Color of the connections to the highlighted group.
-#'@param labels Logical whether or not to display group names.  If True and label.pos is Null, no 
-#'  points will be ploted, just label names.
-#'@param label.pos A position specifier for the labels.  Values of 1, 2, 3, 4, respectively 
-#'  indicate positions below, to the left of, above, and to the right of the points. A null 
-#'  value will cause the labels to be ploted without the points (Assuming that labels = TRUE).
+#'@param Rpath.obj Rpath model created by \code{rpath()}.
+#'@param eco.name Optional name of the ecosystem.  Default is the `eco.name` attribute from the
+#'  rpath object created from running \code{rpath()}.
+#'@param highlight Group number or name to highlight the connections of that group. Valid values are found in the 
+#' `Group` field of the object created from running \code{rpath()}.
+#'@param highlight.col Color of the connections to the highlighted group, vector of length 3.
+#'  Defaults to black for prey, red for predator, orange for fleet.
+#'@param labels Logical whether or not to display group names.  If \code{TRUE} and \code{label.pos} = NULL, no 
+#'  points will be plotted, just label names.
+#'@param label.pos A position specifier for the labels.  Values of 1, 2, 3, 4
+#'  indicate positions below, to the left of, above, and to the right of the points, respectively. A null 
+#'  value will cause the labels to be plotted without the points, assuming that \code{labels} = TRUE.
 #'@param label.num Logical value indication whether group numbers should be used for labels 
 #'  instead of names.
 #'@param line.col The color of the lines between nodes of the food web.
-#'@param fleets Logical value indicating whether or not to include fishing fleets in the food web.
-#'@param type.col The color of the points cooresponding to the types of the group.  Can either be 
-#'  of length 1 or 4.  Color order will be living, primary producers, detrital, and fleet groups.  
+#'@param fleets Logical value indicating whether or not to include fishing fleets in the food web plot.
+#'@param type.col The color of the points corresponding to the types of the group.  Must be 
+#'  of length 1 or 4.  Color order will be consumers, primary producers, detrital, and fleet groups.  
 #'@param box.order Vector of box numbers to change the default plot order.  Must include all box numbers
-#'@param label.cex The relative size of the labels within the plot.
+#'@param label.cex Numeric value of the relative size of the labels within the plot.
 #'
-#'@return Creates a figure of the food web.
+#'@return Returns a plot visualization of the food web.
+#'
+#'@examples
+#' # Read in Rpath parameter file, generate and name model object
+#' Rpath.obj <- rpath(AB.params, eco.name = "Anchovy Bay")
+#' # Plot food web diagram with all groups labeled, including fleets
+#' webplot(Rpath.obj, labels = TRUE, fleets = TRUE)
+#' # Plot food web diagram without labels, highlighting connections of cod group
+#' webplot(Rpath.obj, highlight = "cod",fleets = TRUE)
+#'
 #'@import data.table
 #'@import graphics
 #'@import utils
@@ -132,17 +142,19 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #' Plots the food web associated with an Rpath object using ggplot functions
 #'
 #' @param Rpath.obj Rpath model created by the \code{rpath()} function.
-#' @param eco.name Optional name of the ecosystem. Default is the \code{eco.name} 
+#' @param eco.name Optional name of the ecosystem. Default is the `eco.name` 
 #'                 attribute from the rpath object.
 #' @param line.col The color of the lines between nodes of the food web.
 #' @param highlight Set to the group number or name to highlight the connections of that group.
-#' @param highlight.col Color of the connections to the highlighted group, vector of length 3
+#'  Valid values are found in the `Group` field of the object created from running \code{rpath()}.
+#' @param highlight.col Color of the connections to the highlighted group, vector of length 3.
+#'  Defaults to black = predator, red = prey, orange = fleet.
 #' @param labels Logical whether or not to display group names.  
 #' @param label.num Logical whether or not to display group numbers instead of points at nodes. 
 #' If \code{TRUE}, \code{type.col} must be length 1, not 4.
-#' @param label.cex 
+#' @param label.cex Numeric value of the relative size of the labels within the plot.
 #' @param fleets Logical value indicating whether or not to include fishing fleets in the food web.
-#' @param type.col The color of the points cooresponding to the types of the group.  Can either be 
+#' @param type.col The color of the points corresponding to the types of the group.  Can either be 
 #'  of length 1 or 4. Color order will be living, primary producers, detrital, and fleet groups.  
 #' @param box.order Vector of box numbers to change the default plot order. Must include all box numbers. 
 #' Passed to \code{summarize.for.webplot()}
@@ -152,6 +164,15 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #' @param max.overlaps Maximum number of overlaps allowed for group labels by \code{ggrepel}
 #'
 #' @return Returns a ggplot object visualizing the food web
+#' 
+#' @examples
+#' # Read in Rpath parameter file, generate and name model object
+#' Rpath.obj <- rpath(AB.params, eco.name = "Anchovy Bay")
+#' # Plot food web diagram with all groups labeled, including fleets, using ggplot
+#' ggwebplot(Rpath.obj, labels = TRUE, fleets = TRUE)
+#' # Plot food web diagram without labels, highlighting connections of cod group
+#' ggwebplot(Rpath.obj, highlight = "cod",fleets = TRUE)
+#' 
 #' @import data.table
 #' @import ggplot2
 #' @import utils
@@ -161,7 +182,7 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
                       highlight = NULL, highlight.col = c('black', 'red', 'orange'), 
                       labels = FALSE, label.num = FALSE, label.cex = 1,
                       fleets = FALSE, type.col = 'grey50', box.order = NULL, 
-                      line.alpha = 0.5, point.size = 0.5, text.size = 5,
+                      line.alpha = 0.5, point.size = 1, text.size = 5,
                       max.overlaps = 10) {
   # build pointmap and set of connections
   web.info <- summarize.for.webplot(Rpath.obj, fleets, box.order)
@@ -220,8 +241,10 @@ ggwebplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.co
 #' Prepare food web model to plot
 #' 
 #' Prepare and summarize food web model for plotting by generating x-values for node 
-#' locations and creating a data frame of all trophic connections. This function could
-#' be useful for building custom plotting functions. 
+#' locations and creating a data frame of all trophic connections. This function could also
+#' be used to build custom plotting functions. 
+#' 
+#' @keywords internal
 #'
 #' @param Rpath.obj Rpath model created by the \code{rpath()} function.
 #' @param fleets Logical value indicating whether or not to include fishing fleets in the food web.
@@ -323,11 +346,19 @@ summarize.for.webplot <- function(Rpath.obj, fleets = FALSE, box.order = NULL){
 #'@family Rpath functions
 #'
 #'@inheritParams rpath
-#'@param StanzaGroup The Stanza group's name to be plotted.
+#'@param StanzaGroup The Stanza group's name to be plotted.Valid values are found in the 
+#' `stanzas` field of the Rpath parameter file.
 #'@param line.cols A vector of four colors used to represent the population biomass,
-#'relative number, indvidual weights, and stanza separation lines.
+#'relative number, individual weights, and stanza separation lines.
 #'
 #'@return Creates a figure showing the break down of biomass and number per stanza.
+#'
+#'@examples 
+#' # Choose group with multiple stanzas
+#' params <- REco.params
+#' stanzaplot(params, StanzaGroup = "Roundfish1")
+#' 
+#'
 #'@import data.table
 #'@import graphics
 #'@export

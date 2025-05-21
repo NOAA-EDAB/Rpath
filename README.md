@@ -1,7 +1,6 @@
 
+# Rpath <img src="man/figures/logo.png" align="right" width="120" /> 
 
-Rpath
-=====
 
 <!-- badges: start -->
 [![gitleaks](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml)
@@ -11,14 +10,24 @@ Rpath
 <!-- [![tests](https://github.com/NOAA-EDAB/Rpath/actions/workflows/tests.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/tests.yml) -->
 <!-- badges: end -->
 
-This is the repository for Rpath - the R implementation of the mass balance algorithms.
-
-The new public facing repository (NOAA-EDAB/Rpath) was established for release with 
-the Rpath manuscript [Lucey et al. 2020](https://www.sciencedirect.com/science/article/pii/S0304380020301290).  The previous repository is no longer maintained.
+Rpath is an implementation (in R) of the ecosystem model Ecopath with Ecosim.
 
 Rpath was developed and is maintained through a collaboration between the Alaska Fisheries Science Center and the Northeast Fisheries Science Center.  
 
-To view release notes please visit the [wiki](https://github.com/NOAA-EDAB/Rpath/wiki/Release-Notes).
+## Installation
+
+To install the package and build all of the vignettes locally
+
+```
+remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)`
+```
+
+If you experience issues installing the package using `remotes` or don't need the vignettes locally then please use this alternative
+
+```
+pak::pak("noaa-edab/Rpath")
+```
+
 
 
 

@@ -15,31 +15,34 @@ Fleet = 3.}
 \item{stgroup}{Vector of multistanza group names.  Include NA for non-stanza groups.}
 }
 \value{
-Outputs a list object of Rpath parameters which are populated with values 
+Outputs a list object of \code{Rpath.params} which are populated with values
  of NA or logical default values.  Values can then be filled in using
- R.  Use check.rpath.params() to ensure parameter files are filled out
- correctly (NOTE: This does not ensure data is correct just that it is 
+ R.  Use \code{\link{check.rpath.params}()} to ensure parameter files are filled out
+ correctly (NOTE: This does not ensure data is correct just that it is
  in the right places).
 }
 \description{
-Creates a shell of the Rpath.params list object which contains the model, diet,
-multistanza, and pedigree parameters.
+Creates a shell of the \code{Rpath.params} list object which contains the \emph{model}, \emph{diet},
+\emph{multistanza}, and \emph{pedigree} parameters.
 }
 \seealso{
 Other Rpath functions: 
 \code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
 \code{\link{check.rpath.params}()},
-\code{\link{extract.node}()},
 \code{\link{frate.table}()},
 \code{\link{read.rpath.params}()},
 \code{\link{rpath}()},
+\code{\link{rpath.consumers}()},
+\code{\link{rpath.detrital}()},
+\code{\link{rpath.gears}()},
 \code{\link{rpath.groups}()},
+\code{\link{rpath.living}()},
+\code{\link{rpath.mixotrophs}()},
+\code{\link{rpath.producers}()},
 \code{\link{rpath.stanzas}()},
 \code{\link{stanzaplot}()},
 \code{\link{webplot}()},
 \code{\link{write.Rpath}()},
-\code{\link{write.Rsim}()},
 \code{\link{write.rpath.params}()}
 }
 \concept{Rpath functions}
