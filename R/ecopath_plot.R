@@ -31,9 +31,9 @@
 #' # Read in Rpath parameter file, generate and name model object
 #' Rpath.obj <- rpath(AB.params, eco.name = "Anchovy Bay")
 #' # Plot food web diagram with all groups labeled, including fleets
-#' webplot(Rpath.obj, labels = T, fleets = T)
+#' webplot(Rpath.obj, labels = TRUE, fleets = TRUE)
 #' # Plot food web diagram without labels, highlighting connections of cod group
-#' webplot(Rpath.obj, highlight = "cod",fleets = T)
+#' webplot(Rpath.obj, highlight = "cod",fleets = TRUE)
 #'
 #'@import data.table
 #'@import graphics
@@ -169,9 +169,9 @@ webplot <- function(Rpath.obj, eco.name = attr(Rpath.obj, 'eco.name'), line.col 
 #' # Read in Rpath parameter file, generate and name model object
 #' Rpath.obj <- rpath(AB.params, eco.name = "Anchovy Bay")
 #' # Plot food web diagram with all groups labeled, including fleets, using ggplot
-#' ggwebplot(Rpath.obj, labels = T, fleets = T)
+#' ggwebplot(Rpath.obj, labels = TRUE, fleets = TRUE)
 #' # Plot food web diagram without labels, highlighting connections of cod group
-#' ggwebplot(Rpath.obj, highlight = "cod",fleets = T)
+#' ggwebplot(Rpath.obj, highlight = "cod",fleets = TRUE)
 #' 
 #' @import data.table
 #' @import ggplot2

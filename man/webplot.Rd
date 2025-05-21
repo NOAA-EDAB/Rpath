@@ -62,9 +62,9 @@ Plots the food web associated with an Rpath object.
 # Read in Rpath parameter file, generate and name model object
 Rpath.obj <- rpath(AB.params, eco.name = "Anchovy Bay")
 # Plot food web diagram with all groups labeled, including fleets
-webplot(Rpath.obj, labels = T, fleets = T)
+webplot(Rpath.obj, labels = TRUE, fleets = TRUE)
 # Plot food web diagram without labels, highlighting connections of cod group
-webplot(Rpath.obj, highlight = "cod",fleets = T)
+webplot(Rpath.obj, highlight = "cod",fleets = TRUE)
 
 }
 \seealso{
