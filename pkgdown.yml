@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   ecosense: ecosense.html
@@ -8,4 +8,4 @@ articles:
   RunRpath: RunRpath.html
   RunRsim: RunRsim.html
   UnitTests: UnitTests.html
-last_built: 2025-01-31T19:44Z
+last_built: 2025-05-29T18:21Z
