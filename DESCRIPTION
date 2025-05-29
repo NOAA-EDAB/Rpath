@@ -4,10 +4,15 @@ Title: R implementation of Ecopath with Ecosim
 Version: 0.9.1
 Date: 2024-05-31
 Authors@R: c(
-    person("Kerim", "Aydin",   email = "Kerim.Aydin@NOAA.gov",   role = "aut"),
-    person("Sean", "Lucey",    email = "Sean.Lucey@NOAA.gov",    
-           role = c("aut", "cre")),
-    person("Sarah", "Gaichas", email = "Sarah.Gaichas@NOAA.gov", role = "aut"))
+    person("Kerim", "Aydin",    email = "Kerim.Aydin@NOAA.gov",   role = c("aut", "cre")),
+    person("Sean", "Lucey",     email = "Sean.Lucey@NOAA.gov",    role = "aut"),
+    person("Sarah", "Gaichas",  email = "Sarah.Gaichas@NOAA.gov", role = "aut"),
+    person("Sarah", "Weisberg", email = "sarah.j.weisberg@stonybrook.edu", role= "aut"),
+    person("Andy", "Whitehouse",email = "Andy.Whitehouse@NOAA.gov", role="aut"),
+    person("Ron", "Klasky", email = "ronald.klasky@noaa.gov",   role="ctb"),
+    person("Andy", "Beet",  email = "andrew.beet@noaa.gov",     role="ctb"),
+    person("Max", "Grezlik",email = "maxwell.grezlik@noaa.gov", role="ctb")
+    )
 Description: This package implements the core mass balance equations made popular
     by Ecopath with Ecosim. There are two parts to the package, the static snapshot
     of energy flow through the system using rpath and dynamic simulations run using 
