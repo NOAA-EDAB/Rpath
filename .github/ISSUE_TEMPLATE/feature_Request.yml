@@ -8,7 +8,7 @@ body:
     attributes:
       value: >
         **Thanks for taking the time to fill out this feature request report!** We kindly ask that you search
-        the current issues to see if an issue [already exists](https://github.com/Rpath/issues?q=label:"feature")
+        the current issues to see if an issue [already exists](https://github.com/Rpath/issues?q=is%3Aissue%20state%3Aopen%20label%3Afeature)
         for your feature.
 
         We are also happy to accept contributions from our users. For more details see
