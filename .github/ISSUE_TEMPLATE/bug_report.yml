@@ -42,7 +42,7 @@ body:
     id: additional
     attributes:
       label: Additional content
-      description: Add any other context about the problem here.
+      description: Add additional context
     validations:
       required: false  
   - type: textarea
