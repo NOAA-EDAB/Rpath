@@ -19,10 +19,11 @@ body:
   - type: checkboxes
     id: issues
     attributes:
-      label: IS this a duplicate issue
+      label: Is this a duplicate issue
       description: Have you searched the issues to ensure this is not a duplicate?
-    validations:
-      required: true
+      options:
+        - label: I have searched the existing data.
+          required: true
   - type: textarea
     id: reprex
     attributes:
