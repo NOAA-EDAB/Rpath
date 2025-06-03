@@ -20,7 +20,7 @@ body:
     id: issues
     attributes:
       label: Is this a duplicate issue
-      description: Have you searched the issues to ensure this is not a duplicate?
+      description: Have you searched the [issues](https://github.com/NOAA-EDAB/Rpath/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) to ensure this is not a duplicate?
       options:
         - label: I have searched the existing data.
           required: true
