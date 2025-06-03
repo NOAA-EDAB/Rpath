@@ -1,16 +1,14 @@
----
 name: Bug report
 description: Use this template to report bugs
 title: "[Bug Report]:"
 labels: "[bug]"
-assignees: ''
----
-
 body:
   - type: markdown
     attributes:
       value: |
-        Please use the fields below to describe the bug. We will need this information to reproduce and fix any issues. Thanks
+        Thanks a lot for taking the time to fill out this bug report. 
+        Please use the fields below to describe the bug. 
+        We will need this information to reproduce and fix any issues. Thanks
   - type: textarea
     id: bugdesc
     attributes:
@@ -18,3 +16,31 @@ body:
       description: A clear and concise description of what the bug is.
     validations:
       required: true
+  - type: textarea
+    id: reprex
+    attributes:
+      label: **Can you provide a reprex**
+      description: Please provide a reproducible example ([reprex](https://reprex.tidyverse.org/))
+    validations:
+      required: true      
+  - type: textarea
+    id: expect
+    attributes:
+      label: **What are you expecting to happen?**
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true      
+  - type: textarea
+    id: additional
+    attributes:
+      label: **Additional content**
+      description: Add any other context about the problem here.
+    validations:
+      required: false  
+  - type: textarea
+    id: session
+    attributes:
+      label: **Session info**
+      description: Paste the output of your `sessionInfo()`
+    validations:
+      required: true  
