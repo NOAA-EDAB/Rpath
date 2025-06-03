@@ -12,35 +12,35 @@ body:
   - type: textarea
     id: bugdesc
     attributes:
-      label: **Describe the bug**
+      label: Describe the bug
       description: A clear and concise description of what the bug is.
     validations:
       required: true
   - type: textarea
     id: reprex
     attributes:
-      label: **Can you provide a reprex**
+      label: Can you provide a reprex
       description: Please provide a reproducible example ([reprex](https://reprex.tidyverse.org/))
     validations:
       required: true      
   - type: textarea
     id: expect
     attributes:
-      label: **What are you expecting to happen?**
+      label: What are you expecting to happen?
       description: A clear and concise description of what you expected to happen.
     validations:
       required: true      
   - type: textarea
     id: additional
     attributes:
-      label: **Additional content**
+      label: Additional content
       description: Add any other context about the problem here.
     validations:
       required: false  
   - type: textarea
     id: session
     attributes:
-      label: **Session info**
+      label: Session info
       description: Paste the output of your `sessionInfo()`
     validations:
       required: true  
