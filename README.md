@@ -33,27 +33,45 @@ pak::pak("noaa-edab/Rpath")
 For more background, please see:
 
 ### For Rpath description and methods:
-Sean M. Lucey, Sarah K. Gaichas, Kerim Y. Aydin,
-Conducting reproducible ecosystem modeling using the open source mass balance model Rpath, Ecological Modelling, Volume 427, 2020, 109057, ISSN 0304-3800, https://doi.org/10.1016/j.ecolmodel.2020.109057.
+Lucey, S. M.,  Gaichas, S. K., & Aydin, K. Y. (2020). 
+Conducting reproducible ecosystem modeling using the open source mass balance model Rpath. 
+Ecological Modelling 427(2020), 109057. 
+https://doi.org/10.1016/j.ecolmodel.2020.109057.
 
 ### For use of Rpath for management strategy evaluations:
-Sean M. Lucey, Sarah K. Gaichas, Kerim Y. Aydin,
-Conducting reproducible ecosystem modeling using the open source mass balance model Rpath, Ecological Modelling, Volume 427, 2020, 109057, ISSN 0304-3800, https://doi.org/10.1016/j.ecolmodel.2020.109057.
+Lucey, S. M., Aydin, K. Y., Gaichas, S. K., Cadrin, S. X., Fay, G.,  Fogarty, M. J., & Punt, A. (2021).
+Evaluating fishery management strategies using an ecosystem model as an operating model.
+Fisheries Research 234(2021), 105780.
+https://doi.org/10.1016/j.fishres.2020.105780.
 
 ### For incorporation of bioenergetics into simulations:
-Sean M. Lucey, Sarah K. Gaichas, Kerim Y. Aydin,
-Conducting reproducible ecosystem modeling using the open source mass balance model Rpath, Ecological Modelling, Volume 427, 2020, 109057, ISSN 0304-3800, https://doi.org/10.1016/j.ecolmodel.2020.109057
+Heinichen, M., McManus, M. C., Lucey, S. M., Aydin, K. Y., Humphries, A., Innes-Gold, A., & Collie, J. (2022).
+Margaret Heinichen, M. Conor McManus, Sean M. Lucey, Kerim Aydin, Austin Humphries, Anne Innes-Gold, Jeremy Collie,
+Incorporating temperature-dependent fish bioenergetics into a Narragansett Bay food web model. 
+Ecological Modelling 466(2022), 109911.
+https://doi.org/10.1016/j.ecolmodel.2022.109911.
 
 ### For use of Rpath sensitivty tools:
-George A. Whitehouse, Kerim Y. Aydin,
-Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath, Ecological Modelling, Volume 429, 2020, 109074, ISSN 0304-3800, https://doi.org/10.1016/j.ecolmodel.2020.109074.
+Whitehouse, G.A., & Aydin, K.Y. (2020).
+Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath. 
+Ecological Modelling 429(2020), 109074. 
+https://doi.org/10.1016/j.ecolmodel.2020.109074.
 
 ### For original development of Ecopath and Ecosim:
-Polovina, J. J. (1984). Model of a coral reef ecosystem. Coral Reefs, 3(1), 1–11. https://doi.org/10.1007/BF00306135
+Polovina, J. J. (1984). 
+Model of a coral reef ecosystem.
+Coral Reefs 3(1), 1–11. 
+https://doi.org/10.1007/BF00306135.
 
-Christensen, V., & Walters, C. J. (2004). Ecopath with Ecosim: Methods, capabilities and limitations. Ecological Modelling, 172(2), 109–139. https://doi.org/10.1016/j.ecolmodel.2003.09.003
+Christensen, V., & Walters, C. J. (2004). 
+Ecopath with Ecosim: Methods, capabilities and limitations. 
+Ecological Modelling 172(2), 109–139. 
+https://doi.org/10.1016/j.ecolmodel.2003.09.003.
 
-Walters, C., Pauly, D., Christensen, V., & Kitchell, J. F. (2000). Representing Density Dependent Consequences of Life History Strategies in Aquatic Ecosystems: EcoSim II. Ecosystems, 3(1), 70–83. https://doi.org/10.1007/s100210000011
+Walters, C., Pauly, D., Christensen, V., & Kitchell, J. F. (2000). 
+Representing Density Dependent Consequences of Life History Strategies in Aquatic Ecosystems: EcoSim II. 
+Ecosystems 3(1), 70–83. 
+https://doi.org/10.1007/s100210000011.
 
 # Disclaimer
 
