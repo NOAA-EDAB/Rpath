@@ -9,6 +9,10 @@ body:
         Thanks a lot for taking the time to fill out this bug report. 
         Please use the fields below to describe the bug. 
         We will need this information to reproduce and fix any issues. Thanks
+        
+        We are also happy to accept contributions from our users. So if you have a solution to the
+        bug consider contributing. For more details see
+        [here](https://github.com/NOAA-EDAB/Rpath/CONTRIBUTING.md).
   - type: textarea
     id: bugdesc
     attributes:
