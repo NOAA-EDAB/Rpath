@@ -10,7 +10,7 @@
 <!-- [![tests](https://github.com/NOAA-EDAB/Rpath/actions/workflows/tests.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/tests.yml) -->
 <!-- badges: end -->
 
-Package _Rpath_ is an R implementation of the Ecopath (mass-balance) and Ecosim (dynamic simulation) methods for the modeling of food webs. The _Rpath_ package includes sensitivity analysis tools, bioenergetics forcing, and the ability to
+Package _Rpath_ is an R/Rcpp implementation of the Ecopath (mass-balance) and Ecosim (dynamic simulation) methods for the modeling of food webs. The _Rpath_ package includes sensitivity analysis tools, bioenergetics forcing, and the ability to
 develop adaptive dynamic simulations with annual adjustment/feedback for use
 in management strategy evaluations and similar analyses.
 
@@ -44,14 +44,13 @@ Evaluating fishery management strategies using an ecosystem model as an operatin
 Fisheries Research 234(2021), 105780.
 https://doi.org/10.1016/j.fishres.2020.105780.
 
-### For incorporation of bioenergetics into simulations:
+### For incorporation of bioenergetics into Rpath simulations:
 Heinichen, M., McManus, M. C., Lucey, S. M., Aydin, K. Y., Humphries, A., Innes-Gold, A., & Collie, J. (2022).
-Margaret Heinichen, M. Conor McManus, Sean M. Lucey, Kerim Aydin, Austin Humphries, Anne Innes-Gold, Jeremy Collie,
 Incorporating temperature-dependent fish bioenergetics into a Narragansett Bay food web model. 
 Ecological Modelling 466(2022), 109911.
 https://doi.org/10.1016/j.ecolmodel.2022.109911.
 
-### For use of Rpath sensitivty tools:
+### For use of Rpath sensitivity tools:
 Whitehouse, G.A., & Aydin, K.Y. (2020).
 Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath. 
 Ecological Modelling 429(2020), 109074. 
