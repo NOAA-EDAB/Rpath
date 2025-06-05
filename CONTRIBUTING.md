@@ -19,7 +19,7 @@
 
 ## :book: Code of Conduct
 
-Please review our [Code of Conduct](https://github.com/NOAA-EDAB/Rpath/blob/master/CODE_OF_CONDUCT.md). It is in effect at all times. We expect it to be honored by everyone who contributes to this project. Acting like an asshole will not be tolerated.
+Please review our [Code of Conduct](https://github.com/NOAA-EDAB/Rpath/blob/master/CODE_OF_CONDUCT.md). It is in effect at all times. We expect it to be honored by everyone who contributes to this project.
 
 ## :paperclip: Asking Questions
 
@@ -38,7 +38,7 @@ When opening an issue, please follow these guidelines:
 
 - **Review the documentation** before opening a new issue.
 
-- **Be specific.** Describe the problem in detail. What did you expect to happen? What actually happened? What were you doing when the problem occurred? What version of the library are you using? What version of the OS are you running? What version of Xcode are you using?
+- **Be specific.** Describe the problem in detail. What did you expect to happen? What actually happened? What were you doing when the problem occurred? What version of the library are you using? What version of the OS are you running?
 
 - **Provide a reproducible example (e.g. [reprex](https://reprex.tidyverse.org/))** If possible, provide a minimal, complete, and verifiable example that reproduces the issue. This is often the most important part of a bug report. If you can provide a sample project that reproduces the issue, that is even better!
 
@@ -46,7 +46,7 @@ When opening an issue, please follow these guidelines:
 
 - **Use [GitHub-flavored Markdown](https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax).** Especially put code blocks and console outputs in backticks (```). This improves readability. In short, since you are most likely a developer, **provide a ticket that you would like to receive**.
 
-- **Review the documentation and [Support Guide](https://github.com/jessesquires/.github/blob/main/SUPPORT.md)** before opening a new issue.
+- **Review the documentation** before opening a new issue.
 
 - **Do not open a duplicate issue!** Search through existing issues to see if your issue has previously been reported. If your issue exists, comment with any additional information you have. You may simply note "I have this problem too", which helps prioritize the most common problems and requests. 
 
@@ -67,7 +67,6 @@ Feature requests are more than welcome! While we will consider all requests, we 
 
 We appreciate pull requests! Before [forking the repo](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) and [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests) for non-trivial changes, it is usually best to first open an issue to discuss the changes, or discuss your intended approach for solving the problem in the comments for an existing issue.
 
-For most contributions, after your first pull request is accepted and merged, you will be [invited to the project](https://help.github.com/en/github/setting-up-and-managing-your-github-user-account/inviting-collaborators-to-a-personal-repository) and given **push access**.
 
 *Note: All contributions will be licensed under the project's license.*
 
