@@ -40,19 +40,15 @@ When opening an issue, please follow these guidelines:
 
 - **Be specific.** Describe the problem in detail. What did you expect to happen? What actually happened? What were you doing when the problem occurred? What version of the library are you using? What version of the OS are you running? What version of Xcode are you using?
 
-- **Provide a reproducible example (e.g. [reprex](https://reprex.tidyverse.org/)** If possible, provide a minimal, complete, and verifiable example that reproduces the issue. This is often the most important part of a bug report. If you can provide a sample project that reproduces the issue, that is even better!
+- **Provide a reproducible example (e.g. [reprex](https://reprex.tidyverse.org/))** If possible, provide a minimal, complete, and verifiable example that reproduces the issue. This is often the most important part of a bug report. If you can provide a sample project that reproduces the issue, that is even better!
 
 - **Prefer using [reactions](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/)**, not comments, if you simply want to "+1" an existing issue.
-
-- **Fully complete the provided issue template.** The bug report template requests all the information we need to quickly and efficiently address your issue. Be clear, concise, and descriptive. Provide as much information as you can, including steps to reproduce, stack traces, compiler errors, library versions, OS versions, and screenshots (if applicable).
 
 - **Use [GitHub-flavored Markdown](https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax).** Especially put code blocks and console outputs in backticks (```). This improves readability. In short, since you are most likely a developer, **provide a ticket that you would like to receive**.
 
 - **Review the documentation and [Support Guide](https://github.com/jessesquires/.github/blob/main/SUPPORT.md)** before opening a new issue.
 
 - **Do not open a duplicate issue!** Search through existing issues to see if your issue has previously been reported. If your issue exists, comment with any additional information you have. You may simply note "I have this problem too", which helps prioritize the most common problems and requests. 
-
-- **Prefer using [reactions](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/)**, not comments, if you simply want to "+1" an existing issue.
 
 - **Fully complete the provided issue template.** The bug report template requests all the information we need to quickly and efficiently address your issue. Be clear, concise, and descriptive. Provide as much information as you can, including steps to reproduce, stack traces, compiler errors, library versions, OS versions, and screenshots (if applicable).
 
@@ -144,4 +140,4 @@ To confirm that you have read this guide and are following it as best as possibl
 
 ## :pray: Credits
 
-This CONTRIBUTING document was inspired by [@jessesquires](https://github.com/jessesquires). 
+This document was inspired by [@jessesquires](https://github.com/jessesquires). 
