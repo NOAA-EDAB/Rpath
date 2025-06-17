@@ -1,7 +1,7 @@
 Package: Rpath
 Type: Package
 Title: R implementation of Ecopath with Ecosim
-Version: 0.9.1
+Version: 1.0.0
 Date: 2024-05-31
 Authors@R: c(
     person("Kerim", "Aydin",    email = "Kerim.Aydin@NOAA.gov",   role = c("aut", "cre")),
@@ -10,7 +10,8 @@ Authors@R: c(
     person("Sarah", "Weisberg", email = "sarah.j.weisberg@stonybrook.edu", role= "aut"),
     person("Andy", "Whitehouse",email = "Andy.Whitehouse@NOAA.gov", role="aut"),
     person("Ron", "Klasky", email = "ronald.klasky@noaa.gov",   role="ctb"),
-    person("Andy", "Beet",  email = "andrew.beet@noaa.gov",     role="ctb"),
+    person("Andy", "Beet",  email = "andrew.beet@noaa.gov",     role="ctb", 
+    comment = c(ORCID = "0000-0001-8270-7090")),
     person("Max", "Grezlik",email = "maxwell.grezlik@noaa.gov", role="ctb")
     )
 Description: This package implements the core mass balance equations made popular

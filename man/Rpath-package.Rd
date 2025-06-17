@@ -42,12 +42,21 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Sean Lucey \email{Sean.Lucey@NOAA.gov}
+\strong{Maintainer}: Kerim Aydin \email{Kerim.Aydin@NOAA.gov}
 
 Authors:
 \itemize{
-  \item Kerim Aydin \email{Kerim.Aydin@NOAA.gov}
+  \item Sean Lucey \email{Sean.Lucey@NOAA.gov}
   \item Sarah Gaichas \email{Sarah.Gaichas@NOAA.gov}
+  \item Sarah Weisberg \email{sarah.j.weisberg@stonybrook.edu}
+  \item Andy Whitehouse \email{Andy.Whitehouse@NOAA.gov}
+}
+
+Other contributors:
+\itemize{
+  \item Ron Klasky \email{ronald.klasky@noaa.gov} [contributor]
+  \item Andy Beet \email{andrew.beet@noaa.gov} [contributor]
+  \item Max Grezlik \email{maxwell.grezlik@noaa.gov} [contributor]
 }
 
 }
