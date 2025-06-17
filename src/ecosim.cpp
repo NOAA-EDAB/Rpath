@@ -752,20 +752,20 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
       MzeroLoss[sp] = 0.0;
    }
-    
-// Add mortality forcing
-   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     FoodLoss[i]  *= force_bymort(dd, i);
-     MzeroLoss[i] *= force_bymort(dd, i);
-   }
-   
-// Add migration forcing
-   MigrateLoss = clone(state_Biomass);
-   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     MigrateLoss[i]  *= force_bymigrate(dd, i);
-   }
 
-   
+// Bugfix 17-Jun-2025, commenting these out (moved to ~line624 above)    
+//// Add mortality forcing
+//   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+//     FoodLoss[i]  *= force_bymort(dd, i);
+//     MzeroLoss[i] *= force_bymort(dd, i);
+//   }
+//   
+//// Add migration forcing
+//   MigrateLoss = clone(state_Biomass);
+//   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+//     MigrateLoss[i]  *= force_bymigrate(dd, i);
+//   }
+
 // Sum up derivitive parts (vector sums)
 // Override for group 0 (considered "the sun", never changing)        
    TotGain = FoodGain + DetritalGain + FishingGain;      
