@@ -1,5 +1,9 @@
 url: https://noaa-edab.github.io/Rpath/
 
+authors:
+  Andy Beet:
+    href: https://andybeet.com
+
 template:
  bootstrap: 5
 
