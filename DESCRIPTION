@@ -2,7 +2,6 @@ Package: Rpath
 Type: Package
 Title: R implementation of Ecopath with Ecosim
 Version: 1.0.0
-Date: 2024-05-31
 Authors@R: c(
     person("Kerim", "Aydin",    email = "Kerim.Aydin@NOAA.gov",   role = c("aut", "cre"),
     comment = c(ORCID = "0000-0003-3792-9828")),
