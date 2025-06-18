@@ -58,5 +58,8 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   full.run$annual_Qlink <- rbind(full.run$annual_Qlink, annual_Qlink)
   full.run$end_state <- next.run$end_state
   
+  # dyt continuity fix added 18-Jun-2025
+  full.run$dyt <- next.run$dyt
+  
   return(full.run)
 }
