@@ -1,0 +1,58 @@
+name: Bug report
+description: Use this template to report bugs
+title: "[Bug Report]:"
+labels: "[bug]"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks a lot for taking the time to fill out this bug report. 
+        Please use the fields below to describe the bug. 
+        We will need this information to reproduce and fix any issues. Thanks
+        
+        We are also happy to accept contributions from our users. So if you have a solution to the
+        bug consider contributing. For more details see
+        [here](https://github.com/NOAA-EDAB/Rpath/CONTRIBUTING.md).
+  - type: textarea
+    id: bugdesc
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: checkboxes
+    id: issues
+    attributes:
+      label: Is this a duplicate issue
+      description: Have you searched the [issues](https://github.com/NOAA-EDAB/Rpath/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) to ensure this is not a duplicate?
+      options:
+        - label: I have searched the existing data.
+          required: true
+  - type: textarea
+    id: reprex
+    attributes:
+      label: Can you provide a reprex
+      description: Please provide a reproducible example ([reprex](https://reprex.tidyverse.org/))
+    validations:
+      required: true      
+  - type: textarea
+    id: expect
+    attributes:
+      label: What are you expecting to happen?
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true      
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional content
+      description: Add additional context
+    validations:
+      required: false  
+  - type: textarea
+    id: session
+    attributes:
+      label: Session info
+      description: Paste the output of your `sessionInfo()`
+    validations:
+      required: true  

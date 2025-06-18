@@ -1,7 +1,6 @@
 
+# Rpath <img src="man/figures/logo.png" align="right" width="120" /> 
 
-Rpath
-=====
 
 <!-- badges: start -->
 [![gitleaks](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/secretScan.yml)
@@ -11,16 +10,72 @@ Rpath
 <!-- [![tests](https://github.com/NOAA-EDAB/Rpath/actions/workflows/tests.yml/badge.svg)](https://github.com/NOAA-EDAB/Rpath/actions/workflows/tests.yml) -->
 <!-- badges: end -->
 
-This is the repository for Rpath - the R implementation of the mass balance algorithms.
+Package _Rpath_ is an R/Rcpp implementation of the Ecopath (mass-balance) and Ecosim (dynamic simulation) methods for the modeling of food webs. The _Rpath_ package includes sensitivity analysis tools, bioenergetics forcing, and the ability to
+develop adaptive dynamic simulations with annual adjustment/feedback for use
+in management strategy evaluations and similar analyses.
 
-The new public facing repository (NOAA-EDAB/Rpath) was established for release with 
-the Rpath manuscript [Lucey et al. 2020](https://www.sciencedirect.com/science/article/pii/S0304380020301290).  The previous repository is no longer maintained.
+## Installation
 
-Rpath was developed and is maintained through a collaboration between the Alaska Fisheries Science Center and the Northeast Fisheries Science Center.  
+To install the package and build all of the vignettes locally
 
-To view release notes please visit the [wiki](https://github.com/NOAA-EDAB/Rpath/wiki/Release-Notes).
+```
+remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)`
+```
 
+If you experience issues installing the package using `remotes` or don't need the vignettes locally then please use this alternative
 
+```
+pak::pak("noaa-edab/Rpath")
+```
 
+# More details
+
+For more background, please see:
+
+### For Rpath description and methods:
+Lucey, S. M.,  Gaichas, S. K., & Aydin, K. Y. (2020). 
+Conducting reproducible ecosystem modeling using the open source mass balance model Rpath. 
+Ecological Modelling 427(2020), 109057. 
+https://doi.org/10.1016/j.ecolmodel.2020.109057.
+
+### For use of Rpath for management strategy evaluations:
+Lucey, S. M., Aydin, K. Y., Gaichas, S. K., Cadrin, S. X., Fay, G.,  Fogarty, M. J., & Punt, A. (2021).
+Evaluating fishery management strategies using an ecosystem model as an operating model.
+Fisheries Research 234(2021), 105780.
+https://doi.org/10.1016/j.fishres.2020.105780.
+
+### For incorporation of bioenergetics into Rpath simulations:
+Heinichen, M., McManus, M. C., Lucey, S. M., Aydin, K. Y., Humphries, A., Innes-Gold, A., & Collie, J. (2022).
+Incorporating temperature-dependent fish bioenergetics into a Narragansett Bay food web model. 
+Ecological Modelling 466(2022), 109911.
+https://doi.org/10.1016/j.ecolmodel.2022.109911.
+
+### For use of Rpath sensitivity tools:
+Whitehouse, G.A., & Aydin, K.Y. (2020).
+Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath. 
+Ecological Modelling 429(2020), 109074. 
+https://doi.org/10.1016/j.ecolmodel.2020.109074.
+
+### For original development of Ecopath and Ecosim:
+Polovina, J. J. (1984). 
+Model of a coral reef ecosystem.
+Coral Reefs 3(1), 1–11. 
+https://doi.org/10.1007/BF00306135.
+
+Christensen, V., & Walters, C. J. (2004). 
+Ecopath with Ecosim: Methods, capabilities and limitations. 
+Ecological Modelling 172(2), 109–139. 
+https://doi.org/10.1016/j.ecolmodel.2003.09.003.
+
+Walters, C., Pauly, D., Christensen, V., & Kitchell, J. F. (2000). 
+Representing Density Dependent Consequences of Life History Strategies in Aquatic Ecosystems: EcoSim II. 
+Ecosystems 3(1), 70–83. 
+https://doi.org/10.1007/s100210000011.
+
+# Disclaimer
 
 *This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.*
+
+<img src="https://raw.githubusercontent.com/nmfs-general-modeling-tools/nmfspalette/main/man/figures/noaa-fisheries-rgb-2line-horizontal-small.png" height="75" alt="NOAA Fisheries">
+
+[U.S. Department of Commerce](https://www.commerce.gov/) | [National Oceanographic and Atmospheric Administration](https://www.noaa.gov) | [NOAA Fisheries](https://www.fisheries.noaa.gov/)

@@ -171,7 +171,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
         
         // If biomass goes crazy or hits NA, exit loop with crash signal.  Note it 
         // should still write the NA or INF values back to the output.
-        if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
+        if (bool(any(is_na(cur_Biomass))) || bool(any(is_infinite(cur_Biomass))) || bool(any(is_nan(cur_Biomass))))  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
         }
         
@@ -382,7 +382,7 @@ int y, m, dd;
     // should still write the NA or INF values back to the output.
     //NOJUV make sure crash tests work for juveniles.
    
-           if ( any(is_na(cur_Biomass)) | any(is_infinite(cur_Biomass)) | any(is_nan(cur_Biomass)) )  {
+           if (bool(any(is_na(cur_Biomass))) || bool(any(is_infinite(cur_Biomass))) || bool(any(is_nan(cur_Biomass))))  {
           CRASH_YEAR = y; y = EndYear; m = STEPS_PER_YEAR;
        }
   
@@ -752,20 +752,20 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
    for (sp=NUM_LIVING+1; sp<=NUM_LIVING+NUM_DEAD; sp++){
       MzeroLoss[sp] = 0.0;
    }
-    
-// Add mortality forcing
-   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     FoodLoss[i]  *= force_bymort(dd, i);
-     MzeroLoss[i] *= force_bymort(dd, i);
-   }
-   
-// Add migration forcing
-   MigrateLoss = clone(state_Biomass);
-   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
-     MigrateLoss[i]  *= force_bymigrate(dd, i);
-   }
 
-   
+// Bugfix 17-Jun-2025, commenting these out (moved to ~line624 above)    
+//// Add mortality forcing
+//   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+//     FoodLoss[i]  *= force_bymort(dd, i);
+//     MzeroLoss[i] *= force_bymort(dd, i);
+//   }
+//   
+//// Add migration forcing
+//   MigrateLoss = clone(state_Biomass);
+//   for (int i=1; i<=NUM_DEAD+NUM_LIVING; i++){
+//     MigrateLoss[i]  *= force_bymigrate(dd, i);
+//   }
+
 // Sum up derivitive parts (vector sums)
 // Override for group 0 (considered "the sun", never changing)        
    TotGain = FoodGain + DetritalGain + FishingGain;      

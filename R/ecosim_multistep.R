@@ -17,7 +17,7 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   scene    <- copy(Rsim.scenario)
   full.run <- copy(Rsim.output)
   
-  # KYA adds run date and some random salt to ensure uniquieness  
+  # KYA adds run date and some random salt to ensure uniqueness  
     scene$rundate <- paste(Sys.time(),":salt:",runif(1))    
   
   scene.years <- row.names(Rsim.scenario$fishing$ForcedFRate)
@@ -57,6 +57,9 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   full.run$annual_QB <- rbind(full.run$annual_QB, annual_QB)
   full.run$annual_Qlink <- rbind(full.run$annual_Qlink, annual_Qlink)
   full.run$end_state <- next.run$end_state
+  
+  # dyt continuity fix added 18-Jun-2025
+  full.run$dyt <- next.run$dyt
   
   return(full.run)
 }

@@ -3,24 +3,44 @@
 \docType{data}
 \name{Ecosense.GOA}
 \alias{Ecosense.GOA}
-\title{Gulf of Alaska (west/central) 1990s Ecopath model (49 biological groups and 1 fleet).}
+\title{Gulf of Alaska (west/central) 1990s Ecopath model}
 \format{
-An Rpath unbalanced model object that contains:
+An unbalanced Rpath model object that contains:
 \describe{
-  \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
+  \item{model}{A data.table containing Ecopath unbalanced ecosystem
+  parameters (base parameters and fisheries).}
   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
   \item{stanzas}{Parameters for multistanza groups.}
-  \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}   
+  \item{pedigree}{A data.table containing the data quality (pedigree) for the
+  Ecopath model.}
   ...
 }
 }
 \source{
-Whitehouse and Aydin 2020.  Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath. https://doi.org/10.1016/j.ecolmodel.2020.109074
+Whitehouse and Aydin 2020.  Assessing the sensitivity of three Alaska
+  marine food webs to perturbations: an example of Ecosim simulations using
+  Rpath. https://doi.org/10.1016/j.ecolmodel.2020.109074
 }
 \usage{
 Ecosense.GOA
 }
 \description{
-Rpath inputs (unbalanaced model).
+Rpath inputs for the Gulf of Alaska (west/central) 1990s Ecopath model (49 
+biological groups and 1 fleet).
+}
+\note{
+This is an aggregated version of the 1990s Gulf of Alaska Ecopath model
+  of Aydin et al. (2007) and does not include stanzas.
+}
+\examples{
+# Balance the model
+goa_bal <- rpath(Ecosense.GOA)
+
+}
+\references{
+Aydin KY, Gaichas S, Ortiz I, Kinzey D, Friday N (2007) A
+  comparison of the Bering Sea, Gulf of Alaska, and Aleutian Islands large
+  marine ecosystems through food web modeling. U.S. Dep. Commer., NOAA Tech.
+  Memo. NMFS-AFSC-178.
 }
 \keyword{datasets}

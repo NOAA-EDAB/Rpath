@@ -19,7 +19,7 @@ source("test-constants.R")
 plotResultsSuperimposed <- function(BaseData,CurrData,baseAlg,currAlg,tableName,forcedData,forcedType,species) {
   plots  <- list()
   group  <- species
-  yLabel <- "Biomass (mt/km²)"
+  yLabel <- "Biomass (mt/km\U00B2)"
   currDf <- data.frame()
   baseDf <- data.frame()
   
@@ -80,7 +80,7 @@ plotResultsSuperimposed <- function(BaseData,CurrData,baseAlg,currAlg,tableName,
 plotResultsDifference <- function(BaseData,CurrData,baseAlg,currAlg,tableName,forcedData,forcedType,species) {
   plots  <- list()
   group  <- species
-  yLabel <- "Biomass (mt/km²)"
+  yLabel <- "Biomass (mt/km\U00B2)"
   diffDf <- data.frame()
   
   for (member in group) {

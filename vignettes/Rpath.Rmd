@@ -1,10 +1,8 @@
 ---
 title: "Rpath: an open source food web model"
-author: "Sean M. Lucey"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 csl: "ices-journal-of-marine-science.csl"
-bibliography: references.bib
+bibliography: bibliography/rpath.bib
 link-citations: yes
 urlcolor: blue
 vignette: >
@@ -15,15 +13,25 @@ vignette: >
 
 Rpath is an implementation of the ecosystem model Ecopath with Ecosim (EwE; @polovina_model_1984; @christensen_ecopath_1992; @walters_structuring_1997; @christensen_ecopath_2004; @walters_fisheries_2004; @walters_ecosim_2008).  
 
-Articles for [model setup](articles/ModelSetup.html), [running Rpath](articles/RunRpath.html) and [running Rsim](articles/RunRsim.html) describe some of the basic functionality of the package using a fictional ecosystem, R Ecosystem.  Any resemblance to an actual ecosystem is purely coincidental.  
+Articles for [model setup](ModelSetup.html), [running Rpath](RunRpath.html) and [running Rsim](RunRsim.html) describe some of the basic functionality of the package using a fictional ecosystem, R Ecosystem.  Any resemblance to an actual ecosystem is purely coincidental.  
 
 To see the underlying mathematics please refer to @lucey_conducting_2020. For additional features, see @whitehouse_assessing_2020 for ecosense and @lucey_evaluating_2021 for management strategy evaluation capability. 
 
 # Installation
 
-If necessary, first install the `remotes` package: `install.packages("remotes")` 
+If necessary, first install the `remotes()` package: `install.packages("remotes")` 
 
-Use the command `remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)` to install Rpath.
+```
+remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)` to install Rpath and the vignettes.
+```
+
+If you experience issues installing the package, please use this alternative
+
+```
+pak::pak("noaa-edab/Rpath")
+```
+
+
 
 
 

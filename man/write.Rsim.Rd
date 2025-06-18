@@ -2,37 +2,48 @@
 % Please edit documentation in R/write_functions.R
 \name{write.Rsim}
 \alias{write.Rsim}
-\title{Write function for Ecosim object}
+\title{Write function for Rsim run}
 \usage{
 write.Rsim(Rsim.output, file = NA)
 }
 \arguments{
-\item{Rsim.output}{object created by the rsim.run() function.}
+\item{Rsim.output}{object created by the \code{rsim.run()} function.}
 
-\item{file}{file name for resultant .csv file.  Be sure to include ".csv".}
+\item{file}{file name for resultant file.  Need to specify ".csv" or ".RData".}
 }
 \value{
-Writes a .csv file with the start and end biomass and catch per group
+Writes a list object or file with the start and end biomass and catch per group
 from an Rpath.sim object.
+\item{Group}{Vector of group names}
+\item{StartBio}{Vector of Biomass values at simulation start}
+\item{EndBio}{Vector of Biomass values at simulation end}
+\item{BioES}{Vector of ratio end:start Biomass values}
+\item{StartCatch}{Vector of Catch values at simulation start}
+\item{EndCatch}{Vector of Catch values at simulation end}
+\item{CatchES}{Vector of ratio end:start Catch values}
 }
 \description{
-Outputs start/end biomass and catch to a .csv file.
+Outputs starting biomass, ending biomass, and catch to a .csv or .Rdata file.
+}
+\examples{
+# Read in Rpath parameter file and generate model object
+Rpath <- rpath(AB.params)
+# Create a 50 yr Rsim scenario
+Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
+# Run the Rsim simulation
+Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
+# Save summary output to a .csv file
+write.Rsim(Rsim.output, file = "output.csv")
+
+
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{MTI}()},
-\code{\link{adjust.forcing}()},
-\code{\link{check.rpath.params}()},
-\code{\link{create.rpath.params}()},
+Other Rsim functions: 
 \code{\link{extract.node}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.rpath.params}()}
+\code{\link{rsim.params}()},
+\code{\link{rsim.plot}()},
+\code{\link{rsim.run}()},
+\code{\link{rsim.scenario}()},
+\code{\link{rsim.step}()}
 }
-\concept{Rpath functions}
+\concept{Rsim functions}

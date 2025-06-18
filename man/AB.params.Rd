@@ -5,19 +5,31 @@
 \alias{AB.params}
 \title{AB.params}
 \format{
-An Rpath balanced model object that contains:
+An unbalanced Rpath model object that contains:
 \describe{
-  \item{model}{A data.table containing Ecopath unbalanced ecosystem parameters (base parameters and fisheries).}
+  \item{model}{A data.table containing Ecopath unbalanced ecosystem
+  parameters (base parameters and fisheries).}
   \item{diet}{A data.table containing the Ecopath model's diet matrix.}
   \item{stanzas}{Parameters for multistanza groups.}
-  \item{pedigree}{A data.table containing the data quality (pedigree) for the Ecopath model.}   
+  \item{pedigree}{A data.table containing the data quality (pedigree) for the
+  Ecopath model.}
   ...
 }
+}
+\source{
+Christensen V, Walters CJ (2024) Ecosystem Modelling with EwE. The
+  University of British Columbia, Vancouver, BC. doi:10.14288/24d7-ab68
 }
 \usage{
 AB.params
 }
 \description{
-A tutorial ecosystem for teaching Rpath
+Anchovy Bay (\code{AB.params}) is a sample ecosystem frequently used as an
+example ecosystem with EwE (see Christensen and Walters, 2024).
+}
+\examples{
+# Balance the model
+AB_bal <- rpath(AB.params)
+ 
 }
 \keyword{datasets}

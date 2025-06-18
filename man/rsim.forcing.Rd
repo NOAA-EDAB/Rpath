@@ -2,7 +2,7 @@
 % Please edit documentation in R/ecosim.R
 \name{rsim.forcing}
 \alias{rsim.forcing}
-\title{Generate Rsim forcing matrix}
+\title{Initialize forcing matrix for Rsim scenario}
 \usage{
 rsim.forcing(params, years)
 }
@@ -11,8 +11,31 @@ rsim.forcing(params, years)
 
 \item{years}{A vector of each year of the simulation.}
 }
+\value{
+S3 object class \code{Rsim.forcing}, a list of 7 objects:
+\itemize{
+ \item{\code{ForcedPrey}, numeric matrix of monthly (rows) prey forcing by biomass group (columns)}
+ \item{\code{ForcedMort}, numeric matrix of monthly (rows) mortality multiplier by biomass group (columns)}
+ \item{\code{ForcedRecs}, numeric matrix of monthly (rows) recruitment multiplier by biomass group (columns)}
+ \item{\code{ForcedSearch}, numeric matrix of monthly (rows) search rate multiplier by biomass group (columns)}
+ \item{\code{ForcedActresp}, numeric matrix of monthly (rows) active respiration multiplier by biomass group (columns)}
+ \item{\code{ForcedMigrate}, numeric matrix of monthly (rows) migration forcing by biomass group (columns)}
+ \item{\code{ForcedBio}, numeric matrix of monthly (rows) biomass multiplier by biomass group (columns)}
+}
+}
 \description{
 Creates a matrix for forcing functions not related to fishing (\emph{ForcedPrey}
-\emph{ForcedMort}, \emph{ForcedRecs}, \emph{ForcedSearch}, \emph{ForcedMigrate}, 
-\emph{ForcedBio}).
+\emph{ForcedMort}, \emph{ForcedRecs}, \emph{ForcedSearch}, \emph{ForcedActResp},
+\emph{ForcedMigrate}, and \emph{ForcedBio}). Default values are set to 1 for \emph{ForcedPrey}
+\emph{ForcedMort}, \emph{ForcedRecs}, \emph{ForcedSearch} and \emph{ForcedActResp},
+to 0 for \emph{ForcedMigrate} and to -1 for \emph{ForcedBio} for all timesteps and groups.
+}
+\examples{
+# Read in Rpath parameter file and generate model object
+Rpath <- rpath(AB.params)
+# Create dynamic parameters from Rpath model
+Rsim.params <- rsim.params(Rpath)
+# Create forcing matrix with default values
+Rsim.forcing <- rsim.forcing(Rsim.params, years = 1:50)
+
 }
