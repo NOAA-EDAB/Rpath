@@ -2,6 +2,7 @@
 
 - Fix group parameter reference in `adjust.scenario`
 - Fix Force bymort double-counting bug `ecosim.cpp`
+- rsim step dyt fix in `ecosim_multistep`
 - Removed old datasets
 - Switch from single to double operators in `ecosim.cpp`
 - Added examples to all functions
