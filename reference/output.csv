@@ -1,0 +1,18 @@
+"","Group","StartBio","EndBio","BioES","StartCatch","EndCatch","CatchES"
+"Outside","Outside",1,1,1,0,0,NA
+"whales","whales",0.08,0.08,1,0,0,NA
+"seals","seals",0.0609,0.0609,1,0.0045,0.0045,1
+"cod","cod",3,3,1,0.45,0.45,1
+"whiting","whiting",1.8,1.8,1,0.2,0.2,1
+"mackerel","mackerel",1.2,1.2,1,0.4,0.4,1
+"anchovy","anchovy",7,7,1,1.4,1.4,1
+"shrimp","shrimp",0.8,0.799999999999999,0.999999999999999,0.05,0.0499999999999999,0.999999999999999
+"benthos","benthos",32.6822499999994,32.6822499999994,0.999999999999998,0,0,NA
+"zooplankton","zooplankton",14.8,14.8,1,0,0,NA
+"phytoplankton","phytoplankton",9,9.00000000000001,1,0,0,NA
+"detritus","detritus",10,10,1,0,0,NA
+"sealers","sealers",0,0,NA,0,0,NA
+"trawlers","trawlers",0,0,NA,0,0,NA
+"seiners","seiners",0,0,NA,0,0,NA
+"bait boats","bait boats",0,0,NA,0,0,NA
+"shrimpers","shrimpers",0,0,NA,0,0,NA

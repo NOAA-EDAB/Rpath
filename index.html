@@ -4,109 +4,124 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>R implementation of Ecopath with Ecosim • Rpath</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="R implementation of Ecopath with Ecosim">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="R implementation of Ecopath with Ecosim">
+<meta name="description" content="This package implements the core mass balance equations made popular by Ecopath with Ecosim. There are two parts to the package, the static snapshot of energy flow through the system using rpath and dynamic simulations run using the rsim family of functions.">
 <meta property="og:description" content="This package implements the core mass balance equations made popular by Ecopath with Ecosim. There are two parts to the package, the static snapshot of energy flow through the system using rpath and dynamic simulations run using the rsim family of functions.">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<meta property="og:image" content="https://noaa-edab.github.io/Rpath/logo.png">
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">Rpath</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.1</span>
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="articles/Rpath.html">Get started</a>
-</li>
-<li>
-  <a href="reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    <a class="navbar-brand me-2" href="index.html">Rpath</a>
 
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/ecosense.html">Generating an Rsim ensemble with Ecosense</a>
-    </li>
-    <li>
-      <a href="articles/ModelSetup.html">Set up a food web model</a>
-    </li>
-    <li>
-      <a href="articles/RunRpath.html">Create a static food web model in Rpath</a>
-    </li>
-    <li>
-      <a href="articles/RunRsim.html">Run a dynamic food web simulation in Rsim</a>
-    </li>
-    <li>
-      <a href="articles/UnitTests.html">Unit Tests</a>
-    </li>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="articles/Rpath.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-help" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Help</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-help">
+<li><a class="dropdown-item" href="articles/ModelSetup.html">Model setup</a></li>
+    <li><a class="dropdown-item" href="articles/RunRpath.html">Create food web model</a></li>
+    <li><a class="dropdown-item" href="articles/RunRsim.html">Run food web simulation</a></li>
+    <li><a class="dropdown-item" href="articles/ecosense.html">Create an ensemble</a></li>
+    <li><a class="dropdown-item" href="articles/UnitTests.html">Unit testing</a></li>
   </ul>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/NOAA-EDAB/Rpath/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/NOAA-EDAB/Rpath/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="rpath-">Rpath <a class="anchor" aria-label="anchor" href="#rpath-"></a>
+</h1>
 </div>
-<!--/.navbar -->
-
-
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-<div class="section level1">
-<div class="page-header"><h1 id="rpath">Rpath<a class="anchor" aria-label="anchor" href="#rpath"></a>
-</h1></div>
 <!-- badges: start -->
 
-<p>This is the repository for Rpath - the R implementation of the mass balance algorithms.</p>
-<p>The new public facing repository (NOAA-EDAB/Rpath) was established for release with the Rpath manuscript <a href="https://www.sciencedirect.com/science/article/pii/S0304380020301290" class="external-link">Lucey et al. 2020</a>. The previous repository is no longer maintained.</p>
-<p>Rpath was developed and is maintained through a collaboration between the Alaska Fisheries Science Center and the Northeast Fisheries Science Center.</p>
-<p>To view release notes please visit the <a href="https://github.com/NOAA-EDAB/Rpath/wiki/Release-Notes" class="external-link">wiki</a>.</p>
-<p><em>This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.</em></p>
+<p>Package <em>Rpath</em> is an R/Rcpp implementation of the Ecopath (mass-balance) and Ecosim (dynamic simulation) methods for the modeling of food webs. The <em>Rpath</em> package includes sensitivity analysis tools, bioenergetics forcing, and the ability to develop adaptive dynamic simulations with annual adjustment/feedback for use in management strategy evaluations and similar analyses.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>To install the package and build all of the vignettes locally</p>
+<pre><code>remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)`</code></pre>
+<p>If you experience issues installing the package using <code>remotes</code> or don’t need the vignettes locally then please use this alternative</p>
+<pre><code><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"noaa-edab/Rpath"</span><span class="op">)</span></span></code></pre>
 </div>
-  </div>
+</div>
+<div class="section level1">
+<h1 id="more-details">More details<a class="anchor" aria-label="anchor" href="#more-details"></a>
+</h1>
+<p>For more background, please see:</p>
+<div class="section level3">
+<h3 id="for-rpath-description-and-methods">For Rpath description and methods:<a class="anchor" aria-label="anchor" href="#for-rpath-description-and-methods"></a>
+</h3>
+<p>Lucey, S. M., Gaichas, S. K., &amp; Aydin, K. Y. (2020). Conducting reproducible ecosystem modeling using the open source mass balance model Rpath. Ecological Modelling 427(2020), 109057. <a href="https://doi.org/10.1016/j.ecolmodel.2020.109057" class="external-link uri">https://doi.org/10.1016/j.ecolmodel.2020.109057</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="for-use-of-rpath-for-management-strategy-evaluations">For use of Rpath for management strategy evaluations:<a class="anchor" aria-label="anchor" href="#for-use-of-rpath-for-management-strategy-evaluations"></a>
+</h3>
+<p>Lucey, S. M., Aydin, K. Y., Gaichas, S. K., Cadrin, S. X., Fay, G., Fogarty, M. J., &amp; Punt, A. (2021). Evaluating fishery management strategies using an ecosystem model as an operating model. Fisheries Research 234(2021), 105780. <a href="https://doi.org/10.1016/j.fishres.2020.105780" class="external-link uri">https://doi.org/10.1016/j.fishres.2020.105780</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="for-incorporation-of-bioenergetics-into-rpath-simulations">For incorporation of bioenergetics into Rpath simulations:<a class="anchor" aria-label="anchor" href="#for-incorporation-of-bioenergetics-into-rpath-simulations"></a>
+</h3>
+<p>Heinichen, M., McManus, M. C., Lucey, S. M., Aydin, K. Y., Humphries, A., Innes-Gold, A., &amp; Collie, J. (2022). Incorporating temperature-dependent fish bioenergetics into a Narragansett Bay food web model. Ecological Modelling 466(2022), 109911. <a href="https://doi.org/10.1016/j.ecolmodel.2022.109911" class="external-link uri">https://doi.org/10.1016/j.ecolmodel.2022.109911</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="for-use-of-rpath-sensitivity-tools">For use of Rpath sensitivity tools:<a class="anchor" aria-label="anchor" href="#for-use-of-rpath-sensitivity-tools"></a>
+</h3>
+<p>Whitehouse, G.A., &amp; Aydin, K.Y. (2020). Assessing the sensitivity of three Alaska marine food webs to perturbations: an example of Ecosim simulations using Rpath. Ecological Modelling 429(2020), 109074. <a href="https://doi.org/10.1016/j.ecolmodel.2020.109074" class="external-link uri">https://doi.org/10.1016/j.ecolmodel.2020.109074</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="for-original-development-of-ecopath-and-ecosim">For original development of Ecopath and Ecosim:<a class="anchor" aria-label="anchor" href="#for-original-development-of-ecopath-and-ecosim"></a>
+</h3>
+<p>Polovina, J. J. (1984). Model of a coral reef ecosystem. Coral Reefs 3(1), 1–11. <a href="https://doi.org/10.1007/BF00306135" class="external-link uri">https://doi.org/10.1007/BF00306135</a>.</p>
+<p>Christensen, V., &amp; Walters, C. J. (2004). Ecopath with Ecosim: Methods, capabilities and limitations. Ecological Modelling 172(2), 109–139. <a href="https://doi.org/10.1016/j.ecolmodel.2003.09.003" class="external-link uri">https://doi.org/10.1016/j.ecolmodel.2003.09.003</a>.</p>
+<p>Walters, C., Pauly, D., Christensen, V., &amp; Kitchell, J. F. (2000). Representing Density Dependent Consequences of Life History Strategies in Aquatic Ecosystems: EcoSim II. Ecosystems 3(1), 70–83. <a href="https://doi.org/10.1007/s100210000011" class="external-link uri">https://doi.org/10.1007/s100210000011</a>.</p>
+</div>
+</div>
+<div class="section level1">
+<h1 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
+</h1>
+<p><em>This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.</em></p>
+<p><img src="https://raw.githubusercontent.com/nmfs-general-modeling-tools/nmfspalette/main/man/figures/noaa-fisheries-rgb-2line-horizontal-small.png" height="75" alt="NOAA Fisheries"></p>
+<p><a href="https://www.commerce.gov/" class="external-link">U.S. Department of Commerce</a> | <a href="https://www.noaa.gov" class="external-link">National Oceanographic and Atmospheric Administration</a> | <a href="https://www.fisheries.noaa.gov/" class="external-link">NOAA Fisheries</a></p>
+</div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="links">
+  </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/NOAA-EDAB/Rpath/" class="external-link">Browse source code</a></li>
@@ -122,6 +137,13 @@
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -133,9 +155,12 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Kerim Aydin <br><small class="roles"> Author </small>   </li>
-<li>Sean Lucey <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Kerim Aydin <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-3792-9828" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Sean Lucey <br><small class="roles"> Author </small>   </li>
 <li>Sarah Gaichas <br><small class="roles"> Author </small>   </li>
+<li>Sarah Weisberg <br><small class="roles"> Author </small>   </li>
+<li>Andy Whitehouse <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-9130-9403" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
@@ -149,23 +174,20 @@
 </ul>
 </div>
 
-  </div>
+  </aside>
 </div>
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas, Sarah Weisberg, Andy Whitehouse.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
-
 
 
 

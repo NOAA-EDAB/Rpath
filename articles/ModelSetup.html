@@ -4,103 +4,73 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Set up a food web model • Rpath</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Set up a food web model">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Set up a food web model">
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">Rpath</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.1</span>
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../articles/Rpath.html">Get started</a>
-</li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/ecosense.html">Generating an Rsim ensemble with Ecosense</a>
-    </li>
-    <li>
-      <a href="../articles/ModelSetup.html">Set up a food web model</a>
-    </li>
-    <li>
-      <a href="../articles/RunRpath.html">Create a static food web model in Rpath</a>
-    </li>
-    <li>
-      <a href="../articles/RunRsim.html">Run a dynamic food web simulation in Rsim</a>
-    </li>
-    <li>
-      <a href="../articles/UnitTests.html">Unit Tests</a>
-    </li>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/Rpath.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-help" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Help</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-help">
+<li><a class="dropdown-item" href="../articles/ModelSetup.html">Model setup</a></li>
+    <li><a class="dropdown-item" href="../articles/RunRpath.html">Create food web model</a></li>
+    <li><a class="dropdown-item" href="../articles/RunRsim.html">Run food web simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/ecosense.html">Create an ensemble</a></li>
+    <li><a class="dropdown-item" href="../articles/UnitTests.html">Unit testing</a></li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/NOAA-EDAB/Rpath/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/NOAA-EDAB/Rpath/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
 
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Set up a food web model</h1>
-                        <h4 data-toc-skip class="author">Vignette
-Author</h4>
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Set up a food web model</h1>
             
-            <h4 data-toc-skip class="date">2025-06-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/v0.9.1/vignettes/ModelSetup.Rmd" class="external-link"><code>vignettes/ModelSetup.Rmd</code></a></small>
-      <div class="hidden name"><code>ModelSetup.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/master/vignettes/ModelSetup.Rmd" class="external-link"><code>vignettes/ModelSetup.Rmd</code></a></small>
+      <div class="d-none name"><code>ModelSetup.Rmd</code></div>
     </div>
 
     
@@ -108,11 +78,11 @@ Author</h4>
 <div class="section level2">
 <h2 id="setting-up-a-food-web-model">Setting up a food web model<a class="anchor" aria-label="anchor" href="#setting-up-a-food-web-model"></a>
 </h2>
-<p>First, install Rpath as instructed in <a href="">Getting Started</a>.
-R package <code>data.table</code> is also required to run the code in
-this article.</p>
+<p>First, install Rpath as instructed in <a href="Rpath.html">Getting
+Started</a>. R package <a href="https://r-datatable.com" class="external-link">data.table</a> is also required to run
+the code in this article.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/NOAA-EDAB/Rpath" class="external-link">Rpath</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://noaa-edab.github.io/Rpath/">Rpath</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="parameter-file-generation">Parameter file generation<a class="anchor" aria-label="anchor" href="#parameter-file-generation"></a>
 </h3>
@@ -120,12 +90,12 @@ this article.</p>
 parameter input file. This file is actually a list of several different
 parameter files: model, diet, stanzas, and pedigree. Parameter files can
 be created outside of R and read in using the
-<code>read.rpath.params</code> function. This function will merge
+<code><a href="../reference/read.rpath.params.html">read.rpath.params()</a></code> function. This function will merge
 several different flat files into an R object of the list type. A
 preferred alternative is to generate the list file and populate it
-completely within R. The function <code>create.rpath.params</code> will
-generate an Rpath.param. This ensures that all of the correct columns
-are present in the parameter file.</p>
+completely within R. The function <code><a href="../reference/create.rpath.params.html">create.rpath.params()</a></code>
+will generate an <code>Rpath.params</code> list object. This ensures
+that all of the correct columns are present in the parameter file.</p>
 <p>The parameter file contains all of the information you would normally
 enter in the input data tabs in EwE. There are 2 necessary pieces of
 information to generate the parameter file: the group names and their
@@ -135,7 +105,7 @@ then you need 2 additional pieces of information: stanza group names
 (include NA for those groups not in a stanza) and the number of stanzas
 per stanza group.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Groups and types for the R Ecosystem</span></span>
+<code class="sourceCode R"><span><span class="co"># Groups and types for the R Ecosystem</span></span>
 <span></span>
 <span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Seabirds'</span>, <span class="st">'Whales'</span>, <span class="st">'Seals'</span>, <span class="st">'JuvRoundfish1'</span>, <span class="st">'AduRoundfish1'</span>, </span>
 <span>            <span class="st">'JuvRoundfish2'</span>, <span class="st">'AduRoundfish2'</span>, <span class="st">'JuvFlatfish1'</span>, <span class="st">'AduFlatfish1'</span>,</span>
@@ -150,9 +120,10 @@ per stanza group.</p>
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'Flatfish1'</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'Flatfish2'</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">14</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">REco.params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create.rpath.params.html">create.rpath.params</a></span><span class="op">(</span>group <span class="op">=</span> <span class="va">groups</span>, type <span class="op">=</span> <span class="va">types</span>, stgroup <span class="op">=</span> <span class="va">stgroups</span><span class="op">)</span></span></code></pre></div>
-<p>REco.params now contains a list of 4 objects: model, diet, stanzas,
-and pedigree. The majority of the parameters are populated with NA save
-those that have logical default vaules (i.e 0.66667 for VBGF_d).</p>
+<p><code>REco.params</code> now contains a list of 4 objects: model,
+diet, stanzas, and pedigree. The majority of the parameters are
+populated with NA save those that have logical default vaules (i.e.,
+0.66667 for VBGF_d).</p>
 </div>
 <div class="section level3">
 <h3 id="model-parameters">Model parameters<a class="anchor" aria-label="anchor" href="#model-parameters"></a>
@@ -162,7 +133,7 @@ consumption to biomass, etc. parameters as well as the detrital fate
 parameters and fleet landings and discards.</p>
 <table style="width:100%;" class="table">
 <caption>Example of the model list created using the
-<code>create.rpath.param</code> function</caption>
+<code>create.rpath.param()</code> function</caption>
 <colgroup>
 <col width="10%">
 <col width="3%">
@@ -706,22 +677,22 @@ parameters and fleet landings and discards.</p>
 </tr>
 </tbody>
 </table>
-<p>Each of the parameter lists are data tables (With the exception of
+<p>Each of the parameter lists are data tables (with the exception of
 the stanzas list which is itself a list of an integer and two data
 tables). Data tables are an extension of the classic data frame class.
 Advantages of data tables include simplified indexing which eases the
-process of populating the parameters. For example you can add data to a
+process of populating the parameters. For example, you can add data to a
 specific slot or fill an entire column.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Example of filling specific slots</span></span>
+<code class="sourceCode R"><span><span class="co"># Example of filling specific slots</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Seals'</span>, <span class="st">'Megabenthos'</span><span class="op">)</span>, <span class="va">EE</span> <span class="op">:=</span> <span class="fl">0.8</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Example of filling an entire column</span></span>
+<span><span class="co"># Example of filling an entire column</span></span>
 <span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0149</span>, <span class="fl">0.454</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">1.39</span>, <span class="cn">NA</span>, <span class="fl">5.553</span>, <span class="cn">NA</span>, <span class="fl">5.766</span>, <span class="cn">NA</span>,</span>
 <span>             <span class="fl">0.739</span>, <span class="fl">7.4</span>, <span class="fl">5.1</span>, <span class="fl">4.7</span>, <span class="fl">5.1</span>, <span class="cn">NA</span>, <span class="fl">7</span>, <span class="fl">17.4</span>, <span class="fl">23</span>, <span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">Biomass</span> <span class="op">:=</span> <span class="va">biomass</span><span class="op">]</span></span></code></pre></div>
 <p>Note the use of the operator ‘:=’ to assign values. This is unique to
-data tables.</p>
+data tables from <a href="https://r-datatable.com" class="external-link">data.table</a>.</p>
 <table class="table">
 <caption>Example of assigning a specific slot or a whole
 column</caption>
@@ -886,7 +857,7 @@ column</caption>
 </table>
 <p>Here are the rest of the columns for the model list.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Model</span></span>
+<code class="sourceCode R"><span><span class="co"># Model</span></span>
 <span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0149</span>, <span class="fl">0.454</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">1.39</span>, <span class="cn">NA</span>, <span class="fl">5.553</span>, <span class="cn">NA</span>, <span class="fl">5.766</span>, <span class="cn">NA</span>,</span>
 <span>             <span class="fl">0.739</span>, <span class="fl">7.4</span>, <span class="fl">5.1</span>, <span class="fl">4.7</span>, <span class="fl">5.1</span>, <span class="cn">NA</span>, <span class="fl">7</span>, <span class="fl">17.4</span>, <span class="fl">23</span>, <span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -900,23 +871,23 @@ column</caption>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">PB</span> <span class="op">:=</span> <span class="va">pb</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">QB</span> <span class="op">:=</span> <span class="va">qb</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#EE for groups w/o biomass</span></span>
+<span><span class="co"># EE for groups without biomass</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Seals'</span>, <span class="st">'Megabenthos'</span><span class="op">)</span>, <span class="va">EE</span> <span class="op">:=</span> <span class="fl">0.8</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Production to Consumption for those groups without a QB</span></span>
+<span><span class="co"># Production to Consumption for those groups without a QB</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Shellfish'</span>, <span class="st">'Zooplankton'</span><span class="op">)</span>, <span class="va">ProdCons</span><span class="op">:=</span> <span class="fl">0.25</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span><span class="va">Group</span> <span class="op">==</span> <span class="st">'Macrobenthos'</span>, <span class="va">ProdCons</span> <span class="op">:=</span> <span class="fl">0.35</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Biomass accumulation and unassimilated consumption</span></span>
+<span><span class="co"># Biomass accumulation and unassimilated consumption</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">BioAcc</span>  <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">22</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">Unassim</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">18</span><span class="op">)</span>, <span class="fl">0.4</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Detrital Fate</span></span>
+<span><span class="co"># Detrital Fate</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">Detritus</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">Discards</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">22</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Fisheries</span></span>
-<span><span class="co">#Landings</span></span>
+<span><span class="co"># Fisheries</span></span>
+<span><span class="co"># Landings</span></span>
 <span><span class="va">trawl</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fl">0.08</span>, <span class="fl">0</span>, <span class="fl">0.32</span>, <span class="fl">0</span>, <span class="fl">0.09</span>, <span class="fl">0</span>, <span class="fl">0.05</span>, <span class="fl">0.2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">mid</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span>, <span class="fl">0.3</span>, <span class="fl">0.08</span>, <span class="fl">0.02</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">7</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">dredge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span>, <span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
@@ -924,7 +895,7 @@ column</caption>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">Midwater</span> <span class="op">:=</span> <span class="va">mid</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">model</span><span class="op">[</span>, <span class="va">Dredgers</span> <span class="op">:=</span> <span class="va">dredge</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Discards</span></span>
+<span><span class="co"># Discards</span></span>
 <span><span class="va">trawl.d</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e-5</span>, <span class="fl">1e-7</span>, <span class="fl">0.001</span>, <span class="fl">0.001</span>, <span class="fl">0.005</span>, <span class="fl">0.001</span>, <span class="fl">0.009</span>, <span class="fl">0.001</span>, <span class="fl">0.04</span>, <span class="fl">0.001</span>,</span>
 <span>              <span class="fl">0.01</span>, <span class="fl">0.08</span>, <span class="fl">0.001</span>, <span class="fl">0.001</span>, <span class="fl">0.001</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">7</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">mid.d</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fl">0.001</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fl">0.05</span>, <span class="fl">0.05</span>,</span>
@@ -1479,32 +1450,36 @@ column</caption>
 </tr>
 </tbody>
 </table>
-<p>###Stanza Parameters You may have noticed that the biomass and
-consumption to biomass parameters are missing from some of the
-multistanza groups. Similar to EwE, Rpath calculates those parameters to
-ensure that stanza groups support one another (Christensen and Walters
-2004<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>).
-In order to do this, you need to populate the stanza list. As mentioned
-earlier, this is actually a list itself containing 3 things: the number
-of stanza groups, stanza group parameters, and individual stanza
-parameters. The number of stanzas is automatically populated. For stanza
-groups you need their von Bertalanffy growth function specialized K and
-weight at 50% maturity divided by their weight infinity (relative weight
-at maturity). Individual stanzas need the first and last month the
-species is in the stanza, the total mortality (Z) on the stanza, and
-whether or not it is the leading stanza.</p>
+</div>
+<div class="section level3">
+<h3 id="stanza-parameters">Stanza Parameters<a class="anchor" aria-label="anchor" href="#stanza-parameters"></a>
+</h3>
+<p>You may have noticed that the biomass and consumption to biomass
+parameters are missing from some of the multistanza groups. Similar to
+EwE, Rpath calculates those parameters to ensure that stanza groups
+support one another (<span class="citation">Christensen and Walters (<a href="#ref-christensen_ecopath_2004">2004</a>)</span>). In order to do
+this, you need to populate the stanza list. As mentioned earlier, this
+is actually a list itself containing 3 things: the number of stanza
+groups, stanza group parameters, and individual stanza parameters. The
+number of stanzas is automatically populated. For stanza groups you need
+their von Bertalanffy growth function specialized K and weight at 50%
+maturity divided by their weight infinity (relative weight at maturity).
+Individual stanzas need the first and last month the species is in the
+stanza, the total mortality (Z) on the stanza, and whether or not it is
+the leading stanza.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Group parameters</span></span>
+<code class="sourceCode R"><span><span class="co"># Group parameters</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">stanzas</span><span class="op">$</span><span class="va">stgroups</span><span class="op">[</span>, <span class="va">VBGF_Ksp</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.145</span>, <span class="fl">0.295</span>, <span class="fl">0.0761</span>, <span class="fl">0.112</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">stanzas</span><span class="op">$</span><span class="va">stgroups</span><span class="op">[</span>, <span class="va">Wmat</span>     <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.0769</span>, <span class="fl">0.561</span>, <span class="fl">0.117</span>,  <span class="fl">0.321</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#Individual stanza parameters</span></span>
+<span><span class="co"># Individual stanza parameters</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">stanzas</span><span class="op">$</span><span class="va">stindiv</span><span class="op">[</span>, <span class="va">First</span>   <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">48</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">stanzas</span><span class="op">$</span><span class="va">stindiv</span><span class="op">[</span>, <span class="va">Last</span>    <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">23</span>, <span class="fl">400</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">47</span>, <span class="fl">400</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">stanzas</span><span class="op">$</span><span class="va">stindiv</span><span class="op">[</span>, <span class="va">Z</span>       <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.026</span>, <span class="fl">0.42</span>, <span class="fl">2.1</span>, <span class="fl">0.425</span>, <span class="fl">1.5</span>, </span>
 <span>                                           <span class="fl">0.26</span>, <span class="fl">1.1</span>, <span class="fl">0.18</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">stanzas</span><span class="op">$</span><span class="va">stindiv</span><span class="op">[</span>, <span class="va">Leading</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">F</span>, <span class="cn">T</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <table class="table">
+<caption>Example of Stanza Group Table</caption>
 <colgroup>
 <col width="15%">
 <col width="17%">
@@ -1569,6 +1544,7 @@ whether or not it is the leading stanza.</p>
 </tbody>
 </table>
 <table style="width:100%;" class="table">
+<caption>Example of Individual Stanza Parameters</caption>
 <colgroup>
 <col width="15%">
 <col width="14%">
@@ -1673,9 +1649,9 @@ whether or not it is the leading stanza.</p>
 </tbody>
 </table>
 <p>The final month of the ultimate stanza can be set to any value. The
-function <code>rpath.stanzas</code> will calculate the final month as
+function <code><a href="../reference/rpath.stanzas.html">rpath.stanzas()</a></code> will calculate the final month as
 the point where the species reaches 90% Winf. The function
-<code>rpath.stanzas</code> will also add data tables containing the
+<code><a href="../reference/rpath.stanzas.html">rpath.stanzas()</a></code> will also add data tables containing the
 weight, number, and consumption at age for each stanza group.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">REco.params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rpath.stanzas.html">rpath.stanzas</a></span><span class="op">(</span><span class="va">REco.params</span><span class="op">)</span></span></code></pre></div>
@@ -1748,20 +1724,28 @@ weight, number, and consumption at age for each stanza group.</p>
 </tr>
 </tbody>
 </table>
-<p>Output from the <code>rpath.stanzas</code> function can be plotted
-using the <code>stanzaplot</code> function.</p>
+<p>Output from the <code><a href="../reference/rpath.stanzas.html">rpath.stanzas()</a></code> function can be plotted
+using the <code><a href="../reference/stanzaplot.html">stanzaplot()</a></code> function.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/stanzaplot.html">stanzaplot</a></span><span class="op">(</span><span class="va">REco.params</span>, StanzaGroup <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ModelSetup_files/figure-html/stanzaplot-1.png" width="864" style="display: block; margin: auto;">
-Note: If you do not have multistanza groups in your model, you do not
-have to run <code>rpath.stanzas</code>.</p>
-<p>###Diet Parameters The data entered in the diet list is the same as
-the data entered in the diet composition tab in EwE. Just as within EwE,
-the columns represent the predators while the rows represent the prey.
-Individual diet components can be adjusted by specifying the prey in the
-‘Group’ variable and assigning a value to the predator. For example, if
-you wanted to assign 10% of the seabird diet as ‘Other Groundfish’ you
-could do it like this:</p>
+<div class="figure" style="text-align: center">
+<img src="ModelSetup_files/figure-html/stanzaplot-1.png" alt="Example plot using function stanzaplot() with StanzaGroup=1" width="864"><p class="caption">
+Example plot using function stanzaplot() with StanzaGroup=1
+</p>
+</div>
+<p><br> Note: If you do not have multistanza groups in your model, you
+do not have to run <code><a href="../reference/rpath.stanzas.html">rpath.stanzas()</a></code>.</p>
+</div>
+<div class="section level3">
+<h3 id="diet-parameters">Diet Parameters<a class="anchor" aria-label="anchor" href="#diet-parameters"></a>
+</h3>
+<p>The data entered in the diet list is the same as the data entered in
+the diet composition tab in EwE. Just as within EwE, the columns
+represent the predators while the rows represent the prey. Individual
+diet components can be adjusted by specifying the prey in the
+<code>Group</code> variable and assigning a value to the predator. For
+example, if you wanted to assign 10% of the seabird diet as ‘Other
+Groundfish’ you could do it like this:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">REco.params</span><span class="op">$</span><span class="va">diet</span><span class="op">[</span><span class="va">Group</span> <span class="op">==</span> <span class="st">'OtherGroundfish'</span>, <span class="va">Seabirds</span> <span class="op">:=</span> <span class="fl">0.1</span><span class="op">]</span></span></code></pre></div>
 <p>You can also assign the entire diet composition for a predator:</p>
@@ -1770,6 +1754,7 @@ could do it like this:</p>
 <span>                <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fl">0.86</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="va">REco.params</span><span class="op">$</span><span class="va">diet</span><span class="op">[</span>, <span class="va">Whales</span> <span class="op">:=</span> <span class="va">whale.diet</span><span class="op">]</span></span></code></pre></div>
 <table class="table">
+<caption>Example of a Partial Diet Table</caption>
 <thead><tr class="header">
 <th align="left">Group</th>
 <th align="right">Seabirds</th>
@@ -2518,12 +2503,15 @@ could do it like this:</p>
 </tr>
 </tbody>
 </table>
-<p>###Pedigree parameters Rpath does not currently use pedigrees
-however, future Rpath extensions will use them. Therefore we include
-them in the current parameter object. The default values are 1 (low
-confidence). These defaults are not changed for R Ecosystem but can
-obviously be changed in a similar manner to the other parameter
-files.</p>
+</div>
+<div class="section level3">
+<h3 id="pedigree-parameters">Pedigree parameters<a class="anchor" aria-label="anchor" href="#pedigree-parameters"></a>
+</h3>
+<p>Rpath does not currently use pedigrees. However, future Rpath
+extensions will use them. Therefore, we include them in the current
+parameter object. The default values are 1 (low confidence). These
+defaults are not changed for R Ecosystem but can obviously be changed in
+a similar manner to the other parameter files.</p>
 <table class="table">
 <caption>Pedigree parameters for R Ecosystem</caption>
 <thead><tr class="header">
@@ -2789,39 +2777,32 @@ files.</p>
 </tr>
 </tbody>
 </table>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-christensen_ecopath_2004" class="csl-entry">
+Christensen, V., and Walters, C. J. 2004. Ecopath with
+<span>Ecosim</span>: Methods, capabilities and limitations. Ecological
+Modelling, 172: 109–139. <a href="https://www.sciencedirect.com/science/article/pii/S030438000300365X" class="external-link">https://www.sciencedirect.com/science/article/pii/S030438000300365X</a>
+(Accessed 9 April 2025).
 </div>
 </div>
-<div class="footnotes footnotes-end-of-document">
-<hr>
-<ol>
-<li id="fn1"><p>Christensen and Walters. 2004. Ecopath with Ecosim:
-methods, capabilities and limitations. Ecological Modelling
-172:109-139<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-</ol>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-      </div>
-
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas, Sarah Weisberg, Andy Whitehouse.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
-
 
 
 

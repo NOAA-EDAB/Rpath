@@ -4,117 +4,89 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit Tests • Rpath</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Unit Tests">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>UnitTests • Rpath</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="UnitTests">
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">Rpath</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.1</span>
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../articles/Rpath.html">Get started</a>
-</li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/ecosense.html">Generating an Rsim ensemble with Ecosense</a>
-    </li>
-    <li>
-      <a href="../articles/ModelSetup.html">Set up a food web model</a>
-    </li>
-    <li>
-      <a href="../articles/RunRpath.html">Create a static food web model in Rpath</a>
-    </li>
-    <li>
-      <a href="../articles/RunRsim.html">Run a dynamic food web simulation in Rsim</a>
-    </li>
-    <li>
-      <a href="../articles/UnitTests.html">Unit Tests</a>
-    </li>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/Rpath.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-help" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Help</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-help">
+<li><a class="dropdown-item" href="../articles/ModelSetup.html">Model setup</a></li>
+    <li><a class="dropdown-item" href="../articles/RunRpath.html">Create food web model</a></li>
+    <li><a class="dropdown-item" href="../articles/RunRsim.html">Run food web simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/ecosense.html">Create an ensemble</a></li>
+    <li><a class="dropdown-item" href="../articles/UnitTests.html">Unit testing</a></li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/NOAA-EDAB/Rpath/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/NOAA-EDAB/Rpath/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
 
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Unit Tests</h1>
-                        <h4 data-toc-skip class="author">Ron Klasky</h4>
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>UnitTests</h1>
             
-            <h4 data-toc-skip class="date">2025-06-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/v0.9.1/vignettes/UnitTests.Rmd" class="external-link"><code>vignettes/UnitTests.Rmd</code></a></small>
-      <div class="hidden name"><code>UnitTests.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/master/vignettes/UnitTests.Rmd" class="external-link"><code>vignettes/UnitTests.Rmd</code></a></small>
+      <div class="d-none name"><code>UnitTests.Rmd</code></div>
     </div>
 
     
     
-<p>Source: <code>vignettes/UnitTests.Rmd</code></p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://noaa-edab.github.io/Rpath/">Rpath</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="unit-tests">Unit Tests<a class="anchor" aria-label="anchor" href="#unit-tests"></a>
 </h2>
 <p>Unit Tests are written using the testthat R package. The tests are
-stored in the file: <strong>tests/tests_rpath.R</strong>. They may be
-run explicitly by the user clicking the Test or Check buttons under the
-Build tab in RStudio. They also run automatically via git actions when
-the user does a push or pull request. The output of the unit tests is a
-pdf file with a variety of comparison plots, examples of which are given
-below in Figures 1-3.</p>
+stored in the file: <strong>tests/testthat/test-rpath.R</strong>. They
+may be run explicitly by the user clicking the Test or Check buttons
+under the Build tab in RStudio. They also run automatically via git
+actions when the user does a push or pull request. The output of the
+unit tests is a pdf file with a variety of comparison plots, examples of
+which are given below in <a href="#figures">Figures 1-3.</a></p>
 </div>
 <div class="section level2">
 <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
@@ -124,7 +96,7 @@ string, table) to a previously stored “baseline” value. Differences are
 shown in the testing output as well as reflected in the generated plots
 which are written to: <strong>Rplots.pdf</strong>. Difference
 “tolerances” are defined by the variable:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">TOLERANCE</span> <span class="op">&lt;-</span> <span class="fl">1e-5</span></span></code></pre></div>
 <p>which can be modified as necessary.</p>
 <div class="section level3">
@@ -134,11 +106,11 @@ which are written to: <strong>Rplots.pdf</strong>. Difference
 variable should be set to TRUE and the tests re-run manually (by
 clicking the Test button under the Build tab). This will regenerate all
 of the baseline data files.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CREATE_BASELINE_FILES</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></code></pre></div>
 <p>After the baseline files have been generated, the user should reset
 the variable back:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CREATE_BASELINE_FILES</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></code></pre></div>
 </div>
 </div>
@@ -152,283 +124,526 @@ Kutta) numerical differential equation methods.</p>
 <div class="section level3">
 <h3 id="unit-tests-1">Unit Tests<a class="anchor" aria-label="anchor" href="#unit-tests-1"></a>
 </h3>
-<details><summary>
-Is model balanced?
-</summary><ol style="list-style-type: decimal">
-<li>Looks for “Balanced” string in Rpath summary file output</li>
-</ol></details><details><summary>
-Does model run silent?
-</summary><ol start="2" style="list-style-type: decimal">
-<li>Tests if model runs without producing print statements, warnings, or
-error messages.</li>
-</ol></details><details><summary>
-Compare Rpath summaries
-</summary><ol start="3" style="list-style-type: decimal">
-<li>Is the baseline Rpath object the same as the current Rpath
-object?</li>
-</ol></details><details><summary>
-Compare Rpath summaries
-</summary><ol start="4" style="list-style-type: decimal">
-<li>Is the baseline Rpath summary the same as the current Rpath
-summary?</li>
-</ol></details><details><summary>
-Compare baseline AB sim run to current AB sim run
-</summary><ol start="5" style="list-style-type: decimal">
-<li>Checks if baseline Rpath AB sim run is same as current AB sim run
-(checks top level data structure only)<br>
-</li>
-<li>Compare out_Biomass from baseline and current AB sim runs<br>
-</li>
-<li>Compare out_Catch from baseline and current AB sim runs<br>
-</li>
-<li>Compare out_Gear_Catch from baseline and current AB sim
-runs<br>
-</li>
-</ol></details><details><summary>
-Compare baseline RK4 sim run to current RK4 sim run
-</summary><ol start="9" style="list-style-type: decimal">
-<li>Checks if baseline RK4 sim run same as current RK4 sim run (checks
-top level data structure only)<br>
-</li>
-<li>Compare out_Biomass from baseline and current RK4 sim runs<br>
-</li>
-<li>Compare out_Catch from baseline and current RK4 sim runs<br>
-</li>
-<li>Compare out_Gear_Catch from baseline and current RK4 sim
-runs<br>
-</li>
-</ol></details><details><summary>
-Compare baseline AB sim run to current RK4 sim run
-</summary><ol start="13" style="list-style-type: decimal">
-<li>Checks if baseline AB sim run same as current RK4 sim run (checks
-top level data structure only)<br>
-</li>
-<li>Compare out_Biomass from baseline AB run and current RK4 sim
-run<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current RK4 sim
-run<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current RK4 sim
-run<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with random noise (i.e., jitter) added to
-$forcing$ForcedBio
-</summary><ol start="17" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-noise added to ForcedBio<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with noise
-added to ForcedBio<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-noise added to ForcedBio<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-noise added to ForcedBio<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-noise added to ForcedBio<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with noise added to ForcedBio<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with random noise (i.e., jitter) added to
-$forcing$ForcedMigrate
-</summary><ol start="23" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with noise
-added to ForcedMigrate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with noise added to ForcedMigrate<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with stepped noise added to $forcing$ForcedBio
-</summary><ol start="29" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-stepped noise added to ForcedBio<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedBio<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedBio<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedBio<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedBio<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with stepped noise added to ForcedBio<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with stepped noise added to $forcing$ForcedMigrate
-</summary><ol start="35" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-stepped noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedMigrate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with stepped noise added to ForcedMigrate<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with random noise (i.e., jitter) added to
-$fishing$ForcedEffort
-</summary><ol start="41" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with noise
-added to ForcedEffort<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with noise added to ForcedEffort<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with random noise (i.e., jitter) added to
-$fishing$ForcedFRate
-</summary><ol start="47" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with noise
-added to ForcedFRate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with noise added to ForcedFRate<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with random noise (i.e., jitter) added to
-$fishing$ForcedCatch
-</summary><ol start="53" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with noise
-added to ForcedCatch<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with noise added to ForcedCatch<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with stepped noise added to $fishing$ForcedEffort
-</summary><ol start="59" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-stepped noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedEffort<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with stepped noise added to ForcedEffort<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with stepped noise added to $fishing$ForcedFRate
-</summary><ol start="65" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-stepped noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedFRate<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with stepped noise added to ForcedFRate<br>
-</li>
-</ol></details><details><summary>
-Compare sim runs with stepped noise added to $fishing$ForcedCatch
-</summary><ol start="71" style="list-style-type: decimal">
-<li>Compare out_Biomass from baseline AB run and current AB run with
-stepped noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Gear_Catch from baseline AB run and current AB run with
-stepped noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Biomass from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Catch from baseline RK4 run and current RK4 run with
-stepped noise added to ForcedCatch<br>
-</li>
-<li>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
-with stepped noise added to ForcedCatch<br>
-</li>
-</ol></details><p><br> *The out_Gear_Catch tests are currently awaiting issue #74 to be
+<ol style="list-style-type: decimal">
+<li>
+<p>Is model balanced?</p>
+<p>Looks for “Balanced” string in Rpath summary file output</p>
+</li>
+<li>
+<p>Does model run silent?</p>
+<p>Tests if model runs without producing print statements, warnings, or
+error messages.</p>
+</li>
+<li>
+<p>Compare REcosystem objects</p>
+<p>Is the current REcosystem object the same as the saved original
+REcosystem object?</p>
+</li>
+<li>
+<p>Compare REcosystem summaries</p>
+<p>Is the current REcosystem summary the same as the saved original
+REcosystem summary?</p>
+</li>
+</ol>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests">AB and RK4 Sim Run Tests:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests"></a>
+</h4>
+<ol start="5" style="list-style-type: decimal">
+<li>
+<p>Compare baseline AB sim run to current AB sim run</p>
+<p>Checks if the baseline Rpath AB sim run is the same as the current AB
+sim run (checks top level data structure only).</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline and current AB sim runs</p>
+<p>Checks if OutBiomass is the same for the baseline AB sim run and the
+current AB sim run.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline and current AB sim runs</p>
+<p>Checks if OutCatch is the same for the baseline AB sim run and the
+current AB sim run.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch* from baseline and current AB sim runs</p>
+<p>Checks if OutGearCatch is the same for the baseline AB sim run and
+the current AB sim run.</p>
+</li>
+<li>
+<p>Compare baseline RK4 sim run to current RK4 sim run</p>
+<p>Checks if the baseline RK4 sim run is the same as the current RK4 sim
+run (checks top level data structure only).</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline and current RK4 sim runs</p>
+<p>Checks if OutBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline and current RK4 sim runs</p>
+<p>Checks if OutCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline and current RK4 sim runs</p>
+<p>Checks if OutGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run.</p>
+</li>
+<li>
+<p>Compare baseline AB sim run to current RK4 sim run</p>
+<p>Checks if the baseline AB sim run is the same as the current RK4 sim
+run (checks top level data structure only).</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline AB run and current RK4 sim
+run</p>
+<p>Checks if OutBiomass is the same for the baseline AB sim run and the
+current RK4 sim run.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current RK4 sim
+run</p>
+<p>Checks if OutCatch is the same for the baseline AB sim run and the
+current RK4 sim run.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current RK4 sim
+run</p>
+<p>Checks if OutGearCatch is the same for the baseline AB sim run and
+the current RK4 sim run.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-jitter-on-forcedbiomass">AB and RK4 Sim Run Tests with Jitter on ForcedBiomass:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-jitter-on-forcedbiomass"></a>
+</h4>
+<ol start="17" style="list-style-type: decimal">
+<li>
+<p>Compare sim runs with random noise (i.e., jitter) added to
+$forcing$ForcedBio</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+random noise added to ForcedBio</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with random noise added to ForcedBio</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with random noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with random noise added to ForcedBio</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+random noise added to ForcedBio</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with random noise added to ForcedBio</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with random noise added to ForcedBio.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-jitter-on-forcedmigrate">AB and RK4 Sim Run Tests with Jitter on ForcedMigrate:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-jitter-on-forcedmigrate"></a>
+</h4>
+<ol start="23" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+random noise added to ForcedMigrate</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedMigrate.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+random noise added to ForcedMigrate</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedMigrate.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with random noise added to ForcedMigrate</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with random noise added to
+ForcedMigrate.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with random noise added to ForcedMigrate</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedMigrate.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+random noise added to ForcedMigrate</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedMigrate.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with random noise added to ForcedMigrate</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with random noise added to
+ForcedMigrate.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedbiomass">AB and RK4 Sim Run Tests with Stepped Noise on ForcedBiomass:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedbiomass"></a>
+</h4>
+<ol start="29" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+stepped noise added to ForcedBio</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+stepped noise added to ForcedBio</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with stepped noise added to ForcedBio</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with stepped noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedBio</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+stepped noise added to ForcedBio</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedBio.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedBio</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with stepped noise added to ForcedBio.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedmigrate">AB and RK4 Sim Run Tests with Stepped Noise on ForcedMigrate:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedmigrate"></a>
+</h4>
+<ol start="35" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+stepped noise added to ForcedMigrate</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedMigrate</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+stepped noise added to ForcedMigrate</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedMigrate</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with stepped noise added to ForcedMigrate</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with stepped noise added to
+ForcedMigrate</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedMigrate</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedMigrate</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+stepped noise added to ForcedMigrate</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedMigrate</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedMigrate</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with stepped noise added to
+ForcedMigrate</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-jitter-on-forcedeffort">AB and RK4 Sim Run Tests with Jitter on ForcedEffort:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-jitter-on-forcedeffort"></a>
+</h4>
+<ol start="41" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+random noise added to ForcedEffort</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+random noise added to ForcedEffort</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with random noise added to ForcedEffort</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with random noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with random noise added to ForcedEffort</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+random noise added to ForcedEffort</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with random noise added to ForcedEffort</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with random noise added to
+ForcedEffort.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-jitter-on-forcedfrate">AB and RK4 Sim Run Tests with Jitter on ForcedFRate:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-jitter-on-forcedfrate"></a>
+</h4>
+<ol start="47" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+random noise added to ForcedFRate</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+random noise added to ForcedFRate</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+withrandom noise added to ForcedFRate</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with random noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with random noise added to ForcedFRate</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+random noise added to ForcedFRate</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with random noise added to ForcedFRate</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with random noise added to ForcedFRate.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-jitter-on-forcedcatch">AB and RK4 Sim Run Tests with Jitter on ForcedCatch:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-jitter-on-forcedcatch"></a>
+</h4>
+<ol start="53" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+random noise added to ForcedCatch</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+random noise added to ForcedCatch</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with random noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with random noise added to ForcedCatch</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with random noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with random noise added to ForcedCatch</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+random noise added to ForcedCatch</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with random noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with random noise added to ForcedCatch</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with random noise added to ForcedCatch</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedeffort">AB and RK4 Sim Run Tests with Stepped Noise on ForcedEffort:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedeffort"></a>
+</h4>
+<ol start="59" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+stepped noise added to ForcedEffort</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+stepped noise added to ForcedEffort</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with stepped noise added to ForcedEffort</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with stepped noise added to
+ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedEffort</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+stepped noise added to ForcedEffort</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedEffort.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedEffort</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with stepped noise added to
+ForcedEffort.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedfrate">AB and RK4 Sim Run Tests with Stepped Noise on ForcedFRate:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedfrate"></a>
+</h4>
+<ol start="65" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+stepped noise added to ForcedFRate</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+stepped noise added to ForcedFRate</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with stepped noise added to ForcedFRate</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with stepped noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedFRate</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+stepped noise added to ForcedFRate</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedFRate.</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedFRate</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with stepped noise added to
+ForcedFRate.</p>
+</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedcatch">AB and RK4 Sim Run Tests with Stepped Noise on ForcedCatch:<a class="anchor" aria-label="anchor" href="#ab-and-rk4-sim-run-tests-with-stepped-noise-on-forcedcatch"></a>
+</h4>
+<ol start="71" style="list-style-type: decimal">
+<li>
+<p>Compare out_Biomass from baseline AB run and current AB run with
+stepped noise added to ForcedCatch</p>
+<p>Checks if outBiomass is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline AB run and current AB run with
+stepped noise added to ForcedCatch</p>
+<p>Checks if outCatch is the same for the baseline AB sim run and the
+current AB sim run with stepped noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline AB run and current AB run
+with stepped noise added to ForcedCatch</p>
+<p>Checks if outGearCatch is the same for the baseline AB sim run and
+the current AB sim run with stepped noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Biomass from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedCatch</p>
+<p>Checks if outBiomass is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Catch from baseline RK4 run and current RK4 run with
+stepped noise added to ForcedCatch</p>
+<p>Checks if outCatch is the same for the baseline RK4 sim run and the
+current RK4 sim run with stepped noise added to ForcedCatch</p>
+</li>
+<li>
+<p>Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+with stepped noise added to ForcedCatch</p>
+<p>Checks if outGearCatch is the same for the baseline RK4 sim run and
+the current RK4 sim run with stepped noise added to ForcedCatch</p>
+</li>
+</ol>
+<p>*The out_Gear_Catch tests are currently awaiting issue #74 to be
 resolved.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -439,8 +654,8 @@ plots in a pdf file. These plots may be useful for diagnostic purposes.
 The plots depict the output of a current run in blue and of the baseline
 run in red. If there are no errors, then there should be no red visible
 on the plots. There are two types of plots available, also set by a
-variable in tests/tests_rpath.R:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+variable in tests/testthat/test-rpath.R:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PLOT_TYPE</span> <span class="op">&lt;-</span> <span class="fl">1</span> </span></code></pre></div>
 <p>If PLOT_TYPE is set to 1, then the plot depicts the current model in
 blue superimposed over the baseline model in red. If PLOT_TYPE is set to
@@ -452,7 +667,7 @@ blue superimposed over the baseline model in red. If PLOT_TYPE is set to
 <p>Figure 1 depicts an Rpath Simulation run of Biomass Density vs Time
 for 3 species. The <code>REcosystem_scene$forcing$ForcedBio</code>
 table, where</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="va">REcosystem_scene</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rsim.scenario.html">rsim.scenario</a></span><span class="op">(</span><span class="va">REco</span>, <span class="va">REco.params</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">50</span><span class="op">)</span></span></code></pre></div>
 <p>has been modified with random noise. Both the baseline and current
 model runs use the AB (Adams-Bashforth) numerical differential equation
@@ -464,12 +679,13 @@ baseline (red) plot. <br><br></p>
 Figure 1. No Difference in Baseline vs Current Models
 </p>
 </div>
-<br><br> Figure 2 depicts the same information as Figure 1 with the
+<p><br><br> Figure 2 depicts the same information as Figure 1 with the
 difference being that the randomization factor was slightly changed in
 the current model from what was used in the baseline model. This was
 done to only to highlight how the plot would appear if the current model
 deviated from the baseline. Notice that the underlying baseline plot (in
-red) is now clearly visible. <br><br><div class="figure">
+red) is now clearly visible. <br><br></p>
+<div class="figure">
 <img src="img/plot_02_superimposed_with_difference.png" alt="Figure 2. Difference in red of Baseline vs Current Models" width="85%:" height="85%"><p class="caption">
 Figure 2. Difference in red of Baseline vs Current Models
 </p>
@@ -480,8 +696,8 @@ plots should be completely flat lines. This plot shows the
 current-baseline plots for the data shown in Figure 2. Notice that the
 plot lines are not completely flat, denoting that the difference is not
 0. The scale of the y-axis may be modified by changing the following
-line in <strong>tests/tests_rpath.R</strong>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+line in <strong>tests/testthat/test-rpath.R</strong>:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">YLIMIT_DIFFERENCE_PLOTS</span> <span class="op">&lt;-</span> <span class="fl">0.05</span></span></code></pre></div>
 <div class="figure">
 <img src="img/plot_03_current-baseline.png" alt="Figure 3. Current-Baseline Result" width="85%:" height="85%"><p class="caption">
@@ -489,29 +705,22 @@ Figure 3. Current-Baseline Result
 </p>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-      </div>
-
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas, Sarah Weisberg, Andy Whitehouse.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
-
 
 
 
