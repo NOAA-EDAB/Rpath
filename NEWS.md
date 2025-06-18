@@ -1,6 +1,7 @@
 # Rpath 1.0.0
 
-- Fix group parameter refernce in `adjust.scenario`
+- Fix group parameter reference in `adjust.scenario`
+- Fix Force bymort double-counting bug `ecosim.cpp`
 - Removed old datasets
 - Switch from single to double operators in `ecosim.cpp`
 - Added examples to all functions
