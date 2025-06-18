@@ -4,11 +4,15 @@ Title: R implementation of Ecopath with Ecosim
 Version: 1.0.0
 Date: 2024-05-31
 Authors@R: c(
-    person("Kerim", "Aydin",    email = "Kerim.Aydin@NOAA.gov",   role = c("aut", "cre")),
+    person("Kerim", "Aydin",    email = "Kerim.Aydin@NOAA.gov",   role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0003-3792-9828")),
     person("Sean", "Lucey",     email = "Sean.Lucey@NOAA.gov",    role = "aut"),
     person("Sarah", "Gaichas",  email = "Sarah.Gaichas@NOAA.gov", role = "aut"),
     person("Sarah", "Weisberg", email = "sarah.j.weisberg@stonybrook.edu", role= "aut"),
-    person("Andy", "Whitehouse",email = "Andy.Whitehouse@NOAA.gov", role="aut"),
+    person("Andy", "Whitehouse",email = "gaw@uw.edu", role="aut",
+    comment = c(ORCID = "0000-0002-9130-9403")),
+    person("Bia", "Dias", email = "bia.dias@noaa.gov", role="ctb",
+    comment = c(ORCID = "0000-0001-5905-4044")),
     person("Ron", "Klasky", email = "ronald.klasky@noaa.gov",   role="ctb"),
     person("Andy", "Beet",  email = "andrew.beet@noaa.gov",     role="ctb", 
     comment = c(ORCID = "0000-0001-8270-7090")),
