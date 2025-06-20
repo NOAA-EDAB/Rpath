@@ -11,8 +11,7 @@ body:
         the current issues to see if an issue [already exists](https://github.com/NOAA-EDAB/Rpath/issues?q=is%3Aissue%20state%3Aopen%20label%3Afeature)
         for your feature.
 
-        We are also happy to accept contributions from our users. For more details see
-        [here](https://github.com/NOAA-EDAB/Rpath/CONTRIBUTING.md).
+        We are also happy to accept contributions from our users. For more details see [here](https://github.com/NOAA-EDAB/Rpath/blob/main/CONTRIBUTING.md).
 
   - type: textarea
     attributes:
