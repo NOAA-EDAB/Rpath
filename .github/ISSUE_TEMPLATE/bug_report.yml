@@ -1,7 +1,7 @@
 name: Bug report
 description: Use this template to report bugs
-title: "[Bug Report]:"
-labels: "[bug]"
+title: "[Bug Report]: "
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
@@ -11,8 +11,7 @@ body:
         We will need this information to reproduce and fix any issues. Thanks
         
         We are also happy to accept contributions from our users. So if you have a solution to the
-        bug consider contributing. For more details see
-        [here](https://github.com/NOAA-EDAB/Rpath/CONTRIBUTING.md).
+        bug consider contributing. For more details see [here](https://github.com/NOAA-EDAB/Rpath/blob/main/CONTRIBUTING.md).
   - type: textarea
     id: bugdesc
     attributes:
