@@ -18,7 +18,7 @@ in management strategy evaluations and similar analyses.
 To install the package and build all of the vignettes locally
 
 ```
-remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)`
+remotes::install_github("noaa-edab/Rpath",build_vignettes=TRUE)
 ```
 
 If you experience issues installing the package using `remotes` or don't need the vignettes locally then please use this alternative
