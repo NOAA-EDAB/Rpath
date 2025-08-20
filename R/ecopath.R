@@ -62,8 +62,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   model[is.na(DetInput), DetInput := 0]
   
   # fill in GE(PQ), QB, or PB from other inputs
+  # KYA Aug 2025 - changed this logic so PC would be recalculated if PB and QB supplied
   #GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
-  GE   <- ifelse(!is.na(model[, QB]) & !is.na(model[, PB]), model[, PB / QB],       model[, ProdCons])
+  GE   <- ifelse(!is.na(model[, QB]) & !is.na(model[, PB]), model[, PB / QB], model[, ProdCons])
   QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE],       model[, QB])
   PB.1 <- ifelse(is.na(model[, PB]),       model[, ProdCons * QB], model[, PB])
   model[, QB := QB.1]
