@@ -321,7 +321,7 @@ check.rpath.params <- function(Rpath.params) {
       warning(
         paste(
           Rpath.params$model[Group %in% both & !is.na(PB), Group],
-          'have PB, QB, and ProdCons...only two should be entered \n',
+          'have PB, QB, and ProdCons... ProdCons will be recalculated during balancing \n',
           sep = ' '
         )
       )
