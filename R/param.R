@@ -393,15 +393,20 @@ check.rpath.params <- function(Rpath.params) {
   
   #Check detritus fate is numeric and sum to 1
   det.matrix <- Rpath.params$model[, 11:(10 + n.dead), with = F]
-  test.rows  <- rowSums(det.matrix)
-  if (length(setdiff(which(Rpath.params$model[, Type] == 2), which(test.rows != 1))) > 0) {
-    warning(paste(
-      Rpath.params$model[, Group][setdiff(which(Rpath.params$model[, Type] == 2), which(test.rows != 1))],
-      'detrital fate does not sum to 1 \n',
-      sep = ' '
-    ))
-    w <- w + 1
-  }
+  
+  # KYA August '25 - I'm not sure why this part of this test should be done - having
+  # detrital groups' detrital fate not sum to 1 is appropriate if detritus
+  # is being exported.  I think silence here is more appropriate than a warning.  
+  #test.rows  <- rowSums(det.matrix)
+  #if (length(setdiff(which(Rpath.params$model[, Type] == 2), which(test.rows != 1))) > 0) {
+  #  warning(paste(
+  #    Rpath.params$model[, Group][setdiff(which(Rpath.params$model[, Type] == 2), which(test.rows != 1))],
+  #    'detrital fate does not sum to 1 \n',
+  #    sep = ' '
+  #  ))
+  #  w <- w + 1
+  #}
+  
   if (length(which(is.na(det.matrix))) > 0) {
     na.group <- which(is.na(det.matrix))
     for (i in 1:length(na.group))

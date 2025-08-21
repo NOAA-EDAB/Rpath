@@ -36,11 +36,11 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
       set(model, j = logic.col[i], value = as.numeric(model[[logic.col[i]]]))
     }
   }
-    
+  
   #Remove first column if names (factor or character)
   if(sapply(diet, class)[1] == 'factor')    diet[, 1 := NULL]
   if(sapply(diet, class)[1] == 'character') diet[, 1 := NULL]
-
+  
   #Adjust diet comp of mixotrophs
   mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
   mix.Q <- 1 - model[mixotrophs, Type]
@@ -57,10 +57,10 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   nliving <- nrow(model[Type <  2, ])
   ndead   <- nrow(model[Type == 2, ])
   ngear   <- nrow(model[Type == 3, ])
-
+  
   nodetrdiet <- diet[1:nliving, ]
   model[is.na(DetInput), DetInput := 0]
-
+  
   # fill in GE(PQ), QB, or PB from other inputs
   GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
   QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE],       model[, QB])
@@ -72,7 +72,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   landmat     <- model[, (10 + ndead + 1):(10 + ndead + ngear), with = F]
   discardmat  <- model[, (10 + ndead + 1 + ngear):(10 + ndead + (2 * ngear)), with = F]
   totcatchmat <- landmat + discardmat
-    
+  
   if (is.data.frame(totcatchmat)){
     totcatch <- rowSums(totcatchmat)
     landings <- rowSums(landmat)    
@@ -91,7 +91,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   model[, landings := landings]
   model[, discards := discards]
   model[, totcatch := totcatch]
-
+  
   # flag missing pars and subset for estimation
   model[, noB   := 0]
   model[, noEE  := 0]
@@ -104,7 +104,8 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   
   # define detritus fate matrix
   detfate <- model[, (10 + 1):(10 + ndead), with = F]
-
+  detdetfate <- model[Type==2, (10 + 1):(10 + ndead), with = F]
+  
   # set up and solve the system of equations for living group B or EE
   living  <- model[alive == 1, ]
   
@@ -133,7 +134,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   A     <- A - QBDCa 
   #Switch flag back
   #living[BEE == 1, noB := 0]
-   
+  
   # Generalized inverse does the actual solving
   #Invert A and multiple by b to get x (unknowns)
   x <- MASS::ginv(A, tol = .Machine$double.eps) %*% living[, b]
@@ -144,22 +145,32 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   
   living[, B := x * noB]
   living[is.na(Biomass), Biomass := B]
-
+  
   # detritus EE calcs
   living[, M0 := PB * (1 - EE)]
   living[, QBloss := QB]
   living[is.na(QBloss), QBloss := 0]
+  #KYA fix Aug 2025
+  #loss <- c((living[, M0] * living[, Biomass]) + 
+  #            (living[, Biomass] * living[, QBloss] * living[, Unassim]),
+  #          model[Type ==2, DetInput], 
+  #          geardisc)
+  #detinputs1  <- colSums(loss * detfate)
+  #detinputs1 is "first pass" at det inputs, final detinputs is after initial EE
   loss <- c((living[, M0] * living[, Biomass]) + 
               (living[, Biomass] * living[, QBloss] * living[, Unassim]),
-            model[Type ==2, DetInput], 
-            geardisc)
-  detinputs  <- colSums(loss * detfate)
+            rep(0,ndead), 
+            geardisc) 
+  detinputs1  <- colSums(loss * detfate + model[, DetInput])
+  ## end fix
   detdiet    <- diet[(nliving + 1):(nliving + ndead), ]
   BQB        <- living[, Biomass * QB]
   detcons    <- as.matrix(detdiet) * BQB[col(as.matrix(detdiet))]
   detoutputs <- rowSums(detcons, na.rm = T)
+  det_unused <- ifelse(detinputs1>detoutputs, detinputs1-detoutputs, 0.0)
+  detinputs  <- detinputs1 + colSums(det_unused*detdetfate)
   EE         <- c(living[, EE], as.vector(detoutputs / detinputs))
-
+  
   # added by kya
   # if a detritus biomass is put into the spreadsheet, use that and 
   # calculate PB.  If no biomass, but a PB, use that pb with inflow to 
@@ -172,7 +183,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   DetPB   <- ifelse(is.na(inDetPB), Default_Detrital_PB, inDetPB)
   DetB    <- ifelse(is.na(inDetB), detinputs / DetPB, inDetB)
   DetPB   <- detinputs / DetB
-
+  
   # Trophic Level calcs
   b             <- rep(1, ngroups)
   TLcoeff       <- matrix(0, ngroups, ngroups)
@@ -182,7 +193,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   gearcons[is.na(gearcons)] <- 0
   dietplus <- as.matrix(diet)
   dimnames(dietplus) <- list(NULL, NULL)
-
+  
   #Adjust for mixotrophs (partial primary producers) - #Moved this code up so that
   #it also impacted the EE calculation
   # mixotrophs <- which(model[, Type] > 0 & model[, Type] < 1)
@@ -201,7 +212,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   dietplus <- cbind(dietplus, matrix(0, ngroups, ndead), gearcons)
   TLcoeffA <- TLcoeff - dietplus
   TL       <- solve(t(TLcoeffA), b)     
-
+  
   #kya changed these following four lines for detritus, and removing NAs
   #to match header file format (replacing NAs with 0.0s)
   Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
@@ -228,7 +239,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
                    EE       = EEplus, 
                    GE       = GE, 
                    Removals = RemPlus)
-
+  
   M0plus  <- c(living[, M0], as.vector(detoutputs / detinputs))
   gearF   <- as.matrix(totcatchmat) / living[, Biomass][row(as.matrix(totcatchmat))]
   newcons <- as.matrix(nodetrdiet)  * BQB[col(as.matrix(nodetrdiet))]
@@ -263,19 +274,19 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   detfatem                            <- as.matrix(detfate)
   dimnames(detfatem)                  <- list(gnames, gnames[(nliving+1):(nliving+ndead)])
   detfatem[is.na(detfatem)]           <- 0
-
+  
   # Add names for output list
-    out.Group   <- gnames;           names(out.Group) <- gnames
-    out.type    <- model[, Type];    names(out.type) <- gnames
-    out.TL      <- TL;               names(out.TL) <- gnames
-    out.Biomass <- balanced$Biomass; names(out.Biomass) <- gnames
-    out.PB      <- balanced$PB;      names(out.PB) <- gnames
-    out.QB      <- balanced$QB;      names(out.QB) <- gnames
-    out.EE      <- balanced$EE;      names(out.EE) <- gnames
-    out.BA      <- model[, BioAcc];  names(out.BA) <- gnames
-    out.Unassim <- model[, Unassim]; names(out.Unassim) <- gnames
-    out.GE      <- balanced$GE;      names(out.GE) <- gnames    
-    
+  out.Group   <- gnames;           names(out.Group) <- gnames
+  out.type    <- model[, Type];    names(out.type) <- gnames
+  out.TL      <- TL;               names(out.TL) <- gnames
+  out.Biomass <- balanced$Biomass; names(out.Biomass) <- gnames
+  out.PB      <- balanced$PB;      names(out.PB) <- gnames
+  out.QB      <- balanced$QB;      names(out.QB) <- gnames
+  out.EE      <- balanced$EE;      names(out.EE) <- gnames
+  out.BA      <- model[, BioAcc];  names(out.BA) <- gnames
+  out.Unassim <- model[, Unassim]; names(out.Unassim) <- gnames
+  out.GE      <- balanced$GE;      names(out.GE) <- gnames    
+  
   # list structure for sim inputs
   path.model <- list(NUM_GROUPS = ngroups,
                      NUM_LIVING = nliving,
@@ -295,13 +306,13 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
                      DetFate    = detfatem,
                      Landings   = landmatm,
                      Discards   = discardmatm)      
-
-#Define class of output
-class(path.model) <- 'Rpath'
-attr(path.model, 'eco.name') <- eco.name
-attr(path.model, 'eco.area') <- eco.area
-
-return(path.model)
+  
+  #Define class of output
+  class(path.model) <- 'Rpath'
+  attr(path.model, 'eco.name') <- eco.name
+  attr(path.model, 'eco.area') <- eco.area
+  
+  return(path.model)
 }
 
 
