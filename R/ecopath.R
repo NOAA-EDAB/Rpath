@@ -18,7 +18,7 @@
 #'@export
 rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #Need to define variables to eliminate check() note about no visible binding
-  Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- NULL
+  Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- noPB <- NULL
   BEE <- Biomass <- Q <- BioAcc <- BioQB <- diag.a <- EEa <- B <- M0 <- NULL
   QBloss <- Unassim <- Ex <- NULL
   
@@ -99,11 +99,13 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   model[, noEE  := 0]
   model[, alive := 0]
   model[, BEE   := 0]
+  model[, noPB  := 0]
   model[is.na(Biomass), noB   := 1]
   model[is.na(EE),      noEE  := 1]
   model[Type < 2,       alive := 1]
-  model[noB == 0 & noEE == 0, BEE := 1]
-  
+  model[noB == 0 & noEE == 0,  BEE := 1]
+  model[BEE == 1 & is.na(PB), noPB := 1]    
+          
   # define detritus fate matrix
   detfate <- model[, (10 + 1):(10 + ndead), with = F]
   detdetfate <- model[Type==2, (10 + 1):(10 + ndead), with = F]
@@ -120,6 +122,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #Set up A matrix
   living[noEE == 1, diag.a := Biomass * PB]
   living[noEE == 0, diag.a := PB * EE]
+  living[noPB == 1, diag.a := Biomass * EE] # this needs to be after noEE==0 case
   
   #Special case where B and EE are known then need to solve for BA
   #living[BEE == 1, b := b - (Biomass * PB * EE)]
@@ -147,6 +150,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   
   living[, B := x * noB]
   living[is.na(Biomass), Biomass := B]
+  
+  living[, PBa := x * noPB]
+  living[is.na(PB), PB := PBa]
   
   # detritus EE calcs
   living[, M0 := PB * (1 - EE)]
@@ -184,7 +190,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   inDetB  <- model[(nliving + 1):(nliving + ndead), Biomass]
   DetPB   <- ifelse(is.na(inDetPB), Default_Detrital_PB, inDetPB)
   DetB    <- ifelse(is.na(inDetB), detinputs / DetPB, inDetB)
-  DetPB   <- detinputs / DetB
+  DetPB   <- as.numeric(detinputs) / DetB
   
   # Trophic Level calcs
   b             <- rep(1, ngroups)
@@ -219,8 +225,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #to match header file format (replacing NAs with 0.0s)
   Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
   
-  PBplus <- model[, PB] 
-  PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
+  #PBplus <- model[, PB] 
+  #PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
+  PBplus  <- c(living[,PB],DetPB , rep(0.0, ngear))
   PBplus[is.na(PBplus)] <- 0.0
   
   EEplus <- c(EE, rep(0.0, ngear))
@@ -228,7 +235,8 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   QBplus <- model[, QB]
   QBplus[is.na(QBplus)] <- 0.0
   
-  GE[is.na(GE)] <- 0.0
+  GE <- PBplus/QBplus
+  GE[is.na(GE) | is.nan(GE) | is.infinite(GE)] <- 0.0
   
   RemPlus <- model[, totcatch]
   RemPlus[is.na(RemPlus)] <- 0.0

@@ -216,12 +216,14 @@ check.rpath.params <- function(Rpath.params) {
     w <- w + 1
   }
   if (length(Rpath.params$model[!is.na(Biomass) &
-                                !is.na(EE) & Type < 2, Group]) > 0) {
+                                !is.na(EE) & 
+                                (!is.na(PB) | (is.na(PB) & !is.na(QB) & !is.na(ProdCons))) &
+                                               Type < 2, Group]) > 0) {
     warning(
       paste(
         Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
-        'have both Biomass and EE...Note that Rpath does not calculate BA
-               please enter a value for BA if appropriate \n',
+        'have all of Biomass, EE, and PB entered... Note that Rpath does
+        not calculate BA, please enter a value for BA if appropriate \n',
         sep = ' '
       )
     )
@@ -255,7 +257,7 @@ check.rpath.params <- function(Rpath.params) {
     warning(
       paste(
         Rpath.params$model[Type > 1 & !is.na(QB), Group],
-        'are not living and should not have a QB...set to NA \n',
+        'are not living and should not have a QB... please set to NA \n',
         sep = ' '
       )
     )
@@ -265,7 +267,7 @@ check.rpath.params <- function(Rpath.params) {
     warning(
       paste(
         Rpath.params$model[Type > 1 & !is.na(EE), Group],
-        'are not living and should not have a EE...set to NA \n',
+        'are not living and should not have a EE... please set to NA \n',
         sep = ' '
       )
     )
@@ -276,7 +278,7 @@ check.rpath.params <- function(Rpath.params) {
     warning(
       paste(
         Rpath.params$model[Type > 1 & !is.na(ProdCons), Group],
-        'are not living and should not have a ProdCons...set to NA \n',
+        'are not living and should not have a ProdCons... please set to NA \n',
         sep = ' '
       )
     )
@@ -287,12 +289,14 @@ check.rpath.params <- function(Rpath.params) {
   if (length(Rpath.params$model[Type < 2 & is.na(PB), Group]) > 0) {
     no.pb <- Rpath.params$model[Type < 2 & is.na(PB), Group]
     if (length(Rpath.params$model[Group %in% no.pb &
-                                  (is.na(QB) | is.na(ProdCons)), Group]) > 0) {
+                                  (is.na(QB) | is.na(ProdCons)) &
+                                  (is.na(Biomass) | is.na(EE)), Group]) > 0) {
       warning(
         paste(
           Rpath.params$model[Group %in% no.pb &
-                               (is.na(QB) | is.na(ProdCons)), Group],
-          'are missing a PB without a QB and PQ...set to >= 0 \n',
+                               (is.na(QB) | is.na(ProdCons)) &
+                               (is.na(Biomass) | is.na(EE)), Group],
+          'are missing a PB without either a (QB and ProdCons) or (EE and B) to estimate PB... please set to >= 0 \n',
           sep = ' '
         )
       )
