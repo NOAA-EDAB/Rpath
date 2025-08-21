@@ -347,6 +347,9 @@ rpath.stanzas <- function(Rpath.params){
   Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- BAB <- Ex <- NULL
 
+  # Added Aug 2025 - if no stanzas, silently return original (prob no warning needed?)
+  if(Rpath.params$stanza$NStanzaGroups==0){return(Rpath.params)}
+  
   #Determine the total number of groups with multistanzas
   Nsplit     <- Rpath.params$stanza$NStanzaGroups
   groupfile  <- Rpath.params$stanza$stgroups
