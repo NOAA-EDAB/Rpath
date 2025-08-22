@@ -142,6 +142,11 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   A     <- A - QBDCa 
   #Switch flag back
   #living[BEE == 1, noB := 0]
+
+  # Check for any missing info that will prevent solving
+    if (any(is.na(A))){
+      stop("Model is missing parameters - can't be balanced. Use check.rpath.params() to diagnose.")
+    }
   
   # Generalized inverse does the actual solving
   #Invert A and multiple by b to get x (unknowns)
