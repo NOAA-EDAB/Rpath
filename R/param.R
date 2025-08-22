@@ -172,6 +172,7 @@ check.rpath.params <- function(Rpath.params) {
   Type <- Group <- Biomass <- EE <- PB <- QB <- ProdCons <- BioAcc <- Unassim <- DetInput <- NULL
   
   w <- 0 #warning counter
+  c <- 0 #Balance change counter
   #Check to make sure all types are represented
   if (nrow(Rpath.params$model[Type == 0, ]) == 0) {
     warning('Model must contain at least 1 consumer')
@@ -215,14 +216,15 @@ check.rpath.params <- function(Rpath.params) {
     )
     w <- w + 1
   }
-  if (length(Rpath.params$model[!is.na(Biomass) &
-                                !is.na(EE) & 
+  if (length(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & 
                                 (!is.na(PB) | (is.na(PB) & !is.na(QB) & !is.na(ProdCons))) &
                                                Type < 2, Group]) > 0) {
     warning(
       paste(
-        Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
-        'have all of Biomass, EE, and PB entered... Note that Rpath does
+        Rpath.params$model[!is.na(Biomass) & !is.na(EE) & 
+                                (!is.na(PB) | (is.na(PB) & !is.na(QB) & !is.na(ProdCons))) &
+                             Type < 2, Group],
+        'have all of Biomass, EE, and PB(or QB and ProdCons) entered... Note that Rpath does
         not calculate BA, please enter a value for BA if appropriate \n',
         sep = ' '
       )
@@ -330,6 +332,7 @@ check.rpath.params <- function(Rpath.params) {
         )
       )
       w <- w + 1
+      c <- c + 1
     }
   }
   
@@ -520,7 +523,11 @@ check.rpath.params <- function(Rpath.params) {
   if (w == 0) {
     cat('Rpath parameter file is functional. \n')
   } else {
-    cat('Rpath parameter file needs attention! \n')
+    if (w==c){
+      cat('Rpath parameters functional, though some may be recalculated during balance. \n')
+    } else {
+      cat('Rpath parameter file needs attention! \n')
+    }
   }
 }
 
