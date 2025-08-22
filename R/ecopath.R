@@ -233,6 +233,8 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   EEplus <- c(EE, rep(0.0, ngear))
   
   QBplus <- model[, QB]
+  QBplus[is.na(QBplus) & PBplus>0.0 & !(is.na(GE) | is.nan(GE) | is.infinite(GE))] <-
+    (PBplus/GE)[is.na(QBplus) & PBplus>0.0 & !(is.na(GE) | is.nan(GE) | is.infinite(GE))]
   QBplus[is.na(QBplus)] <- 0.0
   
   GE <- PBplus/QBplus
