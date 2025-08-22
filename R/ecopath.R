@@ -106,6 +106,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   model[noB == 0 & noEE == 0,  BEE := 1]
   model[BEE == 1 & is.na(PB), noPB := 1]    
           
+  if (any(model$Type==0 & is.na(model$QB) & is.na(model$ProdCons))){
+    stop("A consumer is missing both QB and ProdCons - balance failed. Use check.rpath.params() to diagnose.")
+  }
   # define detritus fate matrix
   detfate <- model[, (10 + 1):(10 + ndead), with = F]
   detdetfate <- model[Type==2, (10 + 1):(10 + ndead), with = F]
