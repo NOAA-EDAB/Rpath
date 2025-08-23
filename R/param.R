@@ -172,6 +172,7 @@ check.rpath.params <- function(Rpath.params) {
   Type <- Group <- Biomass <- EE <- PB <- QB <- ProdCons <- BioAcc <- Unassim <- DetInput <- NULL
   
   w <- 0 #warning counter
+  c <- 0 #Balance change counter
   #Check to make sure all types are represented
   if (nrow(Rpath.params$model[Type == 0, ]) == 0) {
     warning('Model must contain at least 1 consumer')
@@ -215,13 +216,16 @@ check.rpath.params <- function(Rpath.params) {
     )
     w <- w + 1
   }
-  if (length(Rpath.params$model[!is.na(Biomass) &
-                                !is.na(EE) & Type < 2, Group]) > 0) {
+  if (length(Rpath.params$model[!is.na(Biomass) & !is.na(EE) & 
+                                (!is.na(PB) | (is.na(PB) & !is.na(QB) & !is.na(ProdCons))) &
+                                               Type < 2, Group]) > 0) {
     warning(
       paste(
-        Rpath.params$model[!is.na(Biomass) & !is.na(EE) & Type < 2, Group],
-        'have both Biomass and EE...Note that Rpath does not calculate BA
-               please enter a value for BA if appropriate \n',
+        Rpath.params$model[!is.na(Biomass) & !is.na(EE) & 
+                                (!is.na(PB) | (is.na(PB) & !is.na(QB) & !is.na(ProdCons))) &
+                             Type < 2, Group],
+        'have all of Biomass, EE, and PB(or QB and ProdCons) entered... Note that Rpath does
+        not calculate BA, please enter a value for BA if appropriate \n',
         sep = ' '
       )
     )
@@ -255,7 +259,7 @@ check.rpath.params <- function(Rpath.params) {
     warning(
       paste(
         Rpath.params$model[Type > 1 & !is.na(QB), Group],
-        'are not living and should not have a QB...set to NA \n',
+        'are not living and should not have a QB... please set to NA \n',
         sep = ' '
       )
     )
@@ -265,7 +269,7 @@ check.rpath.params <- function(Rpath.params) {
     warning(
       paste(
         Rpath.params$model[Type > 1 & !is.na(EE), Group],
-        'are not living and should not have a EE...set to NA \n',
+        'are not living and should not have a EE... please set to NA \n',
         sep = ' '
       )
     )
@@ -276,7 +280,7 @@ check.rpath.params <- function(Rpath.params) {
     warning(
       paste(
         Rpath.params$model[Type > 1 & !is.na(ProdCons), Group],
-        'are not living and should not have a ProdCons...set to NA \n',
+        'are not living and should not have a ProdCons... please set to NA \n',
         sep = ' '
       )
     )
@@ -287,12 +291,14 @@ check.rpath.params <- function(Rpath.params) {
   if (length(Rpath.params$model[Type < 2 & is.na(PB), Group]) > 0) {
     no.pb <- Rpath.params$model[Type < 2 & is.na(PB), Group]
     if (length(Rpath.params$model[Group %in% no.pb &
-                                  (is.na(QB) | is.na(ProdCons)), Group]) > 0) {
+                                  (is.na(QB) | is.na(ProdCons)) &
+                                  (is.na(Biomass) | is.na(EE)), Group]) > 0) {
       warning(
         paste(
           Rpath.params$model[Group %in% no.pb &
-                               (is.na(QB) | is.na(ProdCons)), Group],
-          'are missing a PB without a QB and PQ...set to >= 0 \n',
+                               (is.na(QB) | is.na(ProdCons)) &
+                               (is.na(Biomass) | is.na(EE)), Group],
+          'are missing a PB without either a (QB and ProdCons) or (EE and B) to estimate PB... please set to >= 0 \n',
           sep = ' '
         )
       )
@@ -321,11 +327,12 @@ check.rpath.params <- function(Rpath.params) {
       warning(
         paste(
           Rpath.params$model[Group %in% both & !is.na(PB), Group],
-          'have PB, QB, and ProdCons...only two should be entered \n',
+          'have PB, QB, and ProdCons... ProdCons will be recalculated during balancing \n',
           sep = ' '
         )
       )
       w <- w + 1
+      c <- c + 1
     }
   }
   
@@ -516,7 +523,11 @@ check.rpath.params <- function(Rpath.params) {
   if (w == 0) {
     cat('Rpath parameter file is functional. \n')
   } else {
-    cat('Rpath parameter file needs attention! \n')
+    if (w==c){
+      cat('Rpath parameters functional, though some may be recalculated during balance. \n')
+    } else {
+      cat('Rpath parameter file needs attention! \n')
+    }
   }
 }
 

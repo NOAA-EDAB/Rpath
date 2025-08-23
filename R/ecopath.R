@@ -18,7 +18,7 @@
 #'@export
 rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #Need to define variables to eliminate check() note about no visible binding
-  Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- NULL
+  Type <- Group <- DetInput <- ProdCons <- PB <- QB <- noB <- noEE <- alive <- noPB <- NULL
   BEE <- Biomass <- Q <- BioAcc <- BioQB <- diag.a <- EEa <- B <- M0 <- NULL
   QBloss <- Unassim <- Ex <- NULL
   
@@ -62,7 +62,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   model[is.na(DetInput), DetInput := 0]
   
   # fill in GE(PQ), QB, or PB from other inputs
-  GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
+  # KYA Aug 2025 - changed this logic so PC would be recalculated if PB and QB supplied
+  #GE   <- ifelse(is.na(model[, ProdCons]), model[, PB / QB],       model[, ProdCons])
+  GE   <- ifelse(!is.na(model[, QB]) & !is.na(model[, PB]), model[, PB / QB], model[, ProdCons])
   QB.1 <- ifelse(is.na(model[, QB]),       model[, PB / GE],       model[, QB])
   PB.1 <- ifelse(is.na(model[, PB]),       model[, ProdCons * QB], model[, PB])
   model[, QB := QB.1]
@@ -97,11 +99,16 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   model[, noEE  := 0]
   model[, alive := 0]
   model[, BEE   := 0]
+  model[, noPB  := 0]
   model[is.na(Biomass), noB   := 1]
   model[is.na(EE),      noEE  := 1]
   model[Type < 2,       alive := 1]
-  model[noB == 0 & noEE == 0, BEE := 1]
-  
+  model[noB == 0 & noEE == 0,  BEE := 1]
+  model[BEE == 1 & is.na(PB), noPB := 1]    
+          
+  if (any(model$Type==0 & is.na(model$QB) & is.na(model$ProdCons))){
+    stop("A consumer is missing both QB and ProdCons - balance failed. Use check.rpath.params() to diagnose.")
+  }
   # define detritus fate matrix
   detfate <- model[, (10 + 1):(10 + ndead), with = F]
   detdetfate <- model[Type==2, (10 + 1):(10 + ndead), with = F]
@@ -118,6 +125,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #Set up A matrix
   living[noEE == 1, diag.a := Biomass * PB]
   living[noEE == 0, diag.a := PB * EE]
+  living[noPB == 1, diag.a := Biomass * EE] # this needs to be after noEE==0 case
   
   #Special case where B and EE are known then need to solve for BA
   #living[BEE == 1, b := b - (Biomass * PB * EE)]
@@ -134,6 +142,11 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   A     <- A - QBDCa 
   #Switch flag back
   #living[BEE == 1, noB := 0]
+
+  # Check for any missing info that will prevent solving
+    if (any(is.na(A))){
+      stop("Model is missing parameters - can't be balanced. Use check.rpath.params() to diagnose.")
+    }
   
   # Generalized inverse does the actual solving
   #Invert A and multiple by b to get x (unknowns)
@@ -145,6 +158,9 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   
   living[, B := x * noB]
   living[is.na(Biomass), Biomass := B]
+  
+  living[, PBa := x * noPB]
+  living[is.na(PB), PB := PBa]
   
   # detritus EE calcs
   living[, M0 := PB * (1 - EE)]
@@ -182,7 +198,7 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   inDetB  <- model[(nliving + 1):(nliving + ndead), Biomass]
   DetPB   <- ifelse(is.na(inDetPB), Default_Detrital_PB, inDetPB)
   DetB    <- ifelse(is.na(inDetB), detinputs / DetPB, inDetB)
-  DetPB   <- detinputs / DetB
+  DetPB   <- as.numeric(detinputs) / DetB
   
   # Trophic Level calcs
   b             <- rep(1, ngroups)
@@ -217,16 +233,20 @@ rpath <- function(Rpath.params, eco.name = NA, eco.area = 1) {
   #to match header file format (replacing NAs with 0.0s)
   Bplus  <- c(living[, Biomass], DetB, rep(0.0, ngear))
   
-  PBplus <- model[, PB] 
-  PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
+  #PBplus <- model[, PB] 
+  #PBplus[(nliving + 1):(nliving + ndead)] <- DetPB
+  PBplus  <- c(living[,PB],DetPB , rep(0.0, ngear))
   PBplus[is.na(PBplus)] <- 0.0
   
   EEplus <- c(EE, rep(0.0, ngear))
   
   QBplus <- model[, QB]
+  QBplus[is.na(QBplus) & PBplus>0.0 & !(is.na(GE) | is.nan(GE) | is.infinite(GE))] <-
+    (PBplus/GE)[is.na(QBplus) & PBplus>0.0 & !(is.na(GE) | is.nan(GE) | is.infinite(GE))]
   QBplus[is.na(QBplus)] <- 0.0
   
-  GE[is.na(GE)] <- 0.0
+  GE <- PBplus/QBplus
+  GE[is.na(GE) | is.nan(GE) | is.infinite(GE)] <- 0.0
   
   RemPlus <- model[, totcatch]
   RemPlus[is.na(RemPlus)] <- 0.0
@@ -337,6 +357,9 @@ rpath.stanzas <- function(Rpath.params){
   Group <- Biomass <- R <- NageS <- bs.denom <- bs <- qs.denom <- qs <- Cons <- NULL
   QB <- BAB <- Ex <- NULL
 
+  # Added Aug 2025 - if no stanzas, silently return original (prob no warning needed?)
+  if(Rpath.params$stanza$NStanzaGroups==0){return(Rpath.params)}
+  
   #Determine the total number of groups with multistanzas
   Nsplit     <- Rpath.params$stanza$NStanzaGroups
   groupfile  <- Rpath.params$stanza$stgroups
