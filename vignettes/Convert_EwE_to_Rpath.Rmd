@@ -1,0 +1,22 @@
+---
+title: "Convert EwE to Rpath"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Convert EwE to Rpath}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Rpath)
+```
+
+If you have developed your model in Ecopath and you want to bring it in to R and use Rpath, there are tools available in Rpath to do just that. For example:
+

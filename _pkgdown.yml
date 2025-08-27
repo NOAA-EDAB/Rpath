@@ -66,11 +66,12 @@ reference:
   - write.Rsim
   - frate.table
   - extract.node
-  - Rpath-package
 - title: "Auxiliary Tools"
   desc: "Additional tools"
 - contents:
   - MTI
+  - import.eiixml
+  - create.rpath.from.eiixml
 
 
 navbar:
@@ -86,5 +87,7 @@ navbar:
      href: articles/RunRsim.html
    - text: Create an ensemble
      href: articles/ecosense.html
+   - text: Convert EwE to Rpath
+     href: articles/Convert_EwE_to_Rpath.html
    - text: Unit testing
      href: articles/UnitTests.html
