@@ -93,7 +93,7 @@ create.rpath.from.eiixml <- function(
 
   #-------------------------------------------------------------------------------
   # Create the Unbalanced Rpath object here
-  unbal <- Rpath::create.rpath.params(
+  unbal <- create.rpath.params(
     group = g_names,
     type = g_types,
     stgroup = stanza_name_only
@@ -366,7 +366,7 @@ create.rpath.from.eiixml <- function(
 #' Parses the exported eiixml file (XML format, exported using Ecobase GUI) file into a list of data frames, one for each table in the XML.
 #' To be useful in Rpath this needs to be further processed into an Rpath object.
 #'
-#'@inheritFrom create.rpath.from.eiixml
+#' @inheritParams create.rpath.from.eiixml
 #'
 #' @return A list of data frames, one for each table in the XML file.
 #'
@@ -510,8 +510,8 @@ vec_na <- function(vec) {
 #'
 #' @param ewe_Stanza Stanza data from XML node
 #' @param ewe_StanzaLifeStage Stanza life stage data from XML node
-#' @param pnames
-#' @param gnames
+#' @param pnames Names of biological groups in the model
+#' @param gnames Names of gear groups in the model
 #'
 #' @return list
 #' \item{ordstanzas}{}
