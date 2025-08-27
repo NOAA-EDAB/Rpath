@@ -18,5 +18,62 @@ knitr::opts_chunk$set(
 library(Rpath)
 ```
 
-If you have developed your model in Ecopath and you want to bring it in to R and use Rpath, there are tools available in Rpath to do just that. For example:
+If you have developed your model in Ecopath and you now want to bring it in to R and use Rpath for analysis, there are tools available in `Rpath` to do just that. First, you need to export your model from EwE to XML format. This will result in multiple files being exported to your machine. You will just need to locate the file with the extension `eiixml` and let `Rpath` do its magic!
+
+For example, take the model `West Bering seas.eiixml` exported from Ecobase. We can read in this file and convert it to an rpath object using the function `create.rpath.from.eiixml()`
+
+```{r convert1, echo = TRUE, eval = TRUE}
+# Read in the model
+eiixml_file <- system.file("extdata/xml", "Western Bering Sea.eiixml", package = "Rpath")
+model <- create.rpath.from.eiixml(eiixml_file)
+```
+
+The variable `model` is a list object containing the data objects required to balance your model and run simulations. There are 4 objects that comprise an `Rpath` object
+
+* model - 
+* diet - 
+* pedigree - 
+* stanzas - 
+
+## The Group table
+
+```{r group, echo = FALSE, eval = TRUE}
+model$model |> 
+  DT::datatable(options = list(
+    scrollX = TRUE, 
+    paging = TRUE,   
+    pageLength = 20
+  ))
+
+```
+
+## The Diet table
+
+```{r diet, echo = FALSE, eval = TRUE}
+model$diet |> 
+  DT::datatable(options = list(
+    scrollX = TRUE,
+    paging = TRUE,  
+    pageLength = 20
+  ))
+
+```
+
+## The Pedigree table
+
+```{r pedigree, echo = FALSE, eval = TRUE}
+model$pedigree |> 
+  DT::datatable(options = list(
+    scrollX = TRUE, 
+    paging = TRUE, 
+    pageLength = 20
+  ))
+
+```
+
+## The Stanza info
+
+Some models also contain stanza information. This West Bering Sea model does not.
+However the `Rpath` object will contain an empty stanzas field as a place holder.
+
 

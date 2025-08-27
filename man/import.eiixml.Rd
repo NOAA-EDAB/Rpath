@@ -19,12 +19,10 @@ Parses the exported eiixml file (XML format, exported using Ecobase GUI) file in
 To be useful in Rpath this needs to be further processed into an Rpath object using the function `create.rpath.from.eiimxl`
 }
 \examples{
-\dontrun{
 # Export a model from Ecobase GUI to xml format
 # Path to an exported eiixml file
-eiixml <- here::here("path/to/eiixml")
+eiixml <- system.file("extdata/xml","West Bering Sea.eiixml", package = "Rpath")
 xml_data <- import.eiixml(eiixml)
-}
 
 
 }

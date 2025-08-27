@@ -23,12 +23,10 @@ Reads in the eiixml model format (XML) created from exporting a model from Ecoba
 Translates the XML to an rpath object which can then be balanced
 }
 \examples{
-\dontrun{
 # Export a model from Ecobase GUI to xml format
 # Path to an exported eiixml file
-eiixml <- here::here("path/to/eiixml")
+eiixml <- system.file("extdata/xml","West Bering Sea.eiixml", package = "Rpath")
 rpath_object <- create.rpath.from.eiixml(eiixml)
-}
 
 }
 \seealso{

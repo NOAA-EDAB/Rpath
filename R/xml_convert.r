@@ -16,12 +16,10 @@
 #' @family xml
 #'
 #' @examples
-#' \dontrun{
 #' # Export a model from Ecobase GUI to xml format
 #' # Path to an exported eiixml file
-#' eiixml <- here::here("path/to/eiixml")
+#' eiixml <- system.file("extdata/xml","West Bering Sea.eiixml", package = "Rpath")
 #' rpath_object <- create.rpath.from.eiixml(eiixml)
-#' }
 #'
 #' @export
 
@@ -379,12 +377,10 @@ create.rpath.from.eiixml <- function(
 #' @family xml
 #'
 #' @examples
-#' \dontrun{
 #' # Export a model from Ecobase GUI to xml format
 #' # Path to an exported eiixml file
-#' eiixml <- here::here("path/to/eiixml")
+#' eiixml <- system.file("extdata/xml","West Bering Sea.eiixml", package = "Rpath")
 #' xml_data <- import.eiixml(eiixml)
-#' }
 #'
 #'
 #' @export
@@ -471,9 +467,6 @@ import.eiixml <- function(eiifile, verbose = F) {
       names(dtable) <- cols
       eweobject[[paste0("ewe_", node_name)]] <- dtable
       #assign(paste0("eweobject$ewe_", node_name), dtable)
-      if (export) {
-        do.call("<<-", list(paste0("ewe_", node_name), dtable))
-      }
     } else {
       dtable <- data.frame(matrix(ncol = length(cols), byrow = T))[-1, ]
       # Assign default value of NA to all variables that dont exist for model
