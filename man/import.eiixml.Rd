@@ -14,9 +14,18 @@ import.eiixml(eiifile, verbose = F, export = F)
 \item{export}{Logical. Use for debugging. If TRUE, exports the data frames created in the function}
 }
 \value{
-A list of data frames, one for each table in the XML file.
+A list of data frames, one data frame for each node in the XML file.
 }
 \description{
 Parses the exported eiixml file (XML format, exported using Ecobase GUI) file into a list of data frames, one for each table in the XML.
 To be useful in Rpath this needs to be further processed into an Rpath object.
+}
+\examples{
+\dontrun{
+# Export a model from Ecobase GUI in xml format
+# Path to an exported eiixml file
+eiixml <- here::here("path/to/eiixml")
+xml_data <- import.eiixml(eiixml)
+}
+
 }

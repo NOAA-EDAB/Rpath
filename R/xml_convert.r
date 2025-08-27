@@ -14,8 +14,16 @@
 #' \item{diet}{}
 #' \item{model}{}
 #'
+#' @examples
+#' \dontrun{
+#' # Export a model from Ecobase GUI to xml format
+#' # Path to an exported eiixml file
+#' eiixml <- here::here("path/to/eiixml")
+#' rpath_object <- create.rpath.from.eiixml(eiixml)
+#' }
 #'
 #' @export
+
 create.rpath.from.eiixml <- function(
   eiifile,
   verbose = FALSE,
@@ -368,9 +376,18 @@ create.rpath.from.eiixml <- function(
 #'
 #' @inheritParams create.rpath.from.eiixml
 #'
-#' @return A list of data frames, one for each table in the XML file.
+#' @return A list of data frames, one data frame for each node in the XML file.
+#'
+#' @examples
+#' \dontrun{
+#' # Export a model from Ecobase GUI to xml format
+#' # Path to an exported eiixml file
+#' eiixml <- here::here("path/to/eiixml")
+#' xml_data <- import.eiixml(eiixml)
+#' }
 #'
 #' @export
+
 import.eiixml <- function(eiifile, verbose = F, export = F) {
   # Warn as you go, not at the end
   options(warn = 1)
