@@ -36,7 +36,9 @@ Imports:
     stats,
     utils,
     ggrepel,
-    ggplot2
+    ggplot2,
+    janitor,
+    xml2
 LinkingTo: Rcpp
 Suggests:
     here,
