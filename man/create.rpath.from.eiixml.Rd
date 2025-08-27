@@ -4,14 +4,12 @@
 \alias{create.rpath.from.eiixml}
 \title{Creates an Rpath object from an EwE exported model (EIIXML format)}
 \usage{
-create.rpath.from.eiixml(eiifile, verbose = FALSE, export = FALSE)
+create.rpath.from.eiixml(eiifile, verbose = FALSE)
 }
 \arguments{
 \item{eiifile}{Full path to exported EwE XML file}
 
 \item{verbose}{Logical. Use for debugging. If TRUE, prints out useful content}
-
-\item{export}{Logical. Use for debugging. If TRUE, exports the data frames created in the function}
 }
 \value{
 An Rpath object (list) with the following components:
@@ -26,10 +24,15 @@ Translates the XML to an rpath object which can then be balanced
 }
 \examples{
 \dontrun{
-# Export a model from Ecobase GUI in xml format
+# Export a model from Ecobase GUI to xml format
 # Path to an exported eiixml file
 eiixml <- here::here("path/to/eiixml")
 rpath_object <- create.rpath.from.eiixml(eiixml)
 }
 
 }
+\seealso{
+Other xml: 
+\code{\link{import.eiixml}()}
+}
+\concept{xml}

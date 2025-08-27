@@ -6,13 +6,14 @@
 #'
 #' @param eiifile Full path to exported EwE XML file
 #' @param verbose Logical. Use for debugging. If TRUE, prints out useful content
-#' @param export Logical. Use for debugging. If TRUE, exports the data frames created in the function
 #'
 #' @return An Rpath object (list) with the following components:
 #' \item{stanzas}{}
 #' \item{pedigree}{}
 #' \item{diet}{}
 #' \item{model}{}
+#'
+#' @family xml
 #'
 #' @examples
 #' \dontrun{
@@ -26,11 +27,10 @@
 
 create.rpath.from.eiixml <- function(
   eiifile,
-  verbose = FALSE,
-  export = FALSE
+  verbose = FALSE
 ) {
   # Import the xml file and parse it into a list of data frames
-  parsed_object <- import.eiixml(eiifile, verbose, export)
+  parsed_object <- import.eiixml(eiifile, verbose)
 
   # Extract and order group, gear and stanza names to create Rpath object---------
 
@@ -130,8 +130,6 @@ create.rpath.from.eiixml <- function(
   #be NAs, specifically with detritus.  Ensuring those don't sneak through.
   unbal$model$DetInput[ordgroups$Type != 2] <- NA
   unbal$model$EE[ordgroups$Type == 2] <- NA
-
-  ewe_ordgroups <<- ordgroups
 
   # DIET TABLE---------------------------------------
   # TODO: where are diet imports in EwE XML data?
@@ -372,11 +370,13 @@ create.rpath.from.eiixml <- function(
 #'
 #' @description
 #' Parses the exported eiixml file (XML format, exported using Ecobase GUI) file into a list of data frames, one for each table in the XML.
-#' To be useful in Rpath this needs to be further processed into an Rpath object.
+#' To be useful in Rpath this needs to be further processed into an Rpath object using the function `create.rpath.from.eiimxl`
 #'
 #' @inheritParams create.rpath.from.eiixml
 #'
 #' @return A list of data frames, one data frame for each node in the XML file.
+#'
+#' @family xml
 #'
 #' @examples
 #' \dontrun{
@@ -386,9 +386,10 @@ create.rpath.from.eiixml <- function(
 #' xml_data <- import.eiixml(eiixml)
 #' }
 #'
+#'
 #' @export
 
-import.eiixml <- function(eiifile, verbose = F, export = F) {
+import.eiixml <- function(eiifile, verbose = F) {
   # Warn as you go, not at the end
   options(warn = 1)
 
@@ -534,6 +535,8 @@ vec_na <- function(vec) {
 #' \item{ordstanzas}{}
 #' \item{stanza_name_only}{}
 #' \item{ordstages}{}
+#'
+#' @family xml
 #'
 #' @noRd
 make_stanza_table <- function(ewe_Stanza, ewe_StanzaLifeStage, pnames, gnames) {

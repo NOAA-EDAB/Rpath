@@ -22,7 +22,7 @@ Returns a static \code{Rpath} model that can be supplied to the
 \code{rsim.scenario} function.
 }
 \description{
-Performs initial mass balance using a \code{\link{Rpath.params}()} file
+Performs initial mass balance using a \code{Rpath.params()} file
 }
 \seealso{
 Other Rpath functions: 

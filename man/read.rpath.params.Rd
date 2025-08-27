@@ -29,7 +29,7 @@ be created.}
 \value{
 Outputs an \code{Rpath.param} object that can be used for Rpath and subsequently
  Rsim.  (NOTE: This does function does not ensure data is correct or in the
- correct locations.Run \code{\link{check.rpath.param}()} to ensure the appropriate columns are
+ correct locations.Run \code{check.rpath.params()} to ensure the appropriate columns are
  present).
 }
 \description{

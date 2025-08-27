@@ -17,7 +17,7 @@ Returns a data table of F values for each species/gear combination.
 \item{Total}{Sum over all gear types}
 }
 \description{
-Creates a table of fishing mortalities by species group and gear for an 
+Creates a table of fishing mortalities by species group and gear for an
 \code{rsim.scenario()} object.
 }
 \examples{
