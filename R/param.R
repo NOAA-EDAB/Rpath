@@ -92,8 +92,15 @@ create.rpath.params <- function(group, type, stgroup = NA) {
     #Individual Stanza Parameters
     ind.stanza.group <- model[!is.na(stgroup), Group]
     ieco <- which(!is.na(stgroup))
+    # KYA Aug 2025 - The StGroupNum =rep() line below assumes that the
+    # each stanza grouping is "together" not interleaved - this is not
+    # guaranteed.  The following lookup fixes that (data.frame used because
+    # data.table seems intractable to this).
+      stframe <- data.frame(stgroups)
+      row.names(stframe)<-stframe$StanzaGroup
+      gnum <- stframe[stgroup[!is.na(stgroup)],"StGroupNum"] 
     stindiv <- data.table(
-      StGroupNum = rep(stgroups[, StGroupNum], stgroups[, nstanzas]),
+      StGroupNum = gnum, #rep(stgroups[, StGroupNum], stgroups[, nstanzas]),
       StanzaNum  = as.integer(0),
       GroupNum   = ieco,
       Group      = ind.stanza.group,
