@@ -13,10 +13,10 @@ create.rpath.from.eiixml(eiifile, verbose = FALSE)
 }
 \value{
 An Rpath object (list) with the following components:
-\item{stanzas}{}
-\item{pedigree}{}
-\item{diet}{}
-\item{model}{}
+\item{stanzas}{Stanza parameters}
+\item{pedigree}{Pedigree parameters}
+\item{diet}{Diet parameters}
+\item{model}{Model parameters}
 }
 \description{
 Reads in the eiixml model format (XML) created from exporting a model from Ecobase GUI.

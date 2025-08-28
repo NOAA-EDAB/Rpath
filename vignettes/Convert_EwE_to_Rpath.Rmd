@@ -20,7 +20,7 @@ library(Rpath)
 
 If you have developed your model in Ecopath and you now want to bring it in to R and use Rpath for analysis, there are tools available in `Rpath` to do just that. First, you need to export your model from EwE to XML format. This will result in multiple files being exported to your machine. You will just need to locate the file with the extension `eiixml` and let `Rpath` do its magic!
 
-For example, take the model `West Bering seas.eiixml` exported from Ecobase. We can read in this file and convert it to an rpath object using the function `create.rpath.from.eiixml()`
+For example, take the model `Western_Bering_Sea.eiixml` exported from Ecobase. We can read in this file and convert it to an `Rpath` object using the function `create.rpath.from.eiixml()`
 
 ```{r convert1, echo = TRUE, eval = TRUE}
 # Read in the model
@@ -35,7 +35,7 @@ The variable `model` is a list object containing the data objects required to ba
 * pedigree - 
 * stanzas - 
 
-## The Group table
+## Model parameters
 
 ```{r group, echo = FALSE, eval = TRUE}
 model$model |> 
@@ -47,7 +47,7 @@ model$model |>
 
 ```
 
-## The Diet table
+## Diet parameters
 
 ```{r diet, echo = FALSE, eval = TRUE}
 model$diet |> 
@@ -59,7 +59,7 @@ model$diet |>
 
 ```
 
-## The Pedigree table
+## Pedigree parameters
 
 ```{r pedigree, echo = FALSE, eval = TRUE}
 model$pedigree |> 
@@ -71,7 +71,7 @@ model$pedigree |>
 
 ```
 
-## The Stanza info
+## Stanza parameters
 
 Some models also contain stanza information. This West Bering Sea model does not.
 However the `Rpath` object will contain an empty stanzas field as a place holder.
