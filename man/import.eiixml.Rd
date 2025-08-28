@@ -21,7 +21,7 @@ To be useful in Rpath this needs to be further processed into an Rpath object us
 \examples{
 # Export a model from Ecobase GUI to xml format
 # Path to an exported eiixml file
-eiixml <- system.file("extdata/xml","West_Bering_Sea.eiixml", package = "Rpath")
+eiixml <- system.file("extdata/xml","Western_Bering_Sea.eiixml", package = "Rpath")
 xml_data <- import.eiixml(eiixml)
 
 
