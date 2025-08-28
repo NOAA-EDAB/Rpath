@@ -53,6 +53,7 @@ Suggests:
     usethis,
     dplyr,
     generics,
+    DT,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
