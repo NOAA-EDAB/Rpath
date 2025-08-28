@@ -24,7 +24,7 @@ For example, take the model `West Bering seas.eiixml` exported from Ecobase. We 
 
 ```{r convert1, echo = TRUE, eval = TRUE}
 # Read in the model
-eiixml_file <- system.file("extdata/xml", "Western Bering Sea.eiixml", package = "Rpath")
+eiixml_file <- system.file("extdata/xml", "Western_Bering_Sea.eiixml", package = "Rpath")
 model <- create.rpath.from.eiixml(eiixml_file)
 ```
 
