@@ -23,8 +23,8 @@ of tables exported by EwE, including tables not currently imported into Rpath ob
 This function was tested on files exported by EwE version 6.7.
 }
 \examples{
-# Export a model from Ecobase GUI to xml format
-# Path to an exported eiixml file
+# Import an eiixml file previously exported from the EwE GUI into a list of
+# data frames containing the model data
 eiixml <- system.file("extdata/xml","Western_Bering_Sea.eiixml", package = "Rpath")
 xml_data <- import.eiixml(eiixml)
 

@@ -387,8 +387,8 @@ create.rpath.from.eiixml <- function(
 #' @family xml
 #'
 #' @examples
-#' # Export a model from Ecobase GUI to xml format
-#' # Path to an exported eiixml file
+#' # Import an eiixml file previously exported from the EwE GUI into a list of
+#' # data frames containing the model data
 #' eiixml <- system.file("extdata/xml","Western_Bering_Sea.eiixml", package = "Rpath")
 #' xml_data <- import.eiixml(eiixml)
 #'
