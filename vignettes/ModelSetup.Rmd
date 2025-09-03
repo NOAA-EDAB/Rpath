@@ -33,10 +33,13 @@ Unlike the GUI based EwE software package, Rpath relies on a parameter input fil
 This file is actually a list of several different parameter files: model, diet, 
 stanzas, and pedigree.  Parameter files can be created outside of R and read in using
 the `read.rpath.params()` function.  This function will merge several different flat
-files into an R object of the list type.  A preferred alternative is to generate 
+files into an R object of the list type.  An alternative is to generate 
 the list file and populate it completely within R.  The function 
 `create.rpath.params()` will generate an `Rpath.params` list object.  This ensures that all 
 of the correct columns are present in the parameter file.
+
+Additionally, an existing model can be imported from EwE, by first exporting the
+model from EwE in .eiixml format via the GUI interface, and using the `create.rpath.from.eiixml` function to read in the exported file (see the vignette `Convert_EwE_to_Rpath`).
 
 The parameter file contains all of the information you would normally enter in the
 input data tabs in EwE.  There are 2 necessary pieces of information to generate
