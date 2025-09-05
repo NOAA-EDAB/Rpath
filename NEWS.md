@@ -1,3 +1,20 @@
+# Rpath 1.1.0
+
+- Added ability to import .eiixml files via the `create.rpath.from.eiixml()` function
+- Added balance functionality to estimate P/B from input Biomass and EE, also
+allowing a missing Q/B to be estimated from input PC and the estimated P/B
+- Corrected accounting for single-stage interdetrital flows during balance
+- Behavior change: if all of P/B, Q/B, and PC are supplied as inputs for a group, recalculate PC during balance to ensure internal model consistency (instead of leaving PC unchanged and possibly inaccurate)
+- Improved error messages in `rpath()` balance routine to help diagnose models that are missing parameters
+- Improved warning message content in `check.rpath.params()` to aid diagnosis
+- Modified `rpath.stanzas()` so it no longer produces errors when called with a model that has no multistanza groups (instead it returns the model unchanged)
+- Added Western Bering Sea model .eiixml and EwE output csv files as an import example
+- Added `Convert_EwE_to_Rpath` vignette to describe .eiixml import process
+- Tested eiixml input routines on over 150 models available via EcoBase with most producing consistent results between Rpath and EwE; some remaining balancing differences between Rpath and EwE are noted in the `Convert_EwE_to_Rpath` vignette
+- Fixed some table ordering issues with stanza inputs
+- Documentation fixes
+
+
 # Rpath 1.0.0
 
 - Fix group parameter reference in `adjust.scenario`
