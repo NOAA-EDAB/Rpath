@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@
     <li><a class="dropdown-item" href="../articles/RunRpath.html">Create food web model</a></li>
     <li><a class="dropdown-item" href="../articles/RunRsim.html">Run food web simulation</a></li>
     <li><a class="dropdown-item" href="../articles/ecosense.html">Create an ensemble</a></li>
+    <li><a class="dropdown-item" href="../articles/Convert_EwE_to_Rpath.html">Convert EwE to Rpath</a></li>
     <li><a class="dropdown-item" href="../articles/UnitTests.html">Unit testing</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -40,6 +41,21 @@
       <small>Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.0" id="rpath-110">Rpath 1.1.0<a class="anchor" aria-label="anchor" href="#rpath-110"></a></h2>
+<ul><li>Added ability to import .eiixml files via the <code><a href="../reference/create.rpath.from.eiixml.html">create.rpath.from.eiixml()</a></code> function</li>
+<li>Added balance functionality to estimate P/B from input Biomass and EE, also allowing a missing Q/B to be estimated from input PC and the estimated P/B</li>
+<li>Corrected accounting for single-stage interdetrital flows during balance</li>
+<li>Behavior change: if all of P/B, Q/B, and PC are supplied as inputs for a group, recalculate PC during balance to ensure internal model consistency (instead of leaving PC unchanged and possibly inaccurate)</li>
+<li>Improved error messages in <code><a href="../reference/rpath.html">rpath()</a></code> balance routine to help diagnose models that are missing parameters</li>
+<li>Improved warning message content in <code><a href="../reference/check.rpath.params.html">check.rpath.params()</a></code> to aid diagnosis</li>
+<li>Modified <code><a href="../reference/rpath.stanzas.html">rpath.stanzas()</a></code> so it no longer produces errors when called with a model that has no multistanza groups (instead it returns the model unchanged)</li>
+<li>Added Western Bering Sea model .eiixml and EwE output csv files as an import example</li>
+<li>Added <code>Convert_EwE_to_Rpath</code> vignette to describe .eiixml import process</li>
+<li>Tested eiixml input routines on over 150 models available via EcoBase with most producing consistent results between Rpath and EwE; some remaining balancing differences between Rpath and EwE are noted in the <code>Convert_EwE_to_Rpath</code> vignette</li>
+<li>Fixed some table ordering issues with stanza inputs</li>
+<li>Documentation fixes</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="rpath-100">Rpath 1.0.0<a class="anchor" aria-label="anchor" href="#rpath-100"></a></h2>
 <ul><li>Fix group parameter reference in <code>adjust.scenario</code>

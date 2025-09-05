@@ -3,6 +3,7 @@
 <url><loc>https://noaa-edab.github.io/Rpath/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/CONTRIBUTING.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/LICENSE-text.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/articles/Convert_EwE_to_Rpath.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/articles/ModelSetup.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/articles/Rpath.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/articles/RunRpath.html</loc></url>
@@ -24,6 +25,7 @@
 <url><loc>https://noaa-edab.github.io/Rpath/reference/adjust.forcing.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/adjust.scenario.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/check.rpath.params.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/create.rpath.from.eiixml.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/create.rpath.params.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/extract.node.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/frate.table.html</loc></url>
@@ -33,6 +35,7 @@
 <url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.stanzas.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/get.rsim.start_state.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/ggwebplot.html</loc></url>
+<url><loc>https://noaa-edab.github.io/Rpath/reference/import.eiixml.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/index.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/read.rpath.params.html</loc></url>
 <url><loc>https://noaa-edab.github.io/Rpath/reference/rpath.consumers.html</loc></url>

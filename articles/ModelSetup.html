@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/RunRpath.html">Create food web model</a></li>
     <li><a class="dropdown-item" href="../articles/RunRsim.html">Run food web simulation</a></li>
     <li><a class="dropdown-item" href="../articles/ecosense.html">Create an ensemble</a></li>
+    <li><a class="dropdown-item" href="../articles/Convert_EwE_to_Rpath.html">Convert EwE to Rpath</a></li>
     <li><a class="dropdown-item" href="../articles/UnitTests.html">Unit testing</a></li>
   </ul>
 </li>
@@ -91,11 +92,16 @@ parameter input file. This file is actually a list of several different
 parameter files: model, diet, stanzas, and pedigree. Parameter files can
 be created outside of R and read in using the
 <code><a href="../reference/read.rpath.params.html">read.rpath.params()</a></code> function. This function will merge
-several different flat files into an R object of the list type. A
-preferred alternative is to generate the list file and populate it
-completely within R. The function <code><a href="../reference/create.rpath.params.html">create.rpath.params()</a></code>
-will generate an <code>Rpath.params</code> list object. This ensures
-that all of the correct columns are present in the parameter file.</p>
+several different flat files into an R object of the list type. An
+alternative is to generate the list file and populate it completely
+within R. The function <code><a href="../reference/create.rpath.params.html">create.rpath.params()</a></code> will generate
+an <code>Rpath.params</code> list object. This ensures that all of the
+correct columns are present in the parameter file.</p>
+<p>Additionally, an existing model can be imported from EwE, by first
+exporting the model from EwE in .eiixml format via the GUI interface,
+and using the <code>create.rpath.from.eiixml</code> function to read in
+the exported file (see the vignette
+<code>Convert_EwE_to_Rpath</code>).</p>
 <p>The parameter file contains all of the information you would normally
 enter in the input data tabs in EwE. There are 2 necessary pieces of
 information to generate the parameter file: the group names and their
