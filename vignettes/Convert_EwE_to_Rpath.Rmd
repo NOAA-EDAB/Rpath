@@ -30,10 +30,10 @@ model <- create.rpath.from.eiixml(eiixml_file)
 
 The variable `model` is a list object containing the data objects required to balance your model and run simulations. There are 4 objects that comprise an `Rpath` object
 
-* model - 
-* diet - 
-* pedigree - 
-* stanzas - 
+* model
+* diet  
+* pedigree
+* stanzas  
 
 ## Model parameters
 

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Parses an eiixml file exported using the Ecopath with Ecosim (EwE) GUI
-#' into an unbalanced Rpath model object, which can then be balanced. 
+#' into an unbalanced Rpath model object, which can then be balanced.
 #' This function was tested on files exported by EwE version 6.7.
 #'
 #' @param eiifile Path to exported EwE XML file
@@ -373,8 +373,8 @@ create.rpath.from.eiixml <- function(
 #' Reads in EwE exported XML file and parses into data frames
 #'
 #' @description
-#' Parses an eiixml file exported using the Ecopath with Ecosim (EwE) GUI into a list of data frames, 
-#' one frame for each table in the exported XML file. This function is usually called by the function `create.rpath.from.eiimxl` that
+#' Parses an eiixml file exported using the Ecopath with Ecosim (EwE) GUI into a list of data frames,
+#' one frame for each table in the exported XML file. This function is usually called by the function \code{create.rpath.from.eiixml()} that
 #' converts these tables into an unbalanced rpath model object. However import.xml can be used on its own to examine the full set
 #' of tables exported by EwE, including tables not currently imported into Rpath objects, such as Ecosim runs or model metadata.
 #' This function was tested on files exported by EwE version 6.7.
@@ -382,7 +382,7 @@ create.rpath.from.eiixml <- function(
 #' @inheritParams create.rpath.from.eiixml
 #'
 #' @return A list of data frames, one data frame for each node (exported EwE table) in the XML file. Each table
-#' has the naming convention ewe_[table name] where [table name] is the name of the table provided by EwE.   
+#' has the naming convention ewe_[table name] where [table name] is the name of the table provided by EwE.
 #'
 #' @family xml
 #'
