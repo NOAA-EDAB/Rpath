@@ -12,7 +12,7 @@ rpath.stanzas(Rpath.params)
  or \code{\link{read.rpath.params}()} functions.}
 }
 \value{
-Calculates and adds biomass and consumption for trailing stanza groups.  
+Calculates and adds biomass and consumption for trailing stanza groups.
  Also adds weight at age and number at age for multi-staza groups.
 }
 \description{

@@ -45,7 +45,7 @@ Rpath <- rpath(AB.params)
 # Create a 50 yr Rsim scenario
 Rsim.scenario <- rsim.scenario(Rpath, AB.params, years = 1:50)
 # Adjust the ForcedPrey parameter for cod in year 1 for all months. Change the value to 10
-Rsim.scenario.adjusted <- adjust.forcing(Rsim.scenario, parameter="ForcedPrey",group = "cod", sim.year = 1, sim.month=0,value=10)   
+Rsim.scenario.adjusted <- adjust.forcing(Rsim.scenario, parameter="ForcedPrey",group = "cod", sim.year = 1, sim.month=0,value=10)
 head(Rsim.scenario.adjusted$forcing$ForcedPrey)
 
 

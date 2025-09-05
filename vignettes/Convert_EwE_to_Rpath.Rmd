@@ -1,0 +1,136 @@
+---
+title: "Convert EwE to Rpath"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Convert EwE to Rpath}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Rpath)
+```
+
+If you have developed your model in the Ecopath with Ecosim (EwE) software package and you now want to bring it into Rpath for analysis, there are tools available in `Rpath` to do just that. First, you need to export your model from EwE to XML format, using EwE's `File -> Export Model -> To XML` menu option to create a .eiixml file (all EwE functionality described here was tested using EwE version 6.7.0).  
+
+For this example, the Western Bering Sea EwE model available for download on EcoBase (Aydin et al. 2002) was first imported into EwE, using EwE's Import Model menu option, then exported to the file `Western_Bering_Sea.eiixml`. We can read in this file and convert it to an `Rpath` object using the function `create.rpath.from.eiixml()`. 
+
+```{r convert1, echo = TRUE, eval = TRUE}
+# Read in the model
+eiixml_file <- system.file("extdata/xml", "Western_Bering_Sea.eiixml", package = "Rpath")
+model <- create.rpath.from.eiixml(eiixml_file)
+```
+
+Currently, the `create.rpath.from.eiixml()` will only import input parameters related to the unbalanced
+Ecopath model, and will not import Ecosim information or other supplementary tables.  However, the full
+set of tables in an .eiixml file can be examined (or manually imported) using the `import.eiixml()` 
+helper function. 
+
+The variable `model` is a list object (an unbalanced Ecopath model) containing the data objects required to balance your model and run simulations. There are 4 objects that comprise an `Rpath` object:
+
+* model - including basic inputs, detritus fate, other production, and fishery landings/discards.
+* diet - a diet matrix, including diet import.
+* stanzas - parameters for multi-stanza functional groups.
+* pedigree - data pedigree (quality) for the model.
+
+Prepare your imported model for balancing by first calculating
+multistanza parameters that are based on age structure (such as B and Q/B), using the 
+`rpath.stanzas()` function, then using the `check.rpath.params()` function to ensure all of the
+model's parameters are entered (If your model has no multistanza groups, `rpath.stanzas()`
+can be called but will not change the model). The `check.rpath.params()` function will
+make sure the data was read in correctly, and produce warnings in situations that might
+prevent the model from balancing; for example, if a functional group is missing too many
+parameters to be balanced, or if diet compositions for a predator do not sum to 1.
+
+```{r check, echo = TRUE, eval = TRUE}
+model <- rpath.stanzas(model)
+check.rpath.params(model)
+```
+
+## Model parameters
+
+To compare Rpath balance results with EwE, first balance the model in EwE and use 
+EwE's "Save to a csv" icon on EwE's Outputs -> Basic estimates tab (upper right
+corner).  It is recommended that you first increase the precision (digits displayed)
+in EwE to 8 digits.  The following script, using the dplyr library, can then compare the
+resulting balances.
+
+```{r compare, echo = TRUE, eval = TRUE}
+
+# dplyr is used to match the Rpath and EwE balance results
+  library(dplyr, warn.conflicts=F)
+
+# EwE output files - eiixml file and Basic Estimates csv
+  eiifile <- system.file("extdata/xml", "Western_Bering_Sea.eiixml", package = "Rpath")
+  csvfile <- system.file("extdata/xml", "Western Bering Sea-Basic estimates.csv", package = "Rpath")
+
+# Load and balance the model in Rpath  
+  unbal  <- create.rpath.from.eiixml(eiifile)
+  unbal <- rpath.stanzas(unbal)
+  check.rpath.params(unbal)
+  bal <- rpath(unbal)
+  
+# Load the csv file and clean up the format
+  csv.out <- read.csv(csvfile)
+  # If there's no stanzas, the total mortality column will be missing from the CSV - add an extra column
+  if(length(csv.out)<13){csv.out <- data.frame(append(csv.out, list(tm=NA), after=6))}
+  # cleaned column names matching EwE output
+  names(csv.out)<-  c("X", "Group.name", "Trophic.level", "Hab.area", "Biomass.in.habitat.area",
+                    "Biomass", "Total.mortality", "Production.biomass", "Consumption.biomass",   
+                    "Ecotrophic.Efficiency", "Production.consumption", "Biomass.accumulation",
+                    "BA.rate")  
+  # Drop placeholder lines that head stanza groups
+  csv.out <- csv.out[!is.na(csv.out$X),]
+  # Clean names to rpath standard
+  csv.out$group <- janitor::make_clean_names(csv.out$Group.name)
+  
+# Create a data frame of rpath (balanced model) output 
+  rpath.dat <- data.frame(group=bal$Group,type=bal$type, tl=bal$TL, biomass=bal$Biomass,
+                          pb=bal$PB,qb=bal$QB, EE=bal$EE, pc=bal$GE, 
+                          ba=bal$BA)[c(rpath.living(bal), rpath.detrital(bal)),]
+  
+# Join rpath and EwE balance outputs, using dplyr
+  rpath_ewe_table <- rpath.dat %>% 
+    dplyr::left_join(csv.out, by="group") %>%
+    dplyr::mutate( biomass_test = abs(biomass-Biomass)/Biomass, 
+                   ee_test      = abs(EE-Ecotrophic.Efficiency)) %>%
+    dplyr::select(group, rpath.biomass=biomass, ewe.biomass=Biomass, prop.bio.diff=biomass_test,
+                  rpath.EE=EE, ewe.EE=Ecotrophic.Efficiency, EE.diff=ee_test)
+
+  rpath_ewe_table 
+  
+```
+
+## Differences between Rpath and EwE balances
+
+Rpath was tested using the 150+ models available on EcoBase.  In general, differences
+between Rpath and EwE were within 1.0e-7 of each other for any given estimated EE, B,
+or P/B, with differences due to
+numerical precision of inputs.  Stanza groups may show differences of up to 1.0e-3
+due to accumulated differences summing across age groups.  However, there are
+some specific differences in functionality in some models:
+
+* Q/B - Rpath does not currently estimate Q/B as part of the main balancing (i.e. to 
+estimate Q/B, both P/B and PC must be supplied).
+* Interdetrital flows - For models with three or more stages of interdetrital
+flows (that is, if detritus fate specifies thart Detritus A -> Detritus B -> Detritus C),
+results may differ between Rpath and EwE.  Two-stage detrital flows (Detritus A -> Detritus B)
+give matching results.
+* Rpath will not currently estimate BA.  In cases where all of B, EE, and P/B are
+supplied, Rpath will not estimate BA or make changes to the model, and may produce
+inconsistent results if one of those paramters isn't set to NA.
+* Rpath does not currently support BA rate, only total BA.  If your model has a BA rate,
+it is recommended that you calculate the total BA in EwE (as an output), and enter
+that value into Rpath.
+
+
+
+
+

@@ -17,7 +17,7 @@ Fleet = 3.}
 \value{
 Outputs a list object of \code{Rpath.params} which are populated with values
  of NA or logical default values.  Values can then be filled in using
- R.  Use \code{\link{check.rpath.params}()} to ensure parameter files are filled out
+ R.  Use \code{check.rpath.params()} to ensure parameter files are filled out
  correctly (NOTE: This does not ensure data is correct just that it is
  in the right places).
 }
