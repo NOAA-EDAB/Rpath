@@ -14,7 +14,7 @@ check.rpath.params(Rpath.params)
 \value{
 Checks Rpath parameter files for consistency.  An error message will be produced if one of
  the logical checks fails. Checks include: verification that all types are represented (e.g. consumer, producer, detrital, and fleet);
- check if input parameters were entered correctly; check if Diet columns sum to 1. 
+ check if input parameters were entered correctly; check if Diet columns sum to 1.
  (NOTE: This does not ensure data is correct just that it is in the right places).
 }
 \description{
