@@ -224,7 +224,7 @@ List Adams_run (List params, List instate, List forcing, List fishing, List stan
                  int StartYear, int EndYear, List InitDeriv){
      
 int y, m, dd; 
-
+//std::cout << " x1 ";
 // Get some basic needed numbers from the params List
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
    const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
@@ -254,15 +254,27 @@ int y, m, dd;
    
 // Parameters from stanzas
    const int Nsplit         = as<int>(stanzas["Nsplit"]);
-
+   const int Totstanzas     = as<int>(stanzas["Totstanzas"]);
+   const NumericVector Nstanzas = as<NumericVector>(stanzas["Nstanzas"]);
+   const NumericVector MaxAge   = as<NumericVector>(stanzas["MaxAge"]);
+   NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
+   //std::cout << " x1a ";
+   // stanza outputs
+      NumericMatrix out_SSB(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_eggs(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_Winf(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_Ninf(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_Wrec(EndYear * 12, Totstanzas + 1);
+      NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1);      
+      //std::cout << " x1b ";   
 // Parameter need to track catch by Gear
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
    NumericMatrix out_Biomass( EndYear * 12, NUM_BIO + 1);           
    NumericMatrix out_Catch( EndYear * 12, NUM_BIO + 1);          
-   NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
-   NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
+   //NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
+   //NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
    NumericMatrix out_Gear_Catch(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
    NumericMatrix annual_Catch(EndYear, NUM_BIO+1);
@@ -274,7 +286,12 @@ int y, m, dd;
 // Use Clone to make sure state/stanzas are copies of instate/instanzas, not pointers   
    List state = clone(instate);
    //List stanzas = clone(instanzas);
-   
+   //std::cout << " x1c "; 
+   NumericMatrix NageS          = as<NumericMatrix>(state["NageS"]);
+   NumericMatrix WageS          = as<NumericMatrix>(state["WageS"]);
+   NumericVector SpawnBio       = as<NumericVector>(state["SpawnBio"]);
+   NumericVector EggsStanza     = as<NumericVector>(state["EggsStanza"]);
+   //std::cout << " x1d "; 
    // Update sums of split groups to total biomass for derivative calcs
    if(Nsplit > 0){
      SplitSetPred(stanzas, state); 
@@ -284,7 +301,7 @@ int y, m, dd;
       List dyt = InitDeriv;
 
    dd = StartYear * STEPS_PER_YEAR;
-
+   //std::cout << "x2";
 // MAIN LOOP STARTS HERE
 // ASSUMES STEPS_PER_MONTH will always be 1.0, took out divisions     
    for (y = StartYear; y <= EndYear; y++){
@@ -392,8 +409,8 @@ int y, m, dd;
   
      // Write to output matricies     				          									                    
         out_Biomass( dd, _) = old_Biomass;
-        out_SSB(dd, _) = old_Biomass;
-        out_rec(dd, _) = old_Biomass;
+        //out_SSB(dd, _) = old_Biomass;
+        //out_rec(dd, _) = old_Biomass;
         out_Catch( dd, _) = new_Catch;
         out_Gear_Catch(dd, _) = new_Gear_Catch;
         annual_Catch(y-1, _) = annual_Catch(y-1, _) + new_Catch;
@@ -402,12 +419,22 @@ int y, m, dd;
           annual_QB(y-1, _)    = FoodGain/old_Biomass;
           annual_Qlink(y-1, _) = Qlink;
         }
-        
-     //NOJUV    for (i = 1; i <= juv_N; i++){
-     //NOJUV    out_SSB(dd, JuvNum[i]) = 0.0;
-     //NOJUV 		out_SSB(dd, AduNum[i]) = SpawnBio[i];
-     //NOJUV 		out_rec(dd, AduNum[i]) = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
-
+        //std::cout << "x3";      
+     // Write stanza outputs
+        int sind, isp, ist;
+        sind = 0;
+        for (isp=1; isp<=Nsplit; isp++){
+          out_Winf(dd,isp) = WageS(MaxAge[isp], isp);
+          out_Ninf(dd,isp) = NageS(MaxAge[isp], isp); 
+          out_SSB(dd,isp)  = SpawnBio[isp];
+          out_eggs(dd,isp) = EggsStanza[isp];  
+          for (ist=1; ist<=Nstanzas[isp]; ist++){
+            sind++;
+            out_Nrec(dd,sind) = NageS(Age1(isp,ist), isp);
+            out_Wrec(dd,sind) = WageS(Age1(isp,ist), isp);
+          }
+        }
+        //std::cout << "x4";
      }  // End of main months loop
      
    }// End of years loop
@@ -432,7 +459,13 @@ int y, m, dd;
      _["annual_Catch"]=annual_Catch,
      _["annual_Biomass"]=annual_Biomass,
      _["annual_QB"]=annual_QB,
-     _["annual_Qlink"]=annual_Qlink,     
+     _["annual_Qlink"]=annual_Qlink,
+     _["out_SSB"]=out_SSB,
+     _["out_eggs"]=out_eggs,
+     _["out_Winf"]=out_Winf,
+     _["out_Ninf"]=out_Ninf,
+     _["out_Nrec"]=out_Nrec,
+     _["out_Wrec"]=out_Wrec,
      _["end_state"]=state,
      _["crash_year"]=CRASH_YEAR,
      _["dyt"]=dyt);

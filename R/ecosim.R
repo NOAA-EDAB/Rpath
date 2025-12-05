@@ -165,6 +165,12 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100) {
   colnames(rout$annual_QB) <- sps
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
   
+  colnames(rout$out_SSB)  <- scene$stanzas$Oldest
+  colnames(rout$out_eggs) <- scene$stanzas$Oldest
+  colnames(rout$out_Ninf) <- scene$stanzas$Oldest
+  colnames(rout$out_Winf) <- scene$stanzas$Oldest
+  colnames(rout$out_Nrec) <- scene$stanzas$Groups       
+  colnames(rout$out_Wrec) <- scene$stanzas$Groups   
   # drop the last row (should be always 0; negative index is entry to drop)
   #lastone <- length(rout$annual_Catch[,1])
   #rout$annual_Catch <-    rout$annual_Catch[-lastone,]
@@ -772,6 +778,7 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$Nsplit      <- juvfile$NStanzaGroups
     #Need leading zeros (+1 col/row) to make indexing in C++ easier
     rstan$Nstanzas    <- c(0, juvfile$stgroups$nstanzas)
+    rstan$Totstanzas  <- sum(rstan$Nstanzas)
     rstan$EcopathCode <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
     rstan$Age1        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
     rstan$Age2        <- matrix(NA, rstan$Nsplit + 1, max(rstan$Nstanzas) + 1)
@@ -866,6 +873,23 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$RscaleSplit    <- c(0, rep(1, rstan$Nsplit))
     #sPred1<-sPred+1; rstan$stanzaPred     <- sPred1-1
     sPred1<-sPred+1; rstan$baseStanzaPred <- sPred1-1
+
+    # KYA 12/5/25 - added max.age to sim stanza object for indexing ssb during run
+    rstan$Oldest <- c("Outside", rep(NA, rstan$Nsplit))
+    rstan$Groups <- c("Outside", rep(NA, rstan$Totstanzas))
+    rstan$MaxAge     <- c(0, rep(0,  rstan$Nsplit))
+    sind <- 1
+    for(isp in 1:rstan$Nsplit){
+      for(ist in 1:rstan$Nstanzas[isp + 1]){
+        sind <- sind + 1
+        ieco <- 1 + rstan$EcopathCode[isp+1, ist+1] 
+        rstan$MaxAge[isp+1] <- max(rstan$MaxAge[isp+1], rstan$Age2[isp+1,ist+1])
+        if (rstan$MaxAge[isp+1] == rstan$Age2[isp+1,ist+1]){
+          rstan$Oldest[isp+1] <- params$spname[ieco]
+        }
+        rstan$Groups[sind] <- params$spname[ieco]
+      }
+    }
     
     # SplitSetPred(rstan, state)
   }
@@ -875,6 +899,7 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$Nsplit      <- juvfile$NStanzaGroups
     #Need leading zeros (+1 col/row) to make indexing in C++ easier
     rstan$Nstanzas       <- c(0, 0)
+    rstan$Totstanzas     <- 0
     rstan$EcopathCode    <- matrix(rep(0, 4), 2, 2)
     rstan$Age1           <- matrix(rep(0, 4), 2, 2)
     rstan$Age2           <- matrix(rep(0, 4), 2, 2)
@@ -902,7 +927,9 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$baseSpawnBio   <- c(0, 0)
     rstan$RscaleSplit    <- c(0, 0)
     rstan$baseStanzaPred <- c(0, 0)
-    
+    rstan$Oldest <- c("Outside", "None")
+    rstan$Groups <- c("Outside", "None")
+    rstan.MaxAge         <- c(0,0)
   }
   
   
