@@ -49,6 +49,7 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
   rownames(annual_Qlink) <- ylist  
   
   full.run$out_Biomass <- rbind(full.run$out_Biomass, next.run$out_Biomass[start.month:end.month, ])
+  full.run$out_SSB     <- rbind(full.run$out_SSB, next.run$out_SSB[start.month:end.month, ])
   full.run$out_Catch <- rbind(full.run$out_Catch, next.run$out_Catch[start.month:end.month, ])
   full.run$out_Gear_Catch <- rbind(full.run$out_Gear_Catch, 
                                 next.run$out_Gear_Catch[start.month:end.month, ])
