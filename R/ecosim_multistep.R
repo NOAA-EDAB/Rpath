@@ -29,7 +29,7 @@ rsim.step <- function(Rsim.scenario, Rsim.output, method = 'AB',year.end){
     next.run <- Adams_run(Rsim.scenario$params, full.run$end_state,
                           Rsim.scenario$forcing, Rsim.scenario$fishing,
                           Rsim.scenario$stanzas, step.start, step.end,
-                          full.run$dyt)
+                          full.run$dyt, 0, 0)
   }
   #Merge runs
   last <- nrow(full.run$out_Biomass)

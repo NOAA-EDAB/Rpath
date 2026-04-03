@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rk4_run
-List rk4_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear);
-RcppExport SEXP _Rpath_rk4_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP) {
+List rk4_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear, int spnum, int spstanza);
+RcppExport SEXP _Rpath_rk4_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP, SEXP spnumSEXP, SEXP spstanzaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,13 +23,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type stanzas(stanzasSEXP);
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
-    rcpp_result_gen = Rcpp::wrap(rk4_run(params, instate, forcing, fishing, stanzas, StartYear, EndYear));
+    Rcpp::traits::input_parameter< int >::type spnum(spnumSEXP);
+    Rcpp::traits::input_parameter< int >::type spstanza(spstanzaSEXP);
+    rcpp_result_gen = Rcpp::wrap(rk4_run(params, instate, forcing, fishing, stanzas, StartYear, EndYear, spnum, spstanza));
     return rcpp_result_gen;
 END_RCPP
 }
 // Adams_run
-List Adams_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear, List InitDeriv);
-RcppExport SEXP _Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP, SEXP InitDerivSEXP) {
+List Adams_run(List params, List instate, List forcing, List fishing, List stanzas, int StartYear, int EndYear, List InitDeriv, int spnum, int spstanza);
+RcppExport SEXP _Rpath_Adams_run(SEXP paramsSEXP, SEXP instateSEXP, SEXP forcingSEXP, SEXP fishingSEXP, SEXP stanzasSEXP, SEXP StartYearSEXP, SEXP EndYearSEXP, SEXP InitDerivSEXP, SEXP spnumSEXP, SEXP spstanzaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +43,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
     Rcpp::traits::input_parameter< int >::type EndYear(EndYearSEXP);
     Rcpp::traits::input_parameter< List >::type InitDeriv(InitDerivSEXP);
-    rcpp_result_gen = Rcpp::wrap(Adams_run(params, instate, forcing, fishing, stanzas, StartYear, EndYear, InitDeriv));
+    Rcpp::traits::input_parameter< int >::type spnum(spnumSEXP);
+    Rcpp::traits::input_parameter< int >::type spstanza(spstanzaSEXP);
+    rcpp_result_gen = Rcpp::wrap(Adams_run(params, instate, forcing, fishing, stanzas, StartYear, EndYear, InitDeriv, spnum, spstanza));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -93,8 +97,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Rpath_rk4_run", (DL_FUNC) &_Rpath_rk4_run, 7},
-    {"_Rpath_Adams_run", (DL_FUNC) &_Rpath_Adams_run, 8},
+    {"_Rpath_rk4_run", (DL_FUNC) &_Rpath_rk4_run, 9},
+    {"_Rpath_Adams_run", (DL_FUNC) &_Rpath_Adams_run, 10},
     {"_Rpath_deriv_vector", (DL_FUNC) &_Rpath_deriv_vector, 8},
     {"_Rpath_SplitSetPred", (DL_FUNC) &_Rpath_SplitSetPred, 2},
     {"_Rpath_SplitUpdate", (DL_FUNC) &_Rpath_SplitUpdate, 6},

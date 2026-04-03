@@ -118,9 +118,23 @@ rsim.scenario <- function(Rpath, Rpath.params, years = 1:100){
 #'   
 #'@export
 #'
-rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100) {
+rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100, spname = NULL) {
   
-  scene <- copy(Rsim.scenario) 
+  scene <- copy(Rsim.scenario)
+  
+  # Look up C code species number from species name
+    if (length(spname)>1){stop("Only one name allowed for species name.")}
+    if(is.null(spname)){
+      sp.num <- 0
+    } else {
+      sp.num <- as.numeric(scene$params$spnum[spname])
+      if(is.na(sp.num)){sp.num <- 0; warning("Group ",spname," for diagnostics output.")}
+    }
+  
+  # Check if the species code is associated with a stanza  
+    sp.stanza <- which(scene$stanzas$EcopathCode %in% sp.num) %% (scene$stanzas$Nsplit+1) - 1
+    if(length(sp.stanza)!=1){sp.stanza <- 0}
+  
   
   # Perform argument checks: Check method name and figure out starting and ending years for run
   if (method != 'RK4' && method != 'AB') {
@@ -143,7 +157,7 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100) {
   if (method == 'RK4') {
     rout <- rk4_run(scene$params,  scene$start_state, 
                     scene$forcing, scene$fishing,
-                    scene$stanzas, syear, eyear)
+                    scene$stanzas, syear, eyear, sp.num, sp.stanza)
   } else if (method == 'AB') {
     #Run initial derivative
     derv <- deriv_vector(scene$params, scene$start_state, 
@@ -154,7 +168,7 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100) {
     #Run Adams-Bashforth Algorithm
     rout <- Adams_run(scene$params,  scene$start_state, 
                       scene$forcing, scene$fishing,
-                      scene$stanzas, syear, eyear, derv)
+                      scene$stanzas, syear, eyear, derv, sp.num, sp.stanza)
   }
   # Nicely Name output vectors
   sps <- scene$params$spname[1:(1+scene$params$NUM_BIO)]
@@ -927,9 +941,9 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$baseSpawnBio   <- c(0, 0)
     rstan$RscaleSplit    <- c(0, 0)
     rstan$baseStanzaPred <- c(0, 0)
-    rstan$Oldest <- c("Outside", "None")
-    rstan$Groups <- c("Outside", "None")
-    rstan.MaxAge         <- c(0,0)
+    rstan$Oldest <- c("Outside")
+    rstan$Groups <- c("Outside")
+    rstan$MaxAge         <- c(0,0)
   }
   
   

@@ -6,10 +6,10 @@
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
 List rk4_run (List params, List instate, List forcing, List fishing, List stanzas,
-                 int StartYear, int EndYear){
+                 int StartYear, int EndYear, int spnum, int spstanza){
 
    int y, m, dd, t; 
-// Input rates are in units of years or years^-1.  Integration is wri tten so
+// Input rates are in units of years or years^-1.  Integration is written so
 // that integration timesteps always line up with months, for data reasons.
 // STEPS_PER_YEAR should be 12 (for months), and STEPS_PER_MONTH sets the
 // rk4 integration timestep.  So effective integration timestep with respect
@@ -221,7 +221,7 @@ List outdat = List::create(
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
 List Adams_run (List params, List instate, List forcing, List fishing, List stanzas,
-                 int StartYear, int EndYear, List InitDeriv){
+                 int StartYear, int EndYear, List InitDeriv, int spnum, int spstanza){
      
 int y, m, dd; 
 //std::cout << " x1 ";
@@ -265,7 +265,11 @@ int y, m, dd;
       NumericMatrix out_Winf(EndYear * 12, Nsplit + 1);
       NumericMatrix out_Ninf(EndYear * 12, Nsplit + 1);
       NumericMatrix out_Wrec(EndYear * 12, Totstanzas + 1);
-      NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1);      
+      NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1); 
+      
+  // Species diagnostic outputs
+     NumericMatrix out_species_deriv(EndYear * 12, 10); 
+     
       //std::cout << " x1b ";   
 // Parameter need to track catch by Gear
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
@@ -324,6 +328,19 @@ int y, m, dd;
          NumericVector biomeq      = as<NumericVector>(dyt["biomeq"]);
          NumericVector FishingLoss = as<NumericVector>(dyt["FishingLoss"]);  
          NumericVector Qlink       = as<NumericVector>(dyt["Qlink"]);
+         
+         // Added for per-species diagnostics
+         NumericVector FoodLoss       = as<NumericVector>(dyt["FoodLoss"]); 
+         //"FoodGain", 
+         NumericVector DetritalGain   = as<NumericVector>(dyt["DetritalGain"]);
+         NumericVector FishingGain    = as<NumericVector>(dyt["FishingGain"]);
+         NumericVector UnAssimLoss    = as<NumericVector>(dyt["UnAssimLoss"]);
+         NumericVector ActiveRespLoss = as<NumericVector>(dyt["ActiveRespLoss"]);
+         NumericVector MzeroLoss      = as<NumericVector>(dyt["MzeroLoss"]);
+         //"FishingLoss",
+         NumericVector DetritalLoss   = as<NumericVector>(dyt["DetritalLoss"]);
+         NumericVector MigrateLoss    = as<NumericVector>(dyt["MigrateLoss"]);
+         
                
       // Now Update the new State Biomass using Adams-Basforth
          NumericVector new_Biomass = 
@@ -434,6 +451,20 @@ int y, m, dd;
             out_Wrec(dd,sind) = WageS(Age1(isp,ist), isp);
           }
         }
+        
+      // Write diagnostic species outputs
+        //FoodGain, DetritalGain, FishingGain, FoodLoss, UnAssimLoss, ActiveRespLoss,
+        //MzeroLoss, FishingLoss, DetritalLoss, MigrateLoss
+        out_species_deriv(dd, 0) = FoodGain[spnum];
+        out_species_deriv(dd, 1) = DetritalGain[spnum];        
+        out_species_deriv(dd, 2) = FishingGain[spnum];
+        out_species_deriv(dd, 3) = FoodLoss[spnum];
+        out_species_deriv(dd, 4) = UnAssimLoss[spnum];
+        out_species_deriv(dd, 5) = ActiveRespLoss[spnum];
+        out_species_deriv(dd, 6) = MzeroLoss[spnum];
+        out_species_deriv(dd, 7) = FishingLoss[spnum];
+        out_species_deriv(dd, 8) = DetritalLoss[spnum];
+        out_species_deriv(dd, 9) = MigrateLoss[spnum];
         //std::cout << "x4";
      }  // End of main months loop
      
@@ -460,6 +491,7 @@ int y, m, dd;
      _["annual_Biomass"]=annual_Biomass,
      _["annual_QB"]=annual_QB,
      _["annual_Qlink"]=annual_Qlink,
+     _["out_species_deriv"]=out_species_deriv,
      _["out_SSB"]=out_SSB,
      _["out_eggs"]=out_eggs,
      _["out_Winf"]=out_Winf,
@@ -835,6 +867,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      _["MzeroLoss"]=MzeroLoss,
      _["FishingLoss"]=FishingLoss,
      _["DetritalLoss"]=DetritalLoss,
+     _["MigrateLoss"]=MigrateLoss,
      _["FishingThru"]=FishingThru,
      //_["PredSuite"]=PredSuite,
      //_["HandleSuite"]=HandleSuite,
