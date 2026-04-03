@@ -179,6 +179,14 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100, spname = NULL
   colnames(rout$annual_QB) <- sps
   colnames(rout$annual_Qlink)<-1:(length(rout$annual_Qlink[1,]))
   
+  colnames(rout$out_species_rates) <- c("FoodGain", "DetritalGain", "FishingGain", 
+                                        "FoodLoss", "UnAssimLoss", "ActiveRespLoss",
+                                        "MzeroLoss", "FishingLoss", "DetritalLoss", "MigrateLoss")
+  # Divide rates by biomass, with offset of 1 for beginning of timestep biomass not end of timestep
+  StartBio <- c(as.numeric(scene$start_state$Biomass[sp.num]), head(rout$out_Biomass[,sp.num],-1))
+  rout$out_species_rates <- cbind(StartBio, rout$out_species_rates[,1:10]/StartBio)
+  #rout$out_species_rates[,1:10] <- rout$out_species_rates[,1:10]/rout$out_species_rates$biomass
+  
   colnames(rout$out_SSB)  <- scene$stanzas$Oldest
   colnames(rout$out_eggs) <- scene$stanzas$Oldest
   colnames(rout$out_Ninf) <- scene$stanzas$Oldest

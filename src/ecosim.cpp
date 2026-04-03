@@ -268,7 +268,7 @@ int y, m, dd;
       NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1); 
       
   // Species diagnostic outputs
-     NumericMatrix out_species_deriv(EndYear * 12, 10); 
+     NumericMatrix out_species_rates(EndYear * 12, 10); 
      
       //std::cout << " x1b ";   
 // Parameter need to track catch by Gear
@@ -455,16 +455,16 @@ int y, m, dd;
       // Write diagnostic species outputs
         //FoodGain, DetritalGain, FishingGain, FoodLoss, UnAssimLoss, ActiveRespLoss,
         //MzeroLoss, FishingLoss, DetritalLoss, MigrateLoss
-        out_species_deriv(dd, 0) = FoodGain[spnum];
-        out_species_deriv(dd, 1) = DetritalGain[spnum];        
-        out_species_deriv(dd, 2) = FishingGain[spnum];
-        out_species_deriv(dd, 3) = FoodLoss[spnum];
-        out_species_deriv(dd, 4) = UnAssimLoss[spnum];
-        out_species_deriv(dd, 5) = ActiveRespLoss[spnum];
-        out_species_deriv(dd, 6) = MzeroLoss[spnum];
-        out_species_deriv(dd, 7) = FishingLoss[spnum];
-        out_species_deriv(dd, 8) = DetritalLoss[spnum];
-        out_species_deriv(dd, 9) = MigrateLoss[spnum];
+        out_species_rates(dd, 0) = FoodGain[spnum];
+        out_species_rates(dd, 1) = DetritalGain[spnum];        
+        out_species_rates(dd, 2) = FishingGain[spnum];
+        out_species_rates(dd, 3) = FoodLoss[spnum];
+        out_species_rates(dd, 4) = UnAssimLoss[spnum];
+        out_species_rates(dd, 5) = ActiveRespLoss[spnum];
+        out_species_rates(dd, 6) = MzeroLoss[spnum];
+        out_species_rates(dd, 7) = FishingLoss[spnum];
+        out_species_rates(dd, 8) = DetritalLoss[spnum];
+        out_species_rates(dd, 9) = MigrateLoss[spnum];
         //std::cout << "x4";
      }  // End of main months loop
      
@@ -491,7 +491,7 @@ int y, m, dd;
      _["annual_Biomass"]=annual_Biomass,
      _["annual_QB"]=annual_QB,
      _["annual_Qlink"]=annual_Qlink,
-     _["out_species_deriv"]=out_species_deriv,
+     _["out_species_rates"]=out_species_rates,
      _["out_SSB"]=out_SSB,
      _["out_eggs"]=out_eggs,
      _["out_Winf"]=out_Winf,
