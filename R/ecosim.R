@@ -189,8 +189,8 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100, spname = NULL
   
   colnames(rout$out_SSB)  <- scene$stanzas$Oldest
   colnames(rout$out_eggs) <- scene$stanzas$Oldest
-  colnames(rout$out_Ninf) <- scene$stanzas$Oldest
-  colnames(rout$out_Winf) <- scene$stanzas$Oldest
+  #colnames(rout$out_Ninf) <- scene$stanzas$Oldest
+  #colnames(rout$out_Winf) <- scene$stanzas$Oldest
   colnames(rout$out_Nrec) <- scene$stanzas$Groups       
   colnames(rout$out_Wrec) <- scene$stanzas$Groups   
   # drop the last row (should be always 0; negative index is entry to drop)
@@ -807,6 +807,7 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$baseWageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
     rstan$baseNageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
     rstan$baseQageS   <- matrix(NA, max(juvfile$stindiv$Last) + 1, rstan$Nsplit + 1)
+    rstan$laststanza  <- max(juvfile$stindiv$Last) + 1
     
     sPred <- rep(0, params$NUM_GROUPS + 1) #rstan$stanzaPred  <- rep(0, params$NUM_GROUPS + 1)
     
@@ -928,6 +929,7 @@ rsim.stanzas <- function(Rpath.params, state, params){
     rstan$baseWageS      <- matrix(rep(0, 4), 2, 2)
     rstan$baseNageS      <- matrix(rep(0, 4), 2, 2)
     rstan$baseQageS      <- matrix(rep(0, 4), 2, 2)
+    rstan$laststanza     <- 1
     rstan$Wmat           <- c(0, 0)
     #rstan$Wmat001        <- c(0, 0)
     #rstan$Wmat50         <- c(0, 0)

@@ -255,6 +255,7 @@ int y, m, dd;
 // Parameters from stanzas
    const int Nsplit         = as<int>(stanzas["Nsplit"]);
    const int Totstanzas     = as<int>(stanzas["Totstanzas"]);
+   const int laststanza     = as<int>(stanzas["laststanza"]);
    const NumericVector Nstanzas = as<NumericVector>(stanzas["Nstanzas"]);
    const NumericVector MaxAge   = as<NumericVector>(stanzas["MaxAge"]);
    NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
@@ -266,6 +267,12 @@ int y, m, dd;
       NumericMatrix out_Ninf(EndYear * 12, Nsplit + 1);
       NumericMatrix out_Wrec(EndYear * 12, Totstanzas + 1);
       NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1); 
+      
+     NumericMatrix out_WageS(EndYear*12, laststanza);
+     NumericMatrix out_NageS(EndYear*12, laststanza);
+     NumericMatrix out_QageS(EndYear*12, laststanza);
+     
+       
       
   // Species diagnostic outputs
      NumericMatrix out_species_rates(EndYear * 12, 10); 
@@ -293,6 +300,7 @@ int y, m, dd;
    //std::cout << " x1c "; 
    NumericMatrix NageS          = as<NumericMatrix>(state["NageS"]);
    NumericMatrix WageS          = as<NumericMatrix>(state["WageS"]);
+   NumericMatrix QageS          = as<NumericMatrix>(state["QageS"]);
    NumericVector SpawnBio       = as<NumericVector>(state["SpawnBio"]);
    NumericVector EggsStanza     = as<NumericVector>(state["EggsStanza"]);
    //std::cout << " x1d "; 
@@ -452,6 +460,12 @@ int y, m, dd;
           }
         }
         
+        if(spstanza>0){
+            out_WageS(dd, _ ) = WageS( _ , spstanza);
+            out_NageS(dd, _ ) = NageS( _ , spstanza);
+            out_QageS(dd, _ ) = QageS( _ , spstanza);
+        }
+        
       // Write diagnostic species outputs
         //FoodGain, DetritalGain, FishingGain, FoodLoss, UnAssimLoss, ActiveRespLoss,
         //MzeroLoss, FishingLoss, DetritalLoss, MigrateLoss
@@ -494,10 +508,13 @@ int y, m, dd;
      _["out_species_rates"]=out_species_rates,
      _["out_SSB"]=out_SSB,
      _["out_eggs"]=out_eggs,
-     _["out_Winf"]=out_Winf,
-     _["out_Ninf"]=out_Ninf,
+     //_["out_Winf"]=out_Winf,
+     //_["out_Ninf"]=out_Ninf,
      _["out_Nrec"]=out_Nrec,
      _["out_Wrec"]=out_Wrec,
+     _["out_WageS"]=out_WageS,
+     _["out_NageS"]=out_NageS,
+     _["out_QageS"]=out_QageS,  
      _["end_state"]=state,
      _["crash_year"]=CRASH_YEAR,
      _["dyt"]=dyt);
