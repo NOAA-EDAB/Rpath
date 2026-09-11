@@ -4,7 +4,7 @@
 \alias{rsim.run}
 \title{Run a dynamic simulation}
 \usage{
-rsim.run(Rsim.scenario, method = "RK4", years = 1:100)
+rsim.run(Rsim.scenario, method = "RK4", years = 1:100, spname = NULL)
 }
 \arguments{
 \item{Rsim.scenario}{Scenario object that contains all of the rsim rates and 
