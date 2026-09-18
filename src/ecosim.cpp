@@ -374,15 +374,19 @@ int y, m, dd;
         
      // Calculate catch assuming fixed Frate and exponential biomass change.
      // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
-        NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
-                               (new_Biomass + old_Biomass) / 2.0;
+        //NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
+        //  (new_Biomass + old_Biomass) / 2.0;
+       // kya 9/18/2026
+          NumericVector new_Catch = DELTA_T * FishingLoss;
         
         // Track catch by gear
         NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
         NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
         NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
-        NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
-                                    (new_Biomass_flink + old_Biomass_flink)/2.0;
+        // kya 9/18/2026
+        //NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
+        //                            (new_Biomass_flink + old_Biomass_flink)/2.0;
+        NumericVector new_Gear_Catch = DELTA_T * GearCatch;        
         
         // NumericVector new_Catch = 
         //               ifelse( new_Biomass==old_Biomass,
