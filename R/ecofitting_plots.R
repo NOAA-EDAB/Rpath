@@ -19,7 +19,7 @@
 #' @return Invoked primarily for its side effect of generating an HTML report file
 #'   and launching it in the RStudio Viewer pane.
 #'
-
+#'@export
 render.show.fit <- function(bal, scene_fit, run_fit, output = "test") {
   wdir <- file.path(getwd(), "html")
   
@@ -81,7 +81,7 @@ render.show.fit <- function(bal, scene_fit, run_fit, output = "test") {
 #' @return Invoked for its side effect of drawing plots to external graphics devices.
 #'   Returns `NULL`.
 #'
-
+#'@export
 rsim.runplot <- function(scene, run, species, scene_name = NULL, small=TRUE) {
   if (is.null(scene_name)) {
     display_name <- " "
@@ -187,7 +187,7 @@ rsim.runplot <- function(scene, run, species, scene_name = NULL, small=TRUE) {
 #' @return Invoked for its side effect of drawing a plot to the active graphics
 #'   device. Returns `NULL`.
 #'
-
+#'@export
 rsim.plot.fitbio <- function(scene, run, species, datasource, small= FALSE) {
   
   if(!is.null(scene$fitting$Biomass)){
@@ -336,7 +336,7 @@ rsim.plot.fitbio <- function(scene, run, species, datasource, small= FALSE) {
 #' @return Invoked for its side effect of drawing a plot to the active graphics
 #'   device. Returns `NULL`.
 #'
-
+#'@export
 rsim.plot.fitcatch.small <- function(scene, run, species) {
   
   if(!is.null(scene$fitting$Catch)){
@@ -440,7 +440,7 @@ rsim.plot.fitcatch.small <- function(scene, run, species) {
 #' @return Invoked for its side effect of drawing a multi-panel plot to the active
 #'   graphics device. Returns `NULL`.
 #'
-
+#'@export
 rsim.plot.full <- function(scene, run, species) {
   oldpar <- graphics::par(no.readonly = TRUE)
   #no.readonly = logical; if TRUE and there are no other arguments, only parameters are returned which can be set by a subsequent par() call on the same device.
@@ -620,7 +620,7 @@ rsim.plot.full <- function(scene, run, species) {
 #' @return Invoked for its side effect of drawing a plot to the active graphics
 #'   device. Returns `NULL`.
 #'
-
+#'@export
 rsim.plot.ylim <- function(Rsim.output, spname, indplot = FALSE, ...) {
   oldpar <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(oldpar))
