@@ -4,16 +4,14 @@
 \alias{rsim.plot.catch}
 \title{Plot Simulated vs. Observed Catch for a Single Species}
 \usage{
-rsim.plot.catch(scene, run, species)
+rsim.plot.catch(Rsim.scenario, Rsim.output, species)
 }
 \arguments{
-\item{scene}{An `Rpath` simulation scene object containing the historical catch
-fitting data under `scene$fitting$Catch`.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
-\item{run}{An `Rsim` simulation output object containing the matrix of annual
-catch estimates (`annual_Catch`).}
+\item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character string representing the name of the species/group to plot.}
+\item{species}{A character vector of species names to include in the plots.}
 }
 \value{
 Invoked for its side effect of drawing a plot to the active graphics

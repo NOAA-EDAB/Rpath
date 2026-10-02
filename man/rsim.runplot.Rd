@@ -4,18 +4,25 @@
 \alias{rsim.runplot}
 \title{Plot Biomass and Catch Fitting Results}
 \usage{
-rsim.runplot(scene, run, species, scene_name = NULL, small = TRUE)
+rsim.runplot(
+  Rsim.scenario,
+  Rsim.output,
+  species,
+  scene_name = NULL,
+  small = TRUE
+)
 }
 \arguments{
-\item{scene}{An `Rpath` simulation scene list object containing fitting parameters
-and observation series.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
-\item{run}{An `Rsim` simulation output object (the result of a fitted run).}
+\item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
 \item{species}{A character vector of species names to include in the plots.}
 
 \item{scene_name}{An optional character string used to label the main title
 of the plots. Defaults to `NULL` (resulting in a blank space).}
+
+\item{small}{A logical value indicating whether to adjust the margins for multiplot panel.}
 }
 \value{
 Invoked for its side effect of drawing plots to external graphics devices.

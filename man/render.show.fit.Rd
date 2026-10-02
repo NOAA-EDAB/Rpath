@@ -4,14 +4,14 @@
 \alias{render.show.fit}
 \title{Render and Display Rpath Simulation Fit Report}
 \usage{
-render.show.fit(bal, scene_fit, run_fit, output = "test")
+render.show.fit(bal, Rsim.scenario, Rsim.output, output = "test")
 }
 \arguments{
 \item{bal}{An `Rpath` mass-balanced model object.}
 
-\item{scene_fit}{An `Rpath` simulation scene object containing fitting configuration.}
+\item{Rsim.scenario}{An Rsim scenario object containing the fitting data.}
 
-\item{run_fit}{An `Rsim` simulation output object resulting from a fitted run.}
+\item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
 \item{output}{A character string defining the base name of the generated HTML file
 (without the `.html` extension). Defaults to `"test"`.}

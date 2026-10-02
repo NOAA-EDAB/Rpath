@@ -4,18 +4,25 @@
 \alias{rsim.plot.fitbio}
 \title{Plot Biomass Fit for a Single Species and Data Source}
 \usage{
-rsim.plot.fitbio(scene, run, species, datasource, small = FALSE)
+rsim.plot.fitbio(
+  Rsim.scenario,
+  Rsim.output,
+  species,
+  datasource,
+  small = FALSE
+)
 }
 \arguments{
-\item{scene}{An `Rpath` simulation scene object containing the base reference
-parameters and data fitting configurations.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
-\item{run}{An `Rsim` simulation output object containing the annual estimated biomass.}
+\item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character string representing the name of the species/group to plot.}
+\item{species}{A character vector of species names to include in the plots.}
 
 \item{datasource}{A character string identifying the specific survey or data source
 to extract from the objective function data (e.g., `"race_wgoa"`).}
+
+\item{small}{A logical value indicating whether to adjust the margins for multiplot panel.}
 }
 \value{
 Invoked for its side effect of drawing a plot to the active graphics
@@ -33,4 +40,11 @@ adjusted by survey catchability (`survey_q`) and computes the upper and lower
 bounds of the 95% confidence interval assuming a log-normal error distribution.
 The simulated biomass is plotted as a continuous line, with observed data as
 points and error bars.
+
+The log-scale standard deviation is derived from the arithmetic-scale
+coefficient of variation via `sqrt(log(1 + cv^2))`, and the interval is
+drawn as `mn * exp(+/-1.96 * sdlog)`. This treats the observed value `mn`
+as the median of the log-normal distribution rather than its mean (for
+which `E[X] = exp(mu + sigma^2/2)`), a minor and standard approximation
+common in fisheries stock-assessment diagnostics.
 }

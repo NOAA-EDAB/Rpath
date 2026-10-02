@@ -4,16 +4,14 @@
 \alias{rsim.plot.full}
 \title{Plot Full Biomass and Catch Fits for a Single Species}
 \usage{
-rsim.plot.full(scene, run, species)
+rsim.plot.full(Rsim.scenario, Rsim.output, species)
 }
 \arguments{
-\item{scene}{An `Rpath` simulation scene object containing the base reference
-parameters and data fitting configurations.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
-\item{run}{An `Rsim` simulation output object containing the annual estimated
-biomass and catch.}
+\item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character string representing the name of the species/group to plot.}
+\item{species}{A character vector of species names to include in the plots.}
 }
 \value{
 Invoked for its side effect of drawing a multi-panel plot to the active

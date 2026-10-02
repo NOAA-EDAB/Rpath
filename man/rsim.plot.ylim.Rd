@@ -7,8 +7,7 @@
 rsim.plot.ylim(Rsim.output, spname, indplot = FALSE, ...)
 }
 \arguments{
-\item{Rsim.output}{An `Rsim` simulation output object containing `out_Biomass`
-and base parameters (`params$spname`).}
+\item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
 \item{spname}{A character vector of species names to plot. If `indplot = TRUE`,
 this should be a single character string.}
