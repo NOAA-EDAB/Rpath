@@ -20,7 +20,7 @@ or ecotrophic efficiency.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://noaa-edab.github.io/Rpath/,https://github.com/NOAA-EDAB/Rpath/}
+  \item \url{https://noaa-edab.github.io/Rpath/},\url{https://github.com/NOAA-EDAB/Rpath/}
   \item Report bugs at \url{https://github.com/NOAA-EDAB/Rpath/issues}
 }
 
@@ -30,6 +30,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Kerim Aydin \email{kerim.aydin@noaa.gov} (\href{https://orcid.org/0000-0003-3792-9828}{ORCID})
   \item Sean Lucey \email{sean.m.lucey@noaa.gov} (\href{https://orcid.org/0000-0001-6675-5500}{ORCID})
   \item Sarah Gaichas \email{sgaichas@hydrascientificllc.com} (\href{https://orcid.org/0000-0002-5788-3073}{ORCID})
   \item Sarah Weisberg \email{sarahjweisberg@gmail.com} (\href{https://orcid.org/0000-0003-4271-9534}{ORCID})

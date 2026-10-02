@@ -22,23 +22,23 @@ Logical check that the parameter files are filled out correctly, i.e. data is en
 expected.
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{MTI}()},
-\code{\link{create.rpath.params}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath}()},
-\code{\link{rpath.consumers}()},
-\code{\link{rpath.detrital}()},
-\code{\link{rpath.gears}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.living}()},
-\code{\link{rpath.mixotrophs}()},
-\code{\link{rpath.producers}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.rpath.params}()}
+Other Rpath functions:
+\code{\link[=MTI]{MTI()}},
+\code{\link[=create.rpath.params]{create.rpath.params()}},
+\code{\link[=frate.table]{frate.table()}},
+\code{\link[=read.rpath.params]{read.rpath.params()}},
+\code{\link[=rpath]{rpath()}},
+\code{\link[=rpath.consumers]{rpath.consumers()}},
+\code{\link[=rpath.detrital]{rpath.detrital()}},
+\code{\link[=rpath.gears]{rpath.gears()}},
+\code{\link[=rpath.groups]{rpath.groups()}},
+\code{\link[=rpath.living]{rpath.living()}},
+\code{\link[=rpath.mixotrophs]{rpath.mixotrophs()}},
+\code{\link[=rpath.producers]{rpath.producers()}},
+\code{\link[=rpath.stanzas]{rpath.stanzas()}},
+\code{\link[=stanzaplot]{stanzaplot()}},
+\code{\link[=webplot]{webplot()}},
+\code{\link[=write.Rpath]{write.Rpath()}},
+\code{\link[=write.rpath.params]{write.rpath.params()}}
 }
 \concept{Rpath functions}

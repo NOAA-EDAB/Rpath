@@ -56,10 +56,10 @@ Suggests:
     DT,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
 URL: https://noaa-edab.github.io/Rpath/,https://github.com/NOAA-EDAB/Rpath/
 BugReports: https://github.com/NOAA-EDAB/Rpath/issues
 Depends: 
     R (>= 3.6.0)
 Config/testthat/edition: 3
 LazyData: true
+Config/roxygen2/version: 8.1.0

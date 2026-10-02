@@ -29,10 +29,10 @@ names(params)
 
 }
 \seealso{
-Other Get functions: 
-\code{\link{get.rsim.fishing}()},
-\code{\link{get.rsim.forcing}()},
-\code{\link{get.rsim.params}()},
-\code{\link{get.rsim.stanzas}()}
+Other Get functions:
+\code{\link[=get.rsim.fishing]{get.rsim.fishing()}},
+\code{\link[=get.rsim.forcing]{get.rsim.forcing()}},
+\code{\link[=get.rsim.params]{get.rsim.params()}},
+\code{\link[=get.rsim.stanzas]{get.rsim.stanzas()}}
 }
 \concept{Get functions}

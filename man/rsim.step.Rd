@@ -25,12 +25,12 @@ Runs \code{rsim.run} and appends the output to a previous \code{Rsim.output}.
 Currently only works with the Adams-Bashforth numerical integration method (AB).
 }
 \seealso{
-Other Rsim functions: 
-\code{\link{extract.node}()},
-\code{\link{rsim.params}()},
-\code{\link{rsim.plot}()},
-\code{\link{rsim.run}()},
-\code{\link{rsim.scenario}()},
-\code{\link{write.Rsim}()}
+Other Rsim functions:
+\code{\link[=extract.node]{extract.node()}},
+\code{\link[=rsim.params]{rsim.params()}},
+\code{\link[=rsim.plot]{rsim.plot()}},
+\code{\link[=rsim.run]{rsim.run()}},
+\code{\link[=rsim.scenario]{rsim.scenario()}},
+\code{\link[=write.Rsim]{write.Rsim()}}
 }
 \concept{Rsim functions}

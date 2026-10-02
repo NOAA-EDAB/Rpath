@@ -49,12 +49,12 @@ Rsim.output <- rsim.run(Rsim.scenario, method = "RK4", years = 1:50)
   
 }
 \seealso{
-Other Rsim functions: 
-\code{\link{extract.node}()},
-\code{\link{rsim.params}()},
-\code{\link{rsim.plot}()},
-\code{\link{rsim.scenario}()},
-\code{\link{rsim.step}()},
-\code{\link{write.Rsim}()}
+Other Rsim functions:
+\code{\link[=extract.node]{extract.node()}},
+\code{\link[=rsim.params]{rsim.params()}},
+\code{\link[=rsim.plot]{rsim.plot()}},
+\code{\link[=rsim.scenario]{rsim.scenario()}},
+\code{\link[=rsim.step]{rsim.step()}},
+\code{\link[=write.Rsim]{write.Rsim()}}
 }
 \concept{Rsim functions}
