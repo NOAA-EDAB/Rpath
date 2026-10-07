@@ -1,62 +1,4 @@
-################################################################################
-#' Render and Display Rpath Simulation Fit Report
-#'
-#' Compiles an R Markdown report (`fit_display.Rmd`) summarizing model fitting
-#' outputs and opens the resulting HTML report in the RStudio Viewer pane.
-#'
-#' @details
-#' This function acts as a wrapper around `rmarkdown::render()`. It passes the
-#' balanced model, simulation scene, and fit run objects directly into the
-#' parameterized R Markdown file `fit_display.Rmd`. The rendered output is stored
-#' inside an `html/` directory in the current working directory.
-#' 
-#' @param bal An `Rpath` mass-balanced model object.
-#' @param Rsim.scenario An Rsim scenario object containing the fitting data.
-#' @param Rsim.output An `Rsim` simulation output object resulting from a fitted run.
-#' @param output A character string defining the base name of the generated HTML file
-#'   (without the `.html` extension). Defaults to `"test"`.
-#'
-#' @return Invoked primarily for its side effect of generating an HTML report file
-#'   and launching it in the RStudio Viewer pane.
-#'
-#'@export
-render.show.fit <- function(bal, Rsim.scenario, Rsim.output, output = "test") {
-  wdir <- file.path(getwd(), "html")
-  
-  if (!dir.exists(wdir))
-    dir.create(wdir, recursive = TRUE)
-  
-  output_clean <- tools::file_path_sans_ext(output)
-  out_name <- paste0(output_clean, ".html")
-  
-  
-  rmd_file <- "fit_display.Rmd"
-  if (!file.exists(rmd_file)) {
-    pkg_file <- system.file("rmd", "fit_display.Rmd", package = "Rpath")
-    if (pkg_file != "")
-      rmd_file <- pkg_file
-  }
-  
-  out_path <- rmarkdown::render(
-    rmd_file,
-    output_file = out_name,
-    output_dir = wdir,
-    params = list(
-      bal = bal,
-      Rsim.scenario = Rsim.scenario,
-      Rsim.output = Rsim.output
-    )
-  )
-  
-  viewer <- getOption("viewer")
-  if (!is.null(viewer)) {
-    viewer(out_path)
-  } else{
-    #FLAG ####
-    #doble check if we have utils as a dependency.
-    utils::browseURL(out_path)
-  }
-}
+
 
 ################################################################################
 #' Plot Biomass and Catch Fitting Results
@@ -750,3 +692,62 @@ rsim.plot.catch <- function(Rsim.scenario, Rsim.output, species) {
   }
 }
 
+#  ################################################################################
+#  #' Render and Display Rpath Simulation Fit Report
+#  #'
+#  #' Compiles an R Markdown report (`fit_display.Rmd`) summarizing model fitting
+#  #' outputs and opens the resulting HTML report in the RStudio Viewer pane.
+#  #'
+#  #' @details
+#  #' This function acts as a wrapper around `rmarkdown::render()`. It passes the
+#  #' balanced model, simulation scene, and fit run objects directly into the
+#  #' parameterized R Markdown file `fit_display.Rmd`. The rendered output is stored
+#  #' inside an `html/` directory in the current working directory.
+#  #' 
+#  #' @param bal An `Rpath` mass-balanced model object.
+#  #' @param Rsim.scenario An Rsim scenario object containing the fitting data.
+#  #' @param Rsim.output An `Rsim` simulation output object resulting from a fitted run.
+#  #' @param output A character string defining the base name of the generated HTML file
+#  #'   (without the `.html` extension). Defaults to `"test"`.
+#  #'
+#  #' @return Invoked primarily for its side effect of generating an HTML report file
+#  #'   and launching it in the RStudio Viewer pane.
+#  #'
+#  #'@export
+# render.show.fit <- function(bal, Rsim.scenario, Rsim.output, output = "test") {
+#   wdir <- file.path(getwd(), "html")
+#   
+#   if (!dir.exists(wdir))
+#     dir.create(wdir, recursive = TRUE)
+#   
+#   output_clean <- tools::file_path_sans_ext(output)
+#   out_name <- paste0(output_clean, ".html")
+#   
+#   
+#   rmd_file <- "fit_display.Rmd"
+#   if (!file.exists(rmd_file)) {
+#     pkg_file <- system.file("rmd", "fit_display.Rmd", package = "Rpath")
+#     if (pkg_file != "")
+#       rmd_file <- pkg_file
+#   }
+#   
+#   out_path <- rmarkdown::render(
+#     rmd_file,
+#     output_file = out_name,
+#     output_dir = wdir,
+#     params = list(
+#       bal = bal,
+#       Rsim.scenario = Rsim.scenario,
+#       Rsim.output = Rsim.output
+#     )
+#   )
+#   
+#   viewer <- getOption("viewer")
+#   if (!is.null(viewer)) {
+#     viewer(out_path)
+#   } else{
+#     #FLAG ####
+#     #doble check if we have utils as a dependency.
+#     utils::browseURL(out_path)
+#   }
+# }
