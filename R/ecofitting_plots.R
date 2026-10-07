@@ -520,123 +520,7 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
 
 
 
-#################################################################################
-#' Plot Relative Biomass Over Time
-#'
-#' Generates a line plot showing the relative change in biomass over time for one
-#' or multiple species from an Rpath simulation run. Biomass is scaled relative
-#' to the starting biomass (month 1) of each species.
-#'
-#' @details
-#' This function extracts the monthly biomass data (`out_Biomass`) from an `Rsim`
-#' output object. Depending on the `indplot` flag, it calculates the relative
-#' trajectory for either a single species or a group of species. It dynamically
-#' calculates the legend width to place the legend entirely outside the right
-#' margin of the plotting area.
-#'
-#' @inheritParams rsim.runplot
-#' @param spname A character vector of species names to plot. If `indplot = TRUE`,
-#'   this should be a single character string.
-#' @param indplot A logical flag (`TRUE`/`FALSE` or `T`/`F`). If `FALSE` (default),
-#'   `spname` is treated as a vector of column names. If `TRUE`, `spname` is treated
-#'   as a single species name to look up in `params$spname`.
-#' @param ... Additional graphical parameters passed to the `plot()` setup function.
-#'
-#' @return Invoked for its side effect of drawing a plot to the active graphics
-#'   device. Returns `NULL`.
-#'
-#'@export
-rsim.plot.ylim <- function(Rsim.output, spname, indplot = FALSE, ...) {
-  oldpar <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(oldpar))
-  
-  if (indplot == FALSE) {
-    biomass <- Rsim.output$out_Biomass[, spname, drop = FALSE]
-    n <- ncol(biomass)
-    start.bio <- biomass[1, ]
-    start.bio[which(start.bio == 0)] <- 1
-    rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
-    for (isp in 1:n)
-      rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
-  }
-  if (indplot == TRUE) {
-    spnum <- which(Rsim.output$params$spname == spname)
-    biomass <- Rsim.output$out_Biomass[, spnum, drop = FALSE]
-    n <- 1
-    st_val <- ifelse(biomass[1] == 0, 1, biomass[1])
-    rel.bio <- biomass / st_val
-  }
-  
-  ymax <- max(rel.bio, na.rm = TRUE) + 0.1 * max(rel.bio, na.rm = TRUE)
-  ymin <- min(rel.bio, na.rm = TRUE) - 0.1 * min(rel.bio, na.rm = TRUE)
-  
-  #xmax <- if(indplot) length(biomass) else nrow(biomass) BD way
-  ifelse(indplot, xmax <- length(biomass), xmax <- nrow(biomass))
-  
-  #Plot relative biomass
-  graphics::par(mar = c(4, 6, 2, 0))
-  
-  line.col <- grDevices::rainbow(n)
-  #Create space for legend
-  graphics::plot.new()
-  l <- graphics::legend(
-    0,
-    0,
-    bty = 'n',
-    spname,
-    plot = FALSE,
-    fill = line.col,
-    cex = 0.6
-  )
-  # calculate right margin width in ndc
-  w <- graphics::grconvertX(l$rect$w, to = 'ndc') - graphics::grconvertX(0, to =
-                                                                           'ndc')
-  
-  graphics::par(omd = c(0, 1 - w, 0, 1))
-  
-  graphics::plot(
-    0,
-    0,
-    xlim = c(0, xmax),
-    ylim = c(ymin, ymax),
-    axes = FALSE,
-    xlab = '',
-    ylab = '',
-    type = 'n',
-    ...
-  )
-  graphics::axis(1)
-  graphics::axis(2, las = TRUE)
-  graphics::box(lwd = 2)
-  graphics::mtext(1,
-                  text = 'Months',
-                  line = 2.5,
-                  cex = 1.8)
-  graphics::mtext(2,
-                  text = 'Relative Biomass',
-                  line = 3,
-                  cex = 1.8)
-  
-  
-  for (i in 1:n) {
-    if (indplot == TRUE)
-      graphics::lines(rel.bio, col = line.col[i], lwd = 3)
-    if (indplot == FALSE)
-      graphics::lines(rel.bio[, i], col = line.col[i], lwd = 3)
-  }
-  
-  graphics::legend(
-    graphics::par('usr')[2],
-    graphics::par('usr')[4],
-    bty = 'n',
-    xpd = NA,
-    spname,
-    fill = line.col,
-    cex = 0.6
-  )
-  
-  graphics::par(oldpar)
-}
+
 
 ################################################################################
 #' Plot Simulated vs. Observed Catch for a Single Species
@@ -750,4 +634,123 @@ rsim.plot.catch <- function(Rsim.scenario, Rsim.output, species) {
 #     #doble check if we have utils as a dependency.
 #     utils::browseURL(out_path)
 #   }
+# }
+
+
+# #################################################################################
+# #' Plot Relative Biomass Over Time
+# #'
+# #' Generates a line plot showing the relative change in biomass over time for one
+# #' or multiple species from an Rpath simulation run. Biomass is scaled relative
+# #' to the starting biomass (month 1) of each species.
+# #'
+# #' @details
+# #' This function extracts the monthly biomass data (`out_Biomass`) from an `Rsim`
+# #' output object. Depending on the `indplot` flag, it calculates the relative
+# #' trajectory for either a single species or a group of species. It dynamically
+# #' calculates the legend width to place the legend entirely outside the right
+# #' margin of the plotting area.
+# #'
+# #' @inheritParams rsim.runplot
+# #' @param spname A character vector of species names to plot. If `indplot = TRUE`,
+# #'   this should be a single character string.
+# #' @param indplot A logical flag (`TRUE`/`FALSE` or `T`/`F`). If `FALSE` (default),
+# #'   `spname` is treated as a vector of column names. If `TRUE`, `spname` is treated
+# #'   as a single species name to look up in `params$spname`.
+# #' @param ... Additional graphical parameters passed to the `plot()` setup function.
+# #'
+# #' @return Invoked for its side effect of drawing a plot to the active graphics
+# #'   device. Returns `NULL`.
+# #'
+# #'@export
+# rsim.plot.ylim <- function(Rsim.output, spname, indplot = FALSE, ...) {
+#   oldpar <- graphics::par(no.readonly = TRUE)
+#   on.exit(graphics::par(oldpar))
+#   
+#   if (indplot == FALSE) {
+#     biomass <- Rsim.output$out_Biomass[, spname, drop = FALSE]
+#     n <- ncol(biomass)
+#     start.bio <- biomass[1, ]
+#     start.bio[which(start.bio == 0)] <- 1
+#     rel.bio <- matrix(NA, dim(biomass)[1], dim(biomass)[2])
+#     for (isp in 1:n)
+#       rel.bio[, isp] <- biomass[, isp] / start.bio[isp]
+#   }
+#   if (indplot == TRUE) {
+#     spnum <- which(Rsim.output$params$spname == spname)
+#     biomass <- Rsim.output$out_Biomass[, spnum, drop = FALSE]
+#     n <- 1
+#     st_val <- ifelse(biomass[1] == 0, 1, biomass[1])
+#     rel.bio <- biomass / st_val
+#   }
+#   
+#   ymax <- max(rel.bio, na.rm = TRUE) + 0.1 * max(rel.bio, na.rm = TRUE)
+#   ymin <- min(rel.bio, na.rm = TRUE) - 0.1 * min(rel.bio, na.rm = TRUE)
+#   
+#   #xmax <- if(indplot) length(biomass) else nrow(biomass) BD way
+#   ifelse(indplot, xmax <- length(biomass), xmax <- nrow(biomass))
+#   
+#   #Plot relative biomass
+#   graphics::par(mar = c(4, 6, 2, 0))
+#   
+#   line.col <- grDevices::rainbow(n)
+#   #Create space for legend
+#   graphics::plot.new()
+#   l <- graphics::legend(
+#     0,
+#     0,
+#     bty = 'n',
+#     spname,
+#     plot = FALSE,
+#     fill = line.col,
+#     cex = 0.6
+#   )
+#   # calculate right margin width in ndc
+#   w <- graphics::grconvertX(l$rect$w, to = 'ndc') - graphics::grconvertX(0, to =
+#                                                                            'ndc')
+#   
+#   graphics::par(omd = c(0, 1 - w, 0, 1))
+#   
+#   graphics::plot(
+#     0,
+#     0,
+#     xlim = c(0, xmax),
+#     ylim = c(ymin, ymax),
+#     axes = FALSE,
+#     xlab = '',
+#     ylab = '',
+#     type = 'n',
+#     ...
+#   )
+#   graphics::axis(1)
+#   graphics::axis(2, las = TRUE)
+#   graphics::box(lwd = 2)
+#   graphics::mtext(1,
+#                   text = 'Months',
+#                   line = 2.5,
+#                   cex = 1.8)
+#   graphics::mtext(2,
+#                   text = 'Relative Biomass',
+#                   line = 3,
+#                   cex = 1.8)
+#   
+#   
+#   for (i in 1:n) {
+#     if (indplot == TRUE)
+#       graphics::lines(rel.bio, col = line.col[i], lwd = 3)
+#     if (indplot == FALSE)
+#       graphics::lines(rel.bio[, i], col = line.col[i], lwd = 3)
+#   }
+#   
+#   graphics::legend(
+#     graphics::par('usr')[2],
+#     graphics::par('usr')[4],
+#     bty = 'n',
+#     xpd = NA,
+#     spname,
+#     fill = line.col,
+#     cex = 0.6
+#   )
+#   
+#   graphics::par(oldpar)
 # }
