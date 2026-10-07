@@ -24,7 +24,7 @@
 #'   Returns `NULL`.
 #'
 #'@export
-rsim.runplot <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL, small=TRUE) {
+rsim.plot.fit <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL, small=TRUE) {
   if (is.null(scene_name)) {
     display_name <- " "
   } else {
@@ -123,7 +123,7 @@ rsim.runplot <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL,
 #' which `E[X] = exp(mu + sigma^2/2)`), a minor and standard approximation
 #' common in fisheries stock-assessment diagnostics.
 #' 
-#' @inheritParams rsim.runplot
+#' @inheritParams rsim.plot.fit
 #' @param datasource A character string identifying the specific survey or data source
 #'   to extract from the objective function data (e.g., `"race_wgoa"`).
 #'
@@ -268,7 +268,7 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
 #' A red dashed reference line is also drawn to represent the base historical catch
 #' derived from the scene's fishing effort and base biomass reference points.
 #'
-#' @inheritParams rsim.runplot
+#' @inheritParams rsim.plot.fit
 #'
 #' @return Invoked for its side effect of drawing a plot to the active graphics
 #'   device. Returns `NULL`.
@@ -366,7 +366,7 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
 #' biomass plots plus one additional panel for the catch plot. It calculates
 #' log-normal confidence intervals for observations and overlays base reference lines.
 #'
-#' @inheritParams rsim.runplot 
+#' @inheritParams rsim.plot.fit 
 #'
 #' @return Invoked for its side effect of drawing a multi-panel plot to the active
 #'   graphics device. Returns `NULL`.
@@ -519,62 +519,59 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
 
 
 
-
-
-
-################################################################################
-#' Plot Simulated vs. Observed Catch for a Single Species
-#'
-#' Generates a standard plot comparing the annual simulated catch against historical
-#' catch observations for a specific species, complete with symmetric confidence bounds.
-#'
-#' @details
-#' Unlike the other diagnostic plotting functions that rely on `rsim.fit.obj()`,
-#' this function extracts the historical catch data directly from the scene object
-#' (`scene$fitting$Catch`). Furthermore, it calculates the upper and lower bounds
-#' of the confidence interval using a simple symmetric standard normal calculation
-#' (`mn +/- 1.96 * sd`) rather than assuming a log-normal error distribution.
-#'
-#' @inheritParams rsim.runplot 
-#'
-#' @return Invoked for its side effect of drawing a plot to the active graphics
-#'   device. Returns `NULL`.
-#'
-#'@export
-rsim.plot.catch <- function(Rsim.scenario, Rsim.output, species) {
-  qdat <- Rsim.scenario$fitting$Catch[Rsim.scenario$fitting$Catch$Group == species, ]
-  mn   <- qdat$obs
-  up   <- mn + 1.96 * qdat$sd
-  dn   <- mn - 1.96 * qdat$sd
-  est <- Rsim.output$annual_Catch[, species]
-  
-  #tot <- 0 #sum(qdat$fit)
-  ymax <- max(c(up, est), na.rm = TRUE)
-  
-  if (is.infinite(ymax) || is.na(ymax))
-    ymax <- 1
-  
-  graphics::plot(
-    as.numeric(rownames(Rsim.output$annual_Catch)),
-    est ,
-    type = "l",
-    ylim = c(0, ymax),
-    xlab = "Year",
-    ylab = ""
-  )
-  graphics::mtext(
-    side = 2,
-    line = 2.2,
-    paste(species, "catch"),
-    font = 2,
-    cex = 1.0
-  )
-  
-  if (nrow(qdat) > 0) {
-    graphics::points(as.numeric(qdat$Year), mn)
-    graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
-  }
-}
+# ################################################################################
+# #' Plot Simulated vs. Observed Catch for a Single Species
+# #'
+# #' Generates a standard plot comparing the annual simulated catch against historical
+# #' catch observations for a specific species, complete with symmetric confidence bounds.
+# #'
+# #' @details
+# #' Unlike the other diagnostic plotting functions that rely on `rsim.fit.obj()`,
+# #' this function extracts the historical catch data directly from the scene object
+# #' (`scene$fitting$Catch`). Furthermore, it calculates the upper and lower bounds
+# #' of the confidence interval using a simple symmetric standard normal calculation
+# #' (`mn +/- 1.96 * sd`) rather than assuming a log-normal error distribution.
+# #'
+# #' @inheritParams rsim.plot.fit 
+# #'
+# #' @return Invoked for its side effect of drawing a plot to the active graphics
+# #'   device. Returns `NULL`.
+# #'
+# #'@export
+# rsim.plot.catch <- function(Rsim.scenario, Rsim.output, species) {
+#   qdat <- Rsim.scenario$fitting$Catch[Rsim.scenario$fitting$Catch$Group == species, ]
+#   mn   <- qdat$obs
+#   up   <- mn + 1.96 * qdat$sd
+#   dn   <- mn - 1.96 * qdat$sd
+#   est <- Rsim.output$annual_Catch[, species]
+#   
+#   #tot <- 0 #sum(qdat$fit)
+#   ymax <- max(c(up, est), na.rm = TRUE)
+#   
+#   if (is.infinite(ymax) || is.na(ymax))
+#     ymax <- 1
+#   
+#   graphics::plot(
+#     as.numeric(rownames(Rsim.output$annual_Catch)),
+#     est ,
+#     type = "l",
+#     ylim = c(0, ymax),
+#     xlab = "Year",
+#     ylab = ""
+#   )
+#   graphics::mtext(
+#     side = 2,
+#     line = 2.2,
+#     paste(species, "catch"),
+#     font = 2,
+#     cex = 1.0
+#   )
+#   
+#   if (nrow(qdat) > 0) {
+#     graphics::points(as.numeric(qdat$Year), mn)
+#     graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
+#   }
+# }
 
 #  ################################################################################
 #  #' Render and Display Rpath Simulation Fit Report
@@ -651,7 +648,7 @@ rsim.plot.catch <- function(Rsim.scenario, Rsim.output, species) {
 # #' calculates the legend width to place the legend entirely outside the right
 # #' margin of the plotting area.
 # #'
-# #' @inheritParams rsim.runplot
+# #' @inheritParams rsim.plot.fit
 # #' @param spname A character vector of species names to plot. If `indplot = TRUE`,
 # #'   this should be a single character string.
 # #' @param indplot A logical flag (`TRUE`/`FALSE` or `T`/`F`). If `FALSE` (default),
