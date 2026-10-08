@@ -460,42 +460,7 @@ int y, m, dd;
         }
         new_Biomass = ifelse(NoIntegrate < 0, as<NumericVector>(state["Biomass"]), new_Biomass);
         
-     // Calculate catch assuming fixed Frate and exponential biomass change.
-     // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
-        //NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
-        //  (new_Biomass + old_Biomass) / 2.0;
-       // kya 9/23/2026 using true exponential average (not sure why we stopped that)
-          NumericVector new_Catch = 
-                        ifelse(new_Biomass==old_Biomass,
-                          FishingLoss*DELTA_T,
-                          (FishingLoss*DELTA_T/old_Biomass) *
-                          (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass) 
-                        );           
-       // kya 9/18/2026 - experiment that doesn't work (smoothed integration needed)
-          //NumericVector new_Catch = DELTA_T * FishingLoss;
-        
-        // Track catch by gear
-        NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
-        NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
-        NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
-        // kya 9/10/15
-        //NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
-        //                            (new_Biomass_flink + old_Biomass_flink)/2.0;
-        NumericVector new_Gear_Catch = 
-                      ifelse(new_Biomass_flink==old_Biomass_flink,
-                        GearCatch*DELTA_T,
-                        (GearCatch*DELTA_T/old_Biomass_flink) *
-                        (new_Biomass_flink-old_Biomass_flink)/log(new_Biomass_flink/old_Biomass_flink) 
-                      );
-        // kya 9/18/2026 - experiment that doesn't work (smoothed integration needed)
-        //NumericVector new_Gear_Catch = DELTA_T * GearCatch;        
-        
-        // NumericVector new_Catch = 
-        //               ifelse( new_Biomass==old_Biomass,
-        //                 FishingLoss*DELTA_T,
-        //                 (FishingLoss*DELTA_T/old_Biomass) *
-        //                   (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass) 
-        //               );       
+     // CATCH ACCOUNTING WAS HERE
 
      // KYA 9/13/17 - noticed that cur_Biomass is never copied back into state["Biomass"] after
      // bounds testing.  Error?  Moved state["Biomass"] setting, hopefully nothing breaks...
@@ -517,6 +482,50 @@ int y, m, dd;
      // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
      // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
         cur_Biomass = ifelse((cur_Biomass<0),NA_REAL,cur_Biomass);
+        
+        
+    //CATCH ACCOUNTING
+    
+    // Calculate catch assuming fixed Frate and exponential biomass change.
+    // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
+    //NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
+    //  (new_Biomass + old_Biomass) / 2.0;
+    // kya 9/23/2026 using true exponential average (not sure why we stopped that)
+    NumericVector new_Catch = 
+      ifelse(cur_Biomass==old_Biomass,
+             FishingLoss*DELTA_T,
+             (FishingLoss*DELTA_T/old_Biomass) *
+               (cur_Biomass-old_Biomass)/log(cur_Biomass/old_Biomass) 
+      );           
+    // kya 9/18/2026 - experiment that doesn't work (smoothed integration needed)
+    //NumericVector new_Catch = DELTA_T * FishingLoss;
+    
+    // Track catch by gear
+    NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
+    NumericVector cur_Biomass_flink = as<NumericVector>(cur_Biomass[FishFrom]);
+    NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
+    // kya 9/10/15
+    //NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
+    //                            (new_Biomass_flink + old_Biomass_flink)/2.0;
+    NumericVector new_Gear_Catch = 
+      ifelse(cur_Biomass_flink==old_Biomass_flink,
+             GearCatch*DELTA_T,
+             (GearCatch*DELTA_T/old_Biomass_flink) *
+               (cur_Biomass_flink-old_Biomass_flink)/log(cur_Biomass_flink/old_Biomass_flink) 
+      );
+    // kya 9/18/2026 - experiment that doesn't work (smoothed integration needed)
+    //NumericVector new_Gear_Catch = DELTA_T * GearCatch;        
+    
+    // NumericVector new_Catch = 
+    //               ifelse( new_Biomass==old_Biomass,
+    //                 FishingLoss*DELTA_T,
+    //                 (FishingLoss*DELTA_T/old_Biomass) *
+    //                   (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass) 
+    //               );         
+    
+    
+    //END CATCH ACCOUNTING
+        
 
      // If the run is during the "burn-in" years, and biomass goes
      // into the discard range, set flag to exit the loop.  Should set "bad"
