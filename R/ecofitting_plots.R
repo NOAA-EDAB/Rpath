@@ -1,5 +1,3 @@
-
-
 ################################################################################
 #' Plot Biomass and Catch Fitting Results
 #'
@@ -15,8 +13,8 @@
 #' 
 #' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #' @param Rsim.output An `Rsim` simulation output object resulting from a fitted run.
-#' @param species A character vector of species names to include in the plots.
-#' @param scene_name An optional character string used to label the main title
+#' @param species.list A character vector of species names to include in the plots.
+#' @param scene.name An optional character string used to label the main title
 #'   of the plots. Defaults to `NULL` (resulting in a blank space).
 #' @param small A logical value indicating whether to adjust the margins for multiplot panel.
 #'
@@ -24,80 +22,70 @@
 #'   Returns `NULL`.
 #'
 #'@export
-rsim.plot.fit <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL, small=TRUE) {
-  if (is.null(scene_name)) {
-    display_name <- " "
-  } else {
-    display_name <- scene_name
+rsim.plot.fit <- function(Rsim.scenario, Rsim.output, species.list, scene.name = NULL, small=TRUE) {
+  if(!is.character(species.list)){
+    stop("Argument 'species.list' must be a vector.")
   }
   
-  run.out <- Rsim.output #rsim.fit.run(values,groups,vartypes,scene,"AB",years,T)
+  run.out <- Rsim.output
+  
+  missing_sp <- setdiff(species.list, colnames(run.out$annual_Biomass))
+  if(length(missing_sp) > 0){
+    warning(sprintf("The following species were not found in the simulation output and will be skipped: %s. Please check spelling.",
+                    paste(missing_sp, collapse = ", ")))
+    species.list <- intersect(species.list, colnames(run.out$annual_Biomass))
+    if(length(species.list) == 0) stop("No valid species remain to plot.")
+  }
+  
+  if (is.null(scene.name)) {
+    display_name <- " "
+  } else {
+    display_name <- scene.name
+  }
   
   all_series <- strsplit(rsim.fit.list.bio.series(Rsim.scenario)$all, ":")
-  obs_species <- sapply(all_series, function(x)
-    x[1]) # "[[", 1)
-  obs_sources <- sapply(all_series, function(x)
-    if (length(x) > 1)
-      x[2]
-    else
-      NA) #"[[", 2)
+  obs_species <- sapply(all_series, function(x) x[1]) 
+  obs_sources <- sapply(all_series, function(x) if (length(x) > 1) x[2] else NA) 
   
   nll_val <- round(rsim.fit.obj(Rsim.scenario, Rsim.output, FALSE), 2)
   
-
-  total_bio_panels <- sum(sapply(species, function(sp)
-    max(1, sum(
-      obs_species == sp, na.rm = TRUE
-    ))))
+  total_bio_panels <- sum(sapply(species.list, function(sp) max(1, sum(obs_species == sp, na.rm = TRUE))))
   nc_bio <- min(11, ceiling(sqrt(total_bio_panels))) #columns
   nr_bio <- ceiling(total_bio_panels / nc_bio) #row
-
-  grDevices::dev.new()
-
+  
+  grDevices::dev.new(noRStudioGD=TRUE)
+  
   graphics::par(mfrow = c(nr_bio, nc_bio), oma = c(0, 0, 3, 0)) #oma= outside of margin area
   
-  for (i in 1:length(species)) {
-    sources <- obs_sources[obs_species == species[i] &
-                             !is.na(obs_sources)]
+  for (i in seq_along(species.list)) {
+    sources <- obs_sources[obs_species == species.list[i] & !is.na(obs_sources)]
     if (length(sources) == 0) {
-      rsim.plot.fitbio(Rsim.scenario, run.out, species[i], NA, small=small)
+      rsim.plot.fitbio(Rsim.scenario, run.out, species.list[i], NA, small=small)
     } else{
-      for (j in 1:length(sources)) {
-        rsim.plot.fitbio(Rsim.scenario, run.out, species[i], sources[j], small= small)
+      for (j in seq_along(sources)) {
+        rsim.plot.fitbio(Rsim.scenario, run.out, species.list[i], sources[j], small=small)
       }
     }
   }
+  
   graphics::mtext(
     paste("Fitting results for:", display_name, paste(", nll:", nll_val)),
-    outer = TRUE,
-    side = 3,
-    line = 1,
-    cex = 1.5,
-    font = 1
+    outer = TRUE, side = 3, line = 1, cex = 1.5, font = 1
   )
   
   #catch layout
-  nc_catch <- ceiling(sqrt(length(species)))
-  nr_catch <- ceiling(length(species) / nc_catch)
+  nc_catch <- ceiling(sqrt(length(species.list)))
+  nr_catch <- ceiling(length(species.list) / nc_catch)
   
-  
-  grDevices::dev.new()
-  graphics::par(mfrow = c(nr_catch, nc_catch),
-                oma = c(0, 0, 3, 0))
-  for (sp in species) {
+  grDevices::dev.new(noRStudioGD=TRUE)
+  graphics::par(mfrow = c(nr_catch, nc_catch), oma = c(0, 0, 3, 0))
+  for (sp in species.list) {
     rsim.plot.fitcatch(Rsim.scenario, run.out, sp)
   }
+  
   graphics::mtext(
-    paste(
-      "Catch fitting results for:",
-      display_name,
-      paste(", nll:", nll_val)
-    ),
-    outer = TRUE,
-    side = 3,
-    line = 1,
-    cex = 1.5,
-    font = 1
+    paste("Catch fitting results for:", display_name, paste(", nll:", nll_val)),
+    outer = TRUE, side = 3, line = 1, cex = 1.5, font = 1
   )
 }
 
@@ -107,7 +95,7 @@ rsim.plot.fit <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL
 #' Generates a diagnostic plot comparing simulated biomass against observed
 #' survey data for a specific species and a specific data source. It includes
 #' log-normal confidence intervals for the observed data and displays the NLL score.
-#'
+#' 
 #' @details
 #' This function extracts the goodness-of-fit metrics from `rsim.fit.obj()` for a
 #' given species and observation source. It calculates the mean observed biomass
@@ -124,6 +112,7 @@ rsim.plot.fit <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL
 #' common in fisheries stock-assessment diagnostics.
 #' 
 #' @inheritParams rsim.plot.fit
+#' @param species A single character string representing the species name.
 #' @param datasource A character string identifying the specific survey or data source
 #'   to extract from the objective function data (e.g., `"race_wgoa"`).
 #'
@@ -133,31 +122,36 @@ rsim.plot.fit <- function(Rsim.scenario, Rsim.output, species, scene_name = NULL
 #'@export
 rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, small= FALSE) {
   
+  if (length(species) > 1) {
+    warning("rsim.plot.fitbio expects a single species string. Using only the first element.")
+    species <- species[1]
+  }
+  
   if(!is.null(Rsim.scenario$fitting$Biomass)){
     bio.obj <- rsim.fit.obj(Rsim.scenario, Rsim.output)$Biomass
   } else {
-    bio.obj <- data.frame(Year  = character(), 
-                          Group = character(), 
-                          Type  = character(), 
-                          Stdev = double(),
-                          Value = double(), 
-                          Scale = double(),
-                          Source = character(),
-                          ID     = character(),
-                          obs    = double(),
-                          sd     = double(),
-                          initial_q = double(),
-                          wt        = double())
+    bio.obj <- data.frame(Year = character(), Group = character(), Type = character(), 
+                          Stdev = double(), Value = double(), Scale = double(),
+                          Source = character(), ID = character(), obs = double(), 
+                          sd = double(), initial_q = double(), wt = double())
   }
   
-  qdat <- bio.obj[bio.obj$Group == species &
-                    bio.obj$Source %in% datasource, ]
+  qdat <- bio.obj[bio.obj$Group == species & bio.obj$Source %in% datasource, ]
+  
+  if (nrow(qdat) == 0 && !is.na(datasource)) {
+    warning(sprintf("No biomass observation data found for species '%s' and datasource '%s'. Check your scenario fitting data.", species, datasource))
+  }
   
   if(small){
+    pin <- graphics::par("pin") 
+    dyn_cex <- max(0.4, min(0.85, min(pin) * 0.45))
+    
     mar_vals <- c(2.8, 1.5, 1, 0.5)
-    axis1_mgp <- c(3,0,0)
-    axis2_mgp <- c(3,0.2,0)
+    axis1_mgp <- c(3, 0.1, 0)
+    axis2_mgp <- c(3, 0.2, 0)
+    
   } else {
+    dyn_cex <- 0.9
     mar_vals <- c(4, 3, 2, 1)
     axis1_mgp <- c(3, 0.6, 0)
     axis2_mgp <- c(3, 0.6, 0)
@@ -166,13 +160,11 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
   oldpar <- graphics::par(mar = mar_vals)
   on.exit(graphics::par(oldpar))
   
-  # zero/NA catchability fix the division by 0
   sq <- qdat$survey_q
   sq[sq == 0 | is.na(sq)] <- 1e-6
   
   mn   <- qdat$obs / sq
-  sdlog <- sqrt(log(1.0 + (qdat$sd / sq) * (qdat$sd / sq) / ifelse(mn ==
-                                                                     0, 1e-6, mn * mn))) 
+  sdlog <- sqrt(log(1.0 + (qdat$sd / sq) * (qdat$sd / sq) / ifelse(mn == 0, 1e-6, mn * mn))) 
   up <- mn * exp(1.96 * sdlog)
   dn <- mn / exp(1.96 * sdlog)
   
@@ -184,28 +176,14 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
   ymax <- if(length(valid_vals) > 0) max(valid_vals) else 1
   if (ymax <= 0) ymax <- 1
   
-  
   graphics::plot(
     as.numeric(rownames(Rsim.output$annual_Biomass)),
-    est,
-    type = "l",
-    ylim = c(0, ymax),
-    xaxt = "n",
-    yaxt = "n",
-    xlab = "",
-    ylab = "",
-    bty = "n"
+    est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
   )
-  graphics::axis(1,
-                 mgp = axis1_mgp,
-                 tck = -0.04,
-                 cex.axis = 0.6)
-  graphics::axis(2,
-                 mgp = axis2_mgp,
-                 tck = -0.04,
-                 cex.axis = 0.8)
   
-   
+  graphics::axis(1, mgp = axis1_mgp, tck = -0.04, cex.axis = dyn_cex)
+  graphics::axis(2, mgp = axis2_mgp, tck = -0.04, cex.axis = dyn_cex)
+  
   if(small){
     graphics::mtext(species, side = 1, cex = 0.6, line = 0.9, adj = 0)
     graphics::mtext(datasource, side = 1, cex = 0.6, line = 1.7, adj = 0)
@@ -213,50 +191,36 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
     if (nrow(qdat) > 0) {
       graphics::mtext(
         sprintf("nl:%.3g  q:%.3g (%s)", tot, unique(sq)[1], unique(qdat$Type)[1]),
-        side = 1,
-        line = 2.5,
-        cex = 0.6,
-        adj = 0
+        side = 1, line = 2.5, cex = 0.6, adj = 0
       )
     }
   } else {
-  graphics::mtext(
-    paste(datasource, species, "biomass", sprintf("   nll: %.3g", tot)),
-    side = 1,
-    cex = 0.9,
-    line = 1.5,
-    adj = 0
-  )
-  
-  if (nrow(qdat) > 0) {
     graphics::mtext(
-      sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(qdat$survey_q)[1]),
-      side = 1,
-      line = 2.5,
-      cex = 0.9,
-      adj = 0
+      paste(datasource, species, "biomass", sprintf("   nll: %.3g", tot)),
+      side = 1, cex = 0.9, line = 1.5, adj = 0
     )
+    
+    if (nrow(qdat) > 0) {
+      graphics::mtext(
+        sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(qdat$survey_q)[1]),
+        side = 1, line = 2.5, cex = 0.9, adj = 0
+      )
+    }
   }
-}
+  
   sp_index <- which(Rsim.scenario$params$spname == species)
   
-  if (length(sp_index) > 0 &&
-      !is.na(Rsim.scenario$params$B_BaseRef[sp_index])) {
-    graphics::abline(
-      h = Rsim.scenario$params$B_BaseRef[sp_index],
-      col = "darkred",
-      lty = 3
-    )
+  if (length(sp_index) > 0 && !is.na(Rsim.scenario$params$B_BaseRef[sp_index])) {
+    graphics::abline(h = Rsim.scenario$params$B_BaseRef[sp_index], col = "darkred", lty = 3)
   }
   
   graphics::points(as.numeric(qdat$Year), mn)
   graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
 }
 
-
 #######################################
 #' Plot Catch Fit for a Single Species (Small Panel)
-#'
+#' 
 #' Generates a compact diagnostic plot comparing simulated catch against observed
 #' catch data for a specific species. Designed specifically to be nested inside
 #' multi-panel plot grids.
@@ -268,35 +232,40 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
 #' A red dashed reference line is also drawn to represent the base historical catch
 #' derived from the scene's fishing effort and base biomass reference points.
 #'
+#'
 #' @inheritParams rsim.plot.fit
+#' @param species A single character string representing the species name.
 #'
-#' @return Invoked for its side effect of drawing a plot to the active graphics
-#'   device. Returns `NULL`.
-#'
-#'@export
+#' @export
 rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
   
+  if (length(species) > 1) {
+    warning("rsim.plot.fitcatch expects a single species string. Using only the first element.")
+    species <- species[1]
+  }
+  
   if(!is.null(Rsim.scenario$fitting$Catch)){
-     catch.obj <- rsim.fit.obj(Rsim.scenario, Rsim.output)$Catch
+    catch.obj <- rsim.fit.obj(Rsim.scenario, Rsim.output)$Catch
   } else {
-    catch.obj <- data.frame(Year  = character(), 
-                          Group = character(), 
-                          Stdev = double(),
-                          Value = double(), 
-                          Scale = double(),
-                          obs    = double(),
-                          sd     = double(),
-                          wt        = double())    
+    catch.obj <- data.frame(Year = character(), Group = character(), Stdev = double(),
+                            Value = double(), Scale = double(), obs = double(),
+                            sd = double(), wt = double())    
   }
   
   qdat <- catch.obj[catch.obj$Group == species, ]
   
+  if (nrow(qdat) == 0) {
+    warning(sprintf("No catch observation data found for species '%s'.", species))
+  }
+  
   oldpar <- par(mar = c(3, 2, 2, 1))
   on.exit(par(oldpar))
   
+  pin <- graphics::par("pin")
+  dyn_cex <- max(0.4, min(0.85, min(pin) * 0.45))
+  
   mn   <- qdat$obs
-  sdlog <- sqrt(log(1.0 + (qdat$sd * qdat$sd) / ifelse(mn == 0, 1e-6, mn *
-                                                         mn)))
+  sdlog <- sqrt(log(1.0 + (qdat$sd * qdat$sd) / ifelse(mn == 0, 1e-6, mn * mn)))
   
   up <- mn * exp(1.96 * sdlog)
   dn <- mn / exp(1.96 * sdlog)
@@ -305,56 +274,32 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
   
   all_vals <- c(up, est)
   valid_vals <- all_vals[!is.na(all_vals) & !is.infinite(all_vals)]
-  ymax <- if (length(valid_vals) > 0)
-    max(valid_vals)
-  else
-    1
-  if (ymax <= 0)
-    ymax <- 1
+  ymax <- if (length(valid_vals) > 0) max(valid_vals) else 1
+  if (ymax <= 0) ymax <- 1
   
   graphics::plot(
     as.numeric(rownames(Rsim.output$annual_Catch)),
-    est,
-    type = "l",
-    ylim = c(0, ymax),
-    xaxt = "n",
-    yaxt = "n",
-    xlab = "",
-    ylab = "",
-    bty = "n"
+    est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
   )
-  axis(1,
-       mgp = c(3, 0.6, 0),
-       tck = -0.04,
-       cex.axis = 0.6)
-  axis(2,
-       mgp = c(3, 0.2, 0),
-       tck = -0.04,
-       cex.axis = 0.8)
-  graphics::mtext(
-    paste(species, sprintf("   nll: %.3g", tot)),
-    side = 1,
-    cex = 0.6,
-    line = 1.5,
-    adj = 0
-  )
+  
+  axis(1, mgp = c(3, 0.6, 0), tck = -0.04, cex.axis = dyn_cex)
+  axis(2, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+  
+  graphics::mtext(paste(species, sprintf("   nll: %.3g", tot)),
+                  side = 1, cex = 0.6, line = 1.5, adj = 0)
+  
   graphics::points(as.numeric(qdat$Year), mn)
   graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
-  
   
   slist <- Rsim.scenario$params$spname[Rsim.scenario$params$FishFrom + 1]
   tcatch <- sum((Rsim.scenario$params$FishQ * Rsim.scenario$params$B_BaseRef[slist])
                 [slist == species], na.rm = TRUE)
-  if (!is.na(tcatch) &&
-      tcatch > 0)
-    abline(h = tcatch,
-           col = "darkred",
-           lty = 3)
+  if (!is.na(tcatch) && tcatch > 0)
+    abline(h = tcatch, col = "darkred", lty = 3)
 }
 
 #################################################################################
 #' Plot Full Biomass and Catch Fits for a Single Species
-#'
 #' Generates a multi-panel figure displaying the simulation fits for a single
 #' species across all available biomass observation sources, alongside its catch
 #' fitting data.
@@ -367,14 +312,20 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
 #' log-normal confidence intervals for observations and overlays base reference lines.
 #'
 #' @inheritParams rsim.plot.fit 
+#' @param species A single character string representing the species name.
 #'
 #' @return Invoked for its side effect of drawing a multi-panel plot to the active
-#'   graphics device. Returns `NULL`.
+#' graphics device. Returns `NULL`.
 #'
-#'@export
+#' @export
 rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
+  
+  if (length(species) > 1) {
+    warning("rsim.plot.full expects a single species string. Using only the first element.")
+    species <- species[1]
+  }
+  
   oldpar <- graphics::par(no.readonly = TRUE)
-  #no.readonly = logical; if TRUE and there are no other arguments, only parameters are returned which can be set by a subsequent par() call on the same device.
   on.exit(graphics::par(oldpar))
   
   # Biomass plotting
@@ -384,23 +335,22 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
   sidset <- unique(sdat$Source)
   
   graphics::par(
-    mfrow = c(1, length(sidset) + 1),
+    mfrow = c(1, max(1, length(sidset)) + 1),
     oma = c(0.0, 0.0, 0.0, 0.0),
     mar = c(3, 2, 2, 1)
   )
+  
+  pin <- graphics::par("pin")
+  dyn_cex <- max(0.5, min(0.9, min(pin) * 0.45))
   
   for (S in sidset) {
     qdat <- sdat[sdat$Source == S, ]
     sq <- qdat$survey_q
     sq[sq == 0 | is.na(sq)] <- 1e-6
-    #survey_q <- 1
     mn   <- qdat$obs / sq
-    sdlog <- sqrt(log(1.0 + (qdat$sd / sq) * (qdat$sd / sq) /
-                        ifelse(mn == 0, 1e-6, mn * mn)))
+    sdlog <- sqrt(log(1.0 + (qdat$sd / sq) * (qdat$sd / sq) / ifelse(mn == 0, 1e-6, mn * mn)))
     up <- mn * exp(1.96 * sdlog)
     dn <- mn / exp(1.96 * sdlog)
-    #up   <- mn + 1.96*qdat$sd / qdat$survey_q #/survey_q
-    #dn   <- mn - 1.96*qdat$sd / qdat$survey_q #/survey_q
     
     est <- Rsim.output$annual_Biomass[, species]
     tot  <- sum(qdat$fit * qdat$wt)
@@ -412,47 +362,23 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
     
     graphics::plot(
       as.numeric(rownames(Rsim.output$annual_Biomass)),
-      est,
-      type = "l",
-      ylim = c(0, ymax),
-      xaxt = "n",
-      yaxt = "n",
-      xlab = "",
-      ylab = "",
-      bty = "n"
+      est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
     )
-    graphics::axis(1,
-         mgp = c(3, 0.0, 0),
-         tck = -0.04,
-         cex.axis = 0.6)
-    graphics::axis(2,
-         mgp = c(3, 0.2, 0),
-         tck = -0.04,
-         cex.axis = 0.8)
-    graphics::mtext(
-      paste(S, species, "B", sprintf("nll: %.3g", tot)),
-      side = 1,
-      cex.main = 0.9,
-      line = 0.8,
-      adj = 0
-    )
+    
+    graphics::axis(1, mgp = c(3, 0.0, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(2, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+    
+    graphics::mtext(paste(S, species, "B", sprintf("nll: %.3g", tot)),
+                    side = 1, cex.main = 0.9, line = 0.8, adj = 0)
+    
     if (nrow(qdat) > 0) {
-      graphics::mtext(
-        sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
-        side = 1,
-        line = 1.5,
-        cex = 0.9,
-        adj = 0
-      )
+      graphics::mtext(sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
+                      side = 1, line = 1.5, cex = 0.9, adj = 0)
     }
+    
     sp_index <- which(Rsim.scenario$params$spname == species)
-    if (length(sp_index) > 0 &&
-        !is.na(Rsim.scenario$params$B_BaseRef[sp_index])) {
-      graphics::abline(
-        h = Rsim.scenario$params$B_BaseRef[sp_index],
-        col = "darkred",
-        lty = 3
-      )
+    if (length(sp_index) > 0 && !is.na(Rsim.scenario$params$B_BaseRef[sp_index])) {
+      graphics::abline(h = Rsim.scenario$params$B_BaseRef[sp_index], col = "darkred", lty = 3)
     }
     
     graphics::points(as.numeric(qdat$Year), mn)
@@ -462,62 +388,45 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
   # Catch plotting
   catch.obj <- fit_obj$Catch
   qdat <- catch.obj[catch.obj$Group == species, ]
-  mn   <- qdat$obs
-  sdlog <- sqrt(log(1.0 + (qdat$sd * qdat$sd) / ifelse(mn == 0, 1e-6, mn * mn)))
-  up <- mn * exp(1.96 * sdlog)
-  dn <- mn / exp(1.96 * sdlog)
-  #up   <- mn + 1.96*qdat$sd
-  #dn   <- mn - 1.96*qdat$sd
-  est  <- Rsim.output$annual_Catch[, species]
-  tot <- sum(qdat$fit * qdat$wt)
   
-  all_vals <- c(up, est)
-  valid_vals <- all_vals[!is.na(all_vals) & !is.infinite(all_vals)]
-  ymax <- if (length(valid_vals) > 0) max(valid_vals) else 1
-  if (ymax <= 0) ymax <- 1
-  
-  
-  graphics::plot(
-    as.numeric(rownames(Rsim.output$annual_Catch)),
-    est,
-    type = "l",
-    ylim = c(0, ymax),
-    xaxt = "n",
-    yaxt = "n",
-    xlab = "",
-    ylab = "",
-    bty = "n"
-  )
-  graphics::axis(1,
-       mgp = c(3, 0.2, 0),
-       tck = -0.04,
-       cex.axis = 0.6)
-  graphics::axis(2,
-       mgp = c(3, 0.2, 0),
-       tck = -0.04,
-       cex.axis = 0.8)
-  graphics::mtext(
-    paste(species, "catch", sprintf("   nll: %.3g", tot)),
-    side = 1,
-    cex.main = 0.9,
-    line = 0.8,
-    adj = 0
-  )
-  
-  graphics::points(as.numeric(qdat$Year), mn)
-  graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
-  
-  slist <- Rsim.scenario$params$spname[Rsim.scenario$params$FishFrom + 1]
-  tcatch <- sum((Rsim.scenario$params$FishQ * Rsim.scenario$params$B_BaseRef[slist])[slist == species], na.rm =
-                  TRUE)
-  if (!is.na(tcatch) &&
-      tcatch > 0)
-    graphics::abline(h = tcatch,
-           col = "darkred",
-           lty = 3)
+  if (nrow(qdat) == 0) {
+    graphics::plot(1, type = "n", axes = FALSE, xlab = "", ylab = "")
+    graphics::mtext(paste(species, "catch (No Data)"), side = 1, cex = dyn_cex, line = 0.8)
+  } else {
+    mn   <- qdat$obs
+    sdlog <- sqrt(log(1.0 + (qdat$sd * qdat$sd) / ifelse(mn == 0, 1e-6, mn * mn)))
+    up <- mn * exp(1.96 * sdlog)
+    dn <- mn / exp(1.96 * sdlog)
+    
+    est  <- Rsim.output$annual_Catch[, species]
+    tot <- sum(qdat$fit * qdat$wt)
+    
+    all_vals <- c(up, est)
+    valid_vals <- all_vals[!is.na(all_vals) & !is.infinite(all_vals)]
+    ymax <- if (length(valid_vals) > 0) max(valid_vals) else 1
+    if (ymax <= 0) ymax <- 1
+    
+    graphics::plot(
+      as.numeric(rownames(Rsim.output$annual_Catch)),
+      est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
+    )
+    
+    graphics::axis(1, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(2, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+    
+    graphics::mtext(paste(species, "catch", sprintf("   nll: %.3g", tot)),
+                    side = 1, cex.main = 0.9, line = 0.8, adj = 0)
+    
+    graphics::points(as.numeric(qdat$Year), mn)
+    graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
+    
+    slist <- Rsim.scenario$params$spname[Rsim.scenario$params$FishFrom + 1]
+    tcatch <- sum((Rsim.scenario$params$FishQ * Rsim.scenario$params$B_BaseRef[slist])[slist == species], na.rm = TRUE)
+    if (!is.na(tcatch) && tcatch > 0) {
+      graphics::abline(h = tcatch, col = "darkred", lty = 3)
+    }
+  }
 }
-
-
 
 # ################################################################################
 # #' Plot Simulated vs. Observed Catch for a Single Species
@@ -632,7 +541,6 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
 #     utils::browseURL(out_path)
 #   }
 # }
-
 
 # #################################################################################
 # #' Plot Relative Biomass Over Time
