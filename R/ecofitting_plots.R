@@ -371,11 +371,11 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
     graphics::axis(1, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
     graphics::axis(2, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
     
-    graphics::mtext(paste(S, species, " B"),
+    graphics::mtext(paste(S, species, " B", sprintf(" nll: %.3g", tot)),
                     side = 1, cex= dyn_cex*0.85, line = 2.2, adj = 0)
     
     if (nrow(qdat) > 0) {
-      graphics::mtext(sprintf(" nll: %.3g", tot, "%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
+      graphics::mtext(sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
                       side = 1, line = 3.2, cex = dyn_cex*0.85, adj = 0) #FLAG ####
     }
     
@@ -418,7 +418,7 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
     graphics::axis(2, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex)
     
     graphics::mtext(paste(species, "catch", sprintf("   nll: %.3g", tot)),
-                    side = 1, cex.main = dyn_cex*0.85, line = 2.2, adj = 0)
+                    side = 1, cex= dyn_cex*0.85, line = 2.2, adj = 0)
     
     graphics::points(as.numeric(qdat$Year), mn)
     graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
