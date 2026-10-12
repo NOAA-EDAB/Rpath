@@ -282,11 +282,14 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
     est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
   )
   
-  axis(1, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG####
-  axis(2, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG####
+  graphics::axis(1, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG####
+  graphics::axis(2, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG####
   
-  graphics::mtext(paste(species, sprintf("   nll: %.3g", tot)),
-                  side = 1, cex = dyn_cex*0.8, line = 1.5, adj = 0)
+  #graphics::mtext(paste(species, sprintf("   nll: %.3g", tot)),
+  #               side = 1, cex = dyn_cex*0.8, line = 1.5, adj = 0)
+  
+  graphics::mtext(species, side = 1, cex = dyn_cex*0.8, line = 1.0, adj = 0)
+  graphics::mtext(sprintf("   nll: %.3g", tot), side = 1, cex = dyn_cex*0.8, line = 1.8, adj = 0)
   
   graphics::points(as.numeric(qdat$Year), mn)
   graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
