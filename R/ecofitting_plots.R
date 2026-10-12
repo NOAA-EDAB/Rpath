@@ -328,6 +328,8 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
     species <- species[1]
   }
   
+  grDevices::dev.new(noRStudioGD = TRUE)
+  
   oldpar <- graphics::par(no.readonly = TRUE)
   on.exit(try(graphics::par(oldpar), silent=TRUE))
   
