@@ -262,7 +262,7 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
   on.exit(par(oldpar))
   
   pin <- graphics::par("pin")
-  dyn_cex <- max(0.4, min(0.85, min(pin) * 0.45))
+  dyn_cex <- max(0.75, min(0.95, min(pin) * 0.2 + 0.6)) #FLAG ####
   
   mn   <- qdat$obs
   sdlog <- sqrt(log(1.0 + (qdat$sd * qdat$sd) / ifelse(mn == 0, 1e-6, mn * mn)))
