@@ -190,7 +190,7 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
     
     if (nrow(qdat) > 0) {
       graphics::mtext(
-        sprintf("nl:%.3g  q:%.3g (%s)", tot, unique(sq)[1], unique(qdat$Type)[1]),
+        sprintf("nll:%.3g  q:%.3g (%s)", tot, unique(sq)[1], unique(qdat$Type)[1]),
         side = 1, line = 2.6, cex = dyn_cex*0.8, adj = 0
       )
     }
@@ -254,9 +254,9 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
   
   qdat <- catch.obj[catch.obj$Group == species, ]
   
-  if (nrow(qdat) == 0) {
-    warning(sprintf("No catch observation data found for species '%s'.", species))
-  }
+  #if (nrow(qdat) == 0) {
+  #  warning(sprintf("No catch observation data found for species '%s'.", species))
+  #}
   
   oldpar <- par(mar = c(3, 2, 2, 1))
   on.exit(par(oldpar))
@@ -289,7 +289,7 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
   #               side = 1, cex = dyn_cex*0.8, line = 1.5, adj = 0)
   
   graphics::mtext(species, side = 1, cex = dyn_cex*0.8, line = 1.0, adj = 0)
-  graphics::mtext(sprintf("   nll: %.3g", tot), side = 1, cex = dyn_cex*0.8, line = 1.8, adj = 0)
+  graphics::mtext(sprintf("nll: %.3g", tot), side = 1, cex = dyn_cex*0.8, line = 1.8, adj = 0)
   
   graphics::points(as.numeric(qdat$Year), mn)
   graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
