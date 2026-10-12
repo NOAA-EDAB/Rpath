@@ -340,7 +340,7 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
   graphics::par(
     mfrow = c(1, max(1, length(sidset)) + 1),
     oma = c(0.0, 0.0, 0.0, 0.0),
-    mar = c(4, 2, 2, 1)
+    mar = c(4.5, 2.5, 2, 1)
   )
   
   pin <- graphics::par("pin")
@@ -368,15 +368,15 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
       est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
     )
     
-    graphics::axis(1, mgp = c(3, 0.5, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
-    graphics::axis(2, mgp = c(3, 0.5, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
+    graphics::axis(1, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
+    graphics::axis(2, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
     
-    graphics::mtext(paste(S, species, "B", sprintf("nll: %.3g", tot)),
-                    side = 1, cex.main = dyn_cex*0.85, line = 1.6, adj = 0)
+    graphics::mtext(paste(S, species, " B"),
+                    side = 1, cex= dyn_cex*0.85, line = 2.2, adj = 0)
     
     if (nrow(qdat) > 0) {
-      graphics::mtext(sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
-                      side = 1, line = 2.6, cex = dyn_cex*0.85, adj = 0) #FLAG ####
+      graphics::mtext(sprintf(" nll: %.3g", tot, "%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
+                      side = 1, line = 3.2, cex = dyn_cex*0.85, adj = 0) #FLAG ####
     }
     
     sp_index <- which(Rsim.scenario$params$spname == species)
@@ -394,7 +394,7 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
   
   if (nrow(qdat) == 0) {
     graphics::plot(1, type = "n", axes = FALSE, xlab = "", ylab = "")
-    graphics::mtext(paste(species, "catch (No Data)"), side = 1, cex = dyn_cex*0.85, line = 1.6)
+    graphics::mtext(paste(species, "catch (No Data)"), side = 1, cex = dyn_cex*0.85, line = 2.2)
   } else {
     mn   <- qdat$obs
     sdlog <- sqrt(log(1.0 + (qdat$sd * qdat$sd) / ifelse(mn == 0, 1e-6, mn * mn)))
@@ -414,11 +414,11 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
       est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
     )
     
-    graphics::axis(1, mgp = c(3, 0.5, 0), tck = -0.04, cex.axis = dyn_cex)
-    graphics::axis(2, mgp = c(3, 0.5, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(1, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(2, mgp = c(3, 1, 0), tck = -0.04, cex.axis = dyn_cex)
     
     graphics::mtext(paste(species, "catch", sprintf("   nll: %.3g", tot)),
-                    side = 1, cex.main = dyn_cex*0.85, line = 1.6, adj = 0)
+                    side = 1, cex.main = dyn_cex*0.85, line = 2.2, adj = 0)
     
     graphics::points(as.numeric(qdat$Year), mn)
     graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
