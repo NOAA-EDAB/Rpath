@@ -369,7 +369,7 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
     graphics::axis(2, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
     
     graphics::mtext(paste(S, species, "B", sprintf("nll: %.3g", tot)),
-                    side = 1, cex.main = 0.9, line = 0.8, adj = 0)
+                    side = 1, cex.main = dyn_cex*0.9, line = 0.8, adj = 0)
     
     if (nrow(qdat) > 0) {
       graphics::mtext(sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
