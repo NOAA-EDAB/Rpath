@@ -144,10 +144,10 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
   
   if(small){
     pin <- graphics::par("pin") 
-    dyn_cex <- max(0.4, min(0.85, min(pin) * 0.45))
+    dyn_cex <- max(0.75, min(0.95, min(pin) *0.2+ 0.6)) #FLAG ####
     
     mar_vals <- c(2.8, 1.5, 1, 0.5)
-    axis1_mgp <- c(3, 0.1, 0)
+    axis1_mgp <- c(3, 0.3, 0) #FLAG####
     axis2_mgp <- c(3, 0.2, 0)
     
   } else {
@@ -185,13 +185,13 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
   graphics::axis(2, mgp = axis2_mgp, tck = -0.04, cex.axis = dyn_cex)
   
   if(small){
-    graphics::mtext(species, side = 1, cex = 0.6, line = 0.9, adj = 0)
-    graphics::mtext(datasource, side = 1, cex = 0.6, line = 1.7, adj = 0)
+    graphics::mtext(species, side = 1, cex = dyn_cex*0.9, line = 1.0, adj = 0) #flag ####
+    graphics::mtext(datasource, side = 1, cex = dyn_cex*0.9, line = 1.8, adj = 0) #Flag####
     
     if (nrow(qdat) > 0) {
       graphics::mtext(
         sprintf("nl:%.3g  q:%.3g (%s)", tot, unique(sq)[1], unique(qdat$Type)[1]),
-        side = 1, line = 2.5, cex = 0.6, adj = 0
+        side = 1, line = 2.6, cex = dyn_cex*0.9, adj = 0
       )
     }
   } else {
@@ -203,7 +203,7 @@ rsim.plot.fitbio <- function(Rsim.scenario, Rsim.output, species, datasource, sm
     if (nrow(qdat) > 0) {
       graphics::mtext(
         sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(qdat$survey_q)[1]),
-        side = 1, line = 2.5, cex = 0.9, adj = 0
+        side = 1, line = 2.5, cex = dyn_cex, adj = 0
       )
     }
   }
@@ -282,11 +282,11 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
     est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
   )
   
-  axis(1, mgp = c(3, 0.6, 0), tck = -0.04, cex.axis = dyn_cex)
-  axis(2, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+  axis(1, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG####
+  axis(2, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG####
   
   graphics::mtext(paste(species, sprintf("   nll: %.3g", tot)),
-                  side = 1, cex = 0.6, line = 1.5, adj = 0)
+                  side = 1, cex = dyn_cex*0.9, line = 1.5, adj = 0)
   
   graphics::points(as.numeric(qdat$Year), mn)
   graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
@@ -341,7 +341,7 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
   )
   
   pin <- graphics::par("pin")
-  dyn_cex <- max(0.5, min(0.9, min(pin) * 0.45))
+  dyn_cex <- max(0.8, min(1.0, min(pin) * 0.2 + 0.6)) #FLAG####
   
   for (S in sidset) {
     qdat <- sdat[sdat$Source == S, ]
@@ -365,15 +365,15 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
       est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
     )
     
-    graphics::axis(1, mgp = c(3, 0.0, 0), tck = -0.04, cex.axis = dyn_cex)
-    graphics::axis(2, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(1, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
+    graphics::axis(2, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex) #FLAG ####
     
     graphics::mtext(paste(S, species, "B", sprintf("nll: %.3g", tot)),
                     side = 1, cex.main = 0.9, line = 0.8, adj = 0)
     
     if (nrow(qdat) > 0) {
       graphics::mtext(sprintf("%s  q: %.3g", unique(qdat$Type)[1], unique(sq)[1]),
-                      side = 1, line = 1.5, cex = 0.9, adj = 0)
+                      side = 1, line = 1.8, cex = dyn_cex*0.9, adj = 0) #FLAG ####
     }
     
     sp_index <- which(Rsim.scenario$params$spname == species)
@@ -411,11 +411,11 @@ rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
       est, type = "l", ylim = c(0, ymax), xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n"
     )
     
-    graphics::axis(1, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
-    graphics::axis(2, mgp = c(3, 0.2, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(1, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex)
+    graphics::axis(2, mgp = c(3, 0.4, 0), tck = -0.04, cex.axis = dyn_cex)
     
     graphics::mtext(paste(species, "catch", sprintf("   nll: %.3g", tot)),
-                    side = 1, cex.main = 0.9, line = 0.8, adj = 0)
+                    side = 1, cex.main = dyn_cex, line = 1.0, adj = 0)
     
     graphics::points(as.numeric(qdat$Year), mn)
     graphics::segments(as.numeric(qdat$Year), y0 = up, y1 = dn)
