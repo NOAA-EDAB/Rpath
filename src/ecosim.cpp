@@ -168,7 +168,7 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
              FishingLoss = as<NumericVector>(k1["FishingLoss"]);
              //cum_Catch += (hh * FishingLoss/old_Biomass) * (new_Biomass+old_Biomass)/2.0;
              cum_Catch += (hh * FishingLoss/old_Biomass) *
-               ifelse(new_Biomass==old_Biomass, old_Biomass,
+               ifelse(abs(new_Biomass-old_Biomass)<old_Biomass*BIG_EPSILON, old_Biomass,
                (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass));
              
           // Track catch by gear
@@ -177,7 +177,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
              NumericVector GearCatch = as<NumericVector>(k1["GearCatch"]);
              //cum_Gear_Catch += (hh * GearCatch / old_Biomass_flink) * (new_Biomass_flink + old_Biomass_flink)/2.0;
              cum_Gear_Catch += (hh * GearCatch / old_Biomass_flink) *
-               ifelse(new_Biomass_flink==old_Biomass_flink, old_Biomass_flink,
+               ifelse(abs(new_Biomass_flink-old_Biomass_flink)<old_Biomass_flink*BIG_EPSILON, 
+                      old_Biomass_flink,
                (new_Biomass_flink-old_Biomass_flink)/log(new_Biomass_flink/old_Biomass_flink));
              
           // Set state to new values, including min/max traps
@@ -492,7 +493,8 @@ int y, m, dd;
     //  (new_Biomass + old_Biomass) / 2.0;
     // kya 9/23/2026 using true exponential average (not sure why we stopped that)
     NumericVector new_Catch = 
-      ifelse(cur_Biomass==old_Biomass,
+        //ifelse(cur_Biomass==old_Biomass,
+        ifelse(abs(cur_Biomass-old_Biomass) < old_Biomass*BIG_EPSILON,
              FishingLoss*DELTA_T,
              (FishingLoss*DELTA_T/old_Biomass) *
                (cur_Biomass-old_Biomass)/log(cur_Biomass/old_Biomass) 
@@ -508,7 +510,8 @@ int y, m, dd;
     //NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
     //                            (new_Biomass_flink + old_Biomass_flink)/2.0;
     NumericVector new_Gear_Catch = 
-      ifelse(cur_Biomass_flink==old_Biomass_flink,
+      //ifelse(cur_Biomass_flink==old_Biomass_flink,
+      ifelse(abs(cur_Biomass_flink-old_Biomass_flink) < old_Biomass_flink*BIG_EPSILON,
              GearCatch*DELTA_T,
              (GearCatch*DELTA_T/old_Biomass_flink) *
                (cur_Biomass_flink-old_Biomass_flink)/log(cur_Biomass_flink/old_Biomass_flink) 
