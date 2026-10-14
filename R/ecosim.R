@@ -435,10 +435,11 @@ rsim.mort <- function(Rsim.output, group){
 #'@param sim.year Year of fishing/forcing timeseries to use for derivative calculations.
 #'@param sim.month Month of fishing/forcing timeseries to use for derivative calculations,
 #'noting that month uses a (0-11) range rather than (1-12) due to C++ indexing offsets.
-#'@param tstep Sub-monthly time step usually set to 0. 
+#'@param tstep Sub-monthly time step usually set to 0.
+#'@param outlist (optional) return output as unlabeled list instead of labeled table.  
 #'
-#'@return \code{rsim.deriv.list()} returns the raw unlabeled derivative list used by
-#'the Rcpp integration code, while \code{rsim.deriv()} returns a labeled data.frame
+#'@return If \code{outlist} is true, returns the raw unlabeled derivative list used by
+#'the Rcpp integration code, otherwise returns a labeled data.frame
 #'object of model group (rows) values for 12 derivatives (columns):
 #'\itemize{
 #'  \item{\code{Species}, character names of model groups}
@@ -467,30 +468,22 @@ rsim.mort <- function(Rsim.output, group){
 #'
 #'@export
 #'
-rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
+rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0, outlist=F){
   scene <- copy(Rsim.scenario)
   rout <- deriv_vector(scene$params,  scene$start_state, 
                        scene$forcing, scene$fishing,
                        scene$stanzas, sim.year, sim.month, tstep)
-  
-  rtab <- data.frame(scene$params$spname,rout$DerivT,rout$TotGain,rout$TotLoss, 
+  if(outlist){
+    return(rout)
+  } else{
+    rtab <- data.frame(scene$params$spname,rout$DerivT,rout$TotGain,rout$TotLoss, 
                      rout$FoodGain, rout$DetritalGain, rout$FishingGain,      
                      rout$UnAssimLoss,rout$ActiveRespLoss,
                      rout$FoodLoss,rout$MzeroLoss,rout$FishingLoss,rout$DetritalLoss)
-  colnames(rtab)<-c("Species","DerivT","TotGain","TotLoss","FoodGain","DetritalGain","FishingGain",
+    colnames(rtab)<-c("Species","DerivT","TotGain","TotLoss","FoodGain","DetritalGain","FishingGain",
                     "UnAssimLoss","ActiveRespLoss","FoodLoss","MzeroLoss","FishingLoss","DetritalLoss")
-  return(rtab)
-}
-# List version of rsim.deriv function, returns full list
-#'@rdname rsim.deriv
-#'@export
-#'
-rsim.deriv.list <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
-  scene <- copy(Rsim.scenario)
-  rout <- deriv_vector(scene$params,  scene$start_state, 
-                       scene$forcing, scene$fishing,
-                       scene$stanzas, sim.year, sim.month, tstep)
-  return(rout)
+    return(rtab)
+  }
 }
 
 #'Initial set up for Rsim dynamic simulation
