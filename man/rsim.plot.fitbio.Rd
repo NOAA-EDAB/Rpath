@@ -17,7 +17,7 @@ rsim.plot.fitbio(
 
 \item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character vector of species names to include in the plots.}
+\item{species}{A single character string representing the species name.}
 
 \item{datasource}{A character string identifying the specific survey or data source
 to extract from the objective function data (e.g., `"race_wgoa"`).}

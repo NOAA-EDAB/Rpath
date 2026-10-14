@@ -432,11 +432,14 @@ rsim.mort <- function(Rsim.output, group){
 #'Calculates the derivative for a single time step and saves the output 
 #'
 #'@inheritParams rsim.run
-#'@param sim.year Will inherit from apply functions
-#'@param sim.month Will inherit from apply functions
+#'@param sim.year Year of fishing/forcing timeseries to use for derivative calculations.
+#'@param sim.month Month of fishing/forcing timeseries to use for derivative calculations,
+#'noting that month uses a (0-11) range rather than (1-12) due to C++ indexing offsets.
 #'@param tstep Sub-monthly time step usually set to 0. 
 #'
-#'@return a data.frame object of model group (rows) values for 12 derivatives (columns):
+#'@return \code{rsim.deriv.list()} returns the raw unlabeled derivative list used by
+#'the Rcpp integration code, while \code{rsim.deriv()} returns a labeled data.frame
+#'object of model group (rows) values for 12 derivatives (columns):
 #'\itemize{
 #'  \item{\code{Species}, character names of model groups}
 #'  \item{\code{DerivT}, numeric net flow; Total Gain - Total Loss at the timestep}
@@ -477,6 +480,17 @@ rsim.deriv <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
   colnames(rtab)<-c("Species","DerivT","TotGain","TotLoss","FoodGain","DetritalGain","FishingGain",
                     "UnAssimLoss","ActiveRespLoss","FoodLoss","MzeroLoss","FishingLoss","DetritalLoss")
   return(rtab)
+}
+# List version of rsim.deriv function, returns full list
+#'@rdname rsim.deriv
+#'@export
+#'
+rsim.deriv.list <- function(Rsim.scenario, sim.year = 0, sim.month = 0, tstep = 0){
+  scene <- copy(Rsim.scenario)
+  rout <- deriv_vector(scene$params,  scene$start_state, 
+                       scene$forcing, scene$fishing,
+                       scene$stanzas, sim.year, sim.month, tstep)
+  return(rout)
 }
 
 #'Initial set up for Rsim dynamic simulation

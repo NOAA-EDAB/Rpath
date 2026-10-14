@@ -7,8 +7,8 @@
 rsim.plot.fit(
   Rsim.scenario,
   Rsim.output,
-  species,
-  scene_name = NULL,
+  species.list,
+  scene.name = NULL,
   small = TRUE
 )
 }
@@ -17,9 +17,9 @@ rsim.plot.fit(
 
 \item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character vector of species names to include in the plots.}
+\item{species.list}{A character vector of species names to include in the plots.}
 
-\item{scene_name}{An optional character string used to label the main title
+\item{scene.name}{An optional character string used to label the main title
 of the plots. Defaults to `NULL` (resulting in a blank space).}
 
 \item{small}{A logical value indicating whether to adjust the margins for multiplot panel.}

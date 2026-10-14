@@ -11,11 +11,7 @@ rsim.plot.fitcatch(Rsim.scenario, Rsim.output, species)
 
 \item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character vector of species names to include in the plots.}
-}
-\value{
-Invoked for its side effect of drawing a plot to the active graphics
-  device. Returns `NULL`.
+\item{species}{A single character string representing the species name.}
 }
 \description{
 Generates a compact diagnostic plot comparing simulated catch against observed

@@ -2,7 +2,10 @@
 % Please edit documentation in R/ecofitting_plots.R
 \name{rsim.plot.full}
 \alias{rsim.plot.full}
-\title{Plot Full Biomass and Catch Fits for a Single Species}
+\title{Plot Full Biomass and Catch Fits for a Single Species
+Generates a multi-panel figure displaying the simulation fits for a single
+species across all available biomass observation sources, alongside its catch
+fitting data.}
 \usage{
 rsim.plot.full(Rsim.scenario, Rsim.output, species)
 }
@@ -11,13 +14,14 @@ rsim.plot.full(Rsim.scenario, Rsim.output, species)
 
 \item{Rsim.output}{An `Rsim` simulation output object resulting from a fitted run.}
 
-\item{species}{A character vector of species names to include in the plots.}
+\item{species}{A single character string representing the species name.}
 }
 \value{
 Invoked for its side effect of drawing a multi-panel plot to the active
-  graphics device. Returns `NULL`.
+graphics device. Returns `NULL`.
 }
 \description{
+Plot Full Biomass and Catch Fits for a Single Species
 Generates a multi-panel figure displaying the simulation fits for a single
 species across all available biomass observation sources, alongside its catch
 fitting data.
