@@ -4,15 +4,13 @@
 \alias{MTI}
 \title{Quantify mixed trophic impacts}
 \usage{
-MTI(Rpath, Rpath.params, increase = T)
+MTI(Rpath, Rpath.params)
 }
 \arguments{
 \item{Rpath}{Rpath R object containing a static \code{Rpath} model.}
 
 \item{Rpath.params}{R object containing the \code{Rpath} model parameters.  This is generated
 either by the \code{\link{create.rpath.params}()} or \code{\link{read.rpath.params}()} functions.}
-
-\item{increase}{Logical value indicating whether a marginal increase is applied.}
 }
 \value{
 Returns a matrix of mixed trophic impacts.
