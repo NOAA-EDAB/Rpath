@@ -125,6 +125,18 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100, spname = NULL
   
   scene <- copy(Rsim.scenario)
   
+  # KYA 10/21/26 Check to see if any stanzas have Forcing input values, if so stop with an error.
+  if(scene$stanzas$Nsplit > 0){
+    # Look up split species from stanzas$EcopathCode, remove NAs, get Forced Biomass columns
+    # for those species, adding 1 for c++ Outside offset, and count the number of positive 
+    # biomass forcing numbers - if there are any, give an error.
+    if (sum(scene$forcing$ForcedBio[,  
+            1 + as.vector(scene$stanzas$EcopathCode)[!is.na(scene$stanzas$EcopathCode)]] > 0) 
+        > 0) {
+          stop("Forcing Biomass not implemented for multistanza groups, please set all multistanza ForcedBio values to negative.")
+    }
+  }
+  
   # Look up C code species number from species name
     if (length(spname)>1){stop("Only one name allowed for species name.")}
     if(is.null(spname)){
