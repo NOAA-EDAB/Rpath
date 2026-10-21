@@ -131,7 +131,7 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100, spname = NULL
     # for those species, adding 1 for c++ Outside offset, and count the number of positive 
     # biomass forcing numbers - if there are any, give an error.
     if (sum(scene$forcing$ForcedBio[,  
-            1 + as.vector(scene$stanzas$EcopathCode)[!is.na(scene$stanzas$EcopathCode)]] > 0) 
+            1 + scene$stanzas$EcopathCode[!is.na(scene$stanzas$EcopathCode)]] > 0) 
         > 0) {
           stop("Forcing Biomass not implemented for multistanza groups, please set all multistanza ForcedBio values to negative.")
     }
