@@ -321,7 +321,7 @@ rsim.plot.fitcatch <- function(Rsim.scenario, Rsim.output, species) {
 #' graphics device. Returns `NULL`.
 #'
 #' @export
-rsim.plot.full <- function(Rsim.scenario, Rsim.output, species) {
+rsim.plot.fitspecies <- function(Rsim.scenario, Rsim.output, species) {
   
   if (length(species) > 1) {
     warning("rsim.plot.full expects a single species string. Using only the first element.")
