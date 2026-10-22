@@ -36,7 +36,7 @@ rpath_balanced <- rpath(rpath_object)
 
 }
 \seealso{
-Other xml:
-\code{\link[=import.eiixml]{import.eiixml()}}
+Other xml: 
+\code{\link{import.eiixml}()}
 }
 \concept{xml}

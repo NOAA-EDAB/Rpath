@@ -28,3 +28,5 @@ JITTER_AMOUNT_PCT <- 0.01 # This is 1% jitter
 FORCED_MIGRATION_BIOMASS_PCT <- 0.1 # This is a 10% jitter for the initial value
 POSITIVE_ONLY <- TRUE
 POSITIVE_AND_NEGATIVE <- FALSE
+# Error message patterns
+ERR_MULTISTANZA_BIO_FORCING <- "Forcing Biomass not implemented"

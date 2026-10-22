@@ -4,13 +4,7 @@
 \alias{rsim.plot.fit}
 \title{Plot Biomass and Catch Fitting Results}
 \usage{
-rsim.plot.fit(
-  Rsim.scenario,
-  Rsim.output,
-  species.list,
-  scene.name = NULL,
-  small = TRUE
-)
+rsim.plot.fit(Rsim.scenario, Rsim.output, species.list, scene.name = NULL)
 }
 \arguments{
 \item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
@@ -21,8 +15,6 @@ rsim.plot.fit(
 
 \item{scene.name}{An optional character string used to label the main title
 of the plots. Defaults to `NULL` (resulting in a blank space).}
-
-\item{small}{A logical value indicating whether to adjust the margins for multiplot panel.}
 }
 \value{
 Invoked for its side effect of drawing plots to external graphics devices.
