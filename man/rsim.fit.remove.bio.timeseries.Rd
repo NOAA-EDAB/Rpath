@@ -7,15 +7,15 @@
 rsim.fit.remove.bio.timeseries(Rsim.scenario, timeseries)
 }
 \arguments{
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data setup.}
+
 \item{timeseries}{A character vector of `ID` strings representing the timeseries 
 to be removed (e.g., `"SpeciesName:SurveySource"`).  Existing timeseries
 IDs can be listed using the `rsim.fit.list.bio.series` function.}
-
-\item{scene}{An `Rsim` scenario object containing the fitting data setup.}
 }
 \value{
-Modifies and returns the `scene` object, with the specified timeseries 
-  removed from the `scene$fitting$Biomass` data frame.
+Modifies and returns the `Rsim.scenario` object, with the specified timeseries 
+  removed from the `Rsim.scenario$fitting$Biomass` data frame.
 }
 \description{
 Removes specific biomass observation timeseries from an `Rsim` scenario 

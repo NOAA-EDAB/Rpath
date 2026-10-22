@@ -198,13 +198,13 @@ read.fitting.catch <- function(Rsim.scenario, catch_data){
 #' It filters the `scene$fitting$Biomass` data frame, keeping only the rows 
 #' where the `ID` does NOT match the values provided in the `timeseries` argument.
 #'
-#' @param scene An `Rsim` scenario object containing the fitting data setup.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data setup.
 #' @param timeseries A character vector of `ID` strings representing the timeseries 
 #'   to be removed (e.g., `"SpeciesName:SurveySource"`).  Existing timeseries
 #'   IDs can be listed using the `rsim.fit.list.bio.series` function.
 #'
-#' @return Modifies and returns the `scene` object, with the specified timeseries 
-#'   removed from the `scene$fitting$Biomass` data frame.
+#' @return Modifies and returns the `Rsim.scenario` object, with the specified timeseries 
+#'   removed from the `Rsim.scenario$fitting$Biomass` data frame.
 #'@export
 rsim.fit.remove.bio.timeseries <- function(Rsim.scenario, timeseries){
   Rsim.scenario$fitting$Biomass <- Rsim.scenario$fitting$Biomass[!(Rsim.scenario$fitting$Biomass$ID %in% timeseries),]
@@ -369,9 +369,8 @@ rsim.fit.list.bio.series <- function(Rsim.scenario){
 #' their `"wt"` column with the provided `wt` value. If the specific combination 
 #' is not found in the catch data, it issues a warning and returns the scene unmodified.
 #'
-#' @param Rsim.scenario An Rsim scenario object containing the fitting data.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #' @param group A character string or vector of group names to update.
-#' @param source A character string or vector of survey source names to update.
 #' @param wt A numeric value to assign as the new weight.
 #'
 #' @return Modifies and returns the `Rsim.scenario`object with the 
@@ -529,7 +528,7 @@ rsim.fit.set.q <- function(Rsim.scenario, group, source, q=NULL, years=NULL, typ
 #' calculates a variance-weighted catchability coefficient (`q_est`) to scale 
 #' the estimates prior to calculating the log-likelihood error.
 #'
-#' @param Rsim.scenario An Rsim scenario object containing the fitting data.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #' @param Rsim.output An Rsim simulation output to be evaluated.
 #' @param verbose Logical; if `TRUE`, returns a detailed list containing the 
 #'   original fitting data appended with model estimates, `q` values, and 
@@ -691,7 +690,7 @@ rsim.fit.table <- function(Rsim.scenario, Rsim.output){
 #' `Biomass` and `Catch` data frames, returning only the rows where the `Group` 
 #' matches the provided `species` vector.
 #'
-#' @param Rsim.scenario An Rsim scenario object containing the fitting data.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #' @param Rsim.output An Rsim simulation output to be evaluated.
 #' @param species A character vector of species or group names to extract. Defaults to `NULL`.
 #'
@@ -719,8 +718,7 @@ rsim.fit.obj.species <- function(Rsim.scenario, Rsim.output, species=NULL){
 #' species names in `spname`, and returns the link index (or indices) where 
 #' both the predator and prey match the requested strings.
 #'
-#' @param Rsim.scenario An `Rpath` simulation scene list object containing model parameters 
-#'   (`scene$params$spname`, `scene$params$PreyFrom`, and `scene$params$PreyTo`).
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data..
 #' @param predator A character string specifying the name of the predator group.
 #' @param prey A character string specifying the name of the prey group.
 #'
@@ -825,7 +823,7 @@ rsim.fit.apply <- function(values, species, vartype, scene.params){
 #' @param vartype A character vector indicating the types of parameters to modify. 
 #'   Currently supported parmaters are `"mzero"`, `"predvul"`, `"preyvul"`, and 
 #'   `"ppvul"`.
-#' @param Rsim.scenario An Rsim.scenario list object.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #' @param run_method Numerical integration method for rsim.run. Either \emph{'AB'} 
 #' for Adams-Bashforth or \emph{'RK4'} for 4th order Runge-Kutta.
 #' @param run_years A numeric vector of years over which to run the simulation.
@@ -906,6 +904,7 @@ rsim.fit.run <- function(values,
 #' @param vartype A character vector indicating the types of parameters to modify. 
 #'   Currently supported parmaters are `"mzero"`, `"predvul"`, `"preyvul"`, and 
 #'   `"ppvul"`.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #'
 #' @return Modifies and returns the complete `Rsim.scenario` object with updated 
 #'   vulnerability and mortality parameters.
@@ -926,8 +925,7 @@ rsim.fit.update <- function(values, species, vartype, Rsim.scenario){
 #' This function outputs a data frame of predator/prey link parameters contained 
 #' in an Rsim scenario for a given set of predators and prey.
 #' 
-#'@param Rsim.scenario Scenario object that contains all of the rsim rates and 
-#'    forcing functions generated by \code{\link{rsim.scenario}()}.
+#' @param Rsim.scenario An `Rsim` scenario object containing the fitting data.
 #' @param pred An optional character string or vector of predator names. If not
 #' provided, the function will include all model predators in its output.
 #' @param prey An optional character string or vector of prey names. If not

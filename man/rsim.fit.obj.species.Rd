@@ -7,7 +7,7 @@
 rsim.fit.obj.species(Rsim.scenario, Rsim.output, species = NULL)
 }
 \arguments{
-\item{Rsim.scenario}{An Rsim scenario object containing the fitting data.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
 \item{Rsim.output}{An Rsim simulation output to be evaluated.}
 

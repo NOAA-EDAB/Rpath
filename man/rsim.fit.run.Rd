@@ -30,7 +30,7 @@ vulnerabilities.}
 Currently supported parmaters are `"mzero"`, `"predvul"`, `"preyvul"`, and 
 `"ppvul"`.}
 
-\item{Rsim.scenario}{An Rsim.scenario list object.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
 \item{run_method}{Numerical integration method for rsim.run. Either \emph{'AB'} 
 for Adams-Bashforth or \emph{'RK4'} for 4th order Runge-Kutta.}

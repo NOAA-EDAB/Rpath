@@ -7,8 +7,7 @@
 get.pp.link(Rsim.scenario, predator, prey)
 }
 \arguments{
-\item{Rsim.scenario}{An `Rpath` simulation scene list object containing model parameters 
-(`scene$params$spname`, `scene$params$PreyFrom`, and `scene$params$PreyTo`).}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data..}
 
 \item{predator}{A character string specifying the name of the predator group.}
 

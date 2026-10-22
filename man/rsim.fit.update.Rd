@@ -18,6 +18,8 @@ vulnerabilities.}
 \item{vartype}{A character vector indicating the types of parameters to modify. 
 Currently supported parmaters are `"mzero"`, `"predvul"`, `"preyvul"`, and 
 `"ppvul"`.}
+
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 }
 \value{
 Modifies and returns the complete `Rsim.scenario` object with updated 

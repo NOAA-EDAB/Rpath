@@ -7,13 +7,11 @@
 rsim.fit.set.catch.wt(Rsim.scenario, group, wt)
 }
 \arguments{
-\item{Rsim.scenario}{An Rsim scenario object containing the fitting data.}
+\item{Rsim.scenario}{An `Rsim` scenario object containing the fitting data.}
 
 \item{group}{A character string or vector of group names to update.}
 
 \item{wt}{A numeric value to assign as the new weight.}
-
-\item{source}{A character string or vector of survey source names to update.}
 }
 \value{
 Modifies and returns the `Rsim.scenario`object with the 
