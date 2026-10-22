@@ -62,4 +62,4 @@ Depends:
     R (>= 3.6.0)
 Config/testthat/edition: 3
 LazyData: true
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1
