@@ -125,7 +125,7 @@ rsim.run <- function(Rsim.scenario, method = 'RK4', years = 1:100, spname = NULL
   
   scene <- copy(Rsim.scenario)
   
-  # KYA 10/21/26 Check to see if any stanzas have Forcing input values, if so stop with an error.
+  # KYA 10/21/26 Check to see if any stanzas have Biomass Forcing input values, if so stop with an error.
   if(scene$stanzas$Nsplit > 0){
     # Look up split species from stanzas$EcopathCode, remove NAs, get Forced Biomass columns
     # for those species, adding 1 for c++ Outside offset, and count the number of positive 
