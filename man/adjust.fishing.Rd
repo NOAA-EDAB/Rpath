@@ -50,9 +50,9 @@ head(Rsim.scenario.adjusted.fishing$fishing$ForcedFRate)
 
 }
 \seealso{
-Other Adjust functions: 
-\code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()},
-\code{\link{set.rsim.scene}()}
+Other Adjust functions:
+\code{\link[=adjust.forcing]{adjust.forcing()}},
+\code{\link[=adjust.scenario]{adjust.scenario()}},
+\code{\link[=set.rsim.scene]{set.rsim.scene()}}
 }
 \concept{Adjust functions}

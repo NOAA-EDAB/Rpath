@@ -31,7 +31,7 @@ xml_data <- import.eiixml(eiixml)
 
 }
 \seealso{
-Other xml: 
-\code{\link{create.rpath.from.eiixml}()}
+Other xml:
+\code{\link[=create.rpath.from.eiixml]{create.rpath.from.eiixml()}}
 }
 \concept{xml}
