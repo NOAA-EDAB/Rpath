@@ -1,3 +1,27 @@
+# Rpath 1.2.0
+
+## Breaking changes
+- Changed to log integration smoother instead of linear smoother for catch output
+calculations for better catch output accuracy, especially during rapid biomass changes. 
+This may change previous catch outputs by a few percent. This does not change the
+biomass removed in a model step, but changes the output catch values.
+- Applying biomass forcing via `ForceBio` to multistanza groups has no current effect,
+but the model was reporting forced outputs without actually changing biomass.  Attempting 
+to force multistanza groups with `ForceBio` now results in an error.
+
+## New Features
+- Added functionality to fit rsim runs to observed biomass and catch data, using `optim()`.
+- Added plotting functions designed to show fit results.
+- Added spawning-stock biomass outputs for multistanza groups.
+- Added output diagnostics options to `rsim.run()`, including output of derivative parts
+for selected species, and more detailed multistanza outputs of weight and numbers.
+- Added more informative warning/error messages to some functions.
+
+## Bug fixes
+- Fixed Mixed Trophic Impact function `MTI()` to match EwE methods/outputs.
+- Fixed minor numerical smoother differences between AB and RK4 integration.
+
+
 # Rpath 1.1.0
 
 - Added ability to import .eiixml files via the `create.rpath.from.eiixml()` function
