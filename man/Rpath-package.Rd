@@ -32,17 +32,13 @@ Authors:
 \itemize{
   \item Kerim Aydin \email{kerim.aydin@noaa.gov} (\href{https://orcid.org/0000-0003-3792-9828}{ORCID})
   \item Sean Lucey \email{sean.m.lucey@noaa.gov} (\href{https://orcid.org/0000-0001-6675-5500}{ORCID})
+  \item Andy Beet \email{andrew.beet@noaa.gov} (\href{https://orcid.org/0000-0001-8270-7090}{ORCID})
+  \item Bia Dias \email{bia.dias@noaa.gov} (\href{https://orcid.org/0000-0001-5905-4044}{ORCID})
   \item Sarah Gaichas \email{sgaichas@hydrascientificllc.com} (\href{https://orcid.org/0000-0002-5788-3073}{ORCID})
+  \item Max Grezlik \email{maxwell.grezlik@noaa.gov}
+  \item Ron Klasky \email{ronald.klasky@noaa.gov}
   \item Sarah Weisberg \email{sarahjweisberg@gmail.com} (\href{https://orcid.org/0000-0003-4271-9534}{ORCID})
   \item Andy Whitehouse \email{gaw@uw.edu} (\href{https://orcid.org/0000-0002-9130-9403}{ORCID})
-}
-
-Other contributors:
-\itemize{
-  \item Bia Dias \email{bia.dias@noaa.gov} (\href{https://orcid.org/0000-0001-5905-4044}{ORCID}) [contributor]
-  \item Ron Klasky \email{ronald.klasky@noaa.gov} [contributor]
-  \item Andy Beet \email{andrew.beet@noaa.gov} (\href{https://orcid.org/0000-0001-8270-7090}{ORCID}) [contributor]
-  \item Max Grezlik \email{maxwell.grezlik@noaa.gov} [contributor]
 }
 
 }
