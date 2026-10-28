@@ -5,7 +5,7 @@ Version: 1.2.0
 Authors@R: c(
     person("Kerim", "Aydin",    email = "kerim.aydin@noaa.gov",  role = c("aut","cre"),
     comment = c(ORCID = "0000-0003-3792-9828")),
-    person("Sean", "Lucey",     email = "sean.m.lucey@noaa.gov", role="aut",
+    person("Sean", "Lucey",     email = "sean.lucey@noaa.gov", role="aut",
     comment = c(ORCID = "0000-0001-6675-5500")),
     person("Andy", "Beet",  email = "andrew.beet@noaa.gov",      role="aut", 
     comment = c(ORCID = "0000-0001-8270-7090")),
