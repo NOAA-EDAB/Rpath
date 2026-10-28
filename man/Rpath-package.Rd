@@ -31,7 +31,7 @@ Useful links:
 Authors:
 \itemize{
   \item Kerim Aydin \email{kerim.aydin@noaa.gov} (\href{https://orcid.org/0000-0003-3792-9828}{ORCID})
-  \item Sean Lucey \email{sean.m.lucey@noaa.gov} (\href{https://orcid.org/0000-0001-6675-5500}{ORCID})
+  \item Sean Lucey \email{sean.lucey@noaa.gov} (\href{https://orcid.org/0000-0001-6675-5500}{ORCID})
   \item Andy Beet \email{andrew.beet@noaa.gov} (\href{https://orcid.org/0000-0001-8270-7090}{ORCID})
   \item Bia Dias \email{bia.dias@noaa.gov} (\href{https://orcid.org/0000-0001-5905-4044}{ORCID})
   \item Sarah Gaichas \email{sgaichas@hydrascientificllc.com} (\href{https://orcid.org/0000-0002-5788-3073}{ORCID})
