@@ -6,10 +6,10 @@
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
 List rk4_run (List params, List instate, List forcing, List fishing, List stanzas,
-                 int StartYear, int EndYear){
+                 int StartYear, int EndYear, int spnum, int spstanza){
 
    int y, m, dd, t; 
-// Input rates are in units of years or years^-1.  Integration is wri tten so
+// Input rates are in units of years or years^-1.  Integration is written so
 // that integration timesteps always line up with months, for data reasons.
 // STEPS_PER_YEAR should be 12 (for months), and STEPS_PER_MONTH sets the
 // rk4 integration timestep.  So effective integration timestep with respect
@@ -42,15 +42,36 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
 // Number of split groups
    const int Nsplit = as<int>(stanzas["Nsplit"]);
-
+   const int Totstanzas     = as<int>(stanzas["Totstanzas"]);
+   const int laststanza     = as<int>(stanzas["laststanza"]);
+   const NumericVector Nstanzas = as<NumericVector>(stanzas["Nstanzas"]);
+   const NumericVector MaxAge   = as<NumericVector>(stanzas["MaxAge"]);
+   NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
+   //std::cout << " x1a ";
+   // stanza outputs
+   NumericMatrix out_SSB(EndYear * 12, Nsplit + 1);
+   NumericMatrix out_eggs(EndYear * 12, Nsplit + 1);
+   NumericMatrix out_Winf(EndYear * 12, Nsplit + 1);
+   NumericMatrix out_Ninf(EndYear * 12, Nsplit + 1);
+   NumericMatrix out_Wrec(EndYear * 12, Totstanzas + 1);
+   NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1); 
+   
+   NumericMatrix out_WageS(EndYear*12, laststanza);
+   NumericMatrix out_NageS(EndYear*12, laststanza);
+   NumericMatrix out_QageS(EndYear*12, laststanza);
+   
+   
+   
+   // Species diagnostic outputs
+   NumericMatrix out_species_rates(EndYear * 12, 10); 
 // Parameter need to track catch by Gear
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
    NumericMatrix out_Biomass(EndYear*12, NUM_BIO+1);           
    NumericMatrix out_Catch(EndYear*12, NUM_BIO+1);          
-   NumericMatrix out_SSB(EndYear*12, NUM_BIO+1);        
-   NumericMatrix out_rec(EndYear*12, NUM_BIO+1);
+   //NumericMatrix out_SSB(EndYear*12, NUM_BIO+1);        
+   //NumericMatrix out_rec(EndYear*12, NUM_BIO+1);
    NumericMatrix out_Gear_Catch(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
    NumericMatrix annual_Catch(EndYear, NUM_BIO+1);
@@ -73,13 +94,30 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
 
 // Load state, set some initial values.  Make sure state is COPY, not pointer   
    List state = clone(instate);
+   NumericMatrix NageS          = as<NumericMatrix>(state["NageS"]);
+   NumericMatrix WageS          = as<NumericMatrix>(state["WageS"]);
+   NumericMatrix QageS          = as<NumericMatrix>(state["QageS"]);
+   NumericVector SpawnBio       = as<NumericVector>(state["SpawnBio"]);
+   NumericVector EggsStanza     = as<NumericVector>(state["EggsStanza"]);
+   
    dd =  StartYear * STEPS_PER_YEAR;  // dd is monthly index for data storage
 
 // KYA 6/12/17 an initial derivative call just to declare deriv in right scope
    List dyt = deriv_vector(params,state,forcing,fishing,stanzas,1,0,0);
       NumericVector FoodGain = as<NumericVector>(dyt["FoodGain"]);
       NumericVector Qlink    = as<NumericVector>(dyt["Qlink"]);   
-
+      // Added for per-species diagnostics
+      NumericVector FoodLoss       = as<NumericVector>(dyt["FoodLoss"]); 
+      //"FoodGain", 
+      NumericVector DetritalGain   = as<NumericVector>(dyt["DetritalGain"]);
+      NumericVector FishingGain    = as<NumericVector>(dyt["FishingGain"]);
+      NumericVector UnAssimLoss    = as<NumericVector>(dyt["UnAssimLoss"]);
+      NumericVector ActiveRespLoss = as<NumericVector>(dyt["ActiveRespLoss"]);
+      NumericVector MzeroLoss      = as<NumericVector>(dyt["MzeroLoss"]);
+      //"FishingLoss",
+      NumericVector DetritalLoss   = as<NumericVector>(dyt["DetritalLoss"]);
+      NumericVector MigrateLoss    = as<NumericVector>(dyt["MigrateLoss"]);
+      NumericVector FishingLoss    = as<NumericVector>(dyt["FishingLoss"]);
       // MAIN LOOP STARTS HERE with years loop
    for (y = StartYear; y <= EndYear; y++){
    if (y<1){stop("RK Year can't be less than 1");}
@@ -127,14 +165,21 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
                  old_Ftime);
 
           // Accumulate Catch (small timestep, so linear average)
-             NumericVector FishingLoss = as<NumericVector>(k1["FishingLoss"]);
-             cum_Catch += (hh * FishingLoss/old_Biomass) * (new_Biomass+old_Biomass)/2.0;
+             FishingLoss = as<NumericVector>(k1["FishingLoss"]);
+             //cum_Catch += (hh * FishingLoss/old_Biomass) * (new_Biomass+old_Biomass)/2.0;
+             cum_Catch += (hh * FishingLoss/old_Biomass) *
+               ifelse(abs(new_Biomass-old_Biomass)<old_Biomass*BIG_EPSILON, old_Biomass,
+               (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass));
              
           // Track catch by gear
              NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
              NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
              NumericVector GearCatch = as<NumericVector>(k1["GearCatch"]);
-             cum_Gear_Catch += (hh * GearCatch / old_Biomass_flink) * (new_Biomass_flink + old_Biomass_flink)/2.0;
+             //cum_Gear_Catch += (hh * GearCatch / old_Biomass_flink) * (new_Biomass_flink + old_Biomass_flink)/2.0;
+             cum_Gear_Catch += (hh * GearCatch / old_Biomass_flink) *
+               ifelse(abs(new_Biomass_flink-old_Biomass_flink)<old_Biomass_flink*BIG_EPSILON, 
+                      old_Biomass_flink,
+               (new_Biomass_flink-old_Biomass_flink)/log(new_Biomass_flink/old_Biomass_flink));
              
           // Set state to new values, including min/max traps
              state["Biomass"]    = pmax(pmin(new_Biomass, B_BaseRef*BIGNUM), B_BaseRef*EPSILON);
@@ -178,8 +223,8 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
         
       // Write to monthly output matricies (vector write)     				          									                    
          out_Biomass( dd, _) = cur_Biomass;
-         out_SSB(dd, _) = cur_Biomass;
-         out_rec(dd, _) = cur_Biomass;
+         //out_SSB(dd, _) = cur_Biomass;
+         //out_rec(dd, _) = cur_Biomass;
          out_Catch( dd, _) = cum_Catch;
          out_Gear_Catch(dd, _) = cum_Gear_Catch;
          annual_Catch(y-1, _) = annual_Catch(y-1, _) + cum_Catch;
@@ -187,7 +232,41 @@ List rk4_run (List params, List instate, List forcing, List fishing, List stanza
            annual_Biomass(y-1, _)    = cur_Biomass;
            annual_QB(y-1, _)    = FoodGain/cur_Biomass;
            annual_Qlink(y-1, _) = Qlink;
-         }      
+         }
+         // Write stanza outputs
+         int sind, isp, ist;
+         sind = 0;
+         for (isp=1; isp<=Nsplit; isp++){
+           out_Winf(dd,isp) = WageS(MaxAge[isp], isp);
+           out_Ninf(dd,isp) = NageS(MaxAge[isp], isp); 
+           out_SSB(dd,isp)  = SpawnBio[isp];
+           out_eggs(dd,isp) = EggsStanza[isp];  
+           for (ist=1; ist<=Nstanzas[isp]; ist++){
+             sind++;
+             out_Nrec(dd,sind) = NageS(Age1(isp,ist), isp);
+             out_Wrec(dd,sind) = WageS(Age1(isp,ist), isp);
+           }
+         }
+         if(spstanza>0){
+           out_WageS(dd, _ ) = WageS( _ , spstanza);
+           out_NageS(dd, _ ) = NageS( _ , spstanza);
+           out_QageS(dd, _ ) = QageS( _ , spstanza);
+         }
+         
+         // Write diagnostic species outputs
+         //FoodGain, DetritalGain, FishingGain, FoodLoss, UnAssimLoss, ActiveRespLoss,
+         //MzeroLoss, FishingLoss, DetritalLoss, MigrateLoss
+         out_species_rates(dd, 0) = FoodGain[spnum];
+         out_species_rates(dd, 1) = DetritalGain[spnum];        
+         out_species_rates(dd, 2) = FishingGain[spnum];
+         out_species_rates(dd, 3) = FoodLoss[spnum];
+         out_species_rates(dd, 4) = UnAssimLoss[spnum];
+         out_species_rates(dd, 5) = ActiveRespLoss[spnum];
+         out_species_rates(dd, 6) = MzeroLoss[spnum];
+         out_species_rates(dd, 7) = FishingLoss[spnum];
+         out_species_rates(dd, 8) = DetritalLoss[spnum];
+         out_species_rates(dd, 9) = MigrateLoss[spnum];        
+         
     }  // End of main months loop
     
   }// End of years loop
@@ -207,6 +286,16 @@ List outdat = List::create(
   _["annual_Biomass"]=annual_Biomass,
   _["annual_QB"]=annual_QB,
   _["annual_Qlink"]=annual_Qlink,
+  _["out_species_rates"]=out_species_rates,
+  _["out_SSB"]=out_SSB,
+  _["out_eggs"]=out_eggs,
+  //_["out_Winf"]=out_Winf,
+  //_["out_Ninf"]=out_Ninf,
+  _["out_Nrec"]=out_Nrec,
+  _["out_Wrec"]=out_Wrec,
+  _["out_WageS"]=out_WageS,
+  _["out_NageS"]=out_NageS,
+  _["out_QageS"]=out_QageS,
   _["end_state"]=state,
   _["crash_year"]=CRASH_YEAR);
   
@@ -221,10 +310,10 @@ List outdat = List::create(
 // Currently does not contain aged-structured species.
 // [[Rcpp::export]] 
 List Adams_run (List params, List instate, List forcing, List fishing, List stanzas,
-                 int StartYear, int EndYear, List InitDeriv){
+                 int StartYear, int EndYear, List InitDeriv, int spnum, int spstanza){
      
 int y, m, dd; 
-
+//std::cout << " x1 ";
 // Get some basic needed numbers from the params List
    const int NUM_BIO = as<int>(params["NUM_LIVING"]) + as<int>(params["NUM_DEAD"]);
    const int NumPredPreyLinks          = as<int>(params["NumPredPreyLinks"]);
@@ -254,15 +343,38 @@ int y, m, dd;
    
 // Parameters from stanzas
    const int Nsplit         = as<int>(stanzas["Nsplit"]);
-
+   const int Totstanzas     = as<int>(stanzas["Totstanzas"]);
+   const int laststanza     = as<int>(stanzas["laststanza"]);
+   const NumericVector Nstanzas = as<NumericVector>(stanzas["Nstanzas"]);
+   const NumericVector MaxAge   = as<NumericVector>(stanzas["MaxAge"]);
+   NumericMatrix Age1           = as<NumericMatrix>(stanzas["Age1"]);
+   //std::cout << " x1a ";
+   // stanza outputs
+      NumericMatrix out_SSB(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_eggs(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_Winf(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_Ninf(EndYear * 12, Nsplit + 1);
+      NumericMatrix out_Wrec(EndYear * 12, Totstanzas + 1);
+      NumericMatrix out_Nrec(EndYear * 12, Totstanzas + 1); 
+      
+     NumericMatrix out_WageS(EndYear*12, laststanza);
+     NumericMatrix out_NageS(EndYear*12, laststanza);
+     NumericMatrix out_QageS(EndYear*12, laststanza);
+     
+       
+      
+  // Species diagnostic outputs
+     NumericMatrix out_species_rates(EndYear * 12, 10); 
+     
+      //std::cout << " x1b ";   
 // Parameter need to track catch by Gear
    const NumericVector FishFrom = as<NumericVector>(params["FishFrom"]);
    
 // Monthly output matrices                     
    NumericMatrix out_Biomass( EndYear * 12, NUM_BIO + 1);           
    NumericMatrix out_Catch( EndYear * 12, NUM_BIO + 1);          
-   NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
-   NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
+   //NumericMatrix out_SSB(EndYear * 12, NUM_BIO + 1);        
+   //NumericMatrix out_rec(EndYear * 12, NUM_BIO + 1);
    NumericMatrix out_Gear_Catch(EndYear*12, NumFishingLinks+1);
 // Annual output matrices
    NumericMatrix annual_Catch(EndYear, NUM_BIO+1);
@@ -274,7 +386,13 @@ int y, m, dd;
 // Use Clone to make sure state/stanzas are copies of instate/instanzas, not pointers   
    List state = clone(instate);
    //List stanzas = clone(instanzas);
-   
+   //std::cout << " x1c "; 
+   NumericMatrix NageS          = as<NumericMatrix>(state["NageS"]);
+   NumericMatrix WageS          = as<NumericMatrix>(state["WageS"]);
+   NumericMatrix QageS          = as<NumericMatrix>(state["QageS"]);
+   NumericVector SpawnBio       = as<NumericVector>(state["SpawnBio"]);
+   NumericVector EggsStanza     = as<NumericVector>(state["EggsStanza"]);
+   //std::cout << " x1d "; 
    // Update sums of split groups to total biomass for derivative calcs
    if(Nsplit > 0){
      SplitSetPred(stanzas, state); 
@@ -284,7 +402,7 @@ int y, m, dd;
       List dyt = InitDeriv;
 
    dd = StartYear * STEPS_PER_YEAR;
-
+   //std::cout << "x2";
 // MAIN LOOP STARTS HERE
 // ASSUMES STEPS_PER_MONTH will always be 1.0, took out divisions     
    for (y = StartYear; y <= EndYear; y++){
@@ -307,6 +425,19 @@ int y, m, dd;
          NumericVector biomeq      = as<NumericVector>(dyt["biomeq"]);
          NumericVector FishingLoss = as<NumericVector>(dyt["FishingLoss"]);  
          NumericVector Qlink       = as<NumericVector>(dyt["Qlink"]);
+         
+         // Added for per-species diagnostics
+         NumericVector FoodLoss       = as<NumericVector>(dyt["FoodLoss"]); 
+         //"FoodGain", 
+         NumericVector DetritalGain   = as<NumericVector>(dyt["DetritalGain"]);
+         NumericVector FishingGain    = as<NumericVector>(dyt["FishingGain"]);
+         NumericVector UnAssimLoss    = as<NumericVector>(dyt["UnAssimLoss"]);
+         NumericVector ActiveRespLoss = as<NumericVector>(dyt["ActiveRespLoss"]);
+         NumericVector MzeroLoss      = as<NumericVector>(dyt["MzeroLoss"]);
+         //"FishingLoss",
+         NumericVector DetritalLoss   = as<NumericVector>(dyt["DetritalLoss"]);
+         NumericVector MigrateLoss    = as<NumericVector>(dyt["MigrateLoss"]);
+         
                
       // Now Update the new State Biomass using Adams-Basforth
          NumericVector new_Biomass = 
@@ -330,24 +461,7 @@ int y, m, dd;
         }
         new_Biomass = ifelse(NoIntegrate < 0, as<NumericVector>(state["Biomass"]), new_Biomass);
         
-     // Calculate catch assuming fixed Frate and exponential biomass change.
-     // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
-        NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
-                               (new_Biomass + old_Biomass) / 2.0;
-        
-        // Track catch by gear
-        NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
-        NumericVector new_Biomass_flink = as<NumericVector>(new_Biomass[FishFrom]);
-        NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
-        NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
-                                    (new_Biomass_flink + old_Biomass_flink)/2.0;
-        
-        // NumericVector new_Catch = 
-        //               ifelse( new_Biomass==old_Biomass,
-        //                 FishingLoss*DELTA_T,
-        //                 (FishingLoss*DELTA_T/old_Biomass) *
-        //                   (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass) 
-        //               );       
+     // CATCH ACCOUNTING WAS HERE
 
      // KYA 9/13/17 - noticed that cur_Biomass is never copied back into state["Biomass"] after
      // bounds testing.  Error?  Moved state["Biomass"] setting, hopefully nothing breaks...
@@ -369,6 +483,52 @@ int y, m, dd;
      // KYA 8/9/17 one of the NA or NaN flags is reading back as a negative integer (-2^32)
      // Not sure why.  This sets any negative biomass (assuming this means NaN) to NA_REAL
         cur_Biomass = ifelse((cur_Biomass<0),NA_REAL,cur_Biomass);
+        
+        
+    //CATCH ACCOUNTING
+    
+    // Calculate catch assuming fixed Frate and exponential biomass change.
+    // kya 9/10/15 - replaced with linear, diff on monthly scale is minor
+    //NumericVector new_Catch = (DELTA_T * FishingLoss / old_Biomass) * 
+    //  (new_Biomass + old_Biomass) / 2.0;
+    // kya 9/23/2026 using true exponential average (not sure why we stopped that)
+    NumericVector new_Catch = 
+        //ifelse(cur_Biomass==old_Biomass,
+        ifelse(abs(cur_Biomass-old_Biomass) < old_Biomass*BIG_EPSILON,
+             FishingLoss*DELTA_T,
+             (FishingLoss*DELTA_T/old_Biomass) *
+               (cur_Biomass-old_Biomass)/log(cur_Biomass/old_Biomass) 
+      );           
+    // kya 9/18/2026 - experiment that doesn't work (smoothed integration needed)
+    //NumericVector new_Catch = DELTA_T * FishingLoss;
+    
+    // Track catch by gear
+    NumericVector old_Biomass_flink = as<NumericVector>(old_Biomass[FishFrom]);
+    NumericVector cur_Biomass_flink = as<NumericVector>(cur_Biomass[FishFrom]);
+    NumericVector GearCatch = as<NumericVector>(dyt["GearCatch"]);
+    // kya 9/10/15
+    //NumericVector new_Gear_Catch = (DELTA_T * GearCatch / old_Biomass_flink) * 
+    //                            (new_Biomass_flink + old_Biomass_flink)/2.0;
+    NumericVector new_Gear_Catch = 
+      //ifelse(cur_Biomass_flink==old_Biomass_flink,
+      ifelse(abs(cur_Biomass_flink-old_Biomass_flink) < old_Biomass_flink*BIG_EPSILON,
+             GearCatch*DELTA_T,
+             (GearCatch*DELTA_T/old_Biomass_flink) *
+               (cur_Biomass_flink-old_Biomass_flink)/log(cur_Biomass_flink/old_Biomass_flink) 
+      );
+    // kya 9/18/2026 - experiment that doesn't work (smoothed integration needed)
+    //NumericVector new_Gear_Catch = DELTA_T * GearCatch;        
+    
+    // NumericVector new_Catch = 
+    //               ifelse( new_Biomass==old_Biomass,
+    //                 FishingLoss*DELTA_T,
+    //                 (FishingLoss*DELTA_T/old_Biomass) *
+    //                   (new_Biomass-old_Biomass)/log(new_Biomass/old_Biomass) 
+    //               );         
+    
+    
+    //END CATCH ACCOUNTING
+        
 
      // If the run is during the "burn-in" years, and biomass goes
      // into the discard range, set flag to exit the loop.  Should set "bad"
@@ -392,8 +552,8 @@ int y, m, dd;
   
      // Write to output matricies     				          									                    
         out_Biomass( dd, _) = old_Biomass;
-        out_SSB(dd, _) = old_Biomass;
-        out_rec(dd, _) = old_Biomass;
+        //out_SSB(dd, _) = old_Biomass;
+        //out_rec(dd, _) = old_Biomass;
         out_Catch( dd, _) = new_Catch;
         out_Gear_Catch(dd, _) = new_Gear_Catch;
         annual_Catch(y-1, _) = annual_Catch(y-1, _) + new_Catch;
@@ -402,12 +562,42 @@ int y, m, dd;
           annual_QB(y-1, _)    = FoodGain/old_Biomass;
           annual_Qlink(y-1, _) = Qlink;
         }
+        //std::cout << "x3";      
+     // Write stanza outputs
+        int sind, isp, ist;
+        sind = 0;
+        for (isp=1; isp<=Nsplit; isp++){
+          out_Winf(dd,isp) = WageS(MaxAge[isp], isp);
+          out_Ninf(dd,isp) = NageS(MaxAge[isp], isp); 
+          out_SSB(dd,isp)  = SpawnBio[isp];
+          out_eggs(dd,isp) = EggsStanza[isp];  
+          for (ist=1; ist<=Nstanzas[isp]; ist++){
+            sind++;
+            out_Nrec(dd,sind) = NageS(Age1(isp,ist), isp);
+            out_Wrec(dd,sind) = WageS(Age1(isp,ist), isp);
+          }
+        }
         
-     //NOJUV    for (i = 1; i <= juv_N; i++){
-     //NOJUV    out_SSB(dd, JuvNum[i]) = 0.0;
-     //NOJUV 		out_SSB(dd, AduNum[i]) = SpawnBio[i];
-     //NOJUV 		out_rec(dd, AduNum[i]) = NageS(firstMoAdu[i], i) * WageS(firstMoAdu[i], i);
-
+        if(spstanza>0){
+            out_WageS(dd, _ ) = WageS( _ , spstanza);
+            out_NageS(dd, _ ) = NageS( _ , spstanza);
+            out_QageS(dd, _ ) = QageS( _ , spstanza);
+        }
+        
+      // Write diagnostic species outputs
+        //FoodGain, DetritalGain, FishingGain, FoodLoss, UnAssimLoss, ActiveRespLoss,
+        //MzeroLoss, FishingLoss, DetritalLoss, MigrateLoss
+        out_species_rates(dd, 0) = FoodGain[spnum];
+        out_species_rates(dd, 1) = DetritalGain[spnum];        
+        out_species_rates(dd, 2) = FishingGain[spnum];
+        out_species_rates(dd, 3) = FoodLoss[spnum];
+        out_species_rates(dd, 4) = UnAssimLoss[spnum];
+        out_species_rates(dd, 5) = ActiveRespLoss[spnum];
+        out_species_rates(dd, 6) = MzeroLoss[spnum];
+        out_species_rates(dd, 7) = FishingLoss[spnum];
+        out_species_rates(dd, 8) = DetritalLoss[spnum];
+        out_species_rates(dd, 9) = MigrateLoss[spnum];
+        //std::cout << "x4";
      }  // End of main months loop
      
    }// End of years loop
@@ -432,7 +622,17 @@ int y, m, dd;
      _["annual_Catch"]=annual_Catch,
      _["annual_Biomass"]=annual_Biomass,
      _["annual_QB"]=annual_QB,
-     _["annual_Qlink"]=annual_Qlink,     
+     _["annual_Qlink"]=annual_Qlink,
+     _["out_species_rates"]=out_species_rates,
+     _["out_SSB"]=out_SSB,
+     _["out_eggs"]=out_eggs,
+     //_["out_Winf"]=out_Winf,
+     //_["out_Ninf"]=out_Ninf,
+     _["out_Nrec"]=out_Nrec,
+     _["out_Wrec"]=out_Wrec,
+     _["out_WageS"]=out_WageS,
+     _["out_NageS"]=out_NageS,
+     _["out_QageS"]=out_QageS,  
      _["end_state"]=state,
      _["crash_year"]=CRASH_YEAR,
      _["dyt"]=dyt);
@@ -802,6 +1002,7 @@ int sp, links, prey, pred, gr, egr, dest, isp, ist, ieco;
      _["MzeroLoss"]=MzeroLoss,
      _["FishingLoss"]=FishingLoss,
      _["DetritalLoss"]=DetritalLoss,
+     _["MigrateLoss"]=MigrateLoss,
      _["FishingThru"]=FishingThru,
      //_["PredSuite"]=PredSuite,
      //_["HandleSuite"]=HandleSuite,

@@ -4,15 +4,13 @@
 \alias{MTI}
 \title{Quantify mixed trophic impacts}
 \usage{
-MTI(Rpath, Rpath.params, increase = T)
+MTI(Rpath, Rpath.params)
 }
 \arguments{
 \item{Rpath}{Rpath R object containing a static \code{Rpath} model.}
 
 \item{Rpath.params}{R object containing the \code{Rpath} model parameters.  This is generated
 either by the \code{\link{create.rpath.params}()} or \code{\link{read.rpath.params}()} functions.}
-
-\item{increase}{Logical value indicating whether a marginal increase is applied.}
 }
 \value{
 Returns a matrix of mixed trophic impacts.
@@ -21,23 +19,23 @@ Returns a matrix of mixed trophic impacts.
 Uses a static \code{Rpath} model and creates a matrix of mixed trophic impacts.
 }
 \seealso{
-Other Rpath functions: 
-\code{\link{check.rpath.params}()},
-\code{\link{create.rpath.params}()},
-\code{\link{frate.table}()},
-\code{\link{read.rpath.params}()},
-\code{\link{rpath}()},
-\code{\link{rpath.consumers}()},
-\code{\link{rpath.detrital}()},
-\code{\link{rpath.gears}()},
-\code{\link{rpath.groups}()},
-\code{\link{rpath.living}()},
-\code{\link{rpath.mixotrophs}()},
-\code{\link{rpath.producers}()},
-\code{\link{rpath.stanzas}()},
-\code{\link{stanzaplot}()},
-\code{\link{webplot}()},
-\code{\link{write.Rpath}()},
-\code{\link{write.rpath.params}()}
+Other Rpath functions:
+\code{\link[=check.rpath.params]{check.rpath.params()}},
+\code{\link[=create.rpath.params]{create.rpath.params()}},
+\code{\link[=frate.table]{frate.table()}},
+\code{\link[=read.rpath.params]{read.rpath.params()}},
+\code{\link[=rpath]{rpath()}},
+\code{\link[=rpath.consumers]{rpath.consumers()}},
+\code{\link[=rpath.detrital]{rpath.detrital()}},
+\code{\link[=rpath.gears]{rpath.gears()}},
+\code{\link[=rpath.groups]{rpath.groups()}},
+\code{\link[=rpath.living]{rpath.living()}},
+\code{\link[=rpath.mixotrophs]{rpath.mixotrophs()}},
+\code{\link[=rpath.producers]{rpath.producers()}},
+\code{\link[=rpath.stanzas]{rpath.stanzas()}},
+\code{\link[=stanzaplot]{stanzaplot()}},
+\code{\link[=webplot]{webplot()}},
+\code{\link[=write.Rpath]{write.Rpath()}},
+\code{\link[=write.rpath.params]{write.rpath.params()}}
 }
 \concept{Rpath functions}

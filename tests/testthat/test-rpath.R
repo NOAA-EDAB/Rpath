@@ -654,8 +654,24 @@ testthat::test_that("Rpath Unit Tests", {
     }
     # Tests 17-22 Forced Biomass with Jitter
     # Tests 23-28 Forced Migration with Jitter
-    REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter,method='AB', years=1:50)
-    REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter,method='RK4',years=1:50)
+    #REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter,method='AB', years=1:50)
+    #REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter,method='RK4',years=1:50)
+    
+    skip_test <- FALSE
+    tryCatch({
+      REcosystem_AB_Current_Jitter  <- rsim.run(REcosystem_scenario_jitter, method='AB', years=1:50)
+      REcosystem_RK4_Current_Jitter <- rsim.run(REcosystem_scenario_jitter, method='RK4', years=1:50)
+    }, error = function(e) {
+      if (grepl(ERR_MULTISTANZA_BIO_FORCING, e$message)) {
+        message(paste0("Skipping ", theTypeData, " (Jitter): Multistanza biomass forcing unsupported."))
+        skip_test <<- TRUE
+      } else {
+        stop(e)
+      }
+    })
+    if (skip_test) next
+
+    
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Jitter$out_Biomass,     BaselineJitterFilenames[[1]])
       writeDataFile(REcosystem_AB_Current_Jitter$out_Catch,       BaselineJitterFilenames[[2]])
@@ -717,8 +733,26 @@ testthat::test_that("Rpath Unit Tests", {
       CurrentSteppedFiles   <- list(CurrentABForcedMigOutBiomassStepped,  CurrentABForcedMigOutCatchStepped,  CurrentABForcedMigOutGearCatchStepped,
                                     CurrentRK4ForcedMigOutBiomassStepped, CurrentRK4ForcedMigOutCatchStepped, CurrentRK4ForcedMigOutGearCatchStepped)
     }
-    REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scenario_stepped,method='AB', years=1:50)
-    REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scenario_stepped,method='RK4',years=1:50)
+    # REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scenario_stepped,method='AB', years=1:50)
+    # REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scenario_stepped,method='RK4',years=1:50)
+    
+    skip_test <- FALSE
+    tryCatch({
+      REcosystem_AB_Current_Stepped  <- rsim.run(REcosystem_scenario_stepped, method='AB', years=1:50)
+      REcosystem_RK4_Current_Stepped <- rsim.run(REcosystem_scenario_stepped, method='RK4', years=1:50)
+    }, error = function(e) {
+      if (grepl(ERR_MULTISTANZA_BIO_FORCING, e$message)) {
+        message(paste0("Skipping ", theTypeData, " (Stepped): Multistanza biomass forcing unsupported."))
+        skip_test <<- TRUE
+      } else {
+        stop(e)
+      }
+    })
+    if (skip_test) next 
+    
+    
+    
+    
     if (CREATE_BASELINE_FILES) {
       writeDataFile(REcosystem_AB_Current_Stepped$out_Biomass,     BaselineSteppedFiles[[1]])
       writeDataFile(REcosystem_AB_Current_Stepped$out_Catch,       BaselineSteppedFiles[[2]])

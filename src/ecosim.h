@@ -12,6 +12,7 @@ using namespace Rcpp;
 // this may change recovery times from "0" biomass - sufficiently consistent from old?
 #define EPSILON            1.0E-15                 // Test threshold for "too close to zero"
 #define BIGNUM             1.0E+15                 // Test threshold for "too big"
+#define BIG_EPSILON        1.0E-09           // For compares bigger than EPSILON (Oct 2026)
 
 #define MIN_THRESHOLD(x,y) if ((x)<(y))(x)=(y)  // Set x to min y if too small
 #define MAX_THRESHOLD(x,y) if ((x)>(y))(x)=(y)  // Set x to max y if too big

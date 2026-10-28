@@ -48,9 +48,9 @@ Rsim.scenario.new <- set.rsim.scene(Rsim.scenario,stanzas=stanzas)
 
 }
 \seealso{
-Other Adjust functions: 
-\code{\link{adjust.fishing}()},
-\code{\link{adjust.forcing}()},
-\code{\link{adjust.scenario}()}
+Other Adjust functions:
+\code{\link[=adjust.fishing]{adjust.fishing()}},
+\code{\link[=adjust.forcing]{adjust.forcing()}},
+\code{\link[=adjust.scenario]{adjust.scenario()}}
 }
 \concept{Adjust functions}
