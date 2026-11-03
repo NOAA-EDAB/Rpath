@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Run a dynamic food web simulation in Rsim">
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,16 +70,21 @@
       <img src="../logo.png" class="logo" alt=""><h1>Run a dynamic food web simulation in Rsim</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/v1.1.0/vignettes/RunRsim.Rmd" class="external-link"><code>vignettes/RunRsim.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/main/vignettes/RunRsim.Rmd" class="external-link"><code>vignettes/RunRsim.Rmd</code></a></small>
       <div class="d-none name"><code>RunRsim.Rmd</code></div>
     </div>
 
     
     
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'data.table'</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     %notin%</span></span></code></pre>
 <p>Rsim is the ecosim implementation of the EwE code in R. In order to
 proceed you must have a valid Rpath object. The steps for setting this
 up are described in <code><a href="../articles/ModelSetup.html">vignette("ModelSetup")</a></code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">REco</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rpath.html">rpath</a></span><span class="op">(</span><span class="va">REco.params</span>, eco.name <span class="op">=</span> <span class="st">'R Ecosystem'</span><span class="op">)</span></span></code></pre></div>
 <p>Running rsim, is a three part process. First, the function
 <code><a href="../reference/rsim.scenario.html">rsim.scenario()</a></code> is run to convert rpath parameters to
@@ -89,7 +94,7 @@ matrices for fishing and other forcing functions, and a list of initial
 states. Arguments passed to the <code><a href="../reference/rsim.scenario.html">rsim.scenario()</a></code> function
 are the Rpath object, the rpath parameter object, and a vector of years
 corresponding to the length of the simulation.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">REco.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rsim.scenario.html">rsim.scenario</a></span><span class="op">(</span><span class="va">REco</span>, <span class="va">REco.params</span>, years <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p>The second part of rsim is to add forcing functions or change the
 fishing behavior. This is accomplished by changing the appropriate list
@@ -98,7 +103,7 @@ are a series of adjust functions that will do this without having to
 know the specific group numbers. For example, we can double the effort
 of the trawler fleet after 25 years using the
 <code><a href="../reference/adjust.fishing.html">adjust.fishing()</a></code> function.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">REco.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust.fishing.html">adjust.fishing</a></span><span class="op">(</span><span class="va">REco.sim</span>, <span class="st">'ForcedEffort'</span>, group <span class="op">=</span> <span class="st">'Trawlers'</span>, sim.year <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">100</span>, </span>
 <span>                           value <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p>The final part is to pass the modified REco.sim object to the
@@ -108,7 +113,7 @@ numerical integration, and the length of the simulation. Rpath allows
 for both Adams-Bashforth and Runge-Kutta 4 numerical integration. Older
 versions of EwE use the Adams-Bashforth method while the latest version
 (6+) uses Runge-Kutta (The default method for Rpath).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">REco.run1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rsim.run.html">rsim.run</a></span><span class="op">(</span><span class="va">REco.sim</span>, method <span class="op">=</span> <span class="st">'RK4'</span>, years <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p>The output from <code><a href="../reference/rsim.run.html">rsim.run()</a></code> is another S3 class object.
 Similar to the Rpath object created by <code><a href="../reference/rpath.html">rpath()</a></code>, the generic
@@ -118,7 +123,7 @@ you need to use the function <code><a href="../reference/write.Rsim.html">write.
 <code>summary</code> just like for the Rpath object will display what
 other list items are available.</p>
 <p>For example:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">REco.run1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rpath sim results: R Ecosystem </span></span>
 <span><span class="co">#&gt;                           Group     StartBio       EndBio     BioES StartCatch</span></span>
@@ -129,12 +134,12 @@ other list items are available.</p>
 <span><span class="co">#&gt; JuvRoundfish1     JuvRoundfish1 1.304305e-01 1.421985e-01 1.0902247 0.00300000</span></span>
 <span><span class="co">#&gt; AduRoundfish1     AduRoundfish1 1.390000e+00 1.417537e+00 1.0198106 0.14500020</span></span>
 <span><span class="co">#&gt; JuvRoundfish2     JuvRoundfish2 1.232608e+00 1.189076e+00 0.9646828 0.00300000</span></span>
-<span><span class="co">#&gt; AduRoundfish2     AduRoundfish2 5.553000e+00 4.871675e+00 0.8773050 0.38900025</span></span>
+<span><span class="co">#&gt; AduRoundfish2     AduRoundfish2 5.553000e+00 4.871675e+00 0.8773050 0.38900024</span></span>
 <span><span class="co">#&gt; JuvFlatfish1       JuvFlatfish1 6.988442e-02 6.138067e-02 0.8783169 0.00200000</span></span>
 <span><span class="co">#&gt; AduFlatfish1       AduFlatfish1 5.766000e+00 4.492539e+00 0.7791431 0.18000021</span></span>
 <span><span class="co">#&gt; JuvFlatfish2       JuvFlatfish2 9.628877e-02 4.971856e-02 0.5163485 0.00200000</span></span>
 <span><span class="co">#&gt; AduFlatfish2       AduFlatfish2 7.390000e-01 2.358241e-01 0.3191124 0.07000003</span></span>
-<span><span class="co">#&gt; OtherGroundfish OtherGroundfish 7.400000e+00 7.456467e+00 1.0076307 0.38000000</span></span>
+<span><span class="co">#&gt; OtherGroundfish OtherGroundfish 7.400000e+00 7.456467e+00 1.0076307 0.37999999</span></span>
 <span><span class="co">#&gt; Foragefish1         Foragefish1 5.100000e+00 5.302295e+00 1.0396656 0.35100000</span></span>
 <span><span class="co">#&gt; Foragefish2         Foragefish2 4.700000e+00 4.896228e+00 1.0417506 0.09100000</span></span>
 <span><span class="co">#&gt; OtherForagefish OtherForagefish 5.100000e+00 5.161275e+00 1.0120147 0.03100000</span></span>
@@ -153,13 +158,13 @@ other list items are available.</p>
 <span><span class="co">#&gt; Seabirds        2.220938e-05 2.2209377</span></span>
 <span><span class="co">#&gt; Whales          1.990513e-07 1.9905133</span></span>
 <span><span class="co">#&gt; Seals           1.191009e-03 0.5955044</span></span>
-<span><span class="co">#&gt; JuvRoundfish1   4.367063e-03 1.4556875</span></span>
+<span><span class="co">#&gt; JuvRoundfish1   4.367062e-03 1.4556875</span></span>
 <span><span class="co">#&gt; AduRoundfish1   2.342194e-01 1.6153037</span></span>
-<span><span class="co">#&gt; JuvRoundfish2   3.865061e-03 1.2883537</span></span>
+<span><span class="co">#&gt; JuvRoundfish2   3.865061e-03 1.2883536</span></span>
 <span><span class="co">#&gt; AduRoundfish2   6.296491e-01 1.6186342</span></span>
-<span><span class="co">#&gt; JuvFlatfish1    2.644912e-03 1.3224560</span></span>
+<span><span class="co">#&gt; JuvFlatfish1    2.644911e-03 1.3224557</span></span>
 <span><span class="co">#&gt; AduFlatfish1    2.416845e-01 1.3426903</span></span>
-<span><span class="co">#&gt; JuvFlatfish2    1.566120e-03 0.7830602</span></span>
+<span><span class="co">#&gt; JuvFlatfish2    1.566117e-03 0.7830584</span></span>
 <span><span class="co">#&gt; AduFlatfish2    4.151967e-02 0.5931378</span></span>
 <span><span class="co">#&gt; OtherGroundfish 6.650567e-01 1.7501492</span></span>
 <span><span class="co">#&gt; Foragefish1     3.659638e-01 1.0426318</span></span>
@@ -176,9 +181,9 @@ other list items are available.</p>
 <span><span class="co">#&gt; Midwater        0.000000e+00       NaN</span></span>
 <span><span class="co">#&gt; Dredgers        0.000000e+00       NaN</span></span></code></pre></div>
 <p>To export this object to a csv file</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write.Rsim.html">write.Rsim</a></span><span class="op">(</span><span class="va">REco.run1</span>,file <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org/reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="st">"run1Output.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">REco.run1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rsim parameters for: R Ecosystem </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -189,27 +194,31 @@ other list items are available.</p>
 <span><span class="co">#&gt; 1       2.34911    3.028756</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Rpath sim also includes:</span></span>
-<span><span class="co">#&gt;  [1] "out_Biomass"     "out_Catch"       "out_Gear_Catch"  "annual_Catch"   </span></span>
-<span><span class="co">#&gt;  [5] "annual_Biomass"  "annual_QB"       "annual_Qlink"    "end_state"      </span></span>
-<span><span class="co">#&gt;  [9] "crash_year"      "pred"            "prey"            "Gear_Catch_sp"  </span></span>
-<span><span class="co">#&gt; [13] "Gear_Catch_gear" "Gear_Catch_disp" "start_state"     "params"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "out_Biomass"       "out_Catch"         "out_Gear_Catch"   </span></span>
+<span><span class="co">#&gt;  [4] "annual_Catch"      "annual_Biomass"    "annual_QB"        </span></span>
+<span><span class="co">#&gt;  [7] "annual_Qlink"      "out_species_rates" "out_SSB"          </span></span>
+<span><span class="co">#&gt; [10] "out_eggs"          "out_Nrec"          "out_Wrec"         </span></span>
+<span><span class="co">#&gt; [13] "out_WageS"         "out_NageS"         "out_QageS"        </span></span>
+<span><span class="co">#&gt; [16] "end_state"         "crash_year"        "pred"             </span></span>
+<span><span class="co">#&gt; [19] "prey"              "Gear_Catch_sp"     "Gear_Catch_gear"  </span></span>
+<span><span class="co">#&gt; [22] "Gear_Catch_disp"   "start_state"       "params"</span></span></code></pre></div>
 <p>In addition, there is a quick graphical routine for plotting biomass
 trajectories over time. Other plots similar to the group plots are
 possible but at this time there isn’t a built-in function.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/rsim.plot.html">rsim.plot</a></span><span class="op">(</span><span class="va">REco.run1</span>, spname<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="RunRsim_files/figure-html/ecosimEquilibriumPlot-1.png" alt="Biomass Trajectories of all species in model" width="864"></p>
+<p><img src="RunRsim_files/figure-html/ecosimEquilibriumPlot-1.png" class="r-plt" alt="Biomass Trajectories of all species in model" width="864"></p>
   </main>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas, Sarah Weisberg, Andy Whitehouse.</p>
+  <p>Developed by Kerim Aydin, Sean Lucey, <a href="https://andybeet.com" class="external-link">Andy Beet</a>, Bia Dias, Sarah Gaichas, Max Grezlik, Ron Klasky, Sarah Weisberg, Andy Whitehouse.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

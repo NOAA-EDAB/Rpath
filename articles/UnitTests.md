@@ -1,0 +1,598 @@
+# UnitTests
+
+``` r
+
+library(Rpath)
+```
+
+## Unit Tests
+
+Unit Tests are written using the testthat R package. The tests are
+stored in the file: **tests/testthat/test-rpath.R**. They may be run
+explicitly by the user clicking the Test or Check buttons under the
+Build tab in RStudio. They also run automatically via git actions when
+the user does a push or pull request. The output of the unit tests is a
+pdf file with a variety of comparison plots, examples of which are given
+below in [Figures 1-3.](#figures)
+
+## Details
+
+Unit Tests consist of comparing a “current” model value (i.e., string,
+table) to a previously stored “baseline” value. Differences are shown in
+the testing output as well as reflected in the generated plots which are
+written to: **Rplots.pdf**. Difference “tolerances” are defined by the
+variable:
+
+``` r
+
+TOLERANCE <- 1e-5
+```
+
+which can be modified as necessary.
+
+### Regenerating Baseline Files
+
+If the user needs to regenerate the baseline files, the following
+variable should be set to TRUE and the tests re-run manually (by
+clicking the Test button under the Build tab). This will regenerate all
+of the baseline data files.
+
+``` r
+
+CREATE_BASELINE_FILES <- TRUE
+```
+
+After the baseline files have been generated, the user should reset the
+variable back:
+
+``` r
+
+CREATE_BASELINE_FILES <- FALSE
+```
+
+## List of Tests
+
+The following unit tests have been developed. Note that some tests
+consist of additional/finer tests that compare out_Biomass, out_Catch,
+and out_Gear_Catch\* for AB (Adams-Bashforth) and RK4 (4th Order Runge
+Kutta) numerical differential equation methods.
+
+### Unit Tests
+
+1.  Is model balanced?
+
+    Looks for “Balanced” string in Rpath summary file output
+
+2.  Does model run silent?
+
+    Tests if model runs without producing print statements, warnings, or
+    error messages.
+
+3.  Compare REcosystem objects
+
+    Is the current REcosystem object the same as the saved original
+    REcosystem object?
+
+4.  Compare REcosystem summaries
+
+    Is the current REcosystem summary the same as the saved original
+    REcosystem summary?
+
+#### AB and RK4 Sim Run Tests:
+
+5.  Compare baseline AB sim run to current AB sim run
+
+    Checks if the baseline Rpath AB sim run is the same as the current
+    AB sim run (checks top level data structure only).
+
+6.  Compare out_Biomass from baseline and current AB sim runs
+
+    Checks if OutBiomass is the same for the baseline AB sim run and the
+    current AB sim run.
+
+7.  Compare out_Catch from baseline and current AB sim runs
+
+    Checks if OutCatch is the same for the baseline AB sim run and the
+    current AB sim run.
+
+8.  Compare out_Gear_Catch\* from baseline and current AB sim runs
+
+    Checks if OutGearCatch is the same for the baseline AB sim run and
+    the current AB sim run.
+
+9.  Compare baseline RK4 sim run to current RK4 sim run
+
+    Checks if the baseline RK4 sim run is the same as the current RK4
+    sim run (checks top level data structure only).
+
+10. Compare out_Biomass from baseline and current RK4 sim runs
+
+    Checks if OutBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run.
+
+11. Compare out_Catch from baseline and current RK4 sim runs
+
+    Checks if OutCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run.
+
+12. Compare out_Gear_Catch from baseline and current RK4 sim runs
+
+    Checks if OutGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run.
+
+13. Compare baseline AB sim run to current RK4 sim run
+
+    Checks if the baseline AB sim run is the same as the current RK4 sim
+    run (checks top level data structure only).
+
+14. Compare out_Biomass from baseline AB run and current RK4 sim run
+
+    Checks if OutBiomass is the same for the baseline AB sim run and the
+    current RK4 sim run.
+
+15. Compare out_Catch from baseline AB run and current RK4 sim run
+
+    Checks if OutCatch is the same for the baseline AB sim run and the
+    current RK4 sim run.
+
+16. Compare out_Gear_Catch from baseline AB run and current RK4 sim run
+
+    Checks if OutGearCatch is the same for the baseline AB sim run and
+    the current RK4 sim run.
+
+#### AB and RK4 Sim Run Tests with Jitter on ForcedBiomass:
+
+17. Compare sim runs with random noise (i.e., jitter) added to
+    \$forcing\$ForcedBio
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedBio.
+
+18. Compare out_Catch from baseline AB run and current AB run with
+    random noise added to ForcedBio
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedBio.
+
+19. Compare out_Gear_Catch from baseline AB run and current AB run with
+    random noise added to ForcedBio
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with random noise added to ForcedBio.
+
+20. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    random noise added to ForcedBio
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedBio.
+
+21. Compare out_Catch from baseline RK4 run and current RK4 run with
+    random noise added to ForcedBio
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with random noise added to ForcedBio.
+
+22. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with random noise added to ForcedBio
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedBio.
+
+#### AB and RK4 Sim Run Tests with Jitter on ForcedMigrate:
+
+23. Compare out_Biomass from baseline AB run and current AB run with
+    random noise added to ForcedMigrate
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedMigrate.
+
+24. Compare out_Catch from baseline AB run and current AB run with
+    random noise added to ForcedMigrate
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedMigrate.
+
+25. Compare out_Gear_Catch from baseline AB run and current AB run with
+    random noise added to ForcedMigrate
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with random noise added to ForcedMigrate.
+
+26. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    random noise added to ForcedMigrate
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedMigrate.
+
+27. Compare out_Catch from baseline RK4 run and current RK4 run with
+    random noise added to ForcedMigrate
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with random noise added to ForcedMigrate.
+
+28. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with random noise added to ForcedMigrate
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedMigrate.
+
+#### AB and RK4 Sim Run Tests with Stepped Noise on ForcedBiomass:
+
+29. Compare out_Biomass from baseline AB run and current AB run with
+    stepped noise added to ForcedBio
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedBio.
+
+30. Compare out_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedBio
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedBio.
+
+31. Compare out_Gear_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedBio
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with stepped noise added to ForcedBio.
+
+32. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedBio
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedBio.
+
+33. Compare out_Catch from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedBio
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with stepped noise added to ForcedBio.
+
+34. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with stepped noise added to ForcedBio
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedBio.
+
+#### AB and RK4 Sim Run Tests with Stepped Noise on ForcedMigrate:
+
+35. Compare out_Biomass from baseline AB run and current AB run with
+    stepped noise added to ForcedMigrate
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedMigrate
+
+36. Compare out_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedMigrate
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedMigrate
+
+37. Compare out_Gear_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedMigrate
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with stepped noise added to ForcedMigrate
+
+38. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedMigrate
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedMigrate
+
+39. Compare out_Catch from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedMigrate
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with stepped noise added to ForcedMigrate
+
+40. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with stepped noise added to ForcedMigrate
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedMigrate
+
+#### AB and RK4 Sim Run Tests with Jitter on ForcedEffort:
+
+41. Compare out_Biomass from baseline AB run and current AB run with
+    random noise added to ForcedEffort
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedEffort.
+
+42. Compare out_Catch from baseline AB run and current AB run with
+    random noise added to ForcedEffort
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedEffort.
+
+43. Compare out_Gear_Catch from baseline AB run and current AB run with
+    random noise added to ForcedEffort
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with random noise added to ForcedEffort.
+
+44. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    random noise added to ForcedEffort
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedEffort.
+
+45. Compare out_Catch from baseline RK4 run and current RK4 run with
+    random noise added to ForcedEffort
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with random noise added to ForcedEffort.
+
+46. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with random noise added to ForcedEffort
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedEffort.
+
+#### AB and RK4 Sim Run Tests with Jitter on ForcedFRate:
+
+47. Compare out_Biomass from baseline AB run and current AB run with
+    random noise added to ForcedFRate
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedFRate.
+
+48. Compare out_Catch from baseline AB run and current AB run with
+    random noise added to ForcedFRate
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedFRate.
+
+49. Compare out_Gear_Catch from baseline AB run and current AB run
+    withrandom noise added to ForcedFRate
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with random noise added to ForcedFRate.
+
+50. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    random noise added to ForcedFRate
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedFRate.
+
+51. Compare out_Catch from baseline RK4 run and current RK4 run with
+    random noise added to ForcedFRate
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with random noise added to ForcedFRate.
+
+52. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with random noise added to ForcedFRate
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedFRate.
+
+#### AB and RK4 Sim Run Tests with Jitter on ForcedCatch:
+
+53. Compare out_Biomass from baseline AB run and current AB run with
+    random noise added to ForcedCatch
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedCatch
+
+54. Compare out_Catch from baseline AB run and current AB run with
+    random noise added to ForcedCatch
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with random noise added to ForcedCatch
+
+55. Compare out_Gear_Catch from baseline AB run and current AB run with
+    random noise added to ForcedCatch
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with random noise added to ForcedCatch
+
+56. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    random noise added to ForcedCatch
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedCatch
+
+57. Compare out_Catch from baseline RK4 run and current RK4 run with
+    random noise added to ForcedCatch
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with random noise added to ForcedCatch
+
+58. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with random noise added to ForcedCatch
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with random noise added to ForcedCatch
+
+#### AB and RK4 Sim Run Tests with Stepped Noise on ForcedEffort:
+
+59. Compare out_Biomass from baseline AB run and current AB run with
+    stepped noise added to ForcedEffort
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedEffort.
+
+60. Compare out_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedEffort
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedEffort.
+
+61. Compare out_Gear_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedEffort
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with stepped noise added to ForcedEffort.
+
+62. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedEffort
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedEffort.
+
+63. Compare out_Catch from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedEffort
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with stepped noise added to ForcedEffort.
+
+64. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with stepped noise added to ForcedEffort
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedEffort.
+
+#### AB and RK4 Sim Run Tests with Stepped Noise on ForcedFRate:
+
+65. Compare out_Biomass from baseline AB run and current AB run with
+    stepped noise added to ForcedFRate
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedFRate.
+
+66. Compare out_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedFRate
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedFRate.
+
+67. Compare out_Gear_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedFRate
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with stepped noise added to ForcedFRate.
+
+68. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedFRate
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedFRate.
+
+69. Compare out_Catch from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedFRate
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with stepped noise added to ForcedFRate.
+
+70. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with stepped noise added to ForcedFRate
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedFRate.
+
+#### AB and RK4 Sim Run Tests with Stepped Noise on ForcedCatch:
+
+71. Compare out_Biomass from baseline AB run and current AB run with
+    stepped noise added to ForcedCatch
+
+    Checks if outBiomass is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedCatch
+
+72. Compare out_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedCatch
+
+    Checks if outCatch is the same for the baseline AB sim run and the
+    current AB sim run with stepped noise added to ForcedCatch
+
+73. Compare out_Gear_Catch from baseline AB run and current AB run with
+    stepped noise added to ForcedCatch
+
+    Checks if outGearCatch is the same for the baseline AB sim run and
+    the current AB sim run with stepped noise added to ForcedCatch
+
+74. Compare out_Biomass from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedCatch
+
+    Checks if outBiomass is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedCatch
+
+75. Compare out_Catch from baseline RK4 run and current RK4 run with
+    stepped noise added to ForcedCatch
+
+    Checks if outCatch is the same for the baseline RK4 sim run and the
+    current RK4 sim run with stepped noise added to ForcedCatch
+
+76. Compare out_Gear_Catch from baseline RK4 run and current RK4 run
+    with stepped noise added to ForcedCatch
+
+    Checks if outGearCatch is the same for the baseline RK4 sim run and
+    the current RK4 sim run with stepped noise added to ForcedCatch
+
+\*The out_Gear_Catch tests are currently awaiting issue \#74 to be
+resolved.
+
+## Figures
+
+The Unit Tests compare current runs with baseline runs and produce plots
+in a pdf file. These plots may be useful for diagnostic purposes. The
+plots depict the output of a current run in blue and of the baseline run
+in red. If there are no errors, then there should be no red visible on
+the plots. There are two types of plots available, also set by a
+variable in tests/testthat/test-rpath.R:
+
+``` r
+
+PLOT_TYPE <- 1 
+```
+
+If PLOT_TYPE is set to 1, then the plot depicts the current model in
+blue superimposed over the baseline model in red. If PLOT_TYPE is set to
+2, then the difference (current-baseline) is displayed.
+
+## Example plots:
+
+Figure 1 depicts an Rpath Simulation run of Biomass Density vs Time for
+3 species. The `REcosystem_scene$forcing$ForcedBio` table, where
+
+``` r
+
+  REcosystem_scene <- rsim.scenario(REco, REco.params, 1:50)
+```
+
+has been modified with random noise. Both the baseline and current model
+runs use the AB (Adams-Bashforth) numerical differential equation
+method. Notice that there is no red line visible in this plot. That is,
+the current (blue) line is identical (and covers completely) the
+baseline (red) plot.  
+  
+
+![Figure 1. No Difference in Baseline vs Current
+Models](img/plot_01_no_difference.png)
+
+Figure 1. No Difference in Baseline vs Current Models
+
+  
+  
+Figure 2 depicts the same information as Figure 1 with the difference
+being that the randomization factor was slightly changed in the current
+model from what was used in the baseline model. This was done to only to
+highlight how the plot would appear if the current model deviated from
+the baseline. Notice that the underlying baseline plot (in red) is now
+clearly visible.  
+  
+
+![Figure 2. Difference in red of Baseline vs Current
+Models](img/plot_02_superimposed_with_difference.png)
+
+Figure 2. Difference in red of Baseline vs Current Models
+
+  
+  
+Figure 3 shows the difference of the current and baseline models. If the
+models were identical, the difference would be 0, and the plots should
+be completely flat lines. This plot shows the current-baseline plots for
+the data shown in Figure 2. Notice that the plot lines are not
+completely flat, denoting that the difference is not 0. The scale of the
+y-axis may be modified by changing the following line in
+**tests/testthat/test-rpath.R**:
+
+``` r
+
+YLIMIT_DIFFERENCE_PLOTS <- 0.05
+```
+
+![Figure 3. Current-Baseline Result](img/plot_03_current-baseline.png)
+
+Figure 3. Current-Baseline Result

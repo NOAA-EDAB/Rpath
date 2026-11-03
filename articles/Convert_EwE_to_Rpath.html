@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Convert EwE to Rpath">
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Convert EwE to Rpath</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/v1.1.0/vignettes/Convert_EwE_to_Rpath.Rmd" class="external-link"><code>vignettes/Convert_EwE_to_Rpath.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/main/vignettes/Convert_EwE_to_Rpath.Rmd" class="external-link"><code>vignettes/Convert_EwE_to_Rpath.Rmd</code></a></small>
       <div class="d-none name"><code>Convert_EwE_to_Rpath.Rmd</code></div>
     </div>
 
@@ -143,7 +143,9 @@ resulting balances.</p>
 <span></span>
 <span><span class="co"># EwE output files - eiixml file and Basic Estimates csv</span></span>
 <span>  <span class="va">eiifile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/xml"</span>, <span class="st">"Western_Bering_Sea.eiixml"</span>, package <span class="op">=</span> <span class="st">"Rpath"</span><span class="op">)</span></span>
-<span>  <span class="va">csvfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/xml"</span>, <span class="st">"Western Bering Sea-Basic estimates.csv"</span>, package <span class="op">=</span> <span class="st">"Rpath"</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">zip_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"xml"</span>, <span class="st">"western_bering.zip"</span>, package <span class="op">=</span> <span class="st">"Rpath"</span><span class="op">)</span></span>
+<span>  <span class="va">csvfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">unz</a></span><span class="op">(</span><span class="va">zip_path</span>, <span class="st">"Western Bering Sea-Basic estimates.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load and balance the model in Rpath  </span></span>
 <span>  <span class="va">unbal</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create.rpath.from.eiixml.html">create.rpath.from.eiixml</a></span><span class="op">(</span><span class="va">eiifile</span><span class="op">)</span></span>
@@ -153,7 +155,7 @@ resulting balances.</p>
 <span>  <span class="va">bal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rpath.html">rpath</a></span><span class="op">(</span><span class="va">unbal</span><span class="op">)</span></span>
 <span>  </span>
 <span><span class="co"># Load the csv file and clean up the format</span></span>
-<span>  <span class="va">csv.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">csvfile</span><span class="op">)</span></span>
+<span>  <span class="va">csv.out</span> <span class="op">&lt;-</span> <span class="va">csvfile</span></span>
 <span>  <span class="co"># If there's no stanzas, the total mortality column will be missing from the CSV - add an extra column</span></span>
 <span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">csv.out</span><span class="op">)</span><span class="op">&lt;</span><span class="fl">13</span><span class="op">)</span><span class="op">{</span><span class="va">csv.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/append.html" class="external-link">append</a></span><span class="op">(</span><span class="va">csv.out</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tm<span class="op">=</span><span class="cn">NA</span><span class="op">)</span>, after<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span><span class="op">}</span></span>
 <span>  <span class="co"># cleaned column names matching EwE output</span></span>
@@ -240,11 +242,11 @@ resulting balances.</p>
 <span><span class="co">#&gt; 20 0.87123322 8.413654e-09</span></span>
 <span><span class="co">#&gt; 21 0.82682788 5.571429e-08</span></span>
 <span><span class="co">#&gt; 22 0.90000021 2.100000e-07</span></span>
-<span><span class="co">#&gt; 23 0.24500690 7.818710e-09</span></span>
+<span><span class="co">#&gt; 23 0.24500690 7.818708e-09</span></span>
 <span><span class="co">#&gt; 24 0.27408451 7.461256e-09</span></span>
 <span><span class="co">#&gt; 25 0.99449003 1.565455e-07</span></span>
-<span><span class="co">#&gt; 26 0.82282239 5.739009e-08</span></span>
-<span><span class="co">#&gt; 27 0.39076331 6.128221e-08</span></span>
+<span><span class="co">#&gt; 26 0.82282239 5.739020e-08</span></span>
+<span><span class="co">#&gt; 27 0.39076331 6.128171e-08</span></span>
 <span><span class="co">#&gt; 28 0.91090471 4.047966e-08</span></span>
 <span><span class="co">#&gt; 29 0.89999992 8.000000e-08</span></span>
 <span><span class="co">#&gt; 30 0.01646648 3.809524e-09</span></span>
@@ -289,11 +291,11 @@ in EwE (as an output), and enter that value into Rpath.</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas, Sarah Weisberg, Andy Whitehouse.</p>
+  <p>Developed by Kerim Aydin, Sean Lucey, <a href="https://andybeet.com" class="external-link">Andy Beet</a>, Bia Dias, Sarah Gaichas, Max Grezlik, Ron Klasky, Sarah Weisberg, Andy Whitehouse.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

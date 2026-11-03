@@ -1,0 +1,47 @@
+# Calculate Objective Function for Rsim Model Fit
+
+Computes the negative log-likelihood (goodness of fit) between an
+\`Rsim\` simulation's dynamic output and empirical observation
+timeseries data for both Biomass and Catch.
+
+## Usage
+
+``` r
+rsim.fit.obj(Rsim.scenario, Rsim.output, verbose = TRUE)
+```
+
+## Arguments
+
+- Rsim.scenario:
+
+  An \`Rsim\` scenario object containing the fitting data.
+
+- Rsim.output:
+
+  An Rsim simulation output to be evaluated.
+
+- verbose:
+
+  Logical; if \`TRUE\`, returns a detailed list containing the original
+  fitting data appended with model estimates, \`q\` values, and
+  individual fit scores. If \`FALSE\`, returns only the total sum of the
+  negative log-likelihoods (useful for passing to optimizer functions).
+
+## Value
+
+If \`verbose = TRUE\`, returns a list containing detailed data frames
+(\`Biomass\`, \`Catch\`) and the total objective score (\`tot\`). If
+\`verbose = FALSE\`, returns a single numeric scalar representing the
+total negative log-likelihood.
+
+## Details
+
+This function evaluates how well a simulation run (\`Rsim.output\`)
+matches the loaded observation data (\`Rsim.scenario\$fitting\`). It
+uses a log-normal error distribution and calculates the negative
+log-likelihood.
+
+For biomass observation series marked as \`"index"\`, the function
+analytically calculates a variance-weighted catchability coefficient
+(\`q_est\`) to scale the estimates prior to calculating the
+log-likelihood error.

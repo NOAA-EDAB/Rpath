@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Set up a food web model">
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rpath</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Set up a food web model</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/v1.1.0/vignettes/ModelSetup.Rmd" class="external-link"><code>vignettes/ModelSetup.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NOAA-EDAB/Rpath/blob/main/vignettes/ModelSetup.Rmd" class="external-link"><code>vignettes/ModelSetup.Rmd</code></a></small>
       <div class="d-none name"><code>ModelSetup.Rmd</code></div>
     </div>
 
@@ -83,7 +83,12 @@
 Started</a>. R package <a href="https://r-datatable.com" class="external-link">data.table</a> is also required to run
 the code in this article.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://noaa-edab.github.io/Rpath/">Rpath</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://noaa-edab.github.io/Rpath/">Rpath</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     %notin%</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="parameter-file-generation">Parameter file generation<a class="anchor" aria-label="anchor" href="#parameter-file-generation"></a>
 </h3>
@@ -1735,7 +1740,7 @@ using the <code><a href="../reference/stanzaplot.html">stanzaplot()</a></code> f
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/stanzaplot.html">stanzaplot</a></span><span class="op">(</span><span class="va">REco.params</span>, StanzaGroup <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="ModelSetup_files/figure-html/stanzaplot-1.png" alt="Example plot using function stanzaplot() with StanzaGroup=1" width="864"><p class="caption">
+<img src="ModelSetup_files/figure-html/stanzaplot-1.png" class="r-plt" alt="Example plot using function stanzaplot() with StanzaGroup=1" width="864"><p class="caption">
 Example plot using function stanzaplot() with StanzaGroup=1
 </p>
 </div>
@@ -2800,11 +2805,11 @@ Modelling, 172: 109–139. <a href="https://www.sciencedirect.com/science/articl
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kerim Aydin, Sean Lucey, Sarah Gaichas, Sarah Weisberg, Andy Whitehouse.</p>
+  <p>Developed by Kerim Aydin, Sean Lucey, <a href="https://andybeet.com" class="external-link">Andy Beet</a>, Bia Dias, Sarah Gaichas, Max Grezlik, Ron Klasky, Sarah Weisberg, Andy Whitehouse.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

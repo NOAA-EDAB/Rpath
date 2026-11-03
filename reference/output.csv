@@ -6,10 +6,10 @@
 "whiting","whiting",1.8,1.8,1,0.2,0.2,1
 "mackerel","mackerel",1.2,1.2,1,0.4,0.4,1
 "anchovy","anchovy",7,7,1,1.4,1.4,1
-"shrimp","shrimp",0.8,0.799999999999999,0.999999999999999,0.05,0.0499999999999999,0.999999999999999
-"benthos","benthos",32.6822499999994,32.6822499999994,0.999999999999998,0,0,NA
+"shrimp","shrimp",0.8,0.8,1,0.05,0.05,1
+"benthos","benthos",32.6822499999997,32.6822499999996,0.999999999999999,0,0,NA
 "zooplankton","zooplankton",14.8,14.8,1,0,0,NA
-"phytoplankton","phytoplankton",9,9.00000000000001,1,0,0,NA
+"phytoplankton","phytoplankton",9,9,1,0,0,NA
 "detritus","detritus",10,10,1,0,0,NA
 "sealers","sealers",0,0,NA,0,0,NA
 "trawlers","trawlers",0,0,NA,0,0,NA
