@@ -69,7 +69,9 @@ resulting balances.
 
 # EwE output files - eiixml file and Basic Estimates csv
   eiifile <- system.file("extdata/xml", "Western_Bering_Sea.eiixml", package = "Rpath")
-  csvfile <- system.file("extdata/xml", "Western Bering Sea-Basic estimates.csv", package = "Rpath")
+  
+  zip_path <- system.file("extdata", "xml", "western_bering.zip", package = "Rpath")
+  csvfile <- read.csv(unz(zip_path, "Western Bering Sea-Basic estimates.csv"))
 
 # Load and balance the model in Rpath  
   unbal  <- create.rpath.from.eiixml(eiifile)
@@ -78,7 +80,7 @@ resulting balances.
   bal <- rpath(unbal)
   
 # Load the csv file and clean up the format
-  csv.out <- read.csv(csvfile)
+  csv.out <- csvfile
   # If there's no stanzas, the total mortality column will be missing from the CSV - add an extra column
   if(length(csv.out)<13){csv.out <- data.frame(append(csv.out, list(tm=NA), after=6))}
   # cleaned column names matching EwE output

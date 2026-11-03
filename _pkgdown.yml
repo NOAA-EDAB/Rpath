@@ -66,13 +66,40 @@ reference:
   - write.Rsim
   - frate.table
   - extract.node
-- title: "Auxiliary Tools"
-  desc: "Additional tools"
+- title: "Visualization Tools"
+  desc: "Functions for visualizing rpath and rsim outputs" 
+- title: "Network Tools"
+  desc: "Functions for trophic network analysis"
 - contents:
   - MTI
+- title: "EwE Compatibility Tools"
+  desc: "Functions for importing EwE models"
+- contents:
   - import.eiixml
   - create.rpath.from.eiixml
-
+- title: "Model Fitting Tools"
+  desc: "Functions for fitting Ecosim runs to data"
+- contents:
+  - fitcatch.to.forcecatch
+  - get.pp.link
+  - read.fitting.biomass
+  - read.fitting.catch
+  - rsim.fit.apply 
+  - rsim.fit.list.bio.bysurvey 
+  - rsim.fit.list.bio.series 
+  - rsim.fit.list.catch.series
+  - rsim.fit.obj 
+  - rsim.fit.obj.species 
+  - rsim.fit.remove.bio.timeseries 
+  - rsim.fit.run
+  - rsim.fit.set.bio.wt
+  - rsim.fit.set.catch.wt 
+  - rsim.fit.set.q 
+  - rsim.fit.table 
+  - rsim.fit.update 
+  - rsim.plot.fit 
+  - rsim.plot.fitspecies
+  - rsim.predprey.table
 
 navbar:
  components:
